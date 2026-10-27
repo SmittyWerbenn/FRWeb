@@ -1,13 +1,15 @@
-import SportsComproPreview from './previews/SportsComproPreview'
-import FnbComproPreview from './previews/FnbComproPreview'
-import RetailComproPreview from './previews/RetailComproPreview'
-import ServiceComproPreview from './previews/ServiceComproPreview'
+import {
+  AutoCareServicePreview,
+  CateringProPreview,
+  MaterialStorePreview,
+  PadelArenaPreview,
+} from './previews/archetypes'
 
 const PREVIEWS = {
-  sports: SportsComproPreview,
-  fnb: FnbComproPreview,
-  retail: RetailComproPreview,
-  service: ServiceComproPreview,
+  sports: PadelArenaPreview,
+  fnb: CateringProPreview,
+  retail: MaterialStorePreview,
+  service: AutoCareServicePreview,
 }
 
 /**
@@ -30,7 +32,7 @@ const SKIN_CLASS = {
 }
 
 export default function PreviewRenderer({ template }) {
-  const Preview = PREVIEWS[template.previewType] || SportsComproPreview
+  const Preview = PREVIEWS[template.previewType] || PadelArenaPreview
   const { theme } = template
   const skin = SKIN_CLASS[template.skin] ?? ''
 

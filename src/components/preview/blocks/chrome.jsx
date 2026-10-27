@@ -2,9 +2,24 @@ import { useState } from 'react'
 import { Icon, Menu, MessageCircle, Phone, MapPin, Clock, Star, Quote, X, ArrowRight } from '../../../lib/icons'
 import { PvButton, PvChip, PvHeading, PvSection, Stars, MiniMap, cx } from '../ui'
 
+function openStatus(hours) {
+  const match = /(\d{1,2})[.:](\d{2}).*?(\d{1,2})[.:](\d{2})/.exec(hours || '')
+  if (!match) return { open: true, label: 'Buka Hari Ini' }
+  const now = new Date()
+  const minutes = now.getHours() * 60 + now.getMinutes()
+  const start = Number(match[1]) * 60 + Number(match[2])
+  const end = Number(match[3]) * 60 + Number(match[4])
+  const open = minutes >= start && minutes < end
+  return {
+    open,
+    label: open ? 'Buka Sekarang' : `Tutup · buka ${match[1].padStart(2, '0')}.${match[2]}`,
+  }
+}
+
 export function PreviewNav({ template }) {
-  const { brand, nav, hero, theme } = template
+  const { brand, nav, hero, theme, location } = template
   const [open, setOpen] = useState(false)
+  const status = openStatus(location?.hours)
 
   return (
     <div
@@ -40,6 +55,20 @@ export function PreviewNav({ template }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <span
+            className="hidden items-center gap-1.5 rounded-full border px-2 py-1 text-[9.5px] font-bold @sm:inline-flex"
+            style={{
+              borderColor: status.open ? 'rgba(16,185,129,0.35)' : 'rgba(0,0,0,0.12)',
+              background: status.open ? 'rgba(16,185,129,0.10)' : 'rgba(0,0,0,0.03)',
+              color: status.open ? '#047857' : 'rgba(0,0,0,0.5)',
+            }}
+          >
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${status.open ? 'animate-pulse' : ''}`}
+              style={{ background: status.open ? '#10b981' : '#94a3b8' }}
+            />
+            {status.label}
+          </span>
           <a
             href="#pv-booking"
             className="hidden items-center gap-1.5 rounded-lg px-3.5 py-2 text-[11.5px] font-bold @sm:inline-flex"

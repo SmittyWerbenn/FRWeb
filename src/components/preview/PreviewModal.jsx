@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { ArrowUpRight, Check, Eye, MessageCircle, Monitor, Smartphone, Tablet, X } from '../../lib/icons'
+import { Check, Eye, MessageCircle, Monitor, Smartphone, Tablet, X } from '../../lib/icons'
 import { buildWhatsAppLink } from '../../lib/format'
 import { getCategoryLabel } from '../../data'
 import PreviewRenderer from './PreviewRenderer'
@@ -45,6 +45,14 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
   const waLink = buildWhatsAppLink(template.name, {
     extra: `Saya melihat live preview di tampilan ${current.label} (${current.widthLabel}).`,
   })
+  const goLiveLink = buildWhatsAppLink(template.name, {
+    extra: 'Saya mau go-live dengan desain ini (estimasi 30 menit). Mohon dibantu prosesnya.',
+  })
+
+  const handleGoLive = () => {
+    window.open(goLiveLink, '_blank', 'noopener')
+    onSelect(template)
+  }
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0
@@ -139,9 +147,13 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
             }}
           >
             {viewport !== 'desktop' && (
-              <div className="flex shrink-0 items-center justify-between bg-[#12161f] px-4 py-1">
+              <div className="relative flex shrink-0 items-center justify-between bg-[#12161f] px-4 py-1">
                 <span className="text-[8.5px] font-semibold text-white/40">9:41</span>
-                <span className="h-3.5 w-16 rounded-full bg-black/60" />
+                <span
+                  className={`rounded-full bg-black/70 ${
+                    viewport === 'mobile' ? 'absolute left-1/2 top-1/2 h-4 w-[74px] -translate-x-1/2 -translate-y-1/2' : 'h-3.5 w-16'
+                  }`}
+                />
                 <span className="flex items-center gap-1">
                   <span className="h-1.5 w-3 rounded-sm bg-white/30" />
                   <span className="h-1.5 w-1.5 rounded-full bg-white/30" />
@@ -178,15 +190,15 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
             <span className="hidden text-[10px] text-slate-500 md:inline">
               Lebar tampilan: <span className="font-semibold text-slate-300">{current.widthLabel}</span>
             </span>
-            <a
-              href={waLink}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-300 hover:text-emerald-200"
+            <button
+              type="button"
+              onClick={handleGoLive}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 px-3 py-1.5 text-[11px] font-bold text-white shadow-lg shadow-indigo-900/40 transition hover:brightness-110"
             >
-              Tanya template ini
-              <ArrowUpRight className="h-3 w-3" />
-            </a>
+              <MessageCircle className="h-3.5 w-3.5" />
+              Gunakan Desain Ini
+              <span className="hidden text-[10px] font-semibold text-white/70 sm:inline">(Go-Live 30 Menit)</span>
+            </button>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { ArrowUpRight, Check, Clock, Eye, Sparkles } from '../../lib/icons'
 import { getCategoryLabel } from '../../data'
-import MiniMockup from './MiniMockup'
+import ArchetypeThumb from './ArchetypeThumb'
 
 const BADGE_STYLES = {
   'Best Seller': 'bg-amber-400/15 text-amber-300 ring-amber-400/30',
@@ -45,25 +45,9 @@ export default function TemplateCard({ template, onPreview, onSelect, selected =
           }}
         />
 
-        {/* Thumbnail auto-scroll saat hover */}
-        <div className="relative h-full overflow-hidden rounded-lg bg-white">
-          <div className="origin-top transition-all duration-700 ease-in-out group-hover:-translate-y-[39%]">
-            <MiniMockup template={template} chrome={false} />
-
-            {/* Section skeleton di bawah fold agar thumbnail benar-benar "scroll" */}
-            <div className="grid grid-cols-3 gap-1.5 border-t border-slate-200 bg-white px-2.5 py-2.5">
-              {[0, 1, 2].map((index) => (
-                <div key={index} className="rounded border border-slate-200/90 bg-slate-50 p-1.5">
-                  <span
-                    className="block h-5 rounded"
-                    style={{ background: `${theme.accent}${index === 0 ? '55' : '2e'}` }}
-                  />
-                  <span className="mt-1 block h-1 w-4/5 rounded bg-slate-300/80" />
-                  <span className="mt-1 block h-1 w-3/5 rounded bg-slate-200" />
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* Thumbnail miniatur landing page — auto-scroll saat hover */}
+        <div className="relative h-full overflow-hidden rounded-lg">
+          <ArchetypeThumb template={template} />
         </div>
 
         <div className="pointer-events-none absolute inset-x-3.5 top-3.5 z-10 flex items-start justify-between gap-2">
@@ -85,9 +69,9 @@ export default function TemplateCard({ template, onPreview, onSelect, selected =
           {layoutType}
         </span>
 
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#080c14]/45 opacity-0 backdrop-blur-[2px] transition duration-300 group-hover:opacity-100">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#080c14] shadow-xl">
-            <Eye className="h-3.5 w-3.5" />
+        <div className="pointer-events-none absolute inset-x-3.5 bottom-[52px] z-20 flex justify-end">
+          <span className="inline-flex translate-y-1 items-center gap-1 rounded-full bg-[#080c14]/85 px-2.5 py-1 text-[10px] font-bold text-white opacity-0 shadow-lg ring-1 ring-white/15 backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+            <Eye className="h-3 w-3" />
             Live Interactive Demo
           </span>
         </div>
