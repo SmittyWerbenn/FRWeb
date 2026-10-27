@@ -1,0 +1,151 @@
+import { useMemo } from 'react'
+import { Search, X } from '../../lib/icons'
+import { CATEGORIES, TEMPLATES, SEARCH_INDEX, countByCategory } from '../../data'
+import TemplateCard from './TemplateCard'
+
+const CATEGORY_NOTES = {
+  all: '18 template unggulan FRWeb — tiap kategori punya varian visual yang berlawanan.',
+  sports: 'Booking lapangan, kelas, dan venue. Bandingkan gaya Neon Athletic vs Luxury Country Club.',
+  fnb: 'Reservasi meja, kalkulator catering, dan toko D2C. Dari warm dining sampai wabi-sabi.',
+  service: 'Booking jasa, kalkulator produksi, dan agency engagement. Brutalist grid sampai glass bento.',
+  retail: 'Katalog produk fisik, RFQ grosir, dan toko D2C. Editorial bersih atau cyberpunk spec grid.',
+}
+
+export default function CatalogSection({
+  category,
+  onCategoryChange,
+  query,
+  onQueryChange,
+  onPreview,
+  onSelect,
+  selectedTemplateId,
+}) {
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase()
+    return TEMPLATES.filter((template) => {
+      const matchesCategory = category === 'all' || template.category === category
+      const matchesQuery = !needle || SEARCH_INDEX[template.id].includes(needle)
+      return matchesCategory && matchesQuery
+    })
+  }, [category, query])
+
+  const reset = () => {
+    onCategoryChange('all')
+    onQueryChange('')
+  }
+
+  return (
+    <section id="katalog" className="relative scroll-mt-20 px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-indigo-400">
+              Langkah 3
+            </span>
+            <h2 className="mt-2.5 text-[26px] font-extrabold leading-tight tracking-tight text-white sm:text-[34px]">
+              Pilih desain &amp; tema sesuai industri Anda
+            </h2>
+            <p className="mt-3 text-[14px] leading-relaxed text-slate-400">
+              Setiap kartu bisa dibuka sebagai website utuh di browser — bukan screenshot. Coba
+              form, kalkulator, dan tombol WhatsApp-nya, lalu tekan “Pilih Tema Ini” untuk mengunci
+              pilihan ke ringkasan order.
+            </p>
+          </div>
+
+          <div className="w-full lg:w-[340px]">
+            <label htmlFor="cari-template" className="sr-only">
+              Cari template
+            </label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <input
+                id="cari-template"
+                value={query}
+                onChange={(event) => onQueryChange(event.target.value)}
+                placeholder="Cari template, gaya, atau industri…"
+                className="w-full rounded-xl border border-slate-800/80 bg-white/[0.04] py-3 pl-10 pr-10 text-[13px] text-white placeholder:text-slate-500 focus:border-indigo-400/60 focus:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-indigo-400/20"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => onQueryChange('')}
+                  aria-label="Hapus pencarian"
+                  className="absolute right-2.5 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-md text-slate-400 hover:bg-white/10 hover:text-white"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Filter tab interaktif */}
+        <div className="mt-8 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {CATEGORIES.map((item) => {
+            const active = item.id === category
+            const total = countByCategory(item.id)
+            return (
+              <button
+                key={item.id}
+                type="button"
+                data-filter-tab={item.id}
+                onClick={() => onCategoryChange(item.id)}
+                aria-pressed={active}
+                className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-[12.5px] font-semibold transition ${
+                  active
+                    ? 'border-indigo-500/50 bg-indigo-500/15 text-indigo-100 shadow-[0_0_24px_-10px_rgba(99,102,241,0.8)]'
+                    : 'border-slate-800/80 bg-white/[0.02] text-slate-400 hover:border-slate-700 hover:text-white'
+                }`}
+              >
+                {item.label}
+                <span
+                  className={`text-[10px] font-bold tabular-nums ${
+                    active ? 'text-indigo-200' : 'text-slate-500'
+                  }`}
+                >
+                  ({total})
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+          <p className="text-[12px] text-slate-500">{CATEGORY_NOTES[category]}</p>
+          <p className="text-[12px] font-medium text-slate-400">
+            Menampilkan <span className="font-bold text-white">{filtered.length}</span> dari {TEMPLATES.length} template
+          </p>
+        </div>
+
+        {filtered.length > 0 ? (
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((template) => (
+              <TemplateCard
+                key={template.id}
+                template={template}
+                onPreview={onPreview}
+                onSelect={onSelect}
+                selected={template.id === selectedTemplateId}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-10 rounded-2xl border border-dashed border-slate-800 bg-white/[0.02] px-6 py-16 text-center">
+            <p className="text-[15px] font-bold text-white">Template tidak ditemukan</p>
+            <p className="mx-auto mt-2 max-w-sm text-[13px] text-slate-400">
+              Coba kata kunci lain seperti “booking”, “catering”, “brutalist”, atau “spec”. Atau
+              minta kami buatkan konsep khusus untuk bisnis Anda.
+            </p>
+            <button
+              type="button"
+              onClick={reset}
+              className="mt-5 rounded-lg border border-slate-700 px-4 py-2 text-[12px] font-semibold text-white hover:bg-white/5"
+            >
+              Reset filter
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
