@@ -5,8 +5,8 @@ menentukan domain, memilih tema sesuai industri, lalu checkout langsung ke
 WhatsApp sales. Tidak ada backend — seluruh alur order berjalan di browser dan diteruskan
 sebagai pesan WhatsApp yang sudah terformat.
 
-- Domain produksi: **https://frcloud.cloud**
-- Alternatif subdomain: `catalog.frcloud.id` (ubah `public/CNAME` + `BRAND` di `src/lib/format.js`)
+- Domain produksi: **https://frel.cloud** (custom domain GitHub Pages)
+- Alternatif subdomain: ubah `public/CNAME` + `BRAND` di `src/lib/format.js`
 - Nomor sales: **6285782846851**
 
 ## Stack
@@ -93,18 +93,21 @@ npm run preview  # cek hasil build
 
 ## Deploy (GitHub Pages)
 
-Live sekarang: **https://smittywerbenn.github.io/FRWeb/**
+Live sekarang: **https://frel.cloud/** (custom domain)
 
 1. Push ke branch `main` — workflow `.github/workflows/deploy.yml` menjalankan
-   `npm ci → npm run lint → npm run build → deploy-pages`. Build memakai
-   `VITE_BASE=/FRWeb/` karena Pages menyajikan repo sebagai project site.
+   `npm ci → npm run lint → npm run build → deploy-pages`. Build memakai `base: '/'`
+   karena domain disajikan dari root, dan `public/CNAME` berisi `frel.cloud`.
 2. Pages diaktifkan sekali dengan source **GitHub Actions**
    (`gh api -X POST repos/<user>/<repo>/pages -f build_type=workflow`).
-3. Untuk pindah ke `frcloud.cloud`: salin `CNAME.example` → `public/CNAME`, set
-   `VITE_BASE=/` (atau hapus env-nya) di workflow, lalu arahkan DNS:
+3. DNS custom domain `frel.cloud`:
    - `A @ → 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153`
    - `CNAME www → <username>.github.io`
 4. Aktifkan **Enforce HTTPS** setelah sertifikat terbit.
+
+Catatan: repo ini juga bisa dibuka di `https://smittywerbenn.github.io/FRWeb/` hanya bila
+`base` diubah ke `/FRWeb/` (mis. env `VITE_BASE=/FRWeb/` saat build). Jangan dicampur dengan
+custom domain — aset akan 404 dan halaman tampil kosong (whitescreen).
 
 ## Catatan
 

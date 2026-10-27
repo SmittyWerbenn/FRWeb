@@ -5,9 +5,9 @@ export const BRAND = {
   name: 'FRWeb',
   parent: 'FRCloud',
   tagline: 'Website instan go-live 30 menit',
-  domain: 'frcloud.cloud',
-  url: 'https://frcloud.cloud',
-  email: 'hello@frcloud.cloud',
+  domain: 'frel.cloud',
+  url: 'https://frel.cloud',
+  email: 'hello@frel.cloud',
   city: 'Tangerang, Banten',
 }
 
