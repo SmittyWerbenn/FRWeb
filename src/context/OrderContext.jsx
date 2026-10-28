@@ -1,13 +1,29 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { TEMPLATES } from '../data'
+import { CUSTOM_FEATURE_IDS } from '../data/customFeatures'
 import { DEFAULT_PLAN_ID, PLANS_BY_ID } from '../data/plans'
 import { DEFAULT_TLD, fullDomain, validateDomainName } from '../lib/domain'
-import { buildOrderLink, buildWhatsAppLink } from '../lib/format'
+import { buildCustomOrderLink, buildOrderLink, buildWhatsAppLink } from '../lib/format'
 
-const STORAGE_KEY = 'frcloud:order:v1'
+const STORAGE_KEY = 'frcloud:order:v2'
 const VIEWPORT_IDS = ['desktop', 'tablet', 'mobile']
+export const DESIGN_MODES = ['template', 'custom']
+
+const EMPTY_BRIEF = { reference: '', features: [], notes: '' }
 
 const OrderContext = createContext(null)
+
+function sanitizeBrief(raw) {
+  if (!raw || typeof raw !== 'object') return { ...EMPTY_BRIEF }
+  const features = Array.isArray(raw.features)
+    ? [...new Set(raw.features.filter((id) => CUSTOM_FEATURE_IDS.includes(id)))]
+    : []
+  return {
+    reference: typeof raw.reference === 'string' ? raw.reference : '',
+    features,
+    notes: typeof raw.notes === 'string' ? raw.notes : '',
+  }
+}
 
 function readInitialOrder() {
   const fallback = {
@@ -15,6 +31,8 @@ function readInitialOrder() {
     domainName: '',
     tld: DEFAULT_TLD,
     templateId: '',
+    designMode: 'template',
+    custom: { ...EMPTY_BRIEF },
   }
   if (typeof window === 'undefined') return fallback
   try {
@@ -26,6 +44,8 @@ function readInitialOrder() {
       domainName: typeof parsed.domainName === 'string' ? parsed.domainName : '',
       tld: typeof parsed.tld === 'string' && parsed.tld.startsWith('.') ? parsed.tld : fallback.tld,
       templateId: TEMPLATES.some((item) => item.id === parsed.templateId) ? parsed.templateId : '',
+      designMode: DESIGN_MODES.includes(parsed.designMode) ? parsed.designMode : fallback.designMode,
+      custom: sanitizeBrief(parsed.custom),
     }
   } catch {
     return fallback
@@ -75,6 +95,11 @@ export function OrderProvider({ children }) {
   const domainCheck = validateDomainName(order.domainName)
   const domain = fullDomain(order.domainName, order.tld)
 
+  // Paket Custom Solution selalu memakai jalur Custom Design (langkah 3 terkunci).
+  const designLocked = plan.price === null
+  const designMode = designLocked ? 'custom' : order.designMode
+  const customBrief = order.custom ?? EMPTY_BRIEF
+
   useEffect(() => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(order))
@@ -108,8 +133,13 @@ export function OrderProvider({ children }) {
   }, [previewId, closePreview])
 
   const selectPlan = useCallback((planId) => {
-    if (!PLANS_BY_ID[planId]) return
-    setOrder((current) => ({ ...current, planId }))
+    const next = PLANS_BY_ID[planId]
+    if (!next) return
+    setOrder((current) => ({
+      ...current,
+      planId,
+      designMode: next.price === null ? 'custom' : current.designMode,
+    }))
   }, [])
 
   const setDomainName = useCallback((domainName) => {
@@ -120,12 +150,52 @@ export function OrderProvider({ children }) {
     setOrder((current) => ({ ...current, tld }))
   }, [])
 
+  const setDesignMode = useCallback((mode) => {
+    if (!DESIGN_MODES.includes(mode)) return
+    setOrder((current) => {
+      const currentPlan = PLANS_BY_ID[current.planId]
+      // Mode template tidak tersedia untuk paket Custom Solution.
+      if (mode === 'template' && currentPlan?.price === null) return current
+      return { ...current, designMode: mode }
+    })
+  }, [])
+
   const selectTemplate = useCallback((templateId) => {
-    setOrder((current) => ({ ...current, templateId }))
+    setOrder((current) => {
+      const currentPlan = PLANS_BY_ID[current.planId]
+      return {
+        ...current,
+        templateId,
+        designMode: currentPlan?.price === null ? 'custom' : 'template',
+      }
+    })
   }, [])
 
   const clearTemplate = useCallback(() => {
     setOrder((current) => ({ ...current, templateId: '' }))
+  }, [])
+
+  const setCustomReference = useCallback((reference) => {
+    setOrder((current) => ({ ...current, custom: { ...current.custom, reference } }))
+  }, [])
+
+  const setCustomNotes = useCallback((notes) => {
+    setOrder((current) => ({ ...current, custom: { ...current.custom, notes } }))
+  }, [])
+
+  const toggleCustomFeature = useCallback((featureId) => {
+    if (!CUSTOM_FEATURE_IDS.includes(featureId)) return
+    setOrder((current) => {
+      const selected = current.custom?.features ?? []
+      const features = selected.includes(featureId)
+        ? selected.filter((id) => id !== featureId)
+        : [...selected, featureId]
+      return { ...current, custom: { ...current.custom, features } }
+    })
+  }, [])
+
+  const resetCustomBrief = useCallback(() => {
+    setOrder((current) => ({ ...current, custom: { ...EMPTY_BRIEF } }))
   }, [])
 
   const openPreview = useCallback((nextTemplate) => {
@@ -140,6 +210,8 @@ export function OrderProvider({ children }) {
       domainName: '',
       tld: DEFAULT_TLD,
       templateId: '',
+      designMode: 'template',
+      custom: { ...EMPTY_BRIEF },
     })
   }, [])
 
@@ -149,15 +221,30 @@ export function OrderProvider({ children }) {
   )
 
   const isDomainReady = domainCheck.state === 'valid'
-  const isTemplateReady = Boolean(template)
-  const completedSteps = 1 + (isDomainReady ? 1 : 0) + (isTemplateReady ? 1 : 0)
-  const checkoutReady = isDomainReady && isTemplateReady
-  const waOrderLink = buildOrderLink({
-    planName: plan.name,
-    planPrice: plan.price,
-    domain,
-    templateName: template?.name,
-  })
+  const isTemplateReady = designMode === 'template' && Boolean(template)
+  const isCustomDesignReady =
+    customBrief.reference.trim().length > 0 || customBrief.features.length > 0
+  const isDesignReady = designMode === 'custom' ? isCustomDesignReady : Boolean(template)
+  const completedSteps = 1 + (isDomainReady ? 1 : 0) + (isDesignReady ? 1 : 0)
+  const checkoutReady = isDomainReady && isDesignReady
+
+  const waOrderLink =
+    designMode === 'custom'
+      ? buildCustomOrderLink({
+          planName: plan.name,
+          planPrice: plan.price,
+          domain,
+          reference: customBrief.reference,
+          features: customBrief.features,
+          notes: customBrief.notes,
+        })
+      : buildOrderLink({
+          planName: plan.name,
+          planPrice: plan.price,
+          domain,
+          templateName: template?.name,
+        })
+
   const waTemplateLink = template ? buildWhatsAppLink(template.name) : ''
 
   const value = {
@@ -168,8 +255,13 @@ export function OrderProvider({ children }) {
     domainCheck,
     previewTemplate,
     previewViewport,
+    designMode,
+    designLocked,
+    customBrief,
     isDomainReady,
     isTemplateReady,
+    isCustomDesignReady,
+    isDesignReady,
     checkoutReady,
     completedSteps,
     waOrderLink,
@@ -177,8 +269,13 @@ export function OrderProvider({ children }) {
     selectPlan,
     setDomainName,
     setTld,
+    setDesignMode,
     selectTemplate,
     clearTemplate,
+    setCustomReference,
+    setCustomNotes,
+    toggleCustomFeature,
+    resetCustomBrief,
     resetOrder,
     openPreview,
     closePreview,

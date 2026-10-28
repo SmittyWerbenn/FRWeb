@@ -1,8 +1,9 @@
-import { ArrowRight, Check, Clock, CreditCard, Globe, Layers, MessageCircle, RotateCcw, ShieldCheck, Zap } from '../../lib/icons'
+import { ArrowRight, Check, Clock, CreditCard, Globe, Layers, MessageCircle, RotateCcw, ShieldCheck, Sparkles, Zap } from '../../lib/icons'
 import { formatIDR } from '../../lib/format'
+import { CUSTOM_TIMELINE, featureLabels } from '../../data/customFeatures'
 import { scrollToSection, useOrder } from '../../context/OrderContext'
 
-const AFTER_CHECKOUT = [
+const TEMPLATE_TIMELINE = [
   {
     title: 'Kirim detail order via WhatsApp',
     desc: 'Pesan otomatis berisi paket, domain, dan tema terkirim ke tim sales FRWeb.',
@@ -14,6 +15,21 @@ const AFTER_CHECKOUT = [
   {
     title: 'Deploy & website aktif',
     desc: 'Website, SSL, dan tema dipasang otomatis. Website online dalam ± 30 menit.',
+  },
+]
+
+const CUSTOM_TIMELINE_STEPS = [
+  {
+    title: 'Kirim brief via WhatsApp',
+    desc: 'Pesan otomatis berisi paket, domain, referensi web, dan fitur khusus yang Anda centang.',
+  },
+  {
+    title: 'Konsultasi & penawaran',
+    desc: 'Tim FRWeb mempelajari brief, lalu mengirim estimasi biaya, ruang lingkup, dan timeline final.',
+  },
+  {
+    title: 'Desain, development & go-live',
+    desc: `Pengerjaan ${CUSTOM_TIMELINE} setelah brief disetujui — termasuk desain, development fitur, QA, dan revisi.`,
   },
 ]
 
@@ -40,7 +56,10 @@ export default function OrderSection() {
     template,
     domain,
     domainCheck,
+    designMode,
+    customBrief,
     isTemplateReady,
+    isCustomDesignReady,
     checkoutReady,
     waOrderLink,
     resetOrder,
@@ -48,7 +67,18 @@ export default function OrderSection() {
   } = useOrder()
 
   const isCustom = plan.price === null
+  const isCustomMode = designMode === 'custom'
   const totalLabel = isCustom ? 'Custom' : formatIDR(plan.price)
+
+  const designValue = isCustomMode
+    ? customBrief.features.length > 0
+      ? `Custom design — ${customBrief.features.length} fitur khusus`
+      : customBrief.reference
+        ? 'Custom design — brief terisi sebagian'
+        : 'Custom design — brief belum diisi'
+    : template
+      ? template.name
+      : 'Belum dipilih'
 
   const checklist = [
     {
@@ -68,12 +98,12 @@ export default function OrderSection() {
       done: domainCheck.state === 'valid',
     },
     {
-      id: 'template',
+      id: 'desain',
       target: 'katalog',
-      icon: Layers,
-      label: 'Desain & tema',
-      value: template ? template.name : 'Belum dipilih',
-      done: isTemplateReady,
+      icon: isCustomMode ? Sparkles : Layers,
+      label: 'Desain',
+      value: designValue,
+      done: isCustomMode ? isCustomDesignReady : isTemplateReady,
     },
   ]
 
@@ -83,11 +113,12 @@ export default function OrderSection() {
         <div className="max-w-2xl">
           <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-indigo-400">Langkah 4</span>
           <h2 className="mt-2.5 text-[26px] font-extrabold leading-tight tracking-tight text-white sm:text-[34px]">
-            Ringkasan pesanan &amp; go-live 30 menit
+            {isCustomMode ? 'Ringkasan brief & rencana pengerjaan' : 'Ringkasan pesanan & go-live 30 menit'}
           </h2>
           <p className="mt-3 text-[14px] leading-relaxed text-slate-400">
-            Periksa kembali pilihan Anda. Satu klik akan mengirim detail order ke WhatsApp tim
-            FRWeb, lalu website Anda disiapkan dan aktif dalam ± 30 menit.
+            {isCustomMode
+              ? 'Periksa kembali brief desain Anda. Satu klik akan mengirim detail kebutuhan ke WhatsApp tim FRWeb untuk dihitung estimasi biaya dan timeline-nya.'
+              : 'Periksa kembali pilihan Anda. Satu klik akan mengirim detail order ke WhatsApp tim FRWeb, lalu website Anda disiapkan dan aktif dalam ± 30 menit.'}
           </p>
         </div>
 
@@ -138,7 +169,7 @@ export default function OrderSection() {
                 Setelah checkout
               </h3>
               <ol className="mt-3 space-y-3">
-                {AFTER_CHECKOUT.map((step, index) => (
+                {(isCustomMode ? CUSTOM_TIMELINE_STEPS : TEMPLATE_TIMELINE).map((step, index) => (
                   <li key={step.title} className="flex gap-3">
                     <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-indigo-400/12 font-mono text-[10px] font-bold text-indigo-300">
                       {index + 1}
@@ -154,8 +185,9 @@ export default function OrderSection() {
 
             <div className="flex items-start gap-2.5 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.05] px-3.5 py-3 text-[11.5px] leading-relaxed text-emerald-100/80">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
-              Garansi revisi konten 7 hari dan uang kembali jika website tidak bisa online dalam
-              24 jam setelah pembayaran.
+              {isCustomMode
+                ? 'Garansi revisi desain 2× dan revisi konten 7 hari setelah website live. Timeline final dikonfirmasi setelah brief disetujui.'
+                : 'Garansi revisi konten 7 hari dan uang kembali jika website tidak bisa online dalam 24 jam setelah pembayaran.'}
             </div>
           </div>
 
@@ -163,9 +195,15 @@ export default function OrderSection() {
             <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-[#0b1120] shadow-2xl shadow-black/40">
               <div className="flex items-center justify-between border-b border-slate-800/80 bg-gradient-to-r from-indigo-500/10 via-transparent to-emerald-400/10 px-4 py-3">
                 <h3 className="text-[13px] font-bold text-white">Detail Pesanan</h3>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/12 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    isCustomMode
+                      ? 'bg-indigo-400/12 text-indigo-300'
+                      : 'bg-emerald-400/12 text-emerald-300'
+                  }`}
+                >
                   <Clock className="h-2.5 w-2.5" />
-                  ± 30 menit
+                  {isCustomMode ? CUSTOM_TIMELINE : '± 30 menit'}
                 </span>
               </div>
 
@@ -199,32 +237,102 @@ export default function OrderSection() {
                     </button>
                   }
                 />
+                {isCustomMode ? (
+                  <>
+                    <SummaryRow
+                      icon={Sparkles}
+                      label="Mode desain"
+                      value="Custom Design Request (bukan template)"
+                    />
+                    <SummaryRow
+                      icon={Globe}
+                      label="Referensi web"
+                      value={customBrief.reference.trim() || 'Belum diisi'}
+                      tone={customBrief.reference.trim() ? 'default' : 'muted'}
+                      action={
+                        <button
+                          type="button"
+                          onClick={() => scrollToSection('katalog')}
+                          className="text-[10.5px] font-semibold text-slate-400 hover:text-white"
+                        >
+                          {customBrief.reference.trim() ? 'Ubah' : 'Isi'}
+                        </button>
+                      }
+                    />
+                    <SummaryRow
+                      icon={Layers}
+                      label="Fitur khusus"
+                      value={
+                        customBrief.features.length > 0
+                          ? `${customBrief.features.length} fitur dipilih`
+                          : 'Belum dipilih'
+                      }
+                      tone={customBrief.features.length > 0 ? 'default' : 'muted'}
+                      action={
+                        <button
+                          type="button"
+                          onClick={() => scrollToSection('katalog')}
+                          className="text-[10.5px] font-semibold text-slate-400 hover:text-white"
+                        >
+                          {customBrief.features.length > 0 ? 'Ubah' : 'Pilih'}
+                        </button>
+                      }
+                    />
+                    {customBrief.features.length > 0 && (
+                      <div className="flex flex-wrap gap-1 border-b border-white/[0.06] py-2.5 pl-10">
+                        {featureLabels(customBrief.features).map((label) => (
+                          <span
+                            key={label}
+                            className="rounded-md border border-indigo-400/25 bg-indigo-400/[0.08] px-1.5 py-0.5 text-[10px] font-medium text-indigo-200"
+                          >
+                            {label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <SummaryRow
+                      icon={MessageCircle}
+                      label="Catatan brief"
+                      value={customBrief.notes.trim() ? customBrief.notes.trim() : 'Tidak ada catatan tambahan'}
+                      tone={customBrief.notes.trim() ? 'default' : 'muted'}
+                    />
+                  </>
+                ) : (
+                  <SummaryRow
+                    icon={Layers}
+                    label="Template"
+                    value={template ? template.name : 'Belum dipilih'}
+                    tone={template ? 'default' : 'muted'}
+                    action={
+                      template ? (
+                        <button
+                          type="button"
+                          onClick={clearTemplate}
+                          className="text-[10.5px] font-semibold text-slate-400 hover:text-white"
+                        >
+                          Hapus
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => scrollToSection('katalog')}
+                          className="text-[10.5px] font-semibold text-slate-400 hover:text-white"
+                        >
+                          Pilih
+                        </button>
+                      )
+                    }
+                  />
+                )}
                 <SummaryRow
-                  icon={Layers}
-                  label="Template"
-                  value={template ? template.name : 'Belum dipilih'}
-                  tone={template ? 'default' : 'muted'}
-                  action={
-                    template ? (
-                      <button
-                        type="button"
-                        onClick={clearTemplate}
-                        className="text-[10.5px] font-semibold text-slate-400 hover:text-white"
-                      >
-                        Hapus
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => scrollToSection('katalog')}
-                        className="text-[10.5px] font-semibold text-slate-400 hover:text-white"
-                      >
-                        Pilih
-                      </button>
-                    )
+                  icon={Clock}
+                  label={isCustomMode ? 'Estimasi pengerjaan' : 'Estimasi go-live'}
+                  value={
+                    isCustomMode
+                      ? `${CUSTOM_TIMELINE} setelah brief disetujui`
+                      : '30 menit setelah pembayaran'
                   }
                 />
-                <SummaryRow icon={Clock} label="Estimasi go-live" value="30 menit setelah pembayaran" />
               </div>
 
               <div className="border-t border-slate-800/80 px-4 py-3">
@@ -248,7 +356,7 @@ export default function OrderSection() {
                     className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 px-4 py-3.5 text-[13px] font-bold text-[#04140f] shadow-lg shadow-emerald-500/25 transition hover:brightness-110"
                   >
                     <MessageCircle className="h-4 w-4" />
-                    Proses &amp; Go-Live via WhatsApp
+                    {isCustomMode ? 'Kirim Brief via WhatsApp' : 'Proses & Go-Live via WhatsApp'}
                   </a>
                 ) : (
                   <div className="mt-3.5">
@@ -258,12 +366,23 @@ export default function OrderSection() {
                       className="inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-slate-800/80 bg-white/[0.04] px-4 py-3.5 text-[13px] font-bold text-slate-500"
                     >
                       <MessageCircle className="h-4 w-4" />
-                      Proses &amp; Go-Live via WhatsApp
+                      {isCustomMode ? 'Kirim Brief via WhatsApp' : 'Proses & Go-Live via WhatsApp'}
                     </button>
                     <p className="mt-2 text-center text-[10.5px] text-amber-200/80">
-                      Lengkapi {domainCheck.state !== 'valid' ? 'domain' : ''}
-                      {domainCheck.state !== 'valid' && !isTemplateReady ? ' & ' : ''}
-                      {!isTemplateReady ? 'pilihan tema' : ''} untuk checkout.
+                      Lengkapi{' '}
+                      {[
+                        domainCheck.state !== 'valid' ? 'domain' : null,
+                        isCustomMode
+                          ? isCustomDesignReady
+                            ? null
+                            : 'brief desain'
+                          : isTemplateReady
+                            ? null
+                            : 'pilihan template',
+                      ]
+                        .filter(Boolean)
+                        .join(' & ')}{' '}
+                      untuk checkout.
                     </p>
                   </div>
                 )}
@@ -288,7 +407,9 @@ export default function OrderSection() {
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-800/80 bg-[#080c14]/95 px-3 py-2.5 backdrop-blur-xl lg:hidden">
         <div className="mx-auto flex max-w-3xl items-center gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[9.5px] uppercase tracking-wider text-slate-500">Total · ± 30 menit</p>
+            <p className="text-[9.5px] uppercase tracking-wider text-slate-500">
+              Total · {isCustomMode ? CUSTOM_TIMELINE : '± 30 menit'}
+            </p>
             <p className="truncate text-[14px] font-extrabold text-white">{totalLabel}</p>
           </div>
           {checkoutReady ? (
@@ -299,7 +420,7 @@ export default function OrderSection() {
               className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-400 to-teal-300 px-3.5 py-2.5 text-[11.5px] font-bold text-[#04140f]"
             >
               <MessageCircle className="h-3.5 w-3.5" />
-              Go-Live
+              {isCustomMode ? 'Kirim brief' : 'Go-Live'}
             </a>
           ) : (
             <button

@@ -61,7 +61,7 @@ export default function Hero() {
                 />
               </svg>
             </span>
-            : Pilih Paket, Tentukan Domain, Pilih Tema Bisnis Anda.
+            : Pilih Paket, Tentukan Domain, lalu Pilih Template atau Custom Design.
           </h1>
 
           <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-slate-400 sm:text-base">

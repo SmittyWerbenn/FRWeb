@@ -22,20 +22,20 @@ export const ORDER_STEPS = [
     target: 'domain',
   },
   {
-    id: 'template',
+    id: 'desain',
     number: '03',
-    title: 'Pilih Desain & Tema',
-    short: 'Tema',
-    desc: 'Template siap pakai per industri',
+    title: 'Pilih Desain',
+    short: 'Desain',
+    desc: 'Template instan atau custom design',
     icon: Layers,
     target: 'katalog',
   },
   {
     id: 'deploy',
     number: '04',
-    title: 'Deploy 30 Menit',
+    title: 'Deploy & Go-Live',
     short: 'Deploy',
-    desc: 'Website aktif & bisa diakses',
+    desc: 'Aktif 30 menit atau sesuai brief custom',
     icon: Rocket,
     target: 'ringkasan',
   },
@@ -54,9 +54,9 @@ const PILL_SURFACE = {
 }
 
 export default function Stepper({ className = '' }) {
-  const { order, isDomainReady, isTemplateReady, checkoutReady } = useOrder()
+  const { order, isDomainReady, isDesignReady, checkoutReady } = useOrder()
 
-  const done = [Boolean(order.planId), isDomainReady, isTemplateReady, checkoutReady]
+  const done = [Boolean(order.planId), isDomainReady, isDesignReady, checkoutReady]
   const activeIndex = done.findIndex((value) => !value)
   const completed = done.filter(Boolean).length
   const progress = (completed / ORDER_STEPS.length) * 100

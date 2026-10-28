@@ -7,7 +7,7 @@ import Logo from './Logo'
 const LINKS = [
   { label: 'Paket', target: 'paket' },
   { label: 'Domain', target: 'domain' },
-  { label: 'Template', target: 'katalog' },
+  { label: 'Desain', target: 'katalog' },
   { label: 'Cara Kerja', target: 'cara-kerja' },
   { label: 'FAQ', target: 'faq' },
 ]

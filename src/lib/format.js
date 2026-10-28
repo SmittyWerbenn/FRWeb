@@ -1,3 +1,5 @@
+import { CUSTOM_TIMELINE, featureLabels } from '../data/customFeatures'
+
 /** Nomor sales FRWeb (format internasional tanpa +). */
 export const SALES_WHATSAPP = '6285782846851'
 
@@ -49,9 +51,7 @@ export function buildWhatsAppLink(templateName, { extra } = {}) {
 }
 
 /**
- * Link checkout utama — format pesan sesuai brief:
- * "Halo tim FRWeb, saya ingin setup website go-live 30 menit."
- * + Detail Pesanan (Paket, Domain, Template).
+ * Link checkout jalur template — website go-live 30 menit.
  */
 export function buildOrderLink({ planName, planPrice, domain, templateName }) {
   const priceLabel = planPrice ? ` (${formatIDR(planPrice)})` : ' (Custom — perlu penawaran)'
@@ -61,9 +61,34 @@ export function buildOrderLink({ planName, planPrice, domain, templateName }) {
     '*Detail Pesanan:*',
     `- Paket: ${planName || '-'}${priceLabel}`,
     `- Domain: ${domain || 'belum ditentukan'}`,
+    `- Mode Desain: Template Katalog (Go-Live 30 Menit)`,
     `- Template: ${templateName || 'belum dipilih'}`,
     '',
     'Mohon dibantu proses aktivasi dan pembayarannya.',
+  ]
+  return `https://wa.me/${SALES_WHATSAPP}?text=${encodeURIComponent(lines.join('\n'))}`
+}
+
+/**
+ * Link checkout jalur Custom Design — format pesan mengikuti brief:
+ * referensi web, fitur khusus yang dicentang, dan catatan bisnis.
+ */
+export function buildCustomOrderLink({ planName, planPrice, domain, reference, features, notes }) {
+  const priceLabel = planPrice ? ` (${formatIDR(planPrice)})` : ' (Custom — perlu penawaran)'
+  const featureList = featureLabels(features ?? [])
+  const lines = [
+    'Halo tim FRCloud, saya tertarik setup website dengan *Custom Design*.',
+    '',
+    '*Detail Kebutuhan:*',
+    `- Paket: ${planName || '-'}${priceLabel}`,
+    `- Domain: ${domain || 'belum ditentukan'}`,
+    '- Mode Desain: Custom Design (Bukan Template)',
+    `- Referensi Web: ${(reference || '').trim() || '-'}`,
+    `- Fitur Khusus: ${featureList.length > 0 ? featureList.join(', ') : 'belum ada — akan didiskusikan'}`,
+    `- Catatan: ${(notes || '').trim() || '-'}`,
+    `- Estimasi Pengerjaan: ${CUSTOM_TIMELINE} setelah brief disetujui`,
+    '',
+    'Bisa dibantu estimasi timeline dan tahap selanjutnya?',
   ]
   return `https://wa.me/${SALES_WHATSAPP}?text=${encodeURIComponent(lines.join('\n'))}`
 }

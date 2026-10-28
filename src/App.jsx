@@ -4,7 +4,7 @@ import Hero from './components/catalog/Hero'
 import ValueStrip from './components/catalog/ValueStrip'
 import PricingSection from './components/order/PricingSection'
 import DomainSection from './components/order/DomainSection'
-import CatalogSection from './components/catalog/CatalogSection'
+import DesignModeSection from './components/order/DesignModeSection'
 import OrderSection from './components/order/OrderSection'
 import ValueSection from './components/catalog/ValueSection'
 import ProcessSection from './components/catalog/ProcessSection'
@@ -18,13 +18,13 @@ function Site() {
   const [category, setCategory] = useState('all')
   const [query, setQuery] = useState('')
   const {
-    order,
     previewTemplate,
     previewViewport,
     openPreview,
     closePreview,
     setPreviewViewport,
     selectTemplate,
+    setDesignMode,
   } = useOrder()
 
   const handleSelectFromPreview = (template) => {
@@ -49,14 +49,14 @@ function Site() {
           <ValueStrip />
           <PricingSection />
           <DomainSection />
-          <CatalogSection
+          <DesignModeSection
             category={category}
             onCategoryChange={setCategory}
             query={query}
             onQueryChange={setQuery}
             onPreview={openPreview}
             onSelect={(template) => selectTemplate(template.id)}
-            selectedTemplateId={order.templateId}
+            onRequestCustom={() => setDesignMode('custom')}
           />
           <OrderSection />
           <ProcessSection />
