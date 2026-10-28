@@ -1,10 +1,10 @@
 import { Mail, MapPin, MessageCircle, Phone } from '../../lib/icons'
-import { BRAND, SALES_WHATSAPP, WA_CONSULT } from '../../lib/format'
+import { BRAND, SALES_WHATSAPP, SALES_WHATSAPP_DISPLAY, WA_CONSULT } from '../../lib/format'
 import { CATEGORIES, countByCategory } from '../../data'
 import { scrollToSection } from '../../context/OrderContext'
 import Logo from './Logo'
 
-const displayPhone = '+62 857-8284-6851'
+const displayPhone = SALES_WHATSAPP_DISPLAY
 
 const ORDER_LINKS = [
   { label: '1. Pilih paket', target: 'paket' },

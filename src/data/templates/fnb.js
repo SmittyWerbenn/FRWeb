@@ -29,7 +29,7 @@ export const fnbTemplates = [
       name: 'Kayu & Rasa',
       mark: 'KR',
       tagline: 'Modern Indonesian Dining • Jakarta',
-      phone: '0812-5500-1919',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -169,7 +169,7 @@ export const fnbTemplates = [
       name: 'Dapur Ibu Nara',
       mark: 'DN',
       tagline: 'Catering Rumahan Premium • Depok',
-      phone: '0812-4400-3030',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -341,7 +341,7 @@ export const fnbTemplates = [
       name: 'Bumbu Direct',
       mark: 'BD',
       tagline: 'Bumbu & Frozen Food • Bandung',
-      phone: '0812-3300-7171',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },

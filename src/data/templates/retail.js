@@ -29,7 +29,7 @@ export const retailTemplates = [
       name: 'Kayu Kriya',
       mark: 'KK',
       tagline: 'Custom Furniture • Jepara',
-      phone: '0812-2200-9090',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -218,7 +218,7 @@ export const retailTemplates = [
       name: 'Gudang Material',
       mark: 'GM',
       tagline: 'Distributor Bahan Bangunan • Tangerang',
-      phone: '0812-1100-6060',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -400,7 +400,7 @@ export const retailTemplates = [
       name: 'Bloom Express',
       mark: 'BE',
       tagline: 'Florist & Gift Delivery • Jakarta',
-      phone: '0812-9900-5252',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -585,7 +585,7 @@ export const retailTemplates = [
       name: 'Sembako Jaya',
       mark: 'SJ',
       tagline: 'Distributor Sembako • Bekasi',
-      phone: '0812-8800-1515',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },

@@ -32,7 +32,7 @@ const padelCountryClub = {
     name: 'Meridian Padel Club',
     mark: 'MP',
     tagline: 'Private Courts • Sentul Highlands',
-    phone: '0812-7700-4141',
+    phone: '0857-7818-5971',
   },
   nav: [
     { label: 'Club', href: '#pv-home' },
@@ -204,7 +204,7 @@ const fnbWabisabi = {
     name: 'Kaze Omakase',
     mark: '風',
     tagline: 'Omakase Counter • Menteng',
-    phone: '0812-6600-2323',
+    phone: '0857-7818-5971',
   },
   nav: [
     { label: 'Beranda', href: '#pv-home' },
@@ -346,7 +346,7 @@ const agencyBrutalist = {
     name: 'STUDIO//RAW',
     mark: 'SR',
     tagline: 'Brand & Digital Atelier • Jakarta',
-    phone: '0812-1100-7788',
+    phone: '0857-7818-5971',
   },
   nav: [
     { label: 'Work', href: '#pv-home' },
@@ -492,7 +492,7 @@ const ecomCyberSpec = {
     name: 'NeonSpec',
     mark: 'NS',
     tagline: 'Tech Spec Store • Jakarta',
-    phone: '0812-9900-6262',
+    phone: '0857-7818-5971',
   },
   nav: [
     { label: 'Home', href: '#pv-home' },

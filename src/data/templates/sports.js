@@ -30,7 +30,7 @@ export const sportsTemplates = [
       name: 'Arena Padel 88',
       mark: 'AP',
       tagline: 'Indoor Court • Jakarta Selatan',
-      phone: '0812-8800-8888',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -208,7 +208,7 @@ export const sportsTemplates = [
       name: 'Pulse Studio',
       mark: 'PS',
       tagline: 'Boutique Fitness • Bandung',
-      phone: '0812-7700-2727',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -357,7 +357,7 @@ export const sportsTemplates = [
       name: 'Ruang Temu',
       mark: 'RT',
       tagline: 'Event & Meeting Space • Surabaya',
-      phone: '0812-6600-4141',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },

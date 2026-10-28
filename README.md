@@ -7,7 +7,7 @@ sebagai pesan WhatsApp yang sudah terformat.
 
 - Domain produksi: **https://frel.cloud** (custom domain GitHub Pages)
 - Alternatif subdomain: ubah `public/CNAME` + `BRAND` di `src/lib/format.js`
-- Nomor sales: **6285782846851**
+- Nomor sales & CS: **6285778185971**
 
 ## Stack
 

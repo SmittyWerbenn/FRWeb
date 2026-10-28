@@ -29,7 +29,7 @@ export const serviceTemplates = [
       name: 'Jahit Cepat',
       mark: 'JC',
       tagline: 'Konveksi & Sablon • Bandung',
-      phone: '0812-3300-7171',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -196,7 +196,7 @@ export const serviceTemplates = [
       name: 'Kilau Auto Spa',
       mark: 'KS',
       tagline: 'Detailing & Wash • Jakarta Barat',
-      phone: '0812-7700-3131',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -343,7 +343,7 @@ export const serviceTemplates = [
       name: 'PawCare Vet',
       mark: 'PC',
       tagline: 'Klinik & Grooming • Yogyakarta',
-      phone: '0812-6600-2424',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },
@@ -495,7 +495,7 @@ export const serviceTemplates = [
       name: 'Armada Express',
       mark: 'AE',
       tagline: 'Rental Mobil • Bali',
-      phone: '0812-5500-8787',
+      phone: '0857-7818-5971',
     },
     nav: [
       { label: 'Beranda', href: '#pv-home' },

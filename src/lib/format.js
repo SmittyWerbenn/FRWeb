@@ -1,8 +1,14 @@
 import { CUSTOM_TIMELINE, featureLabels } from '../data/customFeatures'
 import { PAYMENT_ADDON, paymentAddonLine } from '../data/paymentAddon'
 
-/** Nomor sales FRWeb (format internasional tanpa +). */
-export const SALES_WHATSAPP = '6285782846851'
+/** Nomor sales & customer service FRWeb (format internasional tanpa +). */
+export const SALES_WHATSAPP = '6285778185971'
+
+/** "+62 857-7818-5971" — diturunkan dari SALES_WHATSAPP agar tampilan tak pernah beda. */
+export const SALES_WHATSAPP_DISPLAY = SALES_WHATSAPP.replace(
+  /^62(\d{3})(\d{4})(\d+)$/,
+  '+62 $1-$2-$3',
+)
 
 export const BRAND = {
   name: 'FRWeb',
