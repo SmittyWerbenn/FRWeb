@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CateringPro Box - Kalkulator Pax Dinamis, Kustom Lauk & Jadwal Kirim</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cabinet+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Cabinet Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            bento: {
+              green: '#059669',
+              lightGreen: '#10b981',
+              greenBg: '#ecfdf5',
+              orange: '#f97316',
+              deepOrange: '#ea580c',
+              orangeBg: '#fff7ed',
+              dark: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .checkered-pattern {
+      background-color: #fafaf9;
+      background-image: linear-gradient(45deg, #f5f5f4 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f5f5f4 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f5f5f4 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f5f5f4 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableInvoice, #printableInvoice * {
+        visibility: visible;
+      }
+      #printableInvoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#FBFBFA] text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-bento-orangeBg selection:text-bento-deepOrange">
+
+  <!-- Top Announcement Bar (Hijau Bersih & Diskon Bertingkat Oranye) -->
+  <div class="bg-bento-green text-emerald-50 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-2.5 shadow-sm">
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-bento-green">INSTANT B2B & EVENT KITCHEN</span>
+    <span class="font-medium">Pesan 50+ Pax Diskon 5% • Pesan 100+ Pax Diskon 10% + Free Ongkir Se-Jabodetabek</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-nav sticky top-0 z-40 border-b border-stone-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3.5 select-none focus:outline-none transition transform active:scale-95" title="Kembali ke Beranda">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-bento-green to-bento-lightGreen flex items-center justify-center text-white shadow-md shadow-emerald-500/25 flex-shrink-0 transition">
+          <i data-lucide="package-check" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="font-black text-xl sm:text-2xl tracking-tight text-slate-900 block leading-tight font-display">
+            CATERING<span class="text-bento-orange ml-0.5">PRO</span>
+            <span class="text-xs bg-bento-orange text-white px-2 py-0.5 rounded-md uppercase font-sans font-bold ml-1">BOX</span>
+          </span>
+          <span class="text-[10px] font-bold text-stone-400 tracking-wider block uppercase">CUSTOM EVENT CATERING & LOGISTICS</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+        <a href="#customizer" class="text-bento-green hover:text-bento-lightGreen transition">Rakit Menu Lauk</a>
+        <a href="#calculator" class="hover:text-bento-orange transition">Kalkulator Pax</a>
+        <a href="#schedule-info" class="hover:text-bento-green transition">Jadwal Kirim Box</a>
+      </nav>
+
+      <!-- Action & Production Shift Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-bento-greenBg text-bento-green font-semibold px-3 py-1.5 rounded-full border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-bento-lightGreen animate-ping"></span>
+          Dapur Sentral: Siap Terima Order Besok
+        </div>
+        <button onclick="scrollToBuilder()" class="bg-bento-orange hover:bg-bento-deepOrange text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-orange-500/20 flex items-center gap-2 active:scale-95">
+          <span>Mulai Hitung Pax</span>
+          <i data-lucide="calculator" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="checkered-pattern pt-12 sm:pt-16 pb-16 sm:pb-20 border-b border-stone-200 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bento-greenBg border border-emerald-200 text-bento-green text-xs font-semibold">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            Katering Nasi Box Premium dengan Rasa Otentik
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.18] font-display">
+            Kustom Lauk Bebas Suka-Suka. Estimasi Budget Instan per Pax.
+          </h1>
+          <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+            Tidak perlu menunggu penawaran admin berhari-hari. Pilih kombinasi nasi, protein utama, sayur, dan sambal secara mandiri. Sistem menghitung potongan volume tier secara langsung lengkap dengan penjadwalan kurir higienis.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="scrollToBuilder()" class="bg-bento-green hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-emerald-600/25 transition flex items-center gap-2.5">
+              <i data-lucide="chef-hat" class="w-4 h-4"></i>
+              Rakit Bento Box Anda
+            </button>
+            <div class="flex items-center gap-2 text-xs text-slate-500 px-2 py-1">
+              <i data-lucide="shield-check" class="w-4 h-4 text-bento-orange"></i>
+              <span>Higienis Sertifikasi Halal MUI & Box Kemasan Food-Grade</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-stone-200 text-left">
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-slate-900">20 Pax</p>
+              <p class="text-xs text-stone-500 mt-0.5">Minimal Order Fleksibel</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-bento-orange">H-1 Hari</p>
+              <p class="text-xs text-stone-500 mt-0.5">Batas Pemesanan Cepat</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-bento-green">DP 50%</p>
+              <p class="text-xs text-stone-500 mt-0.5">Kunci Tanggal Pengiriman</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Snapshot: Interactive Live Bento Box Visualizer -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-stone-200/80 border border-stone-200 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-stone-100">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-bento-green"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Simulasi Kotak Bento</span>
+              </div>
+              <span class="text-xs font-mono font-bold text-bento-deepOrange bg-bento-orangeBg px-2.5 py-1 rounded-md border border-orange-200">BOX PREMIUM 5 SEKAT</span>
+            </div>
+
+            <!-- Bento Tray Compartments Visualization -->
+            <div class="mt-5 p-3.5 bg-stone-100 rounded-2xl border-2 border-dashed border-stone-300 grid grid-cols-3 gap-2 text-center text-xs">
+              <!-- Nasi Slot -->
+              <div class="col-span-2 bg-white p-3 rounded-xl border border-stone-200 shadow-sm flex flex-col items-center justify-center">
+                <span class="text-[10px] font-bold text-bento-green uppercase tracking-wide">Base Karbohidrat</span>
+                <span class="font-extrabold text-slate-800 text-sm mt-0.5" id="heroPreviewRice">Nasi Daun Jeruk Wangi</span>
+                <span class="text-[9px] text-stone-400">Porsi 200 gram pulen</span>
+              </div>
+              
+              <!-- Sambal Slot -->
+              <div class="bg-rose-50 p-3 rounded-xl border border-rose-200 shadow-sm flex flex-col items-center justify-center">
+                <span class="text-[9px] font-bold text-rose-600 uppercase">Sambal</span>
+                <span class="font-extrabold text-rose-900 text-xs mt-0.5" id="heroPreviewSambal">Sambal Matah</span>
+              </div>
+
+              <!-- Lauk Utama -->
+              <div class="col-span-2 bg-orange-50/70 p-3 rounded-xl border border-orange-200 shadow-sm flex flex-col items-center justify-center">
+                <span class="text-[10px] font-bold text-bento-deepOrange uppercase tracking-wide">Protein Utama</span>
+                <span class="font-extrabold text-slate-900 text-sm mt-0.5" id="heroPreviewMain">Ayam Bakar Madu Wijèn</span>
+                <span class="text-[9px] text-stone-500">Fillet dada empuk 120g</span>
+              </div>
+
+              <!-- Sayuran -->
+              <div class="bg-emerald-50/70 p-3 rounded-xl border border-emerald-200 shadow-sm flex flex-col items-center justify-center">
+                <span class="text-[9px] font-bold text-bento-green uppercase">Sayuran</span>
+                <span class="font-extrabold text-emerald-950 text-xs mt-0.5" id="heroPreviewVeg">Buncis Baby Corn</span>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-between text-xs text-stone-600">
+              <span class="flex items-center gap-1.5">
+                <i data-lucide="utensils" class="w-3.5 h-3.5 text-bento-green"></i>
+                Sendok, garpu, tisu & tusuk gigi steril included
+              </span>
+              <span class="text-[10px] font-bold text-bento-green bg-emerald-100 px-2 py-0.5 rounded">Ready to Eat</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Booking App Container -->
+  <main id="customizer" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex-1 w-full">
+    
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-display">Pilih Komposisi Lauk & Hitung Pesanan</h2>
+      <p class="text-sm text-stone-500 mt-2">Pilih racikan menu terbaik sesuai selera acara kantor, syukuran, atau gathering keluarga Anda.</p>
+    </div>
+
+    <!-- Step Progress Indicator -->
+    <div class="max-w-3xl mx-auto mb-10">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-bento-green text-bento-green pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-bento-green text-white flex items-center justify-center text-[11px]">1</span>
+          Kustom Lauk & Jumlah Pax
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]">2</span>
+          Jadwal Kirim & QRIS Pay
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]">3</span>
+          Delivery Order & Invoice
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Interactive Bento Builder + Dynamic Quantity Calculator -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Split Layout: Menu Selection Studio (Left 8 Cols) vs Dynamic Live Cart (Right 4 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Menu Customizer Sections -->
+        <div class="lg:col-span-8 space-y-6">
+          
+          <!-- Category 1: Base Rice -->
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-bento-greenBg text-bento-green text-xs font-black flex items-center justify-center">1</span>
+                <h3 class="font-extrabold text-sm sm:text-base text-slate-900">Pilihan Nasi (Pondasi Rasa)</h3>
+              </div>
+              <span class="text-xs text-stone-400 font-medium">Pilih salah satu</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="riceOptionsGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Category 2: Main Protein -->
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-bento-orangeBg text-bento-orange text-xs font-black flex items-center justify-center">2</span>
+                <h3 class="font-extrabold text-sm sm:text-base text-slate-900">Lauk Utama (Protein Utama)</h3>
+              </div>
+              <span class="text-xs text-stone-400 font-medium">Pilih salah satu</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="mainProteinGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Category 3: Side Dish & Vegetables -->
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-emerald-100 text-bento-green text-xs font-black flex items-center justify-center">3</span>
+                <h3 class="font-extrabold text-sm sm:text-base text-slate-900">Lauk Pendamping & Sayuran</h3>
+              </div>
+              <span class="text-xs text-stone-400 font-medium">Kombinasi komplit</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-stone-600 mb-2">Lauk Pendamping:</label>
+                <div class="space-y-2 text-xs" id="sideDishGrid"></div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-stone-600 mb-2">Pilihan Sayuran:</label>
+                <div class="space-y-2 text-xs" id="veggieGrid"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category 4: Artisan Sambal & Pelengkap -->
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-rose-100 text-rose-600 text-xs font-black flex items-center justify-center">4</span>
+                <h3 class="font-extrabold text-sm sm:text-base text-slate-900">Sambal Khas & Kerupuk Udang</h3>
+              </div>
+              <span class="text-xs text-stone-400 font-medium">Segar & Pedas Pas</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="sambalGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Dynamic Pax Calculator & Live Slip (Sticky) -->
+        <div class="lg:col-span-4 space-y-6 sticky top-24" id="calculator">
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-xl space-y-5">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Kalkulator Pax Dinamis</span>
+              <span class="text-[10px] font-bold bg-bento-greenBg text-bento-green px-2 py-0.5 rounded border border-emerald-200">Volume Discount</span>
+            </div>
+
+            <!-- Pax Stepper & Slider -->
+            <div class="space-y-3 bg-stone-50 p-4 rounded-2xl border border-stone-200">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-slate-800">Jumlah Porsi (Pax):</label>
+                <div class="flex items-center gap-2">
+                  <button onclick="adjustPax(-5)" class="w-8 h-8 rounded-lg bg-white border border-stone-300 font-black text-slate-700 hover:bg-stone-100 active:scale-95 transition">-</button>
+                  <input type="number" id="paxInput" value="50" min="20" max="1000" onchange="onPaxInputChange()" class="w-16 text-center py-1.5 font-black text-sm text-slate-900 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-bento-green" />
+                  <button onclick="adjustPax(5)" class="w-8 h-8 rounded-lg bg-white border border-stone-300 font-black text-slate-700 hover:bg-stone-100 active:scale-95 transition">+</button>
+                </div>
+              </div>
+
+              <!-- Range Slider -->
+              <input type="range" id="paxSlider" min="20" max="300" step="5" value="50" oninput="onPaxSliderChange(this.value)" class="w-full accent-bento-green cursor-pointer" />
+              
+              <div class="flex justify-between text-[10px] text-stone-400 font-semibold pt-1">
+                <span>Min: 20 Pax</span>
+                <span>Tier 1: 50+ Pax (-5%)</span>
+                <span>Tier 2: 100+ Pax (-10%)</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Price Summary List -->
+            <div class="space-y-2.5 text-xs border-t border-stone-100 pt-3">
+              <div class="flex justify-between text-stone-600">
+                <span>Harga per Box:</span>
+                <span class="font-bold text-slate-800" id="pricePerBoxText">Rp 35.000</span>
+              </div>
+              <div class="flex justify-between text-stone-600">
+                <span>Subtotal (<span id="paxCountLabel">50</span> Pax):</span>
+                <span class="font-bold text-slate-800" id="subtotalText">Rp 1.750.000</span>
+              </div>
+              <div class="flex justify-between text-emerald-700 font-semibold" id="discountRow">
+                <span id="discountLabel">Diskon Volume (5%):</span>
+                <span id="discountAmountText">- Rp 87.500</span>
+              </div>
+              <div class="flex justify-between text-stone-600">
+                <span>Ongkos Kirim Thermal Box:</span>
+                <span class="font-bold text-slate-800" id="shippingFeeText">Rp 50.000</span>
+              </div>
+            </div>
+
+            <!-- Final Estimated Total -->
+            <div class="p-3.5 bg-bento-orangeBg rounded-2xl border border-orange-200 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-bento-deepOrange uppercase block">Total Nilai Pesanan</span>
+                <span class="text-xs text-stone-500">Termasuk Packaging Premium</span>
+              </div>
+              <span class="text-xl font-black text-bento-deepOrange font-mono" id="grandTotalText">Rp 1.712.500</span>
+            </div>
+
+            <!-- Action Button -->
+            <button onclick="goToStep2()" class="w-full bg-bento-green hover:bg-emerald-700 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95">
+              <span>Atur Jadwal Kirim & Bayar</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+
+            <p class="text-[10px] text-stone-400 text-center leading-normal">
+              *Tersedia opsi bayar DP 50% via QRIS untuk mengunci pesanan di dapur kami.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Delivery Schedule, Shipping Address & QRIS Deposit Gateway -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: Logistics Schedule & Recipient Form -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="truck" class="w-4 h-4 text-bento-green"></i>
+                Jadwal Pengiriman & Lokasi Acara
+              </h3>
+              <span class="text-xs text-stone-400">Armada Berpendingin Khusus</span>
+            </div>
+
+            <div class="space-y-4 text-xs">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Tanggal Dikirim *</label>
+                  <input type="date" id="deliveryDateInput" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-bento-green font-medium" />
+                </div>
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Waktu Tiba di Lokasi *</label>
+                  <select id="deliveryTimeSlot" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-bento-green font-medium">
+                    <option value="Pagi (07:00 - 08:30 WIB)">Sarapan Pagi (07:00 - 08:30 WIB)</option>
+                    <option value="Siang (11:00 - 12:30 WIB)" selected>Makan Siang (11:00 - 12:30 WIB)</option>
+                    <option value="Sore (15:30 - 17:00 WIB)">Coffee Break / Sore (15:30 - 17:00 WIB)</option>
+                    <option value="Malam (18:00 - 19:30 WIB)">Makan Malam (18:00 - 19:30 WIB)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Nama PIC Penerima *</label>
+                  <input type="text" id="recipientName" value="Tedi Mahendra" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-bento-green font-medium" />
+                </div>
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Nomor WhatsApp Aktif *</label>
+                  <input type="tel" id="recipientPhone" value="081299998888" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-bento-green font-medium" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Alamat Lengkap Pengiriman *</label>
+                <textarea id="deliveryAddress" rows="2" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-bento-green font-medium">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said Kav. C-5, Setiabudi, Jakarta Selatan</textarea>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Catatan Tambahan untuk Dapur & Kurir (Opsional)</label>
+                <input type="text" id="deliveryNotes" placeholder="Contoh: Pisahkan sambal untuk 5 porsi / titipkan ke resepsionis lobi" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-bento-green font-medium" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Mode Selection: DP 50% vs Lunas 100% -->
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="wallet" class="w-4 h-4 text-bento-orange"></i>
+              Opsi Pembayaran Pesanan Katering
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- DP 50% Option -->
+              <label class="relative flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition select-none hover:bg-stone-50" id="labelOptionDP">
+                <input type="radio" name="paymentType" value="DP" onchange="togglePaymentType('DP')" checked class="sr-only" />
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-slate-800">DP 50% (Uang Muka)</span>
+                  <span class="w-4 h-4 rounded-full border-2 border-bento-green flex items-center justify-center">
+                    <span id="radioCheckDP" class="w-2 h-2 rounded-full bg-bento-green"></span>
+                  </span>
+                </div>
+                <p class="text-[11px] text-stone-500 leading-normal">Kunci jadwal dapur sekarang. Sisa 50% dilunasi saat box diterima di lokasi.</p>
+                <div class="mt-3 text-xs font-extrabold text-bento-green font-mono" id="dpAmountText">Rp 0</div>
+              </label>
+
+              <!-- Full 100% Option -->
+              <label class="relative flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition select-none hover:bg-stone-50" id="labelOptionFull">
+                <input type="radio" name="paymentType" value="FULL" onchange="togglePaymentType('FULL')" class="sr-only" />
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-slate-800">Pelunasan Penuh (100%)</span>
+                  <span class="w-4 h-4 rounded-full border-2 border-stone-300 flex items-center justify-center">
+                    <span id="radioCheckFull" class="w-2 h-2 rounded-full bg-transparent"></span>
+                  </span>
+                </div>
+                <p class="text-[11px] text-stone-500 leading-normal">Praktis tanpa repot transaksi saat acara berlangsung. Kurir serah terima langsung.</p>
+                <div class="mt-3 text-xs font-extrabold text-slate-800 font-mono" id="fullAmountText">Rp 0</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Settlement Gateway -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Gateway Pembayaran QRIS</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-bento-greenBg text-bento-green border border-emerald-200">Auto Verification</span>
+            </div>
+
+            <!-- QRIS Gateway Box -->
+            <div class="border border-stone-200 rounded-2xl p-4 bg-stone-50 text-center flex flex-col items-center">
+              <div class="flex items-center justify-between w-full px-2 mb-3">
+                <div class="flex items-center gap-1.5 font-extrabold text-xs tracking-tight text-slate-800">
+                  <span class="text-red-600 font-black">QRIS</span>
+                  <span class="text-[10px] text-stone-400 font-normal">| Standar Bank Indonesia</span>
+                </div>
+                <div class="flex items-center gap-1 text-[11px] text-bento-deepOrange bg-bento-orangeBg px-2 py-0.5 rounded font-mono font-bold border border-orange-200">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span id="qrisTimer">09:59</span>
+                </div>
+              </div>
+
+              <!-- Dummy QR Code -->
+              <div class="relative bg-white p-3 rounded-2xl border border-stone-200 shadow-inner group">
+                <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PROTOTYPE-CATERINGPRO-BOX-PAYMENT" alt="QRIS Katering" class="w-40 h-40 object-contain mx-auto" />
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div class="w-8 h-8 bg-white text-bento-orange rounded-md p-1 shadow border border-orange-200 flex items-center justify-center">
+                    <i data-lucide="package-check" class="w-4 h-4"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 text-xs text-stone-500 space-y-1">
+                <p class="font-medium text-stone-700">Scan via m-BCA, Mandiri Livin, GoPay, OVO, ShopeePay</p>
+                <p class="text-[10px] text-stone-400">NMID: ID1099238877 - PT CATERINGPRO NUSANTARA</p>
+              </div>
+
+              <!-- Total Payable -->
+              <div class="mt-4 pt-3 border-t border-stone-200 w-full flex items-center justify-between px-2">
+                <span class="text-xs font-semibold text-stone-600">Total Ditagihkan:</span>
+                <span id="checkoutPayableText" class="text-lg font-black text-bento-deepOrange font-mono">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+              <button onclick="simulatePaymentSuccess()" class="w-full bg-bento-green hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>Simulasi Bayar Berhasil (Instant Webhook)</span>
+              </button>
+              <button onclick="backToStep1()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+                Kembali / Sesuaikan Menu
+              </button>
+            </div>
+
+            <p class="text-[10px] text-stone-400 text-center leading-tight">
+              *Setelah scan berhasil, status pesanan otomatis masuk ke jadwal antrean dapur pusat & cetak surat jalan.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Delivery Order Slip & Official Invoice (Printable) -->
+    <div id="step3View" class="hidden max-w-2xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-bento-greenBg border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-950 no-print">
+        <div class="w-10 h-10 rounded-full bg-bento-green text-white flex items-center justify-center flex-shrink-0">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-slate-900">Pesanan Katering Terkonfirmasi & Masuk Antrean Dapur!</h4>
+          <p class="text-xs text-emerald-800">Faktur resmi dan Surat Jalan Pengiriman telah digenerate otomatis. Simpan PDF ini sebagai tanda terima sah.</p>
+        </div>
+      </div>
+
+      <!-- Printable Invoice Document Card -->
+      <div id="printableInvoice" class="bg-white rounded-3xl border border-stone-200 shadow-xl p-6 sm:p-9 space-y-6 relative overflow-hidden">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-stone-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-bento-green flex items-center justify-center text-white">
+                <i data-lucide="package-check" class="w-4 h-4"></i>
+              </div>
+              <span class="font-black text-lg tracking-tight text-slate-900 font-display">CATERING<span class="text-bento-orange">PRO</span> <span class="text-xs font-bold bg-bento-orange text-white px-1.5 py-0.5 rounded font-sans uppercase">BOX</span></span>
+            </div>
+            <p class="text-[11px] text-stone-500">PT CateringPro Nusantara • Central Kitchen Hub Senopati, Jakarta Selatan</p>
+            <p class="text-[11px] text-stone-500">Hotline Operasional & Dispatching Kurir: +62 812-9999-8888</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-bento-greenBg text-bento-green uppercase tracking-wider mb-1 border border-emerald-200">
+              OFFICIAL DELIVERY ORDER
+            </span>
+            <p id="invNumber" class="text-xs font-mono font-bold text-slate-800">CAT-202610-9921</p>
+            <p id="invDate" class="text-[10px] text-stone-400">Dibuat: 28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Customer & Logistics Info -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-stone-50 p-4 rounded-2xl border border-stone-200">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5">Penerima Pesanan:</span>
+            <p id="invRecipientName" class="font-bold text-slate-900 text-sm">Tedi Mahendra</p>
+            <p id="invRecipientPhone" class="text-stone-500">081299998888</p>
+            <p id="invDeliveryAddress" class="text-stone-600 mt-1 leading-relaxed">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Jaksel</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5">Jadwal Pengiriman Tiba:</span>
+            <p id="invDeliveryDate" class="font-bold text-slate-800 text-sm">Kamis, 29 Okt 2026</p>
+            <p id="invDeliverySlot" class="text-bento-deepOrange font-bold">Makan Siang (11:00 - 12:30 WIB)</p>
+            <p class="text-stone-400 mt-1">Armada: Dedicated Thermo Van</p>
+          </div>
+        </div>
+
+        <!-- Table Summary of Custom Menu & Charges -->
+        <div class="border border-stone-200 rounded-2xl overflow-hidden">
+          <table class="w-full text-xs">
+            <thead class="bg-stone-50 text-stone-600 border-b border-stone-200">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-bold">Komposisi Racikan Bento Box</th>
+                <th class="py-2.5 px-4 text-center font-bold">Porsi</th>
+                <th class="py-2.5 px-4 text-right font-bold">Harga Satuan</th>
+                <th class="py-2.5 px-4 text-right font-bold">Total</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-800" id="invBoxPackageTitle">Custom Premium Box (5 Sekat)</div>
+                  <div class="text-[11px] text-stone-500 mt-0.5 leading-relaxed" id="invMenuBreakdown">
+                    Nasi Daun Jeruk • Ayam Bakar Madu • Perkedel Kentang • Buncis Baby Corn • Sambal Matah • Kerupuk Udang
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-center text-slate-700 font-bold" id="invPaxCount">50 Pax</td>
+                <td class="py-3 px-4 text-right text-stone-600 font-mono" id="invRatePerBox">Rp 35.000</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-800 font-mono" id="invRawSubtotal">Rp 1.750.000</td>
+              </tr>
+              <tr class="bg-stone-50/60">
+                <td colspan="3" class="py-2 px-4 text-emerald-700 text-right font-bold" id="invDiscountLabel">Potongan Diskon Volume (5%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700 font-mono" id="invDiscountTotal">- Rp 87.500</td>
+              </tr>
+              <tr class="bg-stone-50/60">
+                <td colspan="3" class="py-2 px-4 text-slate-600 text-right font-bold">Ongkos Kirim Armada Thermal:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-800 font-mono" id="invShippingTotal">Rp 50.000</td>
+              </tr>
+              <tr class="border-t-2 border-stone-200 bg-emerald-50/40">
+                <td colspan="3" class="py-2.5 px-4 text-slate-800 text-right font-extrabold text-xs">Total Nilai Tagihan:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-bento-green font-mono" id="invGrandTotal">Rp 1.712.500</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-emerald-600 text-right font-bold" id="invPaidLabel">Sudah Dibayar (DP QRIS 50%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-600 font-mono" id="invPaidAmount">Rp 856.250</td>
+              </tr>
+              <tr class="bg-bento-orangeBg/30 border-t border-orange-200">
+                <td colspan="3" class="py-2.5 px-4 text-bento-deepOrange text-right font-extrabold text-xs" id="invDueLabel">Sisa Pelunasan Saat Serah Terima:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-bento-deepOrange font-mono" id="invDueAmount">Rp 856.250</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Dispatching Thermal QR Label Box -->
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Kitchen & Courier Dispatching Barcode</span>
+            <p class="text-xs font-bold text-slate-800">Scan Barcode untuk Tracking Pengiriman Real-Time</p>
+            <p class="text-[11px] text-stone-500">Masa konsumsi terbaik adalah 4 jam setelah kotak katering tiba di lokasi.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-stone-200 inline-block shadow-sm">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=CATERINGPRO-DELIVERY-TOKEN-VALID-202610" alt="Dispatch QR" class="w-18 h-18 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-stone-400 mt-1">DISPATCH: DO-9921-BOX</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Pesan Box Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-bento-orange hover:bg-bento-deepOrange text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-orange-500/20">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Surat Jalan & Invoice (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Logistics & Hygiene Standard Strip -->
+  <section id="schedule-info" class="border-t border-stone-200 bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-display">Standar Higienitas & Pengiriman CateringPro Box</h3>
+        <p class="text-xs sm:text-sm text-stone-500 mt-2">Dipersiapkan di central kitchen berstandar HACCP dan dikirim tepat waktu menggunakan box insulasi thermal.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-bento-greenBg text-bento-green flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="calculator" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Diskon Volume Transparan</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Tanpa negosiasi berbelit. Slider kalkulator langsung memotong 5% hingga 10% dan gratis ongkir saat kuantitas Anda bertambah.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-bento-orangeBg text-bento-orange flex items-center justify-center mb-4 border border-orange-200">
+            <i data-lucide="thermometer-snowflake" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Pengantaran Thermal Insulated</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Box diantar dalam wadah termo agar hidangan tetap hangat saat disantap dan aroma masakan terjaga maksimal.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-bento-greenBg text-bento-green flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="badge-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Bebas Ganti Racikan Lauk</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Penyelenggara bebas memadukan rendang, ayam bakar madu, hingga telur asin tanpa paket kaku seperti katering konvensional.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-stone-400 py-10 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-bento-green flex items-center justify-center text-white font-bold text-xs">C</div>
+        <span class="font-bold text-white font-display">CateringPro Box Solutions</span>
+        <span class="text-stone-500">| ID: cateringpro-box</span>
+      </div>
+      <p class="text-stone-400 text-center md:text-right">&copy; 2026 CateringPro Box Platform. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Menu Kustom Bento
+    const menuOptions = {
+      rices: [
+        { id: "rice-1", name: "Nasi Daun Jeruk Wangi", extra: 0, tag: "Favorit Tamu" },
+        { id: "rice-2", name: "Nasi Liwet Sunda Gurih", extra: 2000, tag: "Rempah Kuat" },
+        { id: "rice-3", name: "Nasi Putih Pandan Wangi", extra: 0, tag: "Klasik Pulen" }
+      ],
+      mains: [
+        { id: "main-1", name: "Ayam Bakar Madu Wijèn", basePrice: 35000, desc: "Ayam bakar kecap madu empuk" },
+        { id: "main-2", name: "Rendang Sapi Singkarak", basePrice: 42000, desc: "Daging sapi rempah 6 jam" },
+        { id: "main-3", name: "Udang Crispy Telur Asin", basePrice: 39000, desc: "Saus creamy salted-egg" }
+      ],
+      sides: [
+        { id: "side-1", name: "Perkedel Kentang Daging", price: 0 },
+        { id: "side-2", name: "Tempe Orek Manis Gurih", price: 0 },
+        { id: "side-3", name: "Bakwan Jagung Crispy", price: 0 }
+      ],
+      veggies: [
+        { id: "veg-1", name: "Tumis Buncis Baby Corn", price: 0 },
+        { id: "veg-2", name: "Capcay Jamur Wortel", price: 0 },
+        { id: "veg-3", name: "Urap Sayur Bumbu Kelapa", price: 0 }
+      ],
+      sambals: [
+        { id: "sambal-1", name: "Sambal Matah Bali", spicy: "Sedang" },
+        { id: "sambal-2", name: "Sambal Bawang Terasi", spicy: "Pedas" },
+        { id: "sambal-3", name: "Sambal Ijo Padang", spicy: "Gurih Segar" }
+      ]
+    };
+
+    // State Management
+    let selectedRice = menuOptions.rices[0];
+    let selectedMain = menuOptions.mains[0];
+    let selectedSide = menuOptions.sides[0];
+    let selectedVeggie = menuOptions.veggies[0];
+    let selectedSambal = menuOptions.sambals[0];
+
+    let currentPax = 50;
+    let paymentOption = 'DP'; // 'DP' or 'FULL'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set default delivery date to Tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('deliveryDateInput').value = tomorrow.toISOString().split('T')[0];
+
+      renderMenuCustomizers();
+      updateCalculator();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToBuilder() {
+      document.getElementById('customizer').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Render Customizer Controls
+    function renderMenuCustomizers() {
+      // 1. Rices
+      const riceGrid = document.getElementById('riceOptionsGrid');
+      riceGrid.innerHTML = menuOptions.rices.map(r => `
+        <div onclick="selectRice('${r.id}')" class="p-3.5 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          selectedRice.id === r.id 
+            ? 'border-bento-green bg-bento-greenBg ring-2 ring-emerald-400/20' 
+            : 'border-stone-200 bg-stone-50 hover:bg-white'
+        }">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-extrabold text-xs text-slate-800">${r.name}</span>
+            </div>
+            <span class="text-[9px] font-bold bg-white text-bento-green border border-emerald-200 px-1.5 py-0.5 rounded">${r.tag}</span>
+          </div>
+          <span class="text-[11px] font-bold text-slate-600 mt-2 block">${r.extra > 0 ? '+ ' + formatRupiah(r.extra) : 'Termasuk'}</span>
+        </div>
+      `).join('');
+
+      // 2. Main Protein
+      const mainGrid = document.getElementById('mainProteinGrid');
+      mainGrid.innerHTML = menuOptions.mains.map(m => `
+        <div onclick="selectMain('${m.id}')" class="p-3.5 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          selectedMain.id === m.id 
+            ? 'border-bento-orange bg-bento-orangeBg ring-2 ring-orange-400/20' 
+            : 'border-stone-200 bg-stone-50 hover:bg-white'
+        }">
+          <div>
+            <span class="font-extrabold text-xs text-slate-900 block">${m.name}</span>
+            <p class="text-[10px] text-stone-500 mt-0.5">${m.desc}</p>
+          </div>
+          <span class="text-xs font-black text-bento-deepOrange mt-2 block">${formatRupiah(m.basePrice)}/box</span>
+        </div>
+      `).join('');
+
+      // 3. Side Dishes
+      const sideGrid = document.getElementById('sideDishGrid');
+      sideGrid.innerHTML = menuOptions.sides.map(s => `
+        <label onclick="selectSide('${s.id}')" class="flex items-center justify-between p-2.5 rounded-xl border-2 cursor-pointer transition ${
+          selectedSide.id === s.id ? 'border-bento-green bg-emerald-50/50 font-bold' : 'border-stone-200 hover:bg-stone-50'
+        }">
+          <span class="text-xs text-slate-800">${s.name}</span>
+          <span class="w-3.5 h-3.5 rounded-full border-2 ${selectedSide.id === s.id ? 'border-bento-green bg-bento-green' : 'border-stone-300'}"></span>
+        </label>
+      `).join('');
+
+      // 4. Veggies
+      const veggieGrid = document.getElementById('veggieGrid');
+      veggieGrid.innerHTML = menuOptions.veggies.map(v => `
+        <label onclick="selectVeggie('${v.id}')" class="flex items-center justify-between p-2.5 rounded-xl border-2 cursor-pointer transition ${
+          selectedVeggie.id === v.id ? 'border-bento-green bg-emerald-50/50 font-bold' : 'border-stone-200 hover:bg-stone-50'
+        }">
+          <span class="text-xs text-slate-800">${v.name}</span>
+          <span class="w-3.5 h-3.5 rounded-full border-2 ${selectedVeggie.id === v.id ? 'border-bento-green bg-bento-green' : 'border-stone-300'}"></span>
+        </label>
+      `).join('');
+
+      // 5. Sambals
+      const sambalGrid = document.getElementById('sambalGrid');
+      sambalGrid.innerHTML = menuOptions.sambals.map(sm => `
+        <div onclick="selectSambal('${sm.id}')" class="p-3 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          selectedSambal.id === sm.id 
+            ? 'border-rose-500 bg-rose-50/70 ring-2 ring-rose-400/20' 
+            : 'border-stone-200 bg-stone-50 hover:bg-white'
+        }">
+          <div>
+            <span class="font-bold text-xs text-slate-800 block">${sm.name}</span>
+            <span class="text-[9px] text-rose-600 font-semibold">Tingkat Pedas: ${sm.spicy}</span>
+          </div>
+          <span class="text-[10px] text-stone-400 mt-1 block">+ Kerupuk Udang</span>
+        </div>
+      `).join('');
+
+      // Update Hero Preview
+      document.getElementById('heroPreviewRice').innerText = selectedRice.name;
+      document.getElementById('heroPreviewMain').innerText = selectedMain.name;
+      document.getElementById('heroPreviewVeg').innerText = selectedVeggie.name;
+      document.getElementById('heroPreviewSambal').innerText = selectedSambal.name;
+    }
+
+    function selectRice(id) { selectedRice = menuOptions.rices.find(r => r.id === id); renderMenuCustomizers(); updateCalculator(); }
+    function selectMain(id) { selectedMain = menuOptions.mains.find(m => m.id === id); renderMenuCustomizers(); updateCalculator(); }
+    function selectSide(id) { selectedSide = menuOptions.sides.find(s => s.id === id); renderMenuCustomizers(); updateCalculator(); }
+    function selectVeggie(id) { selectedVeggie = menuOptions.veggies.find(v => v.id === id); renderMenuCustomizers(); updateCalculator(); }
+    function selectSambal(id) { selectedSambal = menuOptions.sambals.find(s => s.id === id); renderMenuCustomizers(); updateCalculator(); }
+
+    // Dynamic Calculator Logic with Volume Tiers
+    function adjustPax(delta) {
+      let nextPax = currentPax + delta;
+      if (nextPax < 20) nextPax = 20;
+      if (nextPax > 1000) nextPax = 1000;
+      currentPax = nextPax;
+      document.getElementById('paxInput').value = currentPax;
+      document.getElementById('paxSlider').value = currentPax <= 300 ? currentPax : 300;
+      updateCalculator();
+    }
+
+    function onPaxInputChange() {
+      let val = parseInt(document.getElementById('paxInput').value) || 20;
+      if (val < 20) val = 20;
+      if (val > 1000) val = 1000;
+      currentPax = val;
+      document.getElementById('paxSlider').value = currentPax <= 300 ? currentPax : 300;
+      updateCalculator();
+    }
+
+    function onPaxSliderChange(val) {
+      currentPax = parseInt(val);
+      document.getElementById('paxInput').value = currentPax;
+      updateCalculator();
+    }
+
+    function updateCalculator() {
+      const pricePerBox = selectedMain.basePrice + selectedRice.extra;
+      const rawSubtotal = pricePerBox * currentPax;
+
+      // Volume Tier Discount
+      let discountPercent = 0;
+      let shippingFee = 50000;
+
+      if (currentPax >= 100) {
+        discountPercent = 0.10; // 10% Off
+        shippingFee = 0; // Free Shipping for 100+ pax
+      } else if (currentPax >= 50) {
+        discountPercent = 0.05; // 5% Off
+      }
+
+      const discountAmount = rawSubtotal * discountPercent;
+      const grandTotal = rawSubtotal - discountAmount + shippingFee;
+
+      // Update UI Text
+      document.getElementById('pricePerBoxText').innerText = formatRupiah(pricePerBox);
+      document.getElementById('paxCountLabel').innerText = currentPax;
+      document.getElementById('subtotalText').innerText = formatRupiah(rawSubtotal);
+      
+      const discountRow = document.getElementById('discountRow');
+      if (discountPercent > 0) {
+        discountRow.classList.remove('hidden');
+        document.getElementById('discountLabel').innerText = `Diskon Volume (${discountPercent * 100}%):`;
+        document.getElementById('discountAmountText').innerText = `- ${formatRupiah(discountAmount)}`;
+      } else {
+        discountRow.classList.add('hidden');
+      }
+
+      document.getElementById('shippingFeeText').innerText = shippingFee === 0 ? "GRATIS (Promo 100+ Pax)" : formatRupiah(shippingFee);
+      document.getElementById('grandTotalText').innerText = formatRupiah(grandTotal);
+
+      return { pricePerBox, rawSubtotal, discountPercent, discountAmount, shippingFee, grandTotal };
+    }
+
+    // Navigation Step 2
+    function goToStep2() {
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-bento-green text-bento-green pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-bento-green text-white flex items-center justify-center text-[11px]";
+
+      const calc = updateCalculator();
+      const dpVal = calc.grandTotal * 0.5;
+
+      document.getElementById('dpAmountText').innerText = formatRupiah(dpVal);
+      document.getElementById('fullAmountText').innerText = formatRupiah(calc.grandTotal);
+
+      togglePaymentType(paymentOption);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function togglePaymentType(type) {
+      paymentOption = type;
+      const dpCard = document.getElementById('labelOptionDP');
+      const fullCard = document.getElementById('labelOptionFull');
+      const checkDP = document.getElementById('radioCheckDP');
+      const checkFull = document.getElementById('radioCheckFull');
+      const payableText = document.getElementById('checkoutPayableText');
+
+      const calc = updateCalculator();
+      const dpVal = calc.grandTotal * 0.5;
+
+      if (type === 'DP') {
+        dpCard.classList.add('border-bento-green', 'bg-emerald-50/30');
+        dpCard.classList.remove('border-stone-200');
+        fullCard.classList.remove('border-bento-green', 'bg-emerald-50/30');
+        fullCard.classList.add('border-stone-200');
+
+        checkDP.className = "w-2 h-2 rounded-full bg-bento-green";
+        checkFull.className = "w-2 h-2 rounded-full bg-transparent";
+
+        payableText.innerText = formatRupiah(dpVal);
+      } else {
+        fullCard.classList.add('border-bento-green', 'bg-emerald-50/30');
+        fullCard.classList.remove('border-bento-green', 'bg-emerald-50/30');
+        dpCard.classList.remove('border-bento-green', 'bg-emerald-50/30');
+        dpCard.classList.add('border-stone-200');
+
+        checkFull.className = "w-2 h-2 rounded-full bg-bento-green";
+        checkDP.className = "w-2 h-2 rounded-full bg-transparent";
+
+        payableText.innerText = formatRupiah(calc.grandTotal);
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi pembayaran QRIS berakhir. Silakan ulangi pemesanan.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const recipient = document.getElementById('recipientName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('recipientPhone').value.trim() || '081299998888';
+      const address = document.getElementById('deliveryAddress').value.trim() || 'Gedung Wirausaha, Jakarta Selatan';
+      const deliveryDate = document.getElementById('deliveryDateInput').value;
+      const deliverySlot = document.getElementById('deliveryTimeSlot').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-bento-green text-bento-green pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-bento-green text-white flex items-center justify-center text-[11px]";
+
+      const calc = updateCalculator();
+      const paid = paymentOption === 'DP' ? calc.grandTotal * 0.5 : calc.grandTotal;
+      const due = calc.grandTotal - paid;
+
+      const randomInvCode = "CAT-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invNumber').innerText = randomInvCode;
+      document.getElementById('invDate').innerText = "Dibuat: " + new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invRecipientName').innerText = recipient;
+      document.getElementById('invRecipientPhone').innerText = phone;
+      document.getElementById('invDeliveryAddress').innerText = address;
+
+      document.getElementById('invDeliveryDate').innerText = deliveryDate;
+      document.getElementById('invDeliverySlot').innerText = deliverySlot;
+
+      document.getElementById('invBoxPackageTitle').innerText = `Bento Custom: ${selectedMain.name}`;
+      document.getElementById('invMenuBreakdown').innerText = `${selectedRice.name} • ${selectedMain.name} • ${selectedSide.name} • ${selectedVeggie.name} • ${selectedSambal.name} • Kerupuk Udang`;
+      document.getElementById('invPaxCount').innerText = `${currentPax} Pax`;
+      document.getElementById('invRatePerBox').innerText = formatRupiah(calc.pricePerBox);
+      document.getElementById('invRawSubtotal').innerText = formatRupiah(calc.rawSubtotal);
+
+      document.getElementById('invDiscountLabel').innerText = `Potongan Diskon Volume (${calc.discountPercent * 100}%):`;
+      document.getElementById('invDiscountTotal').innerText = `- ${formatRupiah(calc.discountAmount)}`;
+      document.getElementById('invShippingTotal').innerText = calc.shippingFee === 0 ? "GRATIS (100+ Pax)" : formatRupiah(calc.shippingFee);
+      document.getElementById('invGrandTotal').innerText = formatRupiah(calc.grandTotal);
+
+      if (paymentOption === 'DP') {
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (DP QRIS 50%):";
+        document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+        document.getElementById('invDueLabel').innerText = "Sisa Pelunasan Saat Serah Terima:";
+        document.getElementById('invDueAmount').innerText = formatRupiah(due);
+      } else {
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (Lunas QRIS 100%):";
+        document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+        document.getElementById('invDueLabel').innerText = "Status Tagihan:";
+        document.getElementById('invDueAmount').innerText = "LUNAS (Rp 0)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      currentPax = 50;
+      paymentOption = 'DP';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      document.getElementById('paxInput').value = 50;
+      document.getElementById('paxSlider').value = 50;
+
+      updateCalculator();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quadra Coffee Shop - Menu Signature, Slow Bar Reservation & Takeaway WA</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit (Proporsional & Anti Gepeng) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+          },
+          colors: {
+            cyan: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              200: '#a5f3fc',
+              300: '#67e8f9',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+            },
+            gold: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#eab308',
+              500: '#d4af37', // Roasted Gold
+              600: '#b48c28',
+              700: '#8a681c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .gold-gradient-tag {
+      background: linear-gradient(135deg, #d4af37 0%, #b48c28 100%);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableReceipt, #printableReceipt * {
+        visibility: visible;
+      }
+      #printableReceipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#F8FCFD] text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-cyan-100 selection:text-cyan-800">
+
+  <!-- Top Announcement Bar (Lega & Jelas) -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-3 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-cyan-900/40">
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">SPECIALTY LAB & ROASTERY</span>
+    <span class="font-medium text-slate-300">Single Origin Geisha & Gesha Village Ready at Slow Bar • Order Takeaway Siap Ambil Tanpa Antre</span>
+  </div>
+
+  <!-- Header / Navigation (Lega, Rapi, Teks Tidak Patah Baris) -->
+  <header class="glass-nav sticky top-0 z-40 border-b border-cyan-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3.5 select-none focus:outline-none transition transform active:scale-95" title="Kembali ke Beranda">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-cyan-500/25 flex-shrink-0 transition border border-gold-300">
+          <i data-lucide="coffee" class="w-6 h-6 text-gold-200"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-2xl tracking-tight text-slate-900 block leading-tight font-display">
+            QUADRA<span class="text-cyan-600 font-sans ml-0.5 font-bold">COFFEE</span>
+            <span class="text-[11px] bg-gold-100 text-gold-800 border border-gold-300 px-2 py-0.5 rounded font-sans uppercase font-bold ml-1.5 align-middle">LAB</span>
+          </span>
+          <span class="text-[11px] font-semibold text-slate-400 tracking-wider block uppercase mt-0.5">SPECIALTY ROASTER & SLOW BAR</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-9 text-sm font-semibold text-slate-600 whitespace-nowrap">
+        <a href="#signature" onclick="switchMainMode('takeaway')" class="text-cyan-600 hover:text-cyan-700 transition">Signature Menu</a>
+        <a href="#slowbar" onclick="switchMainMode('slowbar')" class="hover:text-gold-600 transition">Reservasi Slow Bar</a>
+        <a href="#about" class="hover:text-cyan-600 transition">Extraction Philosophy</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-4">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-cyan-50 text-cyan-800 font-semibold px-4 py-2 rounded-full border border-cyan-200 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+          Barista Bar: Seduh Segar 08:00 - 22:00 WIB
+        </div>
+        <button onclick="scrollToApp()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition shadow-md shadow-cyan-900/10 flex items-center gap-2 border border-cyan-400/40 active:scale-95 whitespace-nowrap">
+          <span>Pesan Sekarang</span>
+          <i data-lucide="arrow-down" class="w-4 h-4 text-gold-400"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Tegap, Proporsional & Font Normal Tidak Gepeng) -->
+  <section class="pt-14 sm:pt-20 pb-18 sm:pb-24 border-b border-cyan-100 relative overflow-hidden bg-gradient-to-b from-white via-cyan-50/30 to-[#F8FCFD]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-7 space-y-7">
+          <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white border border-cyan-200 text-cyan-700 text-xs font-semibold shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-gold-500 animate-ping"></span>
+            Crafted with Precision • Specialty Coffee Association Certified
+          </div>
+          
+          <h1 class="text-3xl sm:text-5xl lg:text-[3.25rem] font-extrabold text-slate-900 tracking-tight leading-[1.22] font-display">
+            Eksplorasi Profil Rasa Kopi. Cepat Bawa Pulang atau Resapi di Slow Bar.
+          </h1>
+          
+          <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl">
+            Pesan racikan <strong class="text-slate-900">Signature Cold Brew & Espresso Mocktail</strong> langsung via WhatsApp untuk pickup kilat, atau amankan kursi privat di <strong class="text-gold-600 font-semibold">Slow Bar Manual Brew Counter</strong> bersama Head Roaster kami.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="switchMainMode('takeaway'); scrollToApp();" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-7 py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 transition flex items-center gap-2.5 border border-cyan-400">
+              <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+              Takeaway Menu (WA)
+            </button>
+            <button onclick="switchMainMode('slowbar'); scrollToApp();" class="bg-white hover:bg-cyan-50 text-slate-800 border-2 border-gold-400 font-bold px-6 py-3.5 rounded-xl transition flex items-center gap-2 shadow-sm">
+              <i data-lucide="droplet" class="w-4 h-4 text-gold-500"></i>
+              Reservasi Slow Bar
+            </button>
+          </div>
+
+          <!-- Metrik Angka Tegak & Proporsional -->
+          <div class="grid grid-cols-3 gap-6 pt-7 border-t border-cyan-100 text-left">
+            <div>
+              <p class="text-3xl sm:text-4xl font-extrabold text-cyan-600 font-display">4 Seats</p>
+              <p class="text-xs text-stone-500 mt-1 font-medium">Slow Bar Counter Intim</p>
+            </div>
+            <div>
+              <p class="text-3xl sm:text-4xl font-extrabold text-gold-600 font-display">90+ SCA</p>
+              <p class="text-xs text-stone-500 mt-1 font-medium">Biji Kopi Terpilih Dunia</p>
+            </div>
+            <div>
+              <p class="text-3xl sm:text-4xl font-extrabold text-slate-900 font-display">0 Menit</p>
+              <p class="text-xs text-stone-500 mt-1 font-medium">Antre Pickup via WhatsApp</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Snapshot: Interactive Specialty Tasting Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-7 shadow-xl shadow-cyan-200/50 border border-cyan-200 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-cyan-50">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Barista Tasting Card</span>
+              </div>
+              <span class="text-[11px] font-bold text-gold-700 bg-gold-100 px-2.5 py-1 rounded-md border border-gold-300">SINGLE ORIGIN LOT #04</span>
+            </div>
+
+            <div class="mt-5 space-y-3.5">
+              <div class="p-4 bg-cyan-50/50 rounded-2xl border border-cyan-100 space-y-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-sm font-bold text-slate-900">Ethiopia Yirgacheffe Idido</h4>
+                  <span class="text-xs font-black text-cyan-700">V60 Pour-over</span>
+                </div>
+                <p class="text-xs text-slate-500 leading-relaxed">Proses: Natural Anaerobic 72 Jam • Altitude: 2.100 MASL</p>
+                
+                <!-- Tasting Flavor Tags -->
+                <div class="flex flex-wrap gap-1.5 pt-1.5">
+                  <span class="text-[10px] font-bold bg-white text-cyan-800 px-2.5 py-0.5 rounded border border-cyan-200">Bergamot Citrus</span>
+                  <span class="text-[10px] font-bold bg-white text-gold-700 px-2.5 py-0.5 rounded border border-gold-300">Wild Jasmine</span>
+                  <span class="text-[10px] font-bold bg-white text-rose-600 px-2.5 py-0.5 rounded border border-rose-200">White Peach</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 bg-white rounded-xl border border-slate-200 flex items-center justify-between text-xs text-stone-600">
+                <span>Rasio Seduh: <strong>1:15 (92°C Mineral Water)</strong></span>
+                <span class="font-bold text-gold-600 font-mono">TDS 1.35% (Optimal)</span>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-stone-500">
+              <span>Ready for: Takeaway / Slow Bar</span>
+              <span class="font-bold text-cyan-600">Pickup Counter Ready</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Dual Mode Switcher Banner -->
+  <section class="bg-white border-b border-cyan-100 py-6" id="app-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-display">Pilih Pengalaman Ngopi Anda</h3>
+          <p class="text-xs text-stone-500 mt-0.5">Beralih antara menu takeaway cepat saji atau reservasi kursi mencicipi di hadapan Barista.</p>
+        </div>
+
+        <!-- Mode Toggle Tabs -->
+        <div class="flex items-center p-1 bg-cyan-50 rounded-2xl border border-cyan-200 w-full sm:w-auto">
+          <button id="modeBtnTakeaway" onclick="switchMainMode('takeaway')" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition flex items-center justify-center gap-2">
+            <i data-lucide="coffee" class="w-4 h-4 text-cyan-600"></i>
+            <span>1. Signature Menu & Takeaway WA</span>
+          </button>
+          <button id="modeBtnSlowbar" onclick="switchMainMode('slowbar')" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition flex items-center justify-center gap-2">
+            <i data-lucide="droplet" class="w-4 h-4 text-gold-500"></i>
+            <span>2. Reservasi Slow Bar Counter</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Dynamic Workspace -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
+    
+    <!-- Step Progress Indicator -->
+    <div class="max-w-3xl mx-auto mb-10">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-cyan-600 text-cyan-700 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[11px]">1</span>
+          Pilih Menu / Kursi Slow Bar
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]">2</span>
+          Checkout WA / QRIS Pay
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]">3</span>
+          Struk Pickup / Bar Pass
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 1: Main Interactive Workspace (Switches between Mode Takeaway & Mode Slow Bar) -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- MODE A: Signature Coffee Menu & Takeaway Customizer -->
+      <div id="takeawayModeWrapper" class="space-y-6">
+        <div class="flex items-center justify-between pb-3 border-b border-cyan-100">
+          <div>
+            <span class="text-xs font-bold text-cyan-600 uppercase tracking-widest">Beverage Catalog</span>
+            <h3 class="text-xl font-bold text-slate-900 font-display">Signature Drink & Artisan Cold Brew</h3>
+          </div>
+          <span class="text-xs text-stone-400">Siap pickup dalam 10 menit</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="signatureCardsGrid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- MODE B: Slow Bar Counter Reservation (4 Exclusive Seats) -->
+      <div id="slowbarModeWrapper" class="hidden space-y-6">
+        <div class="bg-white p-6 sm:p-8 rounded-3xl border border-cyan-200 shadow-sm space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-cyan-50 pb-4">
+            <div>
+              <span class="text-xs font-bold text-gold-600 uppercase tracking-widest">Intimate Brew Experience</span>
+              <h3 class="text-xl font-bold text-slate-900 font-display">Reservasi Meja Slow Bar (Maksimal 4 Tamu)</h3>
+              <p class="text-xs text-stone-500 mt-1">Sesi mencicipi 45 menit bersama Head Roaster mencakup 2 varian kopi langka & cupping notes.</p>
+            </div>
+            
+            <!-- Date Picker for Slow Bar -->
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-stone-500">Tanggal Sesi:</span>
+              <input type="date" id="slowbarDateInput" class="text-xs font-semibold bg-cyan-50/50 border border-cyan-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            </div>
+          </div>
+
+          <!-- Slow Bar Shift Hours -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Jam Sesi Seduh:</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs" id="slowbarShiftsContainer">
+              <button onclick="pickSlowbarShift('10:00 - 10:45')" class="p-3 rounded-2xl border-2 border-cyan-500 bg-cyan-50 text-cyan-900 font-bold text-center shift-btn">10:00 - 10:45 WIB</button>
+              <button onclick="pickSlowbarShift('14:00 - 14:45')" class="p-3 rounded-2xl border border-stone-200 hover:border-cyan-400 bg-white text-slate-700 text-center shift-btn">14:00 - 14:45 WIB</button>
+              <button onclick="pickSlowbarShift('16:30 - 17:15')" class="p-3 rounded-2xl border border-stone-200 hover:border-cyan-400 bg-white text-slate-700 text-center shift-btn">16:30 - 17:15 WIB</button>
+              <button onclick="pickSlowbarShift('19:30 - 20:15')" class="p-3 rounded-2xl border border-stone-200 hover:border-cyan-400 bg-white text-slate-700 text-center shift-btn">19:30 - 20:15 WIB</button>
+            </div>
+          </div>
+
+          <!-- 4 Slow Bar Stool Seats -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Nomor Kursi Stool di Depan Barista:</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="slowbarSeatsGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Beans & Dripper Selection for Slowbar -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+              <span class="text-xs font-bold text-slate-800 block">Pilihan Biji Kopi Koleksi:</span>
+              <select id="slowbarBeanSelect" class="w-full text-xs font-semibold bg-white border border-stone-300 rounded-xl px-3 py-2 text-slate-800">
+                <option value="Panama Geisha Boquete (Floral, Bergamot, Honey)">Panama Geisha Boquete (Floral & Honey)</option>
+                <option value="Colombia Pink Bourbon (Grapefruit, Strawberry Candy)">Colombia Pink Bourbon (Strawberry Candy)</option>
+                <option value="Kenya Nyeri Peaberry (Blackcurrant, Sparkling Citric)">Kenya Nyeri Peaberry (Blackcurrant)</option>
+              </select>
+            </div>
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+              <span class="text-xs font-bold text-slate-800 block">Metode Manual Brew:</span>
+              <select id="slowbarMethodSelect" class="w-full text-xs font-semibold bg-white border border-stone-300 rounded-xl px-3 py-2 text-slate-800">
+                <option value="Hario V60 Ceramic Dripper">Hario V60 Ceramic Dripper (Clean & Crisp)</option>
+                <option value="Origami Dripper with Wave Filter">Origami Dripper (Bright Acidity)</option>
+                <option value="Japanese Vacuum Syphon">Japanese Vacuum Syphon (Rich & Silky Body)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Sticky Action / Cart Summary Bar -->
+      <div id="actionSummaryBar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-3xl bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-30 border border-cyan-500/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-600 text-white flex items-center justify-center font-bold">
+            <i data-lucide="coffee" class="w-5 h-5 text-gold-300"></i>
+          </div>
+          <div>
+            <h5 id="summaryActionTitle" class="text-sm font-bold leading-tight font-display">Item Kopi Terpilih</h5>
+            <p id="summaryActionDesc" class="text-xs text-stone-400">Siap diproses</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          <div class="text-right">
+            <span class="text-[10px] text-stone-400 block uppercase font-medium">Total Biaya</span>
+            <span id="summaryActionPrice" class="text-base font-extrabold text-cyan-300 font-mono">Rp 0</span>
+          </div>
+          <button onclick="goToStep2()" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-cyan-600/40 border border-cyan-400 active:scale-95">
+            <span>Lanjut Checkout</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Checkout Customer Information, Dual Order (WA or QRIS) -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Customer Form & Customization Review -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-white p-6 sm:p-7 rounded-3xl border border-cyan-100 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="user" class="w-4 h-4 text-cyan-600"></i>
+                Identitas Pemesan Kopi
+              </h3>
+              <span id="checkoutModeBadge" class="text-[10px] font-bold bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200">
+                TAKEAWAY QUICK PICKUP
+              </span>
+            </div>
+
+            <div class="space-y-4 text-xs">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Nama Pemanggil / Nama Cup *</label>
+                  <input type="text" id="custName" value="Tedi Mahendra" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-medium" />
+                </div>
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Nomor WhatsApp *</label>
+                  <input type="tel" id="custPhone" value="081299998888" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-medium" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Estimasi Jam Pengambilan di Barista Bar</label>
+                <input type="text" id="pickupEstimateTime" value="Dalam 15 Menit (Barista Pickup Bar)" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-medium" />
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Catatan Racikan Khusus (Suhu / Oatmilk / Less Ice)</label>
+                <input type="text" id="custSpecialNotes" value="Less sweet, gunakan sedotan ramah lingkungan" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-medium" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Fresh Extraction Commitment Box -->
+          <div class="bg-gradient-to-r from-cyan-50/60 to-white p-5 rounded-3xl border border-cyan-200 space-y-2 text-xs text-slate-700">
+            <span class="font-bold text-cyan-800 flex items-center gap-1.5">
+              <i data-lucide="zap" class="w-4 h-4 text-gold-500"></i>
+              Fresh Extraction Guarantee
+            </span>
+            <p class="leading-relaxed">
+              Kopi diekstrak tepat saat Anda tiba atau 5 menit sebelum jam estimasi pickup agar crema dan kesegaran aromatik kopi tidak memudar.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Summary & Dual Action (WhatsApp Takeaway vs QRIS Payment) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-xl space-y-5">
+            <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
+              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Rincian Pembayaran</span>
+              <span class="text-[10px] font-bold bg-gold-100 text-gold-800 px-2 py-0.5 rounded border border-gold-300">Coffee Bar</span>
+            </div>
+
+            <!-- Detail Breakdown -->
+            <div id="checkoutSummaryBreakdown" class="space-y-3 text-xs divide-y divide-stone-100">
+              <!-- Injected via JS -->
+            </div>
+
+            <!-- Grand Total -->
+            <div class="p-3.5 bg-cyan-50 rounded-2xl border border-cyan-200 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-cyan-800 uppercase block">Total Nilai Tagihan</span>
+                <span class="text-xs text-stone-500">Termasuk Pajak & Kemasan Cup</span>
+              </div>
+              <span class="text-xl font-black text-cyan-700 font-mono" id="checkoutGrandTotalDisplay">Rp 0</span>
+            </div>
+
+            <!-- Dual Checkout Action Buttons -->
+            <div class="space-y-2.5 pt-2">
+              <!-- Action 1: Checkout WhatsApp Takeaway -->
+              <button onclick="checkoutTakeawayViaWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <span>Pesan Takeaway via WhatsApp</span>
+              </button>
+
+              <!-- Action 2: Bayar Instan via QRIS -->
+              <button onclick="openQrisModal()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-cyan-300 font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-slate-900/20 border border-cyan-500/40">
+                <i data-lucide="qr-code" class="w-4 h-4 text-gold-400"></i>
+                <span>Bayar Instan via QRIS Dinamis</span>
+              </button>
+
+              <button onclick="backToStep1()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs py-2 px-4 rounded-xl transition text-center block">
+                Kembali / Ubah Pesanan
+              </button>
+            </div>
+
+            <p class="text-[10px] text-stone-400 text-center leading-normal">
+              *Pesanan WhatsApp langsung terhubung dengan tablet kasir barista Quadra.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 3: Automated Barista Order Ticket & Digital Receipt (Printable) -->
+    <div id="step3View" class="hidden max-w-2xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-cyan-900 no-print">
+        <div class="w-10 h-10 rounded-full bg-cyan-600 text-white flex items-center justify-center flex-shrink-0">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-slate-900">Pembayaran Terverifikasi & Barista Mulai Menyeduh!</h4>
+          <p class="text-xs text-cyan-800">Tunjukkan tiket digital ini di Barista Pickup Counter untuk mengambil cangkir kopi Anda.</p>
+        </div>
+      </div>
+
+      <!-- Printable Barista Receipt Paper -->
+      <div id="printableReceipt" class="bg-white rounded-3xl border border-cyan-100 shadow-xl p-6 sm:p-9 space-y-6 relative overflow-hidden">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-stone-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-cyan-600 flex items-center justify-center text-white">
+                <i data-lucide="coffee" class="w-4 h-4 text-gold-300"></i>
+              </div>
+              <span class="font-black text-lg tracking-tight text-slate-900 font-display">QUADRA<span class="text-cyan-600">COFFEE</span> <span class="text-xs font-bold bg-gold-100 text-gold-800 px-1.5 py-0.5 rounded font-sans uppercase">LAB</span></span>
+            </div>
+            <p class="text-[11px] text-stone-500">Jl. Senopati No. 42, Kebayoran Baru, Jakarta Selatan</p>
+            <p class="text-[11px] text-stone-500">Barista Hotline & WA Dispatch: +62 812-9999-8888</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-cyan-50 text-cyan-700 uppercase tracking-wider mb-1 border border-cyan-200">
+              OFFICIAL BAR RECEIPT
+            </span>
+            <p id="receiptNumber" class="text-xs font-mono font-bold text-slate-800">QDR-202610-8821</p>
+            <p id="receiptDate" class="text-[10px] text-stone-400">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Order Type & Customer Details -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-stone-50 p-4 rounded-2xl border border-stone-200">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5">Nama Cup / Pemesan:</span>
+            <p id="invCustName" class="font-bold text-slate-900 text-sm">Tedi Mahendra</p>
+            <p id="invCustPhone" class="text-stone-500">081299998888</p>
+            <p id="invCustNotes" class="text-cyan-700 font-semibold mt-1 italic text-[11px]">Catatan: Less sweet, sedotan bambu</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5">Metode Pemesanan:</span>
+            <p id="invOrderType" class="font-bold text-cyan-600 text-sm">Takeaway Order (Pickup Bar)</p>
+            <p id="invEstimatedTime" class="text-slate-800 font-bold">Estimasi: 15 Menit</p>
+            <p class="text-emerald-700 font-bold mt-1">LUNAS (QRIS Verified)</p>
+          </div>
+        </div>
+
+        <!-- Table Items Summary -->
+        <div class="border border-stone-200 rounded-2xl overflow-hidden">
+          <table class="w-full text-xs">
+            <thead class="bg-stone-50 text-stone-600 border-b border-stone-200">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-bold">Rincian Kopi & Profile Seduhan</th>
+                <th class="py-2.5 px-4 text-center font-bold">Qty</th>
+                <th class="py-2.5 px-4 text-right font-bold">Harga Satuan</th>
+                <th class="py-2.5 px-4 text-right font-bold">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="receiptTableBody" class="divide-y divide-stone-100 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+            <tfoot class="bg-stone-50/70 font-bold border-t border-stone-200">
+              <tr class="bg-cyan-50/50">
+                <td colspan="3" class="py-2.5 px-4 text-right text-slate-800 font-extrabold text-xs">Total Pembayaran Bersih:</td>
+                <td class="py-2.5 px-4 text-right text-cyan-700 font-black text-sm font-mono" id="receiptGrandTotal">Rp 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Barista Counter Barcode Verification -->
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Barista Pickup Scanner Barcode</span>
+            <p class="text-xs font-bold text-slate-800">Scan Barcode di Pick-up Counter Quadra</p>
+            <p class="text-[11px] text-stone-500">Cangkir kopi Anda telah diberi label stiker identitas pemanggil.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-stone-200 inline-block shadow-sm">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=QUADRA-COFFEE-BAR-VALID-202610" alt="Pickup QR" class="w-18 h-18 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-stone-400 mt-1">TOKEN: CUP-BAR-8821</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Receipt -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Pesan Menu Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-cyan-600/20">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Struk Barista (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- QRIS Payment Modal Simulator -->
+  <div id="qrisModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-cyan-100 space-y-4 text-center">
+      <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
+        <span class="text-xs font-bold text-cyan-600 uppercase tracking-wider">QRIS Coffee Lab</span>
+        <button onclick="closeQrisModal()" class="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 hover:text-slate-800">✕</button>
+      </div>
+
+      <div class="border border-stone-200 rounded-2xl p-4 bg-stone-50">
+        <div class="flex items-center justify-between w-full px-1 mb-2">
+          <span class="text-red-600 font-black text-xs">QRIS</span>
+          <span class="text-[11px] font-mono font-bold text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded" id="qrisModalTimer">09:59</span>
+        </div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PROTOTYPE-QUADRA-COFFEE-SETTLEMENT" alt="QRIS Quadra" class="w-40 h-40 object-contain mx-auto bg-white p-2 rounded-xl border border-stone-200" />
+        <p class="text-[10px] text-stone-400 mt-2">NMID: ID1099238899 - QUADRA COFFEE SPECIALTY</p>
+        <div class="mt-3 pt-2 border-t border-stone-200 flex items-center justify-between px-1">
+          <span class="text-xs font-semibold text-stone-600">Total Ditagihkan:</span>
+          <span id="modalPayableText" class="text-base font-black text-cyan-700 font-mono">Rp 0</span>
+        </div>
+      </div>
+
+      <button onclick="confirmQrisSuccess()" class="w-full bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-xs py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/20">
+        <i data-lucide="check-circle" class="w-4 h-4 text-gold-300"></i>
+        <span>Simulasi Bayar Berhasil (Callback Webhook)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Extraction Philosophy Strip -->
+  <section id="about" class="border-t border-cyan-100 bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-display">Empat Pilar Kualitas Quadra Coffee</h3>
+        <p class="text-xs sm:text-sm text-stone-500 mt-2">Setiap gram biji kopi diperlakukan dengan parameter ilmiah untuk menghasilkan cangkir kopi yang seimbang.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-4 border border-cyan-200">
+            <i data-lucide="flask-conical" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Water Mineral Recipe</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Air seduh diformulasikan dengan kadar magnesium & kalsium tepat untuk mengangkat aroma bunga kopi.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-gold-100 text-gold-700 flex items-center justify-center mb-4 border border-gold-300">
+            <i data-lucide="flame" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">In-House Micro Roasting</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Profil sangrai light-to-medium yang mempertahankan keasaman manis alami buah kopi tanpa rasa gosong.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-4 border border-cyan-200">
+            <i data-lucide="clock" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Instant WA Takeaway</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Pesan lebih awal di jalan, tiba di outlet kopi sudah siap di meja pickup bar tanpa antre di kasir.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-gold-100 text-gold-700 flex items-center justify-center mb-4 border border-gold-300">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Intimate Slow Bar</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Sesi privat mencicipi micro-lot eksotis dari Panama dan Ethiopia langsung di hadapan barista roaster kami.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-stone-400 py-10 border-t border-cyan-900/40 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-cyan-600 flex items-center justify-center text-white font-bold text-xs border border-gold-300">Q</div>
+        <span class="font-bold text-white font-display">Quadra Coffee Roastery</span>
+        <span class="text-stone-500">| ID: quadra-coffee-shop</span>
+      </div>
+      <p class="text-stone-400 text-center md:text-right">&copy; 2026 Quadra Coffee Lab. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Signature Coffee Menu
+    const signatureMenus = [
+      {
+        id: "sig-1",
+        name: "Quadra Aerocano Citrus Flambé",
+        category: "Cold Signature",
+        price: 38000,
+        image: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=600&q=80",
+        notes: ["Espresso Aerated", "Orange Blossom", "Velvety Foam"],
+        desc: "Espresso dikocok uap dengan sirup kulit jeruk bakar menghasilkan tekstur lembut menyerupai nitro beer dingin."
+      },
+      {
+        id: "sig-2",
+        name: "Kyoto Cold Drip 18-Hours",
+        category: "Slow Extraction",
+        price: 45000,
+        image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
+        notes: ["Dark Chocolate", "Whisky Barrel Oak", "Sweet Honey"],
+        desc: "Diteteskan perlahan selama 18 jam tetes demi tetes menggunakan es batu murni, aroma kompleks seperti bourbon manis."
+      },
+      {
+        id: "sig-3",
+        name: "Oat Pistachio Cloud Latte",
+        category: "Specialty Latte",
+        price: 42000,
+        image: "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=600&q=80",
+        notes: ["Oat Milk Organic", "Roasted Pistachio Foam", "Double Ristretto"],
+        desc: "Double ristretto dipadukan susu oat hangat dengan taburan foam pistachio gurih dan sea salt."
+      }
+    ];
+
+    // 2. Data 4 Kursi Slow Bar
+    const slowbarSeatsData = [
+      { id: "BAR-01", number: "Stool 01", label: "Hadap V60 Station", available: true },
+      { id: "BAR-02", number: "Stool 02", label: "Center Roaster View", available: true },
+      { id: "BAR-03", number: "Stool 03", label: "Center Roaster View", available: false },
+      { id: "BAR-04", number: "Stool 04", label: "Hadap Syphon Station", available: true },
+    ];
+
+    // State Management
+    let currentMode = 'takeaway';
+    let takeawayCart = {};
+    let selectedSlowbarSeat = null;
+    let selectedSlowbarShift = '10:00 - 10:45';
+    let slowbarFee = 85000;
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('slowbarDateInput').value = today;
+
+      renderSignatureMenu();
+      renderSlowbarSeats();
+      updateActionSummary();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToApp() {
+      document.getElementById('app-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function switchMainMode(mode) {
+      currentMode = mode;
+      const btnTakeaway = document.getElementById('modeBtnTakeaway');
+      const btnSlowbar = document.getElementById('modeBtnSlowbar');
+      const wrapperTakeaway = document.getElementById('takeawayModeWrapper');
+      const wrapperSlowbar = document.getElementById('slowbarModeWrapper');
+
+      if (mode === 'takeaway') {
+        btnTakeaway.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition flex items-center justify-center gap-2";
+        btnSlowbar.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition flex items-center justify-center gap-2";
+        wrapperTakeaway.classList.remove('hidden');
+        wrapperSlowbar.classList.add('hidden');
+      } else {
+        btnSlowbar.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition flex items-center justify-center gap-2";
+        btnTakeaway.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition flex items-center justify-center gap-2";
+        wrapperSlowbar.classList.remove('hidden');
+        wrapperTakeaway.classList.add('hidden');
+      }
+
+      updateActionSummary();
+    }
+
+    function renderSignatureMenu() {
+      const grid = document.getElementById('signatureCardsGrid');
+      grid.innerHTML = '';
+
+      signatureMenus.forEach(menu => {
+        const qty = takeawayCart[menu.id] || 0;
+
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-3xl border border-cyan-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between";
+
+        card.innerHTML = `
+          <div>
+            <div class="relative h-44 w-full bg-stone-100 overflow-hidden">
+              <img src="${menu.image}" alt="${menu.name}" class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+              <div class="absolute top-3 left-3 bg-white/95 backdrop-blur text-cyan-800 text-[10px] font-black px-2.5 py-1 rounded-md tracking-wider border border-cyan-200 uppercase">
+                ${menu.category}
+              </div>
+              <div class="absolute bottom-3 right-3 bg-slate-900/90 text-gold-300 font-mono text-xs font-bold px-2.5 py-1 rounded-lg shadow">
+                ${formatRupiah(menu.price)}
+              </div>
+            </div>
+
+            <div class="p-5 space-y-3">
+              <div>
+                <h3 class="font-extrabold text-base text-slate-900 leading-snug">${menu.name}</h3>
+                <p class="text-[11px] text-stone-500 mt-1 leading-relaxed">${menu.desc}</p>
+              </div>
+
+              <!-- Tasting Notes Pills -->
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                ${menu.notes.map(n => `
+                  <span class="text-[9px] font-bold bg-cyan-50 text-cyan-800 px-2 py-0.5 rounded border border-cyan-100">${n}</span>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 pt-0 border-t border-cyan-50 mt-3">
+            <div class="flex items-center justify-between pt-3">
+              <span class="text-xs font-bold text-stone-600">Pesan Takeaway:</span>
+              
+              ${qty === 0 ? `
+                <button onclick="addTakeawayItem('${menu.id}')" class="bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span>Order Cup</span>
+                </button>
+              ` : `
+                <div class="flex items-center gap-2">
+                  <button onclick="changeTakeawayQty('${menu.id}', -1)" class="w-7 h-7 rounded-lg bg-stone-100 border border-stone-200 text-slate-700 font-black text-xs hover:bg-stone-200 active:scale-95 transition">-</button>
+                  <span class="w-6 text-center font-black text-xs text-cyan-700 font-mono">${qty}</span>
+                  <button onclick="changeTakeawayQty('${menu.id}', 1)" class="w-7 h-7 rounded-lg bg-cyan-600 text-white font-black text-xs hover:bg-cyan-700 active:scale-95 transition">+</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function addTakeawayItem(id) {
+      takeawayCart[id] = 1;
+      renderSignatureMenu();
+      updateActionSummary();
+    }
+
+    function changeTakeawayQty(id, delta) {
+      if (!takeawayCart[id]) return;
+      takeawayCart[id] += delta;
+      if (takeawayCart[id] <= 0) {
+        delete takeawayCart[id];
+      }
+      renderSignatureMenu();
+      updateActionSummary();
+    }
+
+    function renderSlowbarSeats() {
+      const grid = document.getElementById('slowbarSeatsGrid');
+      grid.innerHTML = '';
+
+      slowbarSeatsData.forEach(seat => {
+        const isSelected = selectedSlowbarSeat && selectedSlowbarSeat.id === seat.id;
+
+        if (!seat.available) {
+          const occ = document.createElement('div');
+          occ.className = "p-4 rounded-2xl border border-stone-200 bg-stone-100/70 text-center opacity-50 cursor-not-allowed select-none";
+          occ.innerHTML = `
+            <span class="block text-xs font-mono font-bold text-stone-400 line-through">${seat.number}</span>
+            <span class="block text-[9px] text-stone-400 mt-1">Terisi Sesi Ini</span>
+          `;
+          grid.appendChild(occ);
+        } else {
+          const avail = document.createElement('div');
+          avail.onclick = () => pickSlowbarSeat(seat);
+          avail.className = `p-4 rounded-2xl border-2 transition cursor-pointer text-center select-none ${
+            isSelected 
+              ? 'bg-slate-900 text-cyan-300 border-cyan-400 shadow-md ring-2 ring-cyan-400/30' 
+              : 'bg-white hover:bg-cyan-50/50 text-slate-800 border-stone-200 hover:border-cyan-300 shadow-sm'
+          }`;
+
+          avail.innerHTML = `
+            <span class="block text-xs font-mono font-bold ${isSelected ? 'text-gold-300' : 'text-slate-900'}">${seat.number}</span>
+            <span class="block text-[10px] ${isSelected ? 'text-cyan-200' : 'text-stone-500'} mt-0.5">${seat.label}</span>
+            <span class="block text-[9px] font-bold ${isSelected ? 'text-white' : 'text-cyan-600'} mt-1">Tersedia</span>
+          `;
+          grid.appendChild(avail);
+        }
+      });
+    }
+
+    function pickSlowbarSeat(seat) {
+      selectedSlowbarSeat = seat;
+      renderSlowbarSeats();
+      updateActionSummary();
+    }
+
+    function pickSlowbarShift(shift) {
+      selectedSlowbarShift = shift;
+      const btns = document.querySelectorAll('.shift-btn');
+      btns.forEach(b => {
+        if (b.innerText.includes(shift)) {
+          b.className = "p-3 rounded-2xl border-2 border-cyan-500 bg-cyan-50 text-cyan-900 font-bold text-center shift-btn";
+        } else {
+          b.className = "p-3 rounded-2xl border border-stone-200 hover:border-cyan-400 bg-white text-slate-700 text-center shift-btn";
+        }
+      });
+      updateActionSummary();
+    }
+
+    function updateActionSummary() {
+      const bar = document.getElementById('actionSummaryBar');
+      let totalCost = 0;
+      let title = "";
+      let desc = "";
+
+      if (currentMode === 'takeaway') {
+        let count = 0;
+        for (let id in takeawayCart) {
+          const menu = signatureMenus.find(m => m.id === id);
+          if (menu) {
+            count += takeawayCart[id];
+            totalCost += menu.price * takeawayCart[id];
+          }
+        }
+
+        if (count > 0) {
+          bar.classList.remove('hidden');
+          title = `${count} Cangkir Takeaway Signature`;
+          desc = "Pickup bar tanpa antre • Kemasan seal cup";
+        } else {
+          bar.classList.add('hidden');
+        }
+      } else {
+        if (selectedSlowbarSeat) {
+          bar.classList.remove('hidden');
+          totalCost = slowbarFee;
+          title = `Reservasi Slow Bar (${selectedSlowbarSeat.number})`;
+          desc = `Sesi: ${selectedSlowbarShift} • Single Origin Tasting`;
+        } else {
+          bar.classList.add('hidden');
+        }
+      }
+
+      document.getElementById('summaryActionTitle').innerText = title;
+      document.getElementById('summaryActionDesc').innerText = desc;
+      document.getElementById('summaryActionPrice').innerText = formatRupiah(totalCost);
+
+      return totalCost;
+    }
+
+    function goToStep2() {
+      const total = updateActionSummary();
+      if (total === 0) {
+        alert("Silakan pilih menu takeaway atau pilih kursi Slow Bar terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+      document.getElementById('actionSummaryBar').classList.add('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-cyan-600 text-cyan-700 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[11px]";
+
+      const breakdown = document.getElementById('checkoutSummaryBreakdown');
+      breakdown.innerHTML = '';
+
+      if (currentMode === 'takeaway') {
+        document.getElementById('checkoutModeBadge').innerText = "TAKEAWAY QUICK PICKUP";
+        for (let id in takeawayCart) {
+          const menu = signatureMenus.find(m => m.id === id);
+          if (menu) {
+            const row = document.createElement('div');
+            row.className = "flex justify-between items-center py-1.5";
+            row.innerHTML = `
+              <div>
+                <span class="font-bold text-slate-800">${menu.name}</span>
+                <p class="text-[10px] text-stone-400">${takeawayCart[id]}x Cup @ ${formatRupiah(menu.price)}</p>
+              </div>
+              <span class="font-bold text-slate-900 font-mono">${formatRupiah(menu.price * takeawayCart[id])}</span>
+            `;
+            breakdown.appendChild(row);
+          }
+        }
+      } else {
+        document.getElementById('checkoutModeBadge').innerText = "SLOW BAR EXCLUSIVE COUNTER";
+        const row = document.createElement('div');
+        row.className = "py-1 space-y-1";
+        row.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-slate-800">Sesi Slow Bar: ${selectedSlowbarSeat.number}</span>
+            <span class="font-bold text-slate-900 font-mono">${formatRupiah(slowbarFee)}</span>
+          </div>
+          <p class="text-[10px] text-stone-500">Jam: ${selectedSlowbarShift} • Biji: ${document.getElementById('slowbarBeanSelect').value}</p>
+        `;
+        breakdown.appendChild(row);
+      }
+
+      document.getElementById('checkoutGrandTotalDisplay').innerText = formatRupiah(total);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+      updateActionSummary();
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+    }
+
+    function checkoutTakeawayViaWA() {
+      const name = document.getElementById('custName').value.trim() || 'Pelanggan Quadra';
+      const phone = document.getElementById('custPhone').value.trim() || '-';
+      const timeEst = document.getElementById('pickupEstimateTime').value.trim() || '15 Menit';
+      const notes = document.getElementById('custSpecialNotes').value.trim() || '-';
+      const total = updateActionSummary();
+
+      let orderDetailsText = "";
+      if (currentMode === 'takeaway') {
+        let idx = 1;
+        for (let id in takeawayCart) {
+          const menu = signatureMenus.find(m => m.id === id);
+          if (menu) {
+            orderDetailsText += `${idx}. ${menu.name} (${takeawayCart[id]} Cup) = ${formatRupiah(menu.price * takeawayCart[id])}%0A`;
+            idx++;
+          }
+        }
+      } else {
+        orderDetailsText = `1. Reservasi Slow Bar Kursi ${selectedSlowbarSeat.number}%0A- Jam Sesi: ${selectedSlowbarShift}%0A- Biji Kopi: ${document.getElementById('slowbarBeanSelect').value}%0A`;
+      }
+
+      const waMsg = 
+        `*ORDER COFFEE - QUADRA SPECIALTY ROASTERY*%0A` +
+        `----------------------------------------%0A` +
+        `*Nama Cup:* ${name}%0A` +
+        `*WhatsApp:* ${phone}%0A` +
+        `*Tipe:* ${currentMode === 'takeaway' ? 'Takeaway Pickup' : 'Slow Bar Reservation'}%0A` +
+        `*Waktu:* ${timeEst}%0A` +
+        `*Catatan:* ${notes}%0A%0A` +
+        `*PESANAN ANDA:*%0A` +
+        orderDetailsText +
+        `----------------------------------------%0A` +
+        `*TOTAL TAGIHAN:* ${formatRupiah(total)}%0A%0A` +
+        `Halo Barista Quadra, mohon siapkan pesanan kopi saya ya. Terima kasih!`;
+
+      const waUrl = `https://wa.me/6281299998888?text=${waMsg}`;
+      window.open(waUrl, '_blank');
+    }
+
+    function openQrisModal() {
+      const total = updateActionSummary();
+      document.getElementById('modalPayableText').innerText = formatRupiah(total);
+      document.getElementById('qrisModal').classList.remove('hidden');
+
+      startQrisTimer(10 * 60);
+    }
+
+    function closeQrisModal() {
+      document.getElementById('qrisModal').classList.add('hidden');
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisModalTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Sesi QRIS berakhir.");
+          closeQrisModal();
+        }
+        rem--;
+      }, 1000);
+    }
+
+    function confirmQrisSuccess() {
+      closeQrisModal();
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-cyan-600 text-cyan-700 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[11px]";
+
+      const name = document.getElementById('custName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('custPhone').value.trim() || '081299998888';
+      const notes = document.getElementById('custSpecialNotes').value.trim() || '-';
+      const total = updateActionSummary();
+
+      const randomReceipt = "QDR-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('receiptNumber').innerText = randomReceipt;
+      document.getElementById('receiptDate').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invCustName').innerText = name;
+      document.getElementById('invCustPhone').innerText = phone;
+      document.getElementById('invCustNotes').innerText = `Catatan: ${notes}`;
+
+      const tbody = document.getElementById('receiptTableBody');
+      tbody.innerHTML = '';
+
+      if (currentMode === 'takeaway') {
+        document.getElementById('invOrderType').innerText = "Takeaway Order (Pickup Bar)";
+        document.getElementById('invEstimatedTime').innerText = "Estimasi: 15 Menit";
+
+        for (let id in takeawayCart) {
+          const menu = signatureMenus.find(m => m.id === id);
+          if (menu) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="py-2.5 px-4">
+                <span class="font-bold text-slate-800">${menu.name}</span>
+                <div class="text-[10px] text-stone-400">${menu.notes.join(' • ')}</div>
+              </td>
+              <td class="py-2.5 px-4 text-center font-bold text-slate-700">${takeawayCart[id]}</td>
+              <td class="py-2.5 px-4 text-right font-mono text-stone-600">${formatRupiah(menu.price)}</td>
+              <td class="py-2.5 px-4 text-right font-bold text-slate-800 font-mono">${formatRupiah(menu.price * takeawayCart[id])}</td>
+            `;
+            tbody.appendChild(tr);
+          }
+        }
+      } else {
+        document.getElementById('invOrderType').innerText = `Slow Bar Counter (${selectedSlowbarSeat.number})`;
+        document.getElementById('invEstimatedTime').innerText = `Sesi: ${selectedSlowbarShift}`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2.5 px-4">
+            <span class="font-bold text-slate-800">Slow Bar Tasting Flight (2 Origin)</span>
+            <div class="text-[10px] text-stone-400">${document.getElementById('slowbarBeanSelect').value}</div>
+          </td>
+          <td class="py-2.5 px-4 text-center font-bold text-slate-700">1 Seat</td>
+          <td class="py-2.5 px-4 text-right font-mono text-stone-600">${formatRupiah(slowbarFee)}</td>
+          <td class="py-2.5 px-4 text-right font-bold text-slate-800 font-mono">${formatRupiah(slowbarFee)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      document.getElementById('receiptGrandTotal').innerText = formatRupiah(total);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      takeawayCart = {};
+      selectedSlowbarSeat = null;
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      renderSignatureMenu();
+      renderSlowbarSeats();
+      updateActionSummary();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

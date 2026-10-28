@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaze Omakase (風) - 10-Seat Intimate Hinoki Counter & Zen Reservation</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Shippori+Mincho:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Shippori Mincho"', '"Cormorant Garamond"', 'serif'],
+          },
+          colors: {
+            zen: {
+              paper: '#FAF9F6',
+              pine: '#1b4332',
+              forest: '#2d6a4f',
+              sage: '#40916c',
+              lightGreen: '#e8f5e9',
+              gold: '#c5a059',
+              goldMuted: '#dfba73',
+              goldBg: '#fcf9f2',
+              charcoal: '#1a1d1a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-zen {
+      background: rgba(250, 249, 246, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .washi-border {
+      border: 1px solid rgba(197, 160, 89, 0.28);
+    }
+    .kintsugi-gold {
+      background: linear-gradient(135deg, #c5a059 0%, #dfba73 50%, #b38b45 100%);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableInvitation, #printableInvitation * {
+        visibility: visible;
+      }
+      #printableInvitation {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-zen-paper text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-zen-goldBg selection:text-zen-pine">
+
+  <!-- Top Announcement Bar (Zen & Tenang) -->
+  <div class="bg-zen-charcoal text-stone-300 text-xs py-2.5 px-4 text-center tracking-widest flex justify-center items-center gap-3 border-b border-zen-pine/40">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-serif font-bold bg-zen-gold/20 text-zen-gold border border-zen-gold/30">一期一会 • ICHI-GO ICHI-E</span>
+    <span class="font-serif tracking-normal text-stone-300">Pengalaman bersantap privat 10 kursi di hadapan Executive Chef Kenjiro Sato</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-zen sticky top-0 z-40 border-b border-stone-200/90 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3.5 select-none focus:outline-none transition transform active:scale-95" title="Kembali ke Beranda">
+        <div class="w-11 h-11 rounded-2xl bg-zen-pine flex items-center justify-center text-zen-gold shadow-md shadow-emerald-950/20 flex-shrink-0 transition border border-zen-gold/30">
+          <span class="font-serif font-bold text-xl leading-none">風</span>
+        </div>
+        <div>
+          <span class="font-bold text-xl sm:text-2xl tracking-widest text-zen-charcoal block leading-tight font-serif">
+            KAZE<span class="text-zen-gold font-normal italic ml-1">OMAKASE</span>
+          </span>
+          <span class="text-[9px] font-serif tracking-[0.25em] text-stone-400 block uppercase">PRIVATE HINOKI COUNTER • 10 SEATS</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-9 text-xs font-serif tracking-widest text-stone-600 uppercase">
+        <a href="#counter" class="text-zen-pine font-bold border-b border-zen-pine pb-0.5 transition">10-Seat Counter</a>
+        <a href="#courses" class="hover:text-zen-gold transition">Menu Journey</a>
+        <a href="#philosophy" class="hover:text-zen-pine transition">Wabi-Sabi Etiquette</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-zen-lightGreen text-zen-pine font-serif px-3 py-1.5 rounded-full border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-zen-forest animate-pulse"></span>
+          Intimate Seating: Sisa 3 Kursi Malam Ini
+        </div>
+        <button onclick="scrollToCounter()" class="kintsugi-gold text-slate-900 text-xs sm:text-sm font-serif font-bold px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-yellow-900/10 flex items-center gap-2 active:scale-95">
+          <span>Reservasi Kursi</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Nuansa Tenang & Filosofi Wabi-Sabi) -->
+  <section class="pt-12 sm:pt-16 pb-16 sm:pb-20 border-b border-stone-200/80 relative overflow-hidden bg-gradient-to-b from-white via-zen-paper to-[#F5F3EC]">
+    <!-- Ambient Green-Gold Botanical Mist -->
+    <div class="absolute -top-24 right-1/4 w-96 h-96 bg-zen-lightGreen/50 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-stone-300 text-zen-forest text-xs font-serif shadow-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-zen-gold"></span>
+            Eksklusivitas Musiman dari Pasar Toyosu Tokyo
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-bold text-zen-charcoal tracking-wide leading-[1.2] font-serif">
+            Keheningan Rasa. Keintiman Meja Hinoki untuk Sepuluh Jiwa.
+          </h1>
+          <p class="text-stone-600 text-base sm:text-lg leading-relaxed font-serif">
+            Setiap hidangan disajikan dengan kesadaran penuh saat bahan berada di puncak kelezatannya. Tanpa hiruk-pikuk keramaian, reservasi terpadu menjamin suasana hening yang murni antara Chef, bahan laut, dan penikmat rasa.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="scrollToCounter()" class="kintsugi-gold text-slate-900 font-serif font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-yellow-900/15 transition flex items-center gap-2.5">
+              <i data-lucide="compass" class="w-4 h-4"></i>
+              Pilih Nomor Kursi Counter
+            </button>
+            <div class="flex items-center gap-2 text-xs text-stone-500 font-serif px-2 py-1">
+              <i data-lucide="shield-check" class="w-4 h-4 text-zen-gold"></i>
+              <span>Garansi 1 Tamu 1 Pengalaman Tanpa Double Booking</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-stone-200 text-left font-serif">
+            <div>
+              <p class="text-2xl sm:text-3xl font-bold text-zen-pine">10 Kursi</p>
+              <p class="text-xs text-stone-500 mt-0.5">Kapasitas Maksimal per Sesi</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-bold text-zen-gold">2 Shift</p>
+              <p class="text-xs text-stone-500 mt-0.5">Twilight & Nightfall Dining</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-bold text-stone-800">20 Course</p>
+              <p class="text-xs text-stone-500 mt-0.5">Seasonal Seafood Journey</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Snapshot: Visual Counter Mini Preview -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-stone-300/40 border border-stone-200 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-stone-100 font-serif">
+              <span class="text-xs font-bold uppercase tracking-wider text-zen-pine">Kaze Counter Status</span>
+              <span class="text-[10px] font-bold text-zen-gold bg-zen-goldBg px-2 py-0.5 rounded border border-zen-gold/40">SENJA SHIFT (17:30)</span>
+            </div>
+
+            <!-- Stylized Counter Bar Graphic -->
+            <div class="mt-5 p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-4">
+              <div class="text-center pb-2">
+                <span class="text-[10px] font-serif uppercase tracking-widest text-stone-400 block">Chef Preparation Stage</span>
+                <span class="text-xs font-serif font-bold text-zen-pine">Executive Chef Kenjiro Sato</span>
+              </div>
+
+              <!-- Bar Curve -->
+              <div class="py-3 px-2 bg-amber-50/60 rounded-xl border-2 border-amber-200/80 flex items-center justify-center">
+                <span class="text-[11px] font-serif text-amber-900 tracking-wider">300-Year Aged Hinoki Wood Counter</span>
+              </div>
+
+              <!-- Seats Strip Preview -->
+              <div class="grid grid-cols-5 gap-2 text-center text-xs font-mono">
+                <div class="p-2 bg-zen-pine text-zen-gold rounded-lg font-bold border border-zen-gold">01</div>
+                <div class="p-2 bg-zen-pine text-zen-gold rounded-lg font-bold border border-zen-gold">02</div>
+                <div class="p-2 bg-stone-200 text-stone-400 rounded-lg line-through">03</div>
+                <div class="p-2 bg-white text-stone-700 rounded-lg border border-stone-300 font-bold">04</div>
+                <div class="p-2 bg-white text-stone-700 rounded-lg border border-stone-300 font-bold">05</div>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-zen-lightGreen/70 rounded-xl border border-emerald-200 flex items-center gap-2.5 text-xs text-zen-pine font-serif">
+              <i data-lucide="sparkles" class="w-4 h-4 text-zen-gold flex-shrink-0"></i>
+              <span>Deposit reservasi menjamin bahan musiman diterbangkan segar khusus untuk kehadiran Anda.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Booking App Container -->
+  <main id="counter" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex-1 w-full">
+    
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="text-xs font-serif font-bold text-zen-gold uppercase tracking-[0.2em]">Reservation Protocol</span>
+      <h2 class="text-2xl sm:text-3xl font-bold text-zen-charcoal tracking-wide font-serif mt-1">Pilih Nomor Kursi di Meja Hinoki</h2>
+      <p class="text-sm text-stone-500 font-serif mt-2">Sepuluh kursi eksklusif yang dirancang sejajar dengan sudut pandang pisau Chef.</p>
+    </div>
+
+    <!-- Step Progress Indicator -->
+    <div class="max-w-3xl mx-auto mb-10">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-serif font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-zen-pine text-zen-pine pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-zen-pine text-white flex items-center justify-center text-[11px] font-sans">1</span>
+          Pilih Kursi & Shift
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px] font-sans">2</span>
+          Konfirmasi & QRIS Deposit
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px] font-sans">3</span>
+          Zen Dining Pass
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Interactive 10-Seat Counter & Menu Tier Selector -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Date & Shift Filter Bar -->
+      <div class="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-serif">
+        
+        <!-- Shift Selector -->
+        <div class="flex items-center p-1 bg-stone-100 rounded-2xl w-full md:w-auto border border-stone-200">
+          <button id="shiftTwilightBtn" onclick="selectShift('TWILIGHT')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-zen-charcoal shadow-sm transition">
+            Sesi Senja (17:30 - 19:30 WIB)
+          </button>
+          <button id="shiftNightfallBtn" onclick="selectShift('NIGHTFALL')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-500 hover:text-zen-charcoal transition">
+            Sesi Malam (20:00 - 22:00 WIB)
+          </button>
+        </div>
+
+        <!-- Date Picker -->
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <span class="text-xs font-bold text-stone-500">Tanggal Pengalaman:</span>
+          <div class="relative flex-1">
+            <input type="date" id="reservationDateInput" onchange="renderCounterSeats()" class="w-full text-xs font-sans font-semibold bg-stone-50 border border-stone-200 text-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-zen-forest" />
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Split Layout: 10-Seat Visual Bar (Left 8 Cols) vs Selected Slip (Right 4 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Interactive Semi-Circular Counter Layout -->
+        <div class="lg:col-span-8 bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-stone-100 font-serif">
+            <div>
+              <h3 class="text-base font-bold text-zen-charcoal">Denah Kursi Counter Hinoki (10 Tamu)</h3>
+              <p class="text-xs text-stone-500">Pilih nomor kursi yang Anda kehendaki untuk menikmati presentasi Chef.</p>
+            </div>
+            
+            <div class="flex items-center gap-3 text-[11px] font-sans text-stone-500">
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-white border border-stone-300"></span> Kosong</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-stone-300"></span> Terisi</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-zen-pine"></span> Pilihan Anda</span>
+            </div>
+          </div>
+
+          <!-- The Visual 10-Seat Counter Setup -->
+          <div class="p-6 bg-[#FBF9F5] rounded-3xl border border-stone-200/80 space-y-6">
+            
+            <!-- Chef Cutting Board Island -->
+            <div class="max-w-md mx-auto text-center space-y-1.5 py-3 border-b-2 border-stone-200">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white rounded-full border border-zen-gold/40 text-[10px] font-serif font-bold text-zen-gold">
+                <i data-lucide="sparkles" class="w-3 h-3"></i>
+                HINOKI CUTTING BOARD STAGE
+              </div>
+              <p class="text-[11px] font-serif text-stone-500">Area Preparasi Nigiri & Charcoal Grill</p>
+            </div>
+
+            <!-- Curved 10 Seats Display -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2" id="seatsGrid">
+              <!-- Rendered via JavaScript -->
+            </div>
+
+            <div class="p-3 bg-white rounded-xl border border-stone-200 flex items-center justify-between text-xs text-stone-500 font-serif">
+              <span>Etika Tenang: Harap hadir 10 menit sebelum waktu sesi dimulai.</span>
+              <span class="text-zen-pine font-bold">Wabi-Sabi Sanctuary</span>
+            </div>
+          </div>
+
+          <!-- Omakase Menu Journey Selection -->
+          <div id="courses" class="space-y-3 pt-2">
+            <span class="text-xs font-serif font-bold text-zen-charcoal uppercase tracking-wider block">Pilihan Paket Perjalanan Rasa (Course Journey)</span>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-serif">
+              <!-- Course 1 -->
+              <label onclick="selectMenuCourse('MATSU')" class="p-4 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between bg-white border-stone-200 hover:border-zen-gold" id="labelCourseMatsu">
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center">
+                    <span class="font-bold text-sm text-zen-charcoal">Matsu Journey (松)</span>
+                    <span class="text-[10px] bg-stone-100 text-stone-700 px-2 py-0.5 rounded">16 Courses</span>
+                  </div>
+                  <p class="text-[11px] text-stone-500 leading-relaxed font-sans">
+                    Sashimi musiman Toyosu, 8 signature nigiri, Chawanmushi truffle, A5 Wagyu bite, dan Yuzu dessert.
+                  </p>
+                </div>
+                <div class="mt-4 pt-2 border-t border-stone-100 flex items-center justify-between font-sans">
+                  <span class="text-stone-400 text-[11px]">Harga per tamu:</span>
+                  <span class="font-bold text-zen-pine text-sm font-mono">Rp 1.450.000</span>
+                </div>
+              </label>
+
+              <!-- Course 2 (Signature) -->
+              <label onclick="selectMenuCourse('KAZE')" class="p-4 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between bg-zen-goldBg border-zen-gold shadow-sm" id="labelCourseKaze">
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center">
+                    <span class="font-bold text-sm text-zen-charcoal">Kaze Grand Omakase (風)</span>
+                    <span class="text-[10px] kintsugi-gold text-slate-900 font-bold px-2 py-0.5 rounded">20 Courses Signature</span>
+                  </div>
+                  <p class="text-[11px] text-stone-600 leading-relaxed font-sans">
+                    Otoro binchotan flame, Bafun Uni Hokkaido, Awabi (Abalone) liver sauce, Miyazaki A5 sirloin & Matcha ceremonial.
+                  </p>
+                </div>
+                <div class="mt-4 pt-2 border-t border-zen-gold/30 flex items-center justify-between font-sans">
+                  <span class="text-stone-400 text-[11px]">Harga per tamu:</span>
+                  <span class="font-bold text-zen-gold text-sm font-mono">Rp 2.250.000</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Live Zen Reservation Slip (Sticky) -->
+        <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-stone-200 shadow-xl space-y-5 sticky top-24 font-serif">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+            <span class="text-xs font-bold text-stone-400 uppercase tracking-widest">Slip Reservasi Intim</span>
+            <span class="text-[10px] font-bold text-zen-gold bg-zen-goldBg px-2 py-0.5 rounded border border-zen-gold/40">10-SEAT ONLY</span>
+          </div>
+
+          <!-- Empty Notice -->
+          <div id="noSeatNotice" class="py-10 text-center text-stone-400 space-y-2">
+            <i data-lucide="circle-dot" class="w-8 h-8 mx-auto text-zen-gold animate-pulse"></i>
+            <p class="text-xs">Silakan tentukan nomor kursi pada denah meja Hinoki di samping.</p>
+          </div>
+
+          <!-- Selected Seat Summary -->
+          <div id="seatSummaryContent" class="hidden space-y-4">
+            <div class="p-4 bg-zen-goldBg rounded-2xl border border-zen-gold/40 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-zen-charcoal" id="slipSeatTitle">Kursi 04 (Center View)</span>
+                <span class="text-[10px] font-bold bg-zen-pine text-white px-2 py-0.5 rounded font-sans" id="slipShiftLabel">Senja 17:30</span>
+              </div>
+              <p class="text-[11px] text-stone-600 font-sans leading-relaxed" id="slipCourseTitle">
+                Kaze Grand Omakase (20 Courses)
+              </p>
+            </div>
+
+            <div class="space-y-2 text-xs text-stone-600 font-sans border-t border-b border-stone-100 py-3">
+              <div class="flex justify-between">
+                <span>Tanggal Sesi:</span>
+                <strong class="text-zen-charcoal font-serif" id="slipDateDisplay">28 Okt 2026</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Waktu Sesi:</span>
+                <strong class="text-zen-pine font-serif" id="slipTimeDisplay">17:30 - 19:30 WIB</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Total Biaya Menu:</span>
+                <strong class="text-slate-900 font-mono" id="slipCourseFeeDisplay">Rp 2.250.000</strong>
+              </div>
+            </div>
+
+            <!-- Anti No-Show Commitment Deposit -->
+            <div class="space-y-1.5 font-sans">
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs font-bold text-stone-700">Komitmen Deposit (50%):</span>
+                <span class="text-base font-black text-zen-gold font-mono" id="slipDepositAmount">Rp 1.125.000</span>
+              </div>
+              <p class="text-[10px] text-stone-400 leading-normal">
+                *Deposit digunakan untuk pengadaan bahan segar Toyosu. Sisa 50% dilunasi setelah jamuan selesai di venue.
+              </p>
+            </div>
+
+            <button onclick="goToStep2()" class="w-full kintsugi-gold text-slate-900 font-serif font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-yellow-900/10 flex items-center justify-center gap-2 active:scale-95">
+              <span>Lanjut Otorisasi Deposit</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Checkout Guest Details & QRIS Payment Gateway -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: Guest Details Form & Dietary Notes -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3 font-serif">
+              <h3 class="text-base font-bold text-zen-charcoal flex items-center gap-2">
+                <i data-lucide="user" class="w-4 h-4 text-zen-forest"></i>
+                Identitas Tamu Terhormat
+              </h3>
+              <span class="text-xs text-stone-400">Untuk etiket penyambutan Chef</span>
+            </div>
+
+            <div class="space-y-4 text-xs font-sans">
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Nama Lengkap Tamu *</label>
+                <input type="text" id="guestName" value="Tedi Mahendra" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-zen-forest font-medium" />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Nomor WhatsApp *</label>
+                  <input type="tel" id="guestPhone" value="081299998888" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-zen-forest font-medium" />
+                </div>
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Alamat Email Konfirmasi *</label>
+                  <input type="email" id="guestEmail" value="tedi.work@example.com" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-zen-forest font-medium" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Alergi & Preferensi Makanan (Wajib Dilaporkan)</label>
+                <input type="text" id="guestDietary" value="Tidak ada alergi kerang / Suka wasabi segar" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-zen-forest font-medium" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Wabi-Sabi Etiquette Notice -->
+          <div class="bg-[#F8F6F0] p-5 rounded-3xl border border-zen-gold/40 space-y-2 text-xs font-serif text-stone-700">
+            <span class="font-bold text-zen-pine block flex items-center gap-1.5">
+              <i data-lucide="feather" class="w-4 h-4 text-zen-gold"></i>
+              Etiket Keheningan Meja Hinoki
+            </span>
+            <p class="leading-relaxed">
+              Demi menghormati aroma segar ikan dan konsentrasi pengerjaan Chef, para tamu disarankan tidak mengenakan wewangian beraroma pekat dan menikmati setiap hidangan nigiri dalam 10 detik setelah diletakkan di piring saji.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Deposit Gateway -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-5 font-serif">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-xs font-bold text-stone-400 uppercase tracking-widest">Otorisasi Deposit QRIS</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-zen-lightGreen text-zen-pine border border-emerald-200 font-sans">Instant</span>
+            </div>
+
+            <!-- QRIS Box -->
+            <div class="border border-stone-200 rounded-2xl p-4 bg-stone-50 text-center flex flex-col items-center">
+              <div class="flex items-center justify-between w-full px-2 mb-3">
+                <div class="flex items-center gap-1.5 font-sans font-extrabold text-xs tracking-tight text-slate-800">
+                  <span class="text-red-600 font-black">QRIS</span>
+                  <span class="text-[10px] text-stone-400 font-normal">| Standar Bank Indonesia</span>
+                </div>
+                <div class="flex items-center gap-1 text-[11px] text-zen-pine bg-zen-lightGreen px-2 py-0.5 rounded font-mono font-bold border border-emerald-200">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span id="qrisTimer">09:59</span>
+                </div>
+              </div>
+
+              <!-- Dummy QR Code -->
+              <div class="relative bg-white p-3 rounded-2xl border border-stone-200 shadow-inner group">
+                <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PROTOTYPE-KAZE-OMAKASE-DEPOSIT" alt="QRIS Deposit" class="w-40 h-40 object-contain mx-auto" />
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div class="w-8 h-8 bg-zen-pine text-zen-gold rounded-md p-1 shadow border border-zen-gold flex items-center justify-center">
+                    <span class="font-serif font-bold text-xs">風</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 text-xs text-stone-500 font-sans space-y-1">
+                <p class="font-medium text-stone-700">Scan via m-BCA, Mandiri Livin, GoPay, OVO, ShopeePay</p>
+                <p class="text-[10px] text-stone-400">NMID: ID1099238800 - KAZE OMAKASE INDONESIA</p>
+              </div>
+
+              <!-- Deposit Highlight -->
+              <div class="mt-4 pt-3 border-t border-stone-200 w-full flex items-center justify-between px-2 font-sans">
+                <span class="text-xs font-semibold text-stone-600">Nominal Deposit Kursi:</span>
+                <span id="checkoutPayableText" class="text-lg font-black text-zen-pine font-mono">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2 font-sans">
+              <button onclick="simulatePaymentSuccess()" class="w-full bg-zen-pine hover:bg-zen-forest active:scale-95 text-zen-gold font-serif font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-950/20 border border-zen-gold/30">
+                <i data-lucide="check-circle" class="w-4 h-4 text-zen-gold"></i>
+                <span>Simulasi Bayar Deposit (Webhook Valid)</span>
+              </button>
+              <button onclick="backToStep1()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+                Kembali / Ganti Kursi
+              </button>
+            </div>
+
+            <p class="text-[10px] text-stone-400 text-center font-sans leading-tight">
+              *Setelah pembayaran berhasil, nomor kursi dan tiket dining pass resmi diterbitkan seketika.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Zen Dining Pass & Formal Invitation (Printable) -->
+    <div id="step3View" class="hidden max-w-2xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-zen-lightGreen border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-zen-pine no-print font-serif">
+        <div class="w-10 h-10 rounded-full bg-zen-pine text-zen-gold flex items-center justify-center flex-shrink-0 border border-zen-gold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-zen-charcoal">Kursi Meja Hinoki Resmi Terkunci!</h4>
+          <p class="text-xs text-stone-600 font-sans mt-0.5">Surat undangan resmi dan tanda terima deposit telah diterbitkan. Simpan kartu undangan digital ini.</p>
+        </div>
+      </div>
+
+      <!-- Printable Invitation Document -->
+      <div id="printableInvitation" class="bg-white rounded-3xl border border-stone-200 shadow-xl p-6 sm:p-9 space-y-6 relative overflow-hidden font-serif">
+        
+        <!-- Header Document -->
+        <div class="flex items-start justify-between border-b border-stone-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-zen-pine flex items-center justify-center text-zen-gold border border-zen-gold/40">
+                <span class="font-bold text-sm">風</span>
+              </div>
+              <span class="font-bold text-lg tracking-widest text-zen-charcoal">KAZE<span class="text-zen-gold italic ml-1">OMAKASE</span></span>
+            </div>
+            <p class="text-[11px] text-stone-500 font-sans">Jl. Senopati Raya No. 92, Kebayoran Baru, Jakarta Selatan</p>
+            <p class="text-[11px] text-stone-500 font-sans">Concierge Desk: +62 812-9999-8888 • concierge@kaze.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-bold bg-zen-goldBg text-zen-gold uppercase tracking-wider mb-1 border border-zen-gold/40">
+              CONFIRMED OMAKASE PASS
+            </span>
+            <p id="invNumber" class="text-xs font-mono font-bold text-stone-800">KZ-202610-8812</p>
+            <p id="invDate" class="text-[10px] text-stone-400 font-sans">Diterbitkan: 28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Guest & Seat Details -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#FAF8F5] p-4 rounded-2xl border border-stone-200 font-sans">
+          <div>
+            <span class="text-[10px] uppercase font-serif font-bold text-stone-400 block mb-0.5">Tamu Terdaftar:</span>
+            <p id="invGuestName" class="font-bold text-zen-charcoal text-sm font-serif">Tedi Mahendra</p>
+            <p id="invGuestPhone" class="text-stone-500">081299998888</p>
+            <p id="invGuestDietary" class="text-zen-pine font-medium mt-1 italic text-[11px]">Alergi: Tidak ada alergi kerang</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-serif font-bold text-stone-400 block mb-0.5">Alokasi Kursi Counter:</span>
+            <p id="invSeatNumber" class="font-bold text-zen-pine text-sm font-serif">Kursi Counter 04 (Tengah)</p>
+            <p id="invScheduleDate" class="font-bold text-slate-800">Rabu, 28 Okt 2026</p>
+            <p id="invScheduleShift" class="text-zen-gold font-bold">Sesi Senja (17:30 - 19:30 WIB)</p>
+          </div>
+        </div>
+
+        <!-- Table Summary of Fees -->
+        <div class="border border-stone-200 rounded-2xl overflow-hidden font-sans">
+          <table class="w-full text-xs">
+            <thead class="bg-stone-50 text-stone-600 border-b border-stone-200 font-serif">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-bold">Rincian Perjalanan Kuliner Omakase</th>
+                <th class="py-2.5 px-4 text-center font-bold">Tamu</th>
+                <th class="py-2.5 px-4 text-right font-bold">Biaya Menu</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-800 font-serif text-sm" id="invCourseTitle">Kaze Grand Omakase (風)</div>
+                  <div class="text-[11px] text-stone-400">20 Seasonal Courses Toyosu Air-flown Seafood</div>
+                </td>
+                <td class="py-3 px-4 text-center text-slate-700">1 Kursi</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-800 font-mono" id="invCourseFee">Rp 2.250.000</td>
+              </tr>
+              <tr class="bg-stone-50/60">
+                <td colspan="2" class="py-2 px-4 text-stone-600 text-right font-bold">Total Nilai Pengalaman:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-800 font-mono" id="invTotalValue">Rp 2.250.000</td>
+              </tr>
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-emerald-700 text-right font-bold" id="invPaidLabel">Deposit Diterima (QRIS 50%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700 font-mono" id="invPaidAmount">Rp 1.125.000</td>
+              </tr>
+              <tr class="border-t-2 border-stone-200 bg-zen-goldBg/40">
+                <td colspan="2" class="py-2.5 px-4 text-zen-charcoal text-right font-extrabold text-xs font-serif">Sisa Pelunasan di Meja Kasir:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-zen-pine font-mono" id="invDueAmount">Rp 1.125.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Venue Access Barcode Box -->
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left font-serif">
+            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Door Concierge Authentication</span>
+            <p class="text-xs font-bold text-zen-charcoal">Tunjukkan Barcode ke Host Pintu Masuk</p>
+            <p class="text-[11px] text-stone-500 font-sans">Anda akan langsung dipersilakan menuju kursi counter bernomor 04.</p>
+          </div>
+          
+          <div class="text-center font-sans">
+            <div class="bg-white p-2 rounded-xl border border-stone-200 inline-block shadow-sm">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=KAZE-OMAKASE-SEAT-04-VALID-202610" alt="Concierge QR" class="w-18 h-18 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-stone-400 mt-1">TOKEN: KZ-VIP-0409</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print font-sans">
+        <button onclick="resetApp()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Reservasi Kursi Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="kintsugi-gold text-slate-900 font-serif font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-yellow-900/10">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Undangan (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Wabi-Sabi Philosophy Strip -->
+  <section id="philosophy" class="border-t border-stone-200 bg-white py-16 font-serif">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-bold text-zen-gold uppercase tracking-[0.25em]">Philosophy & Etiquette</span>
+        <h3 class="text-xl sm:text-2xl font-bold text-zen-charcoal mt-1">Seni Menikmati Waktu dan Kesederhanaan</h3>
+        <p class="text-xs sm:text-sm text-stone-500 mt-2 font-sans">Kaze Omakase didedikasikan untuk pengalaman rasa yang murni, terbebas dari kebisingan kota.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
+        <div class="p-6 rounded-2xl bg-[#FAF9F6] border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-zen-lightGreen text-zen-pine flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="sun" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-zen-charcoal mb-1 font-serif">Kesegaran Toyosu Tokyo</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Seluruh bahan musiman dibeli dari lelang subuh pasar Toyosu dan diterbangkan dalam suhu terkendali pada hari yang sama.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-[#FAF9F6] border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-zen-goldBg text-zen-gold flex items-center justify-center mb-4 border border-zen-gold/40">
+            <i data-lucide="sparkle" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-zen-charcoal mb-1 font-serif">Sentuhan Kayu Hinoki 300 Tahun</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Meja counter tanpa sambungan paku yang menebarkan keharuman alami kayu cemara Jepang untuk menenangkan pikiran.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-[#FAF9F6] border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-zen-lightGreen text-zen-pine flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-zen-charcoal mb-1 font-serif">Maksimal 10 Tamu</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Setiap tamu menerima atensi penuh dari Chef Kenjiro Sato dalam penjelasan asal-usul rasa di setiap suapan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-zen-charcoal text-stone-400 py-10 border-t border-zen-pine/40 text-xs font-serif">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-zen-pine border border-zen-gold flex items-center justify-center text-zen-gold font-bold text-xs">風</div>
+        <span class="font-bold text-white tracking-wider">Kaze Omakase Gastronomy</span>
+        <span class="text-stone-500 font-sans">| ID: fnb-wabisabi-omakase</span>
+      </div>
+      <p class="text-stone-400 text-center md:text-right font-sans">&copy; 2026 Kaze Omakase Society. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data 10 Kursi Counter
+    const counterSeatsData = [
+      { id: "S-01", number: "01", position: "Ujung Kiri", available: true, view: "Sudut Tenang" },
+      { id: "S-02", number: "02", position: "Kiri Bar", available: true, view: "Perspektif Samping" },
+      { id: "S-03", number: "03", position: "Kiri Tengah", available: false, view: "Terisi (Reserved)" },
+      { id: "S-04", number: "04", position: "Tengah Utama", available: true, view: "Hadap Langsung Chef" },
+      { id: "S-05", number: "05", position: "Tengah Utama", available: true, view: "Hadap Langsung Chef" },
+      { id: "S-06", number: "06", position: "Tengah Kanan", available: false, view: "Terisi (Reserved)" },
+      { id: "S-07", number: "07", position: "Tengah Kanan", available: true, view: "Dekat Grill Binchotan" },
+      { id: "S-08", number: "08", position: "Kanan Bar", available: true, view: "Sudut Teh & Sake" },
+      { id: "S-09", number: "09", position: "Kanan Bar", available: false, view: "Terisi (Reserved)" },
+      { id: "S-10", number: "10", position: "Ujung Kanan", available: true, view: "Sudut Intim" }
+    ];
+
+    const coursesData = {
+      MATSU: {
+        title: "Matsu Journey (松) • 16 Courses",
+        price: 1450000,
+        desc: "Sashimi musiman Toyosu, 8 signature nigiri, Chawanmushi truffle, A5 Wagyu bite, dan Yuzu dessert."
+      },
+      KAZE: {
+        title: "Kaze Grand Omakase (風) • 20 Courses",
+        price: 2250000,
+        desc: "Otoro binchotan flame, Bafun Uni Hokkaido, Awabi liver sauce, Miyazaki A5 sirloin & Matcha ceremonial."
+      }
+    };
+
+    // State
+    let selectedShift = 'TWILIGHT'; // 'TWILIGHT' or 'NIGHTFALL'
+    let selectedSeat = null;
+    let selectedCourseKey = 'KAZE';
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('reservationDateInput').value = today;
+      renderCounterSeats();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px] font-sans";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px] font-sans";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToCounter() {
+      document.getElementById('counter').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Shift Selector
+    function selectShift(shift) {
+      selectedShift = shift;
+      const btnTwilight = document.getElementById('shiftTwilightBtn');
+      const btnNightfall = document.getElementById('shiftNightfallBtn');
+
+      if (shift === 'TWILIGHT') {
+        btnTwilight.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-zen-charcoal shadow-sm transition";
+        btnNightfall.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-500 hover:text-zen-charcoal transition";
+      } else {
+        btnNightfall.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-zen-charcoal shadow-sm transition";
+        btnTwilight.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-500 hover:text-zen-charcoal transition";
+      }
+
+      renderCounterSeats();
+      updateSlipDisplay();
+    }
+
+    // Render 10 Seats on the Hinoki Bar
+    function renderCounterSeats() {
+      const grid = document.getElementById('seatsGrid');
+      grid.innerHTML = '';
+
+      counterSeatsData.forEach(seat => {
+        const isSelected = selectedSeat && selectedSeat.id === seat.id;
+
+        if (!seat.available) {
+          // Occupied Seat
+          const cardOcc = document.createElement('div');
+          cardOcc.className = "p-3.5 rounded-2xl border border-stone-200 bg-stone-100/70 text-center opacity-50 cursor-not-allowed select-none";
+          cardOcc.innerHTML = `
+            <span class="block text-xs font-mono font-bold text-stone-400 line-through">SEAT ${seat.number}</span>
+            <span class="block text-[9px] font-serif text-stone-400 mt-1">Terisi</span>
+          `;
+          grid.appendChild(cardOcc);
+        } else {
+          // Available Seat
+          const cardAvail = document.createElement('div');
+          cardAvail.onclick = () => pickSeat(seat);
+          cardAvail.className = `p-3.5 rounded-2xl border-2 transition cursor-pointer text-center select-none ${
+            isSelected 
+              ? 'bg-zen-pine text-zen-gold border-zen-gold shadow-md ring-2 ring-zen-gold/30' 
+              : 'bg-white hover:bg-zen-lightGreen text-slate-800 border-stone-200 hover:border-zen-forest shadow-sm'
+          }`;
+
+          cardAvail.innerHTML = `
+            <span class="block text-xs font-mono font-bold ${isSelected ? 'text-zen-gold' : 'text-zen-pine'}">SEAT ${seat.number}</span>
+            <span class="block text-[9px] font-serif ${isSelected ? 'text-white' : 'text-stone-500'} mt-0.5">${seat.position}</span>
+            <span class="block text-[8px] font-sans ${isSelected ? 'text-amber-200' : 'text-zen-gold'} mt-1">Tersedia</span>
+          `;
+          grid.appendChild(cardAvail);
+        }
+      });
+
+      lucide.createIcons();
+    }
+
+    function pickSeat(seat) {
+      selectedSeat = seat;
+      renderCounterSeats();
+      updateSlipDisplay();
+    }
+
+    function selectMenuCourse(courseKey) {
+      selectedCourseKey = courseKey;
+      const labelMatsu = document.getElementById('labelCourseMatsu');
+      const labelKaze = document.getElementById('labelCourseKaze');
+
+      if (courseKey === 'MATSU') {
+        labelMatsu.className = "p-4 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between bg-zen-goldBg border-zen-gold shadow-sm";
+        labelKaze.className = "p-4 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between bg-white border-stone-200 hover:border-zen-gold";
+      } else {
+        labelKaze.className = "p-4 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between bg-zen-goldBg border-zen-gold shadow-sm";
+        labelMatsu.className = "p-4 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between bg-white border-stone-200 hover:border-zen-gold";
+      }
+
+      updateSlipDisplay();
+    }
+
+    function updateSlipDisplay() {
+      if (!selectedSeat) {
+        document.getElementById('noSeatNotice').classList.remove('hidden');
+        document.getElementById('seatSummaryContent').classList.add('hidden');
+        return;
+      }
+
+      document.getElementById('noSeatNotice').classList.add('hidden');
+      document.getElementById('seatSummaryContent').classList.remove('hidden');
+
+      const course = coursesData[selectedCourseKey];
+      const depositAmount = course.price * 0.5;
+      const dateVal = document.getElementById('reservationDateInput').value;
+
+      document.getElementById('slipSeatTitle').innerText = `Kursi Hinoki ${selectedSeat.number} (${selectedSeat.position})`;
+      document.getElementById('slipShiftLabel').innerText = selectedShift === 'TWILIGHT' ? 'Senja 17:30' : 'Malam 20:00';
+      document.getElementById('slipCourseTitle').innerText = course.title;
+
+      document.getElementById('slipDateDisplay').innerText = dateVal;
+      document.getElementById('slipTimeDisplay').innerText = selectedShift === 'TWILIGHT' ? '17:30 - 19:30 WIB' : '20:00 - 22:00 WIB';
+      document.getElementById('slipCourseFeeDisplay').innerText = formatRupiah(course.price);
+      document.getElementById('slipDepositAmount').innerText = formatRupiah(depositAmount);
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      if (!selectedSeat) {
+        alert("Silakan pilih nomor kursi terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-zen-pine text-zen-pine pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-zen-pine text-white flex items-center justify-center text-[11px] font-sans";
+
+      const course = coursesData[selectedCourseKey];
+      const depositVal = course.price * 0.5;
+
+      document.getElementById('checkoutPayableText').innerText = formatRupiah(depositVal);
+
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px] font-sans";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi otorisasi habis. Kursi dikembalikan ke antrean publik.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const name = document.getElementById('guestName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('guestPhone').value.trim() || '081299998888';
+      const dietary = document.getElementById('guestDietary').value.trim() || 'Tidak ada pantangan';
+      const dateVal = document.getElementById('reservationDateInput').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-zen-pine text-zen-pine pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-zen-pine text-white flex items-center justify-center text-[11px] font-sans";
+
+      const course = coursesData[selectedCourseKey];
+      const depositVal = course.price * 0.5;
+      const dueVal = course.price - depositVal;
+
+      const randomInvCode = "KZ-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invNumber').innerText = randomInvCode;
+      document.getElementById('invDate').innerText = "Diterbitkan: " + new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invGuestName').innerText = name;
+      document.getElementById('invGuestPhone').innerText = phone;
+      document.getElementById('invGuestDietary').innerText = `Alergi: ${dietary}`;
+
+      document.getElementById('invSeatNumber').innerText = `Kursi Counter ${selectedSeat.number} (${selectedSeat.position})`;
+      document.getElementById('invScheduleDate').innerText = dateVal;
+      document.getElementById('invScheduleShift').innerText = selectedShift === 'TWILIGHT' ? 'Sesi Senja (17:30 - 19:30 WIB)' : 'Sesi Malam (20:00 - 22:00 WIB)';
+
+      document.getElementById('invCourseTitle').innerText = course.title;
+      document.getElementById('invCourseFee').innerText = formatRupiah(course.price);
+      document.getElementById('invTotalValue').innerText = formatRupiah(course.price);
+
+      document.getElementById('invPaidLabel').innerText = "Deposit Terbayar (QRIS 50%):";
+      document.getElementById('invPaidAmount').innerText = formatRupiah(depositVal);
+      document.getElementById('invDueAmount').innerText = formatRupiah(dueVal);
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedSeat = null;
+      document.getElementById('noSeatNotice').classList.remove('hidden');
+      document.getElementById('seatSummaryContent').classList.add('hidden');
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px] font-sans";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px] font-sans";
+
+      renderCounterSeats();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CustomCraft - Bengkel Kustom Furnitur Kayu Solid Presisi</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            slateTech: {
+              dark: '#0F172A',
+              card: '#1E293B',
+              gray: '#334155',
+              sky: '#38BDF8',
+              skyHover: '#0284C7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .cad-canvas-bg {
+      background-color: #070D18;
+      background-image: 
+        linear-gradient(rgba(51, 65, 85, 0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(51, 65, 85, 0.25) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableBlueprint, #printableBlueprint * {
+        visibility: visible;
+      }
+      #printableBlueprint {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #0F172A !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slateTech-dark text-slate-100 antialiased font-sans min-h-screen flex flex-col selection:bg-slateTech-sky selection:text-slate-900">
+
+  <!-- Top Announcement Bar (Bahasa Natural & Tidak Maksa) -->
+  <div class="bg-[#0A101D] text-slate-400 text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-slateTech-gray/40">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slateTech-sky/15 text-slateTech-sky border border-slateTech-sky/30">WORKSHOP RESMI</span>
+    <span>Pengerjaan Kayu Solid Pilihan & Rangka Besi Presisi • Konsultasi Ukuran Langsung dengan Pengrajin</span>
+  </div>
+
+  <!-- Header / Navigation (Lega, Bersih, Teks Mengalir Alami) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-slateTech-gray/50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-slateTech-card border border-slateTech-sky/40 flex items-center justify-center text-slateTech-sky shadow-sm transition group-hover:border-slateTech-sky">
+          <i data-lucide="hammer" class="w-5 h-5 text-slateTech-sky"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-white block leading-tight">
+            CUSTOM<span class="text-slateTech-sky">CRAFT</span>
+          </span>
+          <span class="text-[10px] text-slate-400 tracking-wider block font-medium">BENGKEL FURNITUR SOLID</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links yang Wajar & Tidak Kaku -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <a href="#simulator" class="text-slateTech-sky font-semibold hover:text-white transition">Simulator Meja</a>
+        <a href="#gallery" class="hover:text-slateTech-sky transition">Hasil Karya</a>
+        <a href="#standards" class="hover:text-slateTech-sky transition">Bahan & Garansi</a>
+      </nav>
+
+      <!-- Action Button -->
+      <div class="flex items-center gap-3">
+        <a href="#simulator" class="bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-slateTech-sky/20 flex items-center gap-2 active:scale-95">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+          <span>Mulai Kustom Ukuran</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Ringkas & Proporsional) -->
+  <section class="border-b border-slateTech-gray/50 bg-gradient-to-b from-[#111A2E] via-slateTech-dark to-slateTech-dark py-12 sm:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl space-y-5">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slateTech-card border border-slateTech-gray text-slateTech-sky text-xs font-medium">
+          <span class="w-2 h-2 rounded-full bg-slateTech-sky"></span>
+          Kustomisasi Ukuran Milimeter & Simulasi Harga Langsung
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.2]">
+          Bikin Meja Kayu Solid Pas dengan Ruangan Anda.
+        </h1>
+        <p class="text-slate-400 text-base sm:text-lg leading-relaxed">
+          Tentukan panjang, lebar, dan tinggi meja sesuai kebutuhan. Pilih jenis kayu utuh tanpa serbuk olahan (MDF), rangka besi anti-goyang, dan langsung dapatkan estimasi biaya pembuatan yang jelas.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-semibold">
+        <div id="stepIndicator1" class="border-b-2 border-slateTech-sky text-slateTech-sky pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slateTech-sky text-slate-900 flex items-center justify-center text-[11px] font-bold">1</span>
+          Ukuran & Bahan
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slateTech-gray text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slateTech-card text-slate-400 flex items-center justify-center text-[11px] font-bold border border-slateTech-gray">2</span>
+          Detail Pesanan & DP
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slateTech-gray text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slateTech-card text-slate-400 flex items-center justify-center text-[11px] font-bold border border-slateTech-gray">3</span>
+          Surat Perintah Kerja (SPK)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Workspace Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    
+    <!-- STEP 1: Simulator Ukuran, Material & Dynamic Pricing Studio -->
+    <div id="step1View" class="space-y-12">
+      
+      <!-- The Interactive Simulator Workbench -->
+      <section id="simulator" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Sliders & Material Pickers (7 Cols) -->
+        <div class="lg:col-span-7 bg-slateTech-card p-6 sm:p-7 rounded-2xl border border-slateTech-gray/80 shadow-xl space-y-6">
+          <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-3">
+            <div>
+              <h3 class="text-lg font-bold text-white">Sesuaikan Ukuran Meja</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Geser tombol untuk menyesuaikan dimensi dalam sentimeter (cm)</p>
+            </div>
+          </div>
+
+          <!-- Base Furniture Type Selector -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-2">Pilih Model Meja:</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-medium">
+              <button onclick="selectProductType('DESK')" id="btnTypeDesk" class="p-2.5 rounded-xl border-2 border-slateTech-sky bg-slateTech-sky/15 text-white font-bold text-center">Meja Kerja</button>
+              <button onclick="selectProductType('DINING')" id="btnTypeDining" class="p-2.5 rounded-xl border border-slateTech-gray bg-[#0E1626] text-slate-300 text-center hover:border-slateTech-sky">Meja Makan</button>
+              <button onclick="selectProductType('CREDENZA')" id="btnTypeCredenza" class="p-2.5 rounded-xl border border-slateTech-gray bg-[#0E1626] text-slate-300 text-center hover:border-slateTech-sky">Kredensa</button>
+              <button onclick="selectProductType('ISLAND')" id="btnTypeIsland" class="p-2.5 rounded-xl border border-slateTech-gray bg-[#0E1626] text-slate-300 text-center hover:border-slateTech-sky">Island Dapur</button>
+            </div>
+          </div>
+
+          <!-- Dimensional Sliders (Panjang, Lebar, Tinggi) -->
+          <div class="space-y-5 bg-[#0D1524] p-5 rounded-xl border border-slateTech-gray/60">
+            <!-- Panjang Slider -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-300 font-medium">Panjang:</span>
+                <span class="text-slateTech-sky font-bold font-mono text-sm" id="lengthDisplay">180 cm</span>
+              </div>
+              <input type="range" id="lengthSlider" min="100" max="300" step="5" value="180" oninput="updateDimensions()" class="w-full accent-slateTech-sky cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+                <span>100 cm</span>
+                <span>Standar 180 cm</span>
+                <span>300 cm</span>
+              </div>
+            </div>
+
+            <!-- Lebar Slider -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-300 font-medium">Lebar:</span>
+                <span class="text-slateTech-sky font-bold font-mono text-sm" id="widthDisplay">80 cm</span>
+              </div>
+              <input type="range" id="widthSlider" min="50" max="140" step="5" value="80" oninput="updateDimensions()" class="w-full accent-slateTech-sky cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+                <span>50 cm</span>
+                <span>Standar 80 cm</span>
+                <span>140 cm</span>
+              </div>
+            </div>
+
+            <!-- Tinggi Slider -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-300 font-medium">Tinggi:</span>
+                <span class="text-slateTech-sky font-bold font-mono text-sm" id="heightDisplay">75 cm</span>
+              </div>
+              <input type="range" id="heightSlider" min="40" max="105" step="1" value="75" oninput="updateDimensions()" class="w-full accent-slateTech-sky cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+                <span>40 cm (Meja Kopi)</span>
+                <span>75 cm (Standar Duduk)</span>
+                <span>105 cm (Meja Bar)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Material Pilihan Kayu Solid -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-2">Pilihan Kayu Solid:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="woodOptionsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Material Pilihan Rangka / Kaki Besi -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-2">Pilihan Kaki & Rangka:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="frameOptionsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Real-time Live CAD Schematic Canvas & Price Quote (5 Cols) -->
+        <div class="lg:col-span-5 bg-slateTech-card p-6 sm:p-7 rounded-2xl border border-slateTech-gray/80 shadow-xl space-y-5 sticky top-24">
+          <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Gambar Rancangan</span>
+            <span class="text-[10px] font-bold text-slateTech-sky bg-slateTech-sky/15 border border-slateTech-sky/30 px-2 py-0.5 rounded font-mono">LIVE PREVIEW</span>
+          </div>
+
+          <!-- Live Realistic Isometric CAD Blueprint Canvas (Menggantikan balok pipih aneh) -->
+          <div class="cad-canvas-bg rounded-xl border border-slateTech-gray/80 relative overflow-hidden flex flex-col items-center justify-center p-3 h-64">
+            
+            <!-- SVG Gambar Meja Isometrik 3 Dimensi Nyata -->
+            <svg id="cadSvgCanvas" viewBox="0 0 400 240" class="w-full h-full">
+              <!-- Grid Horizon & Ground Shadow -->
+              <ellipse cx="200" cy="180" rx="140" ry="25" fill="#030712" opacity="0.6"/>
+
+              <!-- 4 Kaki Meja Isometrik dengan Efek Kedalaman -->
+              <!-- Kaki Kiri Belakang -->
+              <rect id="svgLegBL" x="120" y="85" width="10" height="75" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
+              <!-- Kaki Kanan Belakang -->
+              <rect id="svgLegBR" x="270" y="85" width="10" height="75" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
+              
+              <!-- Kaki Kiri Depan -->
+              <rect id="svgLegFL" x="95" y="115" width="12" height="75" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5"/>
+              <!-- Kaki Kanan Depan -->
+              <rect id="svgLegFR" x="293" y="115" width="12" height="75" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5"/>
+
+              <!-- Top Table Sisi Depan (Tebal Meja 3D) -->
+              <polygon id="svgTableFront" points="90,115 310,115 310,125 90,125" fill="#5A3A2C" stroke="#38BDF8" stroke-width="1"/>
+
+              <!-- Top Table Sisi Atas (Isometric Surface) -->
+              <polygon id="svgTableTop" points="135,75 265,75 310,115 90,115" fill="#8D5B4C" stroke="#38BDF8" stroke-width="1.5"/>
+
+              <!-- Garis Ukur Dimensi CAD (Panjang Meja) -->
+              <line x1="90" y1="135" x2="310" y2="135" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <text id="svgTextLength" x="200" y="150" fill="#38BDF8" font-size="11" font-family="monospace" font-weight="bold" text-anchor="middle">P: 180 cm</text>
+
+              <!-- Garis Ukur Dimensi CAD (Tinggi Meja) -->
+              <line x1="330" y1="75" x2="330" y2="190" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <text id="svgTextHeight" x="338" y="135" fill="#38BDF8" font-size="11" font-family="monospace" font-weight="bold">T: 75 cm</text>
+
+              <!-- Garis Ukur Dimensi CAD (Lebar Meja) -->
+              <line x1="65" y1="110" x2="110" y2="70" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <text id="svgTextWidth" x="70" y="85" fill="#94A3B8" font-size="10" font-family="monospace">L: 80 cm</text>
+            </svg>
+
+            <!-- Status Material Pojok -->
+            <div class="absolute top-2 left-3 text-[11px] font-mono text-slate-300 bg-slateTech-card/80 px-2 py-0.5 rounded border border-slateTech-gray/60">
+              Kayu: <span id="canvasWoodName" class="text-slateTech-sky font-bold">Jati Perhutani</span>
+            </div>
+            <div class="absolute bottom-2 left-3 text-[10px] font-mono text-slate-400" id="volIndicator">
+              Volume: 0.058 m³
+            </div>
+          </div>
+
+          <!-- Rincian Biaya -->
+          <div class="space-y-2 text-xs font-mono border-t border-slateTech-gray/60 pt-3">
+            <div class="flex justify-between text-slate-400">
+              <span>Bahan Kayu (<span id="calcWoodName">Jati Solid</span>):</span>
+              <span class="font-bold text-white" id="calcWoodCost">Rp 4.200.000</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>Rangka Kaki (<span id="calcFrameName">Matte Black</span>):</span>
+              <span class="font-bold text-white" id="calcFrameCost">Rp 1.400.000</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>Pengerjaan & Finishing:</span>
+              <span class="font-bold text-white">Rp 950.000</span>
+            </div>
+          </div>
+
+          <!-- Total Biaya & Garansi -->
+          <div class="p-3.5 bg-[#0D1524] rounded-xl border border-slateTech-sky/30 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-slateTech-sky uppercase block font-mono">Estimasi Total Produksi</span>
+              <span class="text-xs text-slate-400">Garansi Struktur 10 Tahun</span>
+            </div>
+            <span class="text-xl font-black text-white font-mono" id="calcTotalPrice">Rp 6.550.000</span>
+          </div>
+
+          <button onclick="goToStep2()" class="w-full bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-slateTech-sky/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+            <span>Lanjut Isi Alamat & Kunci Pesanan</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+
+          <p class="text-[10px] text-slate-500 text-center leading-normal">
+            *Ukuran final akan dikonfirmasi ulang via WhatsApp sebelum proses pemotongan kayu.
+          </p>
+        </div>
+
+      </section>
+
+      <!-- Galeri Portofolio Kurasi Workshop -->
+      <section id="gallery" class="pt-8 border-t border-slateTech-gray/60 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 class="text-xl font-bold text-white">Contoh Meja yang Pernah Dibuat</h3>
+            <p class="text-xs text-slate-400">Foto asli hasil pengerjaan tim pengrajin di berbagai rumah & kantor</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="portfolioGrid">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+    </div>
+
+    <!-- STEP 2: Technical Brief & QRIS DP Payment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Technical Brief Form -->
+        <div class="lg:col-span-7 bg-slateTech-card p-6 sm:p-7 rounded-2xl border border-slateTech-gray/80 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-3">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="file-text" class="w-4 h-4 text-slateTech-sky"></i>
+              Data Pemesan & Alamat Kirim
+            </h3>
+          </div>
+
+          <div class="space-y-4 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-300 mb-1">Nama Lengkap *</label>
+                <input type="text" id="clientName" value="Tedi Mahendra" class="w-full bg-[#0D1524] px-3.5 py-2.5 rounded-xl border border-slateTech-gray focus:outline-none focus:ring-2 focus:ring-slateTech-sky text-white" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-300 mb-1">Nomor WhatsApp *</label>
+                <input type="tel" id="clientPhone" value="081299998888" class="w-full bg-[#0D1524] px-3.5 py-2.5 rounded-xl border border-slateTech-gray focus:outline-none focus:ring-2 focus:ring-slateTech-sky text-white" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Alamat Pengiriman & Pemasangan Unit *</label>
+              <textarea id="deliveryLocation" rows="2" class="w-full bg-[#0D1524] px-3.5 py-2.5 rounded-xl border border-slateTech-gray focus:outline-none focus:ring-2 focus:ring-slateTech-sky text-white">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Jakarta Selatan</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-300 mb-1">Pilihan Lapisan Finishing:</label>
+                <select id="finishOptionSelect" class="w-full bg-[#0D1524] px-3.5 py-2.5 rounded-xl border border-slateTech-gray focus:outline-none focus:ring-2 focus:ring-slateTech-sky text-slate-200">
+                  <option value="Satin Polyurethane (Anti Gores & Air)" selected>Satin (Anti-Air & Gores)</option>
+                  <option value="Matte Alami (Serat Natural)">Matte (Serat Alami)</option>
+                  <option value="Danish Oil Ekstra">Danish Oil Tradisional</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-300 mb-1">Lubang Kabel Meja:</label>
+                <select id="featureSelect" class="w-full bg-[#0D1524] px-3.5 py-2.5 rounded-xl border border-slateTech-gray focus:outline-none focus:ring-2 focus:ring-slateTech-sky text-slate-200">
+                  <option value="1x Kotak Kabel Aluminium Rata">1x Kotak Kabel Aluminium</option>
+                  <option value="Wireless Charger Tanam">Wireless Charger Tanam</option>
+                  <option value="Polos Tanpa Lubang">Polos Tanpa Lubang</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Catatan Tambahan untuk Tukang Kayu:</label>
+              <input type="text" id="specialNotes" value="Siku meja dibuat agak bulat (radius 1 cm) agar tidak tajam." class="w-full bg-[#0D1524] px-3.5 py-2.5 rounded-xl border border-slateTech-gray focus:outline-none focus:ring-2 focus:ring-slateTech-sky text-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Down Payment (DP 50%) & QRIS Gateway -->
+        <div class="lg:col-span-5 bg-slateTech-card p-6 rounded-2xl border border-slateTech-gray/80 shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-3">
+            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Uang Muka (DP 50%)</span>
+            <span class="text-[10px] font-bold text-slateTech-sky bg-slateTech-sky/15 px-2 py-0.5 rounded border border-slateTech-sky/30">MULAI PRODUKSI</span>
+          </div>
+
+          <!-- QRIS Box -->
+          <div class="border border-slateTech-gray rounded-xl p-4 bg-[#0D1524] text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2 font-mono">
+              <span class="text-red-500 font-bold text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-slateTech-sky" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow border border-slate-300">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-CUSTOMCRAFT-DP-FURNITURE" alt="QRIS DP" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-400 font-mono">
+              <p>BCA, Mandiri, GoPay, OVO, ShopeePay</p>
+              <p class="text-[10px] text-slate-500">PT CUSTOMCRAFT FURNITUR</p>
+            </div>
+
+            <!-- Total Price to Pay -->
+            <div class="mt-3 pt-3 border-t border-slateTech-gray/60 w-full flex items-center justify-between px-1 font-mono">
+              <span class="text-xs text-slate-400">Total DP 50%:</span>
+              <span id="dpPayableAmount" class="text-base font-bold text-slateTech-sky">Rp 3.275.000</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-slateTech-sky/20 active:scale-95">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Simulasi Bayar DP & Buat SPK</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-[#0D1524] hover:bg-slate-800 text-slate-300 font-medium text-xs py-2.5 px-4 rounded-xl transition">
+              Kembali / Ubah Ukuran
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-500 text-center">
+            *Pelunasan sisa 50% dilakukan setelah meja selesai dibuat dan diantar ke lokasi.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Surat Perintah Kerja (SPK) & Faktur Resmi (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-slateTech-card border border-slateTech-sky/40 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-white no-print">
+        <div class="w-10 h-10 rounded-full bg-slateTech-sky text-slate-900 flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold">DP Diterima & Pesanan Masuk Antrean Bengkel</h4>
+          <p class="text-xs text-slate-400 mt-0.5">Surat Perintah Kerja (SPK) resmi telah dibuat untuk kepala tukang kayu kami.</p>
+        </div>
+      </div>
+
+      <!-- Printable SPK Document Card -->
+      <div id="printableBlueprint" class="bg-slateTech-card rounded-2xl border border-slateTech-gray shadow-xl p-6 sm:p-8 space-y-6">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-slateTech-gray/60 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-slateTech-sky flex items-center justify-center text-slate-900 font-bold">
+                <i data-lucide="hammer" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-lg text-white">CUSTOM<span class="text-slateTech-sky">CRAFT</span></span>
+            </div>
+            <p class="text-xs text-slate-400">Workshop Kayu Sentul, Jawa Barat • Hotline: +62 812-9999-8888</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-slateTech-sky/15 text-slateTech-sky uppercase border border-slateTech-sky/30">
+              SURAT PERINTAH KERJA (SPK)
+            </span>
+            <p id="spkDocNumber" class="text-xs font-bold text-white font-mono mt-1">SPK-202610-8812</p>
+            <p id="spkDateText" class="text-[11px] text-slate-400">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Client & Job Order Info -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#0D1524] p-4 rounded-xl border border-slateTech-gray/60">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">PEMESAN:</span>
+            <p id="invClientName" class="font-bold text-white text-sm">Tedi Mahendra</p>
+            <p id="invClientPhone" class="text-slate-400 font-mono">081299998888</p>
+            <p id="invDeliveryAddress" class="text-slate-300 mt-1 leading-relaxed">Gedung Wirausaha, Jakarta Selatan</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">STATUS PENGERJAAN:</span>
+            <p class="font-bold text-slateTech-sky text-sm">14 Hari Kerja</p>
+            <p id="invTargetDate" class="text-slate-300">Target Selesai: 12 Nov 2026</p>
+            <p class="text-emerald-400 font-semibold mt-1">DP 50% LUNAS</p>
+          </div>
+        </div>
+
+        <!-- Specification Table -->
+        <div class="border border-slateTech-gray/60 rounded-xl overflow-hidden">
+          <table class="w-full text-xs">
+            <thead class="bg-[#0D1524] text-slate-400 border-b border-slateTech-gray/60">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-semibold">Rincian Meja Kustom</th>
+                <th class="py-2.5 px-4 text-center font-semibold">Ukuran (P × L × T)</th>
+                <th class="py-2.5 px-4 text-right font-semibold">Total Biaya</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slateTech-gray/60 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-white text-sm" id="invProductTitle">Meja Kerja Kayu Solid</div>
+                  <div class="text-xs text-slate-400 mt-0.5" id="invMaterialSpecs">
+                    Kayu: Jati Perhutani • Rangka: Matte Black Steel • Lapisan: Satin
+                  </div>
+                  <div class="text-xs text-slateTech-sky mt-1" id="invFeatureSpec">
+                    Fitur: 1x Kotak Kabel Aluminium Rata
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-center text-slate-300 font-mono font-bold" id="invDimensionsText">180 × 80 × 75 cm</td>
+                <td class="py-3 px-4 text-right font-bold text-white font-mono" id="invTotalValue">Rp 6.550.000</td>
+              </tr>
+              <tr class="bg-[#0D1524]">
+                <td colspan="2" class="py-2 px-4 text-slate-400 text-right font-semibold">Total Nilai Pembuatan:</td>
+                <td class="py-2 px-4 text-right font-bold text-white font-mono" id="invSubtotalAmount">Rp 6.550.000</td>
+              </tr>
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-emerald-400 text-right font-semibold">DP Diterima (50%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-400 font-mono" id="invPaidAmount">Rp 3.275.000</td>
+              </tr>
+              <tr class="bg-[#0D1524] border-t border-slateTech-gray/60">
+                <td colspan="2" class="py-2.5 px-4 text-slateTech-sky text-right font-bold text-xs">
+                  Sisa Pelunasan Saat Meja Diantar:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-slateTech-sky font-mono" id="invDueAmount">
+                  Rp 3.275.000
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Garansi & Tracking -->
+        <div class="p-4 bg-[#0D1524] rounded-xl border border-slateTech-gray/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Nomor Resi Pengerjaan Bengkel</span>
+            <p class="text-xs font-bold text-white">Scan Barcode untuk Cek Update Foto Meja di Workshop</p>
+            <p class="text-[11px] text-slate-400">Garansi 10 tahun meliputi kekuatan sambungan dan kelurusan daun meja.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-lg inline-block shadow">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=CUSTOMCRAFT-SPK-QC-8812" alt="QC Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1">SPK-8812-OK</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below SPK -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-slateTech-card hover:bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-slateTech-gray/60">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Buat Desain Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-slateTech-sky/20">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak SPK (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Standards Strip Ringkas -->
+  <section id="standards" class="border-t border-slateTech-gray/60 bg-slateTech-card py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <h3 class="text-xl font-bold text-white">Standar Kayu & Konstruksi Kami</h3>
+        <p class="text-xs text-slate-400 mt-1">Dibuat kuat untuk pemakaian harian jangka panjang</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+        <div class="p-5 rounded-xl bg-[#0D1524] border border-slateTech-gray/60">
+          <div class="w-9 h-9 rounded-lg bg-slateTech-sky/15 text-slateTech-sky flex items-center justify-center mb-3">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1">Kayu Oven Kering (<12%)</h4>
+          <p class="text-slate-400 leading-relaxed">Kadar air kayu dikeringkan dengan oven khusus agar tidak melengkung atau retak saat perubahan cuaca ruangan ber-AC.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-[#0D1524] border border-slateTech-gray/60">
+          <div class="w-9 h-9 rounded-lg bg-slateTech-sky/15 text-slateTech-sky flex items-center justify-center mb-3">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1">Papan Kayu Utuh</h4>
+          <p class="text-slate-400 leading-relaxed">Kami hanya menggunakan kayu solid asli (Jati, Walnut, Oak) tanpa triplek lapis tipis atau serbuk serbuk kayu MDF.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-[#0D1524] border border-slateTech-gray/60">
+          <div class="w-9 h-9 rounded-lg bg-slateTech-sky/15 text-slateTech-sky flex items-center justify-center mb-3">
+            <i data-lucide="wrench" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1">Kaki Besi Las Rapi</h4>
+          <p class="text-slate-400 leading-relaxed">Rangka besi dilapisi cat oven (powder coating) tebal yang tahan benturan dan bebas dari karat.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-[#070D18] text-slate-500 py-8 border-t border-slateTech-gray/40 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-slateTech-card border border-slateTech-sky flex items-center justify-center text-slateTech-sky font-bold text-[10px]">C</div>
+        <span class="font-bold text-slate-300">CustomCraft Workshop</span>
+        <span class="text-slate-600">| ID: customcraft-furniture</span>
+      </div>
+      <p class="text-slate-500 text-center md:text-right">&copy; 2026 CustomCraft Atelier. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Material Kayu Solid
+    const woodMaterials = [
+      { id: "TEAK", name: "Jati Perhutani", rate: 28000000, topColor: "#8D5B4C", frontColor: "#613D32", desc: "Kuat, awet & serat khas" },
+      { id: "WALNUT", name: "American Walnut", rate: 34000000, topColor: "#503D33", frontColor: "#352720", desc: "Cokelat gelap mewah" },
+      { id: "OAK", name: "White Oak", rate: 26000000, topColor: "#B89B72", frontColor: "#8F7653", desc: "Cerah & minimalis" }
+    ];
+
+    // 2. Data Material Rangka Kaki Besi
+    const frameMaterials = [
+      { id: "STEEL_BLACK", name: "Matte Black", cost: 1400000, color: "#0F172A", stroke: "#38BDF8" },
+      { id: "STEEL_WHITE", name: "Putih Bersih", cost: 1400000, color: "#E2E8F0", stroke: "#94A3B8" },
+      { id: "BRASS", name: "Emas Kuningan", cost: 2300000, color: "#D4AF37", stroke: "#F59E0B" }
+    ];
+
+    // 3. Portofolio Kurasi
+    const portfolioItems = [
+      {
+        title: "Meja Kerja Ruang Direksi",
+        wood: "American Black Walnut Solid",
+        dimensions: "220 × 90 × 75 cm",
+        client: "Kantor Kawasan Kuningan, Jakarta",
+        image: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        title: "Meja Makan 8 Kursi",
+        wood: "Kayu Jati Solid Natural",
+        dimensions: "240 × 100 × 76 cm",
+        client: "Rumah Tinggal, Bintaro",
+        image: "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        title: "Kredensa TV Minimalis",
+        wood: "White Oak dengan Aksen Emas",
+        dimensions: "180 × 45 × 80 cm",
+        client: "Apartemen BSD City",
+        image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80"
+      }
+    ];
+
+    // State Management
+    let selectedProductType = 'DESK';
+    let selectedWood = woodMaterials[0];
+    let selectedFrame = frameMaterials[0];
+
+    let currentLength = 180;
+    let currentWidth = 80;
+    let currentHeight = 75;
+
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderWoodOptions();
+      renderFrameOptions();
+      renderPortfolio();
+      updateDimensions();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slateTech-gray text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slateTech-card text-slate-400 flex items-center justify-center text-[11px] font-bold border border-slateTech-gray";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slateTech-gray text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slateTech-card text-slate-400 flex items-center justify-center text-[11px] font-bold border border-slateTech-gray";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectProductType(type) {
+      selectedProductType = type;
+      const btns = {
+        DESK: document.getElementById('btnTypeDesk'),
+        DINING: document.getElementById('btnTypeDining'),
+        CREDENZA: document.getElementById('btnTypeCredenza'),
+        ISLAND: document.getElementById('btnTypeIsland')
+      };
+
+      for (let k in btns) {
+        if (k === type) {
+          btns[k].className = "p-2.5 rounded-xl border-2 border-slateTech-sky bg-slateTech-sky/15 text-white font-bold text-center";
+        } else {
+          btns[k].className = "p-2.5 rounded-xl border border-slateTech-gray bg-[#0E1626] text-slate-300 text-center hover:border-slateTech-sky";
+        }
+      }
+
+      if (type === 'DESK') { currentLength = 180; currentWidth = 80; currentHeight = 75; }
+      else if (type === 'DINING') { currentLength = 220; currentWidth = 100; currentHeight = 76; }
+      else if (type === 'CREDENZA') { currentLength = 160; currentWidth = 50; currentHeight = 85; }
+      else if (type === 'ISLAND') { currentLength = 200; currentWidth = 90; currentHeight = 90; }
+
+      document.getElementById('lengthSlider').value = currentLength;
+      document.getElementById('widthSlider').value = currentWidth;
+      document.getElementById('heightSlider').value = currentHeight;
+
+      updateDimensions();
+    }
+
+    function renderWoodOptions() {
+      const container = document.getElementById('woodOptionsContainer');
+      container.innerHTML = woodMaterials.map(w => `
+        <div onclick="selectWood('${w.id}')" class="p-3 rounded-xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          selectedWood.id === w.id 
+            ? 'border-slateTech-sky bg-slateTech-sky/15' 
+            : 'border-slateTech-gray/60 bg-[#0E1626] hover:border-slate-500'
+        }">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-3.5 h-3.5 rounded-full border border-white" style="background-color: ${w.topColor}"></span>
+              <span class="font-bold text-xs text-white">${w.name}</span>
+            </div>
+            <span class="text-[11px] text-slate-400">${w.desc}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectWood(id) {
+      selectedWood = woodMaterials.find(w => w.id === id);
+      renderWoodOptions();
+      updateDimensions();
+    }
+
+    function renderFrameOptions() {
+      const container = document.getElementById('frameOptionsContainer');
+      container.innerHTML = frameMaterials.map(f => `
+        <div onclick="selectFrame('${f.id}')" class="p-3 rounded-xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          selectedFrame.id === f.id 
+            ? 'border-slateTech-sky bg-slateTech-sky/15' 
+            : 'border-slateTech-gray/60 bg-[#0E1626] hover:border-slate-500'
+        }">
+          <div class="flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded-full border border-slate-600" style="background-color: ${f.color}"></span>
+            <span class="font-bold text-xs text-white">${f.name}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectFrame(id) {
+      selectedFrame = frameMaterials.find(f => f.id === id);
+      renderFrameOptions();
+      updateDimensions();
+    }
+
+    // Kalkulasi Dimensi, Harga & Gambar CAD Isometrik
+    function updateDimensions() {
+      currentLength = parseInt(document.getElementById('lengthSlider').value);
+      currentWidth = parseInt(document.getElementById('widthSlider').value);
+      currentHeight = parseInt(document.getElementById('heightSlider').value);
+
+      document.getElementById('lengthDisplay').innerText = `${currentLength} cm`;
+      document.getElementById('widthDisplay').innerText = `${currentWidth} cm`;
+      document.getElementById('heightDisplay').innerText = `${currentHeight} cm`;
+
+      // Hitung Volume Kubikasi Kayu (Ketebalan = 4 cm = 0.04 m)
+      const volumeM3 = (currentLength / 100) * (currentWidth / 100) * 0.04;
+      const woodCost = Math.round(volumeM3 * selectedWood.rate);
+      const frameCost = selectedFrame.cost;
+      const laborCost = 950000;
+      const grandTotal = woodCost + frameCost + laborCost;
+
+      // Update Teks Biaya
+      document.getElementById('calcWoodName').innerText = selectedWood.name;
+      document.getElementById('calcWoodCost').innerText = formatRupiah(woodCost);
+      document.getElementById('calcFrameName').innerText = selectedFrame.name;
+      document.getElementById('calcFrameCost').innerText = formatRupiah(frameCost);
+      document.getElementById('calcTotalPrice').innerText = formatRupiah(grandTotal);
+
+      document.getElementById('canvasWoodName').innerText = selectedWood.name;
+      document.getElementById('volIndicator').innerText = `Volume: ${volumeM3.toFixed(3)} m³`;
+
+      // Update Teks CAD Dimension di dalam SVG
+      document.getElementById('svgTextLength').textContent = `P: ${currentLength} cm`;
+      document.getElementById('svgTextWidth').textContent = `L: ${currentWidth} cm`;
+      document.getElementById('svgTextHeight').textContent = `T: ${currentHeight} cm`;
+
+      // Kalkulasi Skala Gambar Isometrik Proporsional
+      // Panjang: rentang 100 s/d 300 cm
+      const lenFactor = (currentLength - 100) / 200; // 0 s/d 1
+      const pLeft = 120 - (lenFactor * 45); // geser ke kiri saat panjang
+      const pRight = 280 + (lenFactor * 45); // geser ke kanan saat panjang
+
+      // Lebar: rentang 50 s/d 140 cm
+      const widFactor = (currentWidth - 50) / 90;
+      const depthOffset = 30 + (widFactor * 25); // kemiringan ke belakang
+
+      // Tinggi Meja: rentang 40 s/d 105 cm
+      const hFactor = (currentHeight - 40) / 65;
+      const legHeight = 55 + (hFactor * 35);
+      const topY = 190 - legHeight; // Y dasar permukaan meja
+
+      // 1. Update Polygon Sisi Atas Meja (Top Isometrik)
+      const pFL = [pLeft, topY];
+      const pFR = [pRight, topY];
+      const pBL = [pLeft + depthOffset, topY - depthOffset * 0.8];
+      const pBR = [pRight - depthOffset * 0.4, topY - depthOffset * 0.8];
+
+      const topPoints = `${pBL[0]},${pBL[1]} ${pBR[0]},${pBR[1]} ${pFR[0]},${pFR[1]} ${pFL[0]},${pFL[1]}`;
+      const frontPoints = `${pFL[0]},${pFL[1]} ${pFR[0]},${pFR[1]} ${pFR[0]},${pFL[1] + 10} ${pFL[0]},${pFL[1] + 10}`;
+
+      const svgTableTop = document.getElementById('svgTableTop');
+      const svgTableFront = document.getElementById('svgTableFront');
+
+      svgTableTop.setAttribute('points', topPoints);
+      svgTableTop.setAttribute('fill', selectedWood.topColor);
+
+      svgTableFront.setAttribute('points', frontPoints);
+      svgTableFront.setAttribute('fill', selectedWood.frontColor);
+
+      // 2. Update 4 Kaki Meja Isometrik
+      const svgLegFL = document.getElementById('svgLegFL');
+      const svgLegFR = document.getElementById('svgLegFR');
+      const svgLegBL = document.getElementById('svgLegBL');
+      const svgLegBR = document.getElementById('svgLegBR');
+
+      // Kaki Depan Kiri
+      svgLegFL.setAttribute('x', pFL[0] + 6);
+      svgLegFL.setAttribute('y', pFL[1] + 10);
+      svgLegFL.setAttribute('height', legHeight);
+      svgLegFL.setAttribute('fill', selectedFrame.color);
+      svgLegFL.setAttribute('stroke', selectedFrame.stroke);
+
+      // Kaki Depan Kanan
+      svgLegFR.setAttribute('x', pFR[0] - 18);
+      svgLegFR.setAttribute('y', pFR[1] + 10);
+      svgLegFR.setAttribute('height', legHeight);
+      svgLegFR.setAttribute('fill', selectedFrame.color);
+      svgLegFR.setAttribute('stroke', selectedFrame.stroke);
+
+      // Kaki Belakang Kiri
+      svgLegBL.setAttribute('x', pBL[0] + 6);
+      svgLegBL.setAttribute('y', pBL[1] + 5);
+      svgLegBL.setAttribute('height', legHeight);
+      svgLegBL.setAttribute('fill', selectedFrame.color);
+      svgLegBL.setAttribute('stroke', selectedFrame.stroke);
+
+      // Kaki Belakang Kanan
+      svgLegBR.setAttribute('x', pBR[0] - 18);
+      svgLegBR.setAttribute('y', pBR[1] + 5);
+      svgLegBR.setAttribute('height', legHeight);
+      svgLegBR.setAttribute('fill', selectedFrame.color);
+      svgLegBR.setAttribute('stroke', selectedFrame.stroke);
+
+      return { volumeM3, woodCost, frameCost, grandTotal };
+    }
+
+    function renderPortfolio() {
+      const container = document.getElementById('portfolioGrid');
+      container.innerHTML = portfolioItems.map(item => `
+        <div class="bg-slateTech-card rounded-2xl border border-slateTech-gray/80 overflow-hidden shadow group">
+          <div class="relative h-44 w-full overflow-hidden">
+            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" />
+            <div class="absolute bottom-2.5 left-2.5 bg-slateTech-dark/90 px-2 py-0.5 rounded text-[10px] font-mono text-slateTech-sky border border-slateTech-gray/60">
+              ${item.dimensions}
+            </div>
+          </div>
+          <div class="p-4 space-y-1">
+            <h4 class="font-bold text-sm text-white">${item.title}</h4>
+            <p class="text-xs text-slate-400 font-mono">${item.wood}</p>
+            <p class="text-[11px] text-slate-500">${item.client}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function goToStep2() {
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slateTech-sky text-slateTech-sky pb-2 flex items-center justify-center gap-1.5 font-semibold";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slateTech-sky text-slate-900 flex items-center justify-center text-[11px] font-bold";
+
+      const calc = updateDimensions();
+      const dpAmount = Math.round(calc.grandTotal * 0.5);
+
+      document.getElementById('dpPayableAmount').innerText = formatRupiah(dpAmount);
+
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slateTech-gray text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slateTech-card text-slate-400 flex items-center justify-center text-[11px] font-bold border border-slateTech-gray";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi DP QRIS berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    function simulatePaymentSuccess() {
+      const client = document.getElementById('clientName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('clientPhone').value.trim() || '081299998888';
+      const address = document.getElementById('deliveryLocation').value.trim() || 'Gedung Wirausaha, Jakarta Selatan';
+      const finishOption = document.getElementById('finishOptionSelect').value;
+      const featureOption = document.getElementById('featureSelect').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slateTech-sky text-slateTech-sky pb-2 flex items-center justify-center gap-1.5 font-semibold";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slateTech-sky text-slate-900 flex items-center justify-center text-[11px] font-bold";
+
+      const calc = updateDimensions();
+      const dpAmount = Math.round(calc.grandTotal * 0.5);
+      const dueAmount = calc.grandTotal - dpAmount;
+
+      const randomSPK = "SPK-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('spkDocNumber').innerText = randomSPK;
+      document.getElementById('spkDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invClientName').innerText = client;
+      document.getElementById('invClientPhone').innerText = phone;
+      document.getElementById('invDeliveryAddress').innerText = address;
+
+      let typeLabel = "Meja Kerja Kayu Solid";
+      if (selectedProductType === 'DINING') typeLabel = "Meja Makan Solid";
+      if (selectedProductType === 'CREDENZA') typeLabel = "Kredensa Minimalis";
+      if (selectedProductType === 'ISLAND') typeLabel = "Kitchen Island Kayu";
+
+      document.getElementById('invProductTitle').innerText = typeLabel;
+      document.getElementById('invMaterialSpecs').innerText = `Kayu: ${selectedWood.name} • Rangka: ${selectedFrame.name} • Lapisan: ${finishOption}`;
+      document.getElementById('invFeatureSpec').innerText = `Fitur: ${featureOption}`;
+      document.getElementById('invDimensionsText').innerText = `${currentLength} × ${currentWidth} × ${currentHeight} cm`;
+
+      document.getElementById('invTotalValue').innerText = formatRupiah(calc.grandTotal);
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(calc.grandTotal);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(dpAmount);
+      document.getElementById('invDueAmount').innerText = formatRupiah(dueAmount);
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedProductType = 'DESK';
+      selectedWood = woodMaterials[0];
+      selectedFrame = frameMaterials[0];
+      currentLength = 180;
+      currentWidth = 80;
+      currentHeight = 75;
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slateTech-gray text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slateTech-card text-slate-400 flex items-center justify-center text-[11px] font-bold border border-slateTech-gray";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slateTech-gray text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slateTech-card text-slate-400 flex items-center justify-center text-[11px] font-bold border border-slateTech-gray";
+
+      selectProductType('DESK');
+      renderWoodOptions();
+      renderFrameOptions();
+      updateDimensions();
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

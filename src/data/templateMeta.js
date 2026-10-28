@@ -160,6 +160,64 @@ export const TEMPLATE_META = {
     badgeLabel: 'Varian Baru',
     skin: 'brutalist',
   },
+
+  /* ── Template tambahan (file HTML mandiri) ────────────────────────────── */
+  'quadra-coffee-shop': {
+    industry: 'Coffee shop & roastery',
+    variantStyle: 'Artisan Warm Craft',
+    colorPalette: ['#2A1A0E', '#B45309', '#D9A05B', '#FDF6EC'],
+    layoutType: 'Menu showcase + slow bar reservation',
+    badgeLabel: 'Baru',
+    skin: 'warm',
+  },
+  'led-vista-indonesia': {
+    industry: 'Videotron & LED display',
+    variantStyle: 'Technical Studio Dark',
+    colorPalette: ['#0B1424', '#3B82F6', '#0EA5E9', '#EFF6FF'],
+    layoutType: 'Product spec grid + kalkulator pitch',
+    badgeLabel: 'Baru',
+    skin: 'cyber',
+  },
+  'sinar-trans-express': {
+    industry: 'Ekspedisi & kargo',
+    variantStyle: 'Logistics Corporate Bold',
+    colorPalette: ['#1A1211', '#DC2626', '#F59E0B', '#FEF2F2'],
+    layoutType: 'Rate checker + tracking timeline',
+    badgeLabel: 'Baru',
+    skin: 'default',
+  },
+  'fortis-realty': {
+    industry: 'Broker properti',
+    variantStyle: 'Premium Real Estate Editorial',
+    colorPalette: ['#0B1B2B', '#0EA5E9', '#C8A96A', '#F8FAFC'],
+    layoutType: 'Listing gallery + simulasi KPR',
+    badgeLabel: 'Premium',
+    skin: 'luxury',
+  },
+  'golden-vista-tour': {
+    industry: 'Travel & tour',
+    variantStyle: 'Sunset Travel Editorial',
+    colorPalette: ['#1B2A3A', '#FBBF24', '#0EA5E9', '#FFFBEB'],
+    layoutType: 'Destination hero + itinerary accordion',
+    badgeLabel: 'Baru',
+    skin: 'editorial',
+  },
+  'fine-wo': {
+    industry: 'Wedding organizer',
+    variantStyle: 'Soft Romantic Editorial',
+    colorPalette: ['#3B2530', '#F472B6', '#E7C8A0', '#FFF1F5'],
+    layoutType: 'Theme showcase + paket comparison',
+    badgeLabel: 'Baru',
+    skin: 'editorial',
+  },
+  'ala-carte-eo': {
+    industry: 'Event organizer',
+    variantStyle: 'Creative Event Bold',
+    colorPalette: ['#1B1035', '#A855F7', '#F97316', '#F5F3FF'],
+    layoutType: 'Portfolio grid + budget estimator',
+    badgeLabel: 'Baru',
+    skin: 'brutalist',
+  },
 }
 
 /** Fallback aman untuk template yang belum punya entri meta. */

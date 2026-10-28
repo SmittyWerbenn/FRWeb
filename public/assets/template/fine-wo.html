@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fine WO - Modern Wedding Organizer & Concept Atelier</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            indigoTheme: {
+              white: '#FFFFFF',
+              canvas: '#F8FAFC',        // Slate Canvas Soft
+              indigo: '#4F46E5',        // Electric Indigo Utama
+              indigoDark: '#4338CA',    // Darker Indigo
+              indigoDeep: '#312E81',    // Deep Indigo
+              indigoBg: '#EEF2FF',      // Light Indigo Tint
+              coral: '#F43F5E',         // Hot Coral Accent
+              coralHover: '#E11D48',    // Darker Coral
+              coralBg: '#FFF1F2',       // Soft Coral Tint
+              border: '#E2E8F0',        // Border Soft
+              textDark: '#1E1B4B'       // Deep Indigo-Black Text
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .indigo-grid {
+      background-color: #F8FAFC;
+      background-image: 
+        linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .coral-glow {
+      box-shadow: 0 0 25px rgba(244, 63, 94, 0.22);
+    }
+    .indigo-glow {
+      box-shadow: 0 0 25px rgba(79, 70, 229, 0.2);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printablePass, #printablePass * {
+        visibility: visible;
+      }
+      #printablePass {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: 2px solid #4F46E5 !important;
+        background: white !important;
+        color: #1E1B4B !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-indigoTheme-canvas text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-indigoTheme-coral selection:text-white">
+
+  <!-- Top Announcement Bar (Electric Indigo & Hot Coral Badge) -->
+  <div class="bg-indigoTheme-indigoDeep text-white text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-indigo-900 font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigoTheme-coral text-white">ELECTRIC INDIGO ATELIER</span>
+    <span>Sistem Rencana Acara Terstruktur • Kru Berpengalaman 500+ Pesta Resepsi • Jadwal Musim Nikah 2026/2027 Terbuka</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-indigoTheme-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-indigoTheme-indigo flex items-center justify-center text-white shadow-md shadow-indigo-500/25 flex-shrink-0 transition group-hover:bg-indigoTheme-indigoDark">
+          <i data-lucide="gem" class="w-5 h-5 text-indigoTheme-coral"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-indigoTheme-textDark block leading-tight font-display">
+            FINE<span class="text-indigoTheme-indigo ml-0.5">WO</span>
+            <span class="text-[10px] font-mono bg-indigoTheme-indigoBg text-indigoTheme-indigo border border-indigo-200 px-1.5 py-0.5 rounded ml-1 font-bold uppercase">ATELIER</span>
+          </span>
+          <span class="text-[10px] text-slate-500 tracking-wider block font-mono font-medium">WEDDING ARCHITECTURE & ORGANIZER</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+        <a href="#themes-showcase" class="text-indigoTheme-indigo hover:text-indigoTheme-coral transition">Showcase Tema</a>
+        <a href="#packages-matrix" class="hover:text-indigoTheme-indigo transition">Perbandingan Paket</a>
+        <a href="#consultation-booking" class="hover:text-indigoTheme-indigo transition">Konsultasi Privat</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-indigoTheme-indigoBg text-indigoTheme-indigo font-mono px-3.5 py-1.5 rounded-lg border border-indigo-200">
+          <span class="w-2 h-2 rounded-full bg-indigoTheme-coral animate-pulse"></span>
+          Wedding Director: Siaga
+        </div>
+        <button onclick="scrollToConsultation()" class="bg-indigoTheme-indigo hover:bg-indigoTheme-indigoDark text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-indigo-500/20 flex items-center gap-2 active:scale-95 font-display">
+          <i data-lucide="sparkles" class="w-4 h-4 text-indigoTheme-coral"></i>
+          <span>Kunci Tanggal Resepsi</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Electric Indigo & Hot Coral Aesthetic) -->
+  <section class="indigo-grid py-12 sm:py-16 border-b border-indigoTheme-border relative overflow-hidden bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigoTheme-indigoBg border border-indigo-200 text-indigoTheme-indigo text-xs font-mono font-bold">
+          <span class="w-1.5 h-1.5 rounded-full bg-indigoTheme-coral animate-ping"></span>
+          Next-Generation Wedding Production Management
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-indigoTheme-textDark tracking-tight leading-[1.18] font-display">
+          Pesta Pernikahan Megah Tanpa Stres Rencana Hari H.
+        </h1>
+        <p class="text-slate-600 text-base sm:text-lg leading-relaxed font-sans">
+          Bebaskan momen terindah Anda dari kepanikan teknis. Kami merancang konsep visual resepsi berkelas, mengkoordinasikan vendor tata suara & katering terbaik, serta memastikan setiap detik susunan acara berlangsung mulus sesuai impian Anda berdua.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-indigoTheme-border text-left font-mono">
+        <div class="p-4 rounded-xl bg-white border border-indigoTheme-border shadow-sm">
+          <span class="text-xs text-slate-500 block font-sans">Kru Hari H</span>
+          <span class="text-2xl font-extrabold text-indigoTheme-indigo font-display mt-0.5 block">12 - 25 Orang</span>
+        </div>
+        <div class="p-4 rounded-xl bg-white border border-indigoTheme-border shadow-sm">
+          <span class="text-xs text-slate-500 block font-sans">Ketepatan Rundown</span>
+          <span class="text-2xl font-extrabold text-indigoTheme-coral font-display mt-0.5 block">99.8% On-Time</span>
+        </div>
+        <div class="p-4 rounded-xl bg-white border border-indigoTheme-border shadow-sm">
+          <span class="text-xs text-slate-500 block font-sans">Konsultasi Awal</span>
+          <span class="text-2xl font-extrabold text-indigoTheme-indigo font-display mt-0.5 block">Gratis 60 Mnt</span>
+        </div>
+        <div class="p-4 rounded-xl bg-white border border-indigoTheme-border shadow-sm">
+          <span class="text-xs text-slate-500 block font-sans">Garansi Koordinasi</span>
+          <span class="text-2xl font-extrabold text-indigoTheme-textDark font-display mt-0.5 block">End-to-End</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-indigoTheme-indigo text-indigoTheme-indigo pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-indigoTheme-indigo text-white flex items-center justify-center text-[11px] font-bold">1</span>
+          Tema & Perbandingan Paket
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold">2</span>
+          Kunci Tanggal & DP QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold">3</span>
+          Wedding Pass & SPK Acara
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Wedding Workspace Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="themes-showcase">
+    
+    <!-- STEP 1: Interactive Theme Moodboard & Package Comparison Matrix -->
+    <div id="step1View" class="space-y-10">
+      
+      <!-- Interactive Theme Moodboard Dock -->
+      <section class="bg-white p-6 sm:p-7 rounded-2xl border border-indigoTheme-border shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigoTheme-border pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold text-indigoTheme-indigo uppercase tracking-widest">[MOODBOARD // ATELIER]</span>
+            <h3 class="text-xl font-bold text-indigoTheme-textDark font-display mt-0.5">Pilihan Konsep & Tema Estetika Pelaminan</h3>
+          </div>
+          <span class="text-xs font-mono text-slate-500">Klik konsep untuk melihat visualisasi suasana panggung</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="themeCardsContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- Package Comparison Matrix Section -->
+      <section id="packages-matrix" class="space-y-6">
+        <div class="flex items-center justify-between border-b border-indigoTheme-border pb-3">
+          <div>
+            <h3 class="text-xl font-bold text-indigoTheme-textDark font-display">Perbandingan Paket Wedding Organizer</h3>
+            <p class="text-xs text-slate-500 font-sans mt-0.5">Pilih paket yang paling sesuai dengan skala jumlah tamu undangan dan lokasi resepsi Anda.</p>
+          </div>
+          <span class="text-xs font-mono bg-indigoTheme-indigoBg text-indigoTheme-indigo px-2.5 py-1 rounded border border-indigo-200 font-bold">ALL-IN COORDINATION</span>
+        </div>
+
+        <!-- Split Layout: Packages Matrix Cards (7 Cols) vs Live Booking Slip (5 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Package Comparison Cards (7 Cols) -->
+          <div class="lg:col-span-7 space-y-4" id="packagesListContainer">
+            <!-- Rendered via JavaScript -->
+          </div>
+
+          <!-- Right: Live Consultation & Date Lock Slip (5 Cols Sticky) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-indigoTheme-border shadow-xl space-y-5 sticky top-24 font-mono text-xs" id="consultation-booking">
+            <div class="flex items-center justify-between border-b border-indigoTheme-border pb-3">
+              <div>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block font-mono">[DISPATCH DOCK]</span>
+                <h4 class="text-sm font-bold text-indigoTheme-textDark font-display mt-0.5">Rincian Paket & Jadwal Temu</h4>
+              </div>
+              <span class="text-[11px] font-bold bg-indigoTheme-indigo text-white px-2 py-0.5 rounded font-mono" id="slipPackageBadge">INTIMATE</span>
+            </div>
+
+            <!-- Selected Package Highlight Box -->
+            <div class="p-4 bg-indigoTheme-canvas rounded-xl border border-indigoTheme-border space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="font-bold text-indigoTheme-textDark text-base font-display block leading-tight" id="slipPackageTitle">Intimate Heritage Wedding</span>
+                  <p class="text-[11px] text-slate-500 font-sans mt-0.5" id="slipThemeNameText">Konsep: Neo-Heritage Royal</p>
+                </div>
+                <span class="text-xs font-bold text-indigoTheme-coral font-mono" id="slipPackagePriceText">Rp 22.000.000</span>
+              </div>
+              <p class="text-[11px] text-slate-600 font-sans leading-relaxed" id="slipPackageCapacityText">Kapasitas Tamu: s/d 300 Pax • 8 Orang Kru WO Hari H</p>
+            </div>
+
+            <!-- Date Availability Checker & Schedule Picker -->
+            <div class="space-y-3 border-t border-b border-indigoTheme-border py-3">
+              <span class="font-bold text-indigoTheme-textDark block font-sans">Tentukan Tanggal Rencana Resepsi:</span>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono">
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-1">Hari Acara Pernikahan:</span>
+                  <input type="date" id="weddingDateInput" onchange="updateBookingSlip()" class="w-full bg-white px-3 py-2 rounded-lg border border-indigoTheme-border text-slate-800 font-bold text-xs focus:ring-1 focus:ring-indigoTheme-indigo" />
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-1">Sesi Konsultasi Privat:</span>
+                  <select id="consultationSlotSelect" onchange="updateBookingSlip()" class="w-full bg-white px-3 py-2 rounded-lg border border-indigoTheme-border text-slate-800 font-bold text-xs focus:ring-1 focus:ring-indigoTheme-indigo">
+                    <option value="Sesi Siang (13:00 - 14:00 WIB)" selected>Siang (13:00 - 14:00 WIB)</option>
+                    <option value="Sesi Sore (16:00 - 17:00 WIB)">Sore (16:00 - 17:00 WIB)</option>
+                    <option value="Sesi Malam (19:30 - 20:30 WIB)">Malam (19:30 - 20:30 WIB)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Medium Konsultasi -->
+              <div>
+                <span class="text-[10px] text-slate-500 block mb-1">Pilihan Tempat Konsultasi:</span>
+                <select id="consultationPlaceSelect" class="w-full bg-white px-3 py-2 rounded-lg border border-indigoTheme-border text-slate-800 font-sans text-xs focus:ring-1 focus:ring-indigoTheme-indigo">
+                  <option value="ONLINE_MEET" selected>Google Meet Video Call (Private Room Link)</option>
+                  <option value="OFFLINE_LOUNGE">Tatap Muka di Wedding Lounge Fine WO (Senopati, Jaksel)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Breakdown Summary -->
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between text-slate-600">
+                <span>Nilai Kontrak Paket:</span>
+                <span class="font-bold text-slate-900 font-mono" id="slipContractAmount">Rp 22.000.000</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Sesi Konsultasi Eksklusif:</span>
+                <span class="font-bold text-indigoTheme-indigo font-mono">GRATIS (Include Paket)</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Opsi Kunci Tanggal (Hold Token):</span>
+                <span class="font-bold text-slate-900 font-mono" id="slipTokenFeeText">Rp 500.000</span>
+              </div>
+            </div>
+
+            <!-- Grand Total Price Highlight Box -->
+            <div class="p-3.5 bg-indigoTheme-indigoDeep rounded-xl text-white flex items-center justify-between border border-indigo-900">
+              <div>
+                <span class="text-[10px] font-bold text-indigoTheme-coral uppercase block font-sans">Total Paket Pengorganisasian</span>
+                <span class="text-xs text-slate-300 font-sans">Termasuk Pendampingan Vendor</span>
+              </div>
+              <span class="text-xl font-black text-white font-mono" id="slipGrandTotalText">Rp 22.000.000</span>
+            </div>
+
+            <!-- Next Button to Step 2 -->
+            <button onclick="goToStep2()" class="w-full bg-indigoTheme-indigo hover:bg-indigoTheme-indigoDark text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <span>Lanjut Isi Data Calon Pengantin & Kunci Tanggal</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+
+            <p class="text-[10px] text-slate-400 text-center leading-normal font-sans">
+              *Jadwal tanggal pernikahan hanya dialokasikan untuk 1 pasangan pengantin per wedding director per hari.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- STEP 2: Bride & Groom Profile Form + QRIS Date Lock Payment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Bride & Groom Data Form -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-indigoTheme-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-indigoTheme-border pb-3 font-mono">
+            <h3 class="text-base font-bold text-indigoTheme-textDark flex items-center gap-2 font-display">
+              <i data-lucide="heart" class="w-4 h-4 text-indigoTheme-coral"></i>
+              Profil Calon Mempelai & Rencana Acara
+            </h3>
+            <span class="text-xs text-slate-400">Verifikasi Tim WO</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-sans">Nama Lengkap Mempelai Wanita *</label>
+                <input type="text" id="brideNameInput" value="Clarissa Lovata, S.Ds" class="w-full bg-indigoTheme-canvas px-3.5 py-2.5 rounded-xl border border-indigoTheme-border focus:outline-none focus:ring-2 focus:ring-indigoTheme-indigo text-slate-900 font-sans font-medium" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-sans">Nama Lengkap Mempelai Pria *</label>
+                <input type="text" id="groomNameInput" value="Tedi Mahendra, B.Eng" class="w-full bg-indigoTheme-canvas px-3.5 py-2.5 rounded-xl border border-indigoTheme-border focus:outline-none focus:ring-2 focus:ring-indigoTheme-indigo text-slate-900 font-sans font-medium" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-sans">Nomor WhatsApp Koordinator Utama *</label>
+                <input type="tel" id="contactPhoneInput" value="081299998888" class="w-full bg-indigoTheme-canvas px-3.5 py-2.5 rounded-xl border border-indigoTheme-border focus:outline-none focus:ring-2 focus:ring-indigoTheme-indigo text-slate-900 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-sans">Email Konfirmasi Rundown *</label>
+                <input type="email" id="contactEmailInput" value="tedi.work@example.com" class="w-full bg-indigoTheme-canvas px-3.5 py-2.5 rounded-xl border border-indigoTheme-border focus:outline-none focus:ring-2 focus:ring-indigoTheme-indigo text-slate-900 font-sans" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 font-sans">Estimasi Lokasi Venue / Ballroom Resepsi *</label>
+              <textarea id="venuePlanInput" rows="2" class="w-full bg-indigoTheme-canvas px-3.5 py-2.5 rounded-xl border border-indigoTheme-border focus:outline-none focus:ring-2 focus:ring-indigoTheme-indigo text-slate-900 font-sans leading-relaxed">Grand Ballroom Hotel Mulia Senayan, Jl. Asia Afrika No. 1, Jakarta Pusat</textarea>
+            </div>
+
+            <!-- Payment Scheme Choice (Free Consultation vs Priority Date Lock Token) -->
+            <div class="space-y-3 pt-1 font-sans">
+              <label class="block font-bold text-slate-700">Pilihan Skema Reservasi:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+                <!-- Free Consultation -->
+                <label onclick="selectPaymentScheme('FREE')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-indigoTheme-indigoBg border-indigoTheme-indigo" id="labelSchemeFree">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-indigoTheme-textDark">Konsultasi Privat (Gratis)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-indigoTheme-indigo flex items-center justify-center">
+                      <span id="radioDotFree" class="w-2 h-2 rounded-full bg-indigoTheme-indigo"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-600 font-sans leading-normal">Diskusi konsep 60 menit via video call atau lounge tanpa biaya awal.</p>
+                  <span class="text-xs font-black text-emerald-600 mt-2 block font-mono">Rp 0 (Bebas Biaya)</span>
+                </label>
+
+                <!-- Priority Date Lock Token -->
+                <label onclick="selectPaymentScheme('LOCK')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-indigoTheme-border hover:border-slate-400" id="labelSchemeLock">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-indigoTheme-textDark">Priority Date Lock Token</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                      <span id="radioDotLock" class="w-2 h-2 rounded-full bg-transparent"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-600 font-sans leading-normal">Kunci tanggal resepsi agar tidak diambil pasangan lain + free venue inspection.</p>
+                  <span class="text-xs font-black text-indigoTheme-coral mt-2 block font-mono">Token Rp 500.000</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 font-sans">Catatan Tradisi / Keinginan Khusus (Adat / Modern Wedding):</label>
+              <input type="text" id="specialRequestsInput" value="Resepsi modern dengan prosesi adat Sunda siger saat akad nikah pagi." class="w-full bg-indigoTheme-canvas px-3.5 py-2.5 rounded-xl border border-indigoTheme-border focus:outline-none focus:ring-2 focus:ring-indigoTheme-indigo text-slate-900 font-sans" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Gateway & Booking Authorization -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-indigoTheme-border shadow-xl space-y-5 font-mono text-xs">
+          <div class="flex items-center justify-between border-b border-indigoTheme-border pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gateway Verifikasi Instan</span>
+            <span class="text-[10px] font-bold bg-indigoTheme-indigoBg text-indigoTheme-indigo px-2 py-0.5 rounded">DIRECTOR ASSIGNED</span>
+          </div>
+
+          <!-- QR Box -->
+          <div class="border border-indigoTheme-border rounded-xl p-4 bg-indigoTheme-canvas text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-600 font-black text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-white bg-indigoTheme-indigo px-2 py-0.5 rounded" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-300">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-FINE-WO-WEDDING-BOOKING" alt="QRIS Fine WO" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-500 font-sans">
+              <p class="font-medium text-slate-700">Scan via BCA, Mandiri, BRI, BNI, GoPay, OVO</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 font-mono">NMID: ID1099238833 - PT FINE WEDDING ORGANIZER</p>
+            </div>
+
+            <!-- Payable Highlight -->
+            <div class="mt-3 pt-3 border-t border-indigoTheme-border w-full flex items-center justify-between px-1 font-mono">
+              <span class="text-xs text-slate-600 font-sans" id="qrisPayableLabel">Biaya Registrasi Konsultasi:</span>
+              <span id="qrisPayableAmount" class="text-base font-extrabold text-indigoTheme-indigo font-mono">Rp 0 (Gratis)</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2 font-sans">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-indigoTheme-indigo hover:bg-indigoTheme-indigoDark active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20">
+              <i data-lucide="check-circle" class="w-4 h-4 text-indigoTheme-coral"></i>
+              <span>Konfirmasi Jadwal & Terbitkan Wedding Pass</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition border border-indigoTheme-border">
+              Kembali / Ubah Konsep Acara
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal font-sans">
+            *Undangan resmi sesi konsultasi privat dan form brief teknis otomatis dikirimkan ke email & WhatsApp terdaftar.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Wedding Consultation Pass & SPK Acara (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-950 no-print font-sans">
+        <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-display">Sesi Konsultasi Terjadwal & Tanggal Resepsi Terkunci!</h4>
+          <p class="text-xs text-emerald-800 mt-0.5">Wedding Pass resmi dan Surat Perintah Kerja (SPK) persiapan vendor telah diterbitkan.</p>
+        </div>
+      </div>
+
+      <!-- Printable Wedding Pass Document Card -->
+      <div id="printablePass" class="bg-white rounded-2xl border-2 border-indigoTheme-indigo shadow-xl p-6 sm:p-9 space-y-6 font-mono text-slate-900">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-indigoTheme-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-indigoTheme-indigo flex items-center justify-center text-white font-bold">
+                <i data-lucide="gem" class="w-4 h-4 text-indigoTheme-coral"></i>
+              </div>
+              <span class="font-extrabold text-lg text-indigoTheme-textDark font-display">FINE<span class="text-indigoTheme-indigo">WO</span> ATELIER</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-sans">PT Fine Wedding Organizer Indonesia • Senopati Suites Lt. 3, Kebayoran Baru, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-500 font-sans">Concierge VIP Wedding: +62 812-9999-8888 • concierge@finewo.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigoTheme-indigo text-white uppercase" id="invPassBadge">
+              WEDDING CONSULTATION PASS
+            </span>
+            <p id="invPassNumber" class="text-xs font-bold text-slate-900 mt-1">PASS-FWO-202610-8812</p>
+            <p id="invDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Bride, Groom & Resepsi Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-indigoTheme-canvas p-4 rounded-xl border border-indigoTheme-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">CALON MEMPELAI:</span>
+            <p id="invCouplesName" class="font-bold text-indigoTheme-textDark text-sm font-sans">Clarissa Lovata & Tedi Mahendra</p>
+            <p id="invContactPhone" class="text-slate-500 mt-0.5">WhatsApp: 081299998888</p>
+            <p id="invVenueLocation" class="text-slate-600 mt-1 leading-relaxed font-sans">Grand Ballroom Hotel Mulia Senayan</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">JADWAL PERNIKAHAN & SESI TEMU:</span>
+            <p id="invWeddingDate" class="font-bold text-indigoTheme-indigo text-sm">Hari H: 06 Des 2026</p>
+            <p id="invConsultationSlot" class="text-slate-600 mt-0.5">Sesi: Siang (13:00 - 14:00 WIB)</p>
+            <p class="text-emerald-700 font-bold mt-1">STATUS: TERKUNCI DI SISTEM</p>
+          </div>
+        </div>
+
+        <!-- Package & Theme Details Table -->
+        <div class="border border-indigoTheme-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-indigoTheme-canvas text-slate-600 border-b border-indigoTheme-border font-sans">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Rincian Paket & Konsep Estetika</th>
+                <th class="py-2.5 px-3 font-bold text-center">Kapasitas Tamu</th>
+                <th class="py-2.5 px-4 font-bold text-right">Nilai Paket</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-slate-900 block text-sm font-display" id="invPackageTitle">Intimate Heritage Wedding</span>
+                  <div class="text-[11px] text-slate-500 font-sans mt-0.5" id="invThemeDetailText">Konsep: Neo-Heritage Royal • Koordinasi 8 Kru WO Hari H</div>
+                  <div class="text-[10px] text-indigoTheme-indigo font-mono mt-1" id="invRequestsSummary">Catatan: Resepsi modern dengan prosesi adat Sunda siger akad nikah pagi</div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-700 font-mono" id="invCapacityNumber">s/d 300 Pax</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono" id="invContractPrice">Rp 22.000.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-indigoTheme-canvas border-t border-indigoTheme-border text-xs font-mono">
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-right text-slate-600 font-bold">Biaya Sesi Konsultasi Eksklusif:</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700" id="invConsultationFeeText">Rp 0 (Gratis)</td>
+              </tr>
+              <tr class="bg-white border-t border-indigoTheme-border">
+                <td colspan="2" class="py-2.5 px-4 text-indigoTheme-textDark text-right font-extrabold text-xs">
+                  Biaya Priority Date Lock Token (Jika Ada):
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-indigoTheme-coral font-mono" id="invLockTokenFee">
+                  Rp 0
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- QR Barcode & Meeting Access -->
+        <div class="p-4 bg-indigoTheme-canvas rounded-xl border border-indigoTheme-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">[ACCESS // CLEARANCE]</span>
+            <p class="text-xs font-bold text-slate-900">Tautan Sesi Konsultasi Google Meet / Lounge Pass Aktif</p>
+            <p class="text-[11px] text-slate-500">Tautan: <strong>https://meet.google.com/fine-wo-wedding-session</strong> (Akses Langsung Wedding Director).</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-lg inline-block shadow-sm border border-indigoTheme-border">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=FINE-WO-WEDDING-PASS-8812" alt="Meeting Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] text-slate-400 mt-1">PASS-8812-WED</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-indigoTheme-border font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Pilih Paket Lain
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-indigoTheme-indigo hover:bg-indigoTheme-indigoDark text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-indigo-500/20 font-sans">
+            <i data-lucide="printer" class="w-4 h-4 text-indigoTheme-coral"></i>
+            Cetak Wedding Pass & SPK (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Standards & Wedding Day Coordination Guarantees -->
+  <section class="border-t border-indigoTheme-border bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-indigoTheme-indigo uppercase tracking-wider font-mono">Coordination Standards</span>
+        <h3 class="text-xl font-bold text-indigoTheme-textDark font-display mt-1">Standar Manajemen Hari H Fine WO</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-indigoTheme-canvas border border-indigoTheme-border">
+          <div class="w-9 h-9 rounded-lg bg-indigoTheme-indigoBg text-indigoTheme-indigo flex items-center justify-center mb-3 border border-indigo-200">
+            <i data-lucide="clock" class="w-5 h-5 text-indigoTheme-indigo"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Master Rundown Menit ke Menit</h4>
+          <p class="text-slate-600 leading-relaxed">Penyusunan jadwal terperinci mulai dari sesi makeup pengantin subuh, prosesi temu adat/pemberkatan, hingga penutupan resepsi bebas molor.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-indigoTheme-canvas border border-indigoTheme-border">
+          <div class="w-9 h-9 rounded-lg bg-indigoTheme-indigoBg text-indigoTheme-indigo flex items-center justify-center mb-3 border border-indigo-200">
+            <i data-lucide="shield-check" class="w-5 h-5 text-indigoTheme-indigo"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Technical Meeting Seluruh Vendor</h4>
+          <p class="text-slate-600 leading-relaxed">Kami memimpin koordinasi lintas vendor (katering, dekorasi panggung, band pengiring, dokumentasi) agar tidak terjadi miskomunikasi di lapangan.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-indigoTheme-canvas border border-indigoTheme-border">
+          <div class="w-9 h-9 rounded-lg bg-indigoTheme-indigoBg text-indigoTheme-indigo flex items-center justify-center mb-3 border border-indigo-200">
+            <i data-lucide="radio" class="w-5 h-5 text-indigoTheme-indigo"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Kru HT Intercom Frekuensi Terisolasi</h4>
+          <p class="text-slate-600 leading-relaxed">Seluruh koordinator lapangan berkomunikasi dengan headset interkom nirkabel profesional untuk respon cepat saat menghadapi situasi tak terduga.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Deep Indigo Theme) -->
+  <footer class="bg-indigoTheme-indigoDeep text-slate-300 py-8 border-t border-indigo-900 text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-indigoTheme-indigo flex items-center justify-center text-white font-bold text-[10px]">F</div>
+        <span class="font-bold text-white font-sans">Fine WO Wedding Architecture</span>
+        <span class="text-slate-400">| ID: fine-wo</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right font-sans">&copy; 2026 PT Fine Wedding Organizer Indonesia. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Konsep Tema Pernikahan (Showcase Moodboard)
+    const weddingThemesData = [
+      {
+        id: "THEME-HERITAGE",
+        name: "Neo-Heritage Royal",
+        tag: "Adat Megah Modern",
+        colorPalette: ["#4F46E5", "#F43F5E", "#1E1B4B"],
+        image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",
+        desc: "Perpaduan kekayaan adat nusantara (Jawa/Sunda/Minang) dengan pencahayaan dramatis dan ornamen ukiran modern."
+      },
+      {
+        id: "THEME-GLASS",
+        name: "Cyber Glass Minimalist",
+        tag: "Avant-Garde & Sleek",
+        colorPalette: ["#4F46E5", "#EEF2FF", "#F43F5E"],
+        image: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80",
+        desc: "Struktur pelaminan akrilik transparan, instalasi cermin geometris, dan taburan bunga putih monokromatik kontemporer."
+      },
+      {
+        id: "THEME-BOTANICAL",
+        name: "Ethereal Botanical Glow",
+        tag: "Taman Impian Romantis",
+        colorPalette: ["#4338CA", "#FFF1F2", "#F43F5E"],
+        image: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=600&q=80",
+        desc: "Hutan bunga gantung nan rimbun, kehangatan lampu fairy lights berkedip lembut, dan nuansa alam organik yang intim."
+      }
+    ];
+
+    // 2. Data Matriks Perbandingan Paket Wedding
+    const weddingPackagesData = [
+      {
+        id: "PKG-INTIMATE",
+        name: "Intimate Heritage Wedding",
+        badge: "Tamu s/d 300 Pax",
+        price: 22000000,
+        crewCount: "8 Orang Kru WO Hari H",
+        features: [
+          "1 Wedding Director (Pemimpin Acara)",
+          "1 Stage & Rundown Manager",
+          "2 Pendamping Mempelai (Bridal Escort)",
+          "2 Koordinator Katering & Meja VIP",
+          "2 Koordinator Meja Resepsionis & Angpao",
+          "Penyusunan Master Rundown & Buku Panduan Keluarga",
+          "Technical Meeting Seluruh Vendor di Lokasi H-7"
+        ]
+      },
+      {
+        id: "PKG-BALLROOM",
+        name: "Grand Ballroom Celebration",
+        badge: "Tamu 300 s/d 800 Pax",
+        price: 36000000,
+        crewCount: "14 Orang Kru WO Hari H",
+        features: [
+          "1 Senior Wedding Director",
+          "1 Floor & Security Stage Manager",
+          "3 Pendamping Pengantin & Orang Tua",
+          "4 Koordinator Katering & Logistik Buffet",
+          "3 Koordinator Penerima Tamu & Souvenir",
+          "2 Runner Perlengkapan Acara Cepat",
+          "Termasuk 1x MC Profesional Akad & Resepsi",
+          "Konsultasi Vendor Rekanan Tanpa Batas"
+        ]
+      },
+      {
+        id: "PKG-ROYAL",
+        name: "VVIP Royal Custom Production",
+        badge: "Tamu 800 s/d 1.500+ Pax",
+        price: 58000000,
+        crewCount: "22 Orang Kru WO Hari H",
+        features: [
+          "Lead Producer & 2 Associate Directors",
+          "Dedicated Protocol VIP & Pejabat Negara",
+          "Intercom Frekuensi Khusus 22 Channel",
+          "Koordinator Live Streaming Hybrid Multi-Camera",
+          "Full Day Wedding Care (Pemberkatan/Akad s/d After Party)",
+          "Pengawalan Souvenir & Penghitungan Angpao Brankas",
+          "Kompensasi Jaminan Kelancaran Acara 100%"
+        ]
+      }
+    ];
+
+    // State Management
+    let selectedTheme = weddingThemesData[0];
+    let selectedPackage = weddingPackagesData[0];
+    let selectedPaymentScheme = 'FREE'; // 'FREE' or 'LOCK'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set Default Wedding Date to 6 Weeks From Now
+      const weddingDate = new Date();
+      weddingDate.setDate(weddingDate.getDate() + 42);
+      document.getElementById('weddingDateInput').value = weddingDate.toISOString().split('T')[0];
+
+      renderThemeCards();
+      renderPackageCards();
+      updateBookingSlip();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToConsultation() {
+      document.getElementById('consultation-booking').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Render Theme Cards (Moodboard)
+    function renderThemeCards() {
+      const container = document.getElementById('themeCardsContainer');
+      container.innerHTML = '';
+
+      weddingThemesData.forEach(thm => {
+        const isSelected = selectedTheme && selectedTheme.id === thm.id;
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border-2 transition cursor-pointer flex flex-col justify-between select-none ${
+          isSelected 
+            ? 'bg-indigoTheme-indigoBg border-indigoTheme-indigo ring-2 ring-indigoTheme-indigo/25 shadow-sm' 
+            : 'bg-white border-indigoTheme-border hover:border-slate-400'
+        }`;
+        card.onclick = () => pickTheme(thm);
+
+        let colorsHtml = thm.colorPalette.map(c => `
+          <span class="w-4 h-4 rounded-full border border-slate-300 inline-block" style="background-color: ${c}"></span>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="space-y-3">
+            <div class="h-40 w-full rounded-lg overflow-hidden relative border border-indigoTheme-border">
+              <img src="${thm.image}" alt="${thm.name}" class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+              <div class="absolute top-2 left-2 bg-indigoTheme-indigoDeep/90 backdrop-blur px-2 py-0.5 rounded text-[10px] font-mono text-white font-bold">
+                ${thm.tag}
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-extrabold text-sm text-slate-900 font-display">${thm.name}</h4>
+              <p class="text-xs text-slate-600 font-sans mt-1 leading-relaxed">${thm.desc}</p>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-1.5">
+              ${colorsHtml}
+            </div>
+            <span class="font-bold ${isSelected ? 'text-indigoTheme-indigo' : 'text-slate-400'}">
+              ${isSelected ? '✓ Tema Aktif' : 'Pilih Konsep'}
+            </span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function pickTheme(thm) {
+      selectedTheme = thm;
+      renderThemeCards();
+      updateBookingSlip();
+    }
+
+    // Render Package Comparison Cards
+    function renderPackageCards() {
+      const container = document.getElementById('packagesListContainer');
+      container.innerHTML = '';
+
+      weddingPackagesData.forEach(pkg => {
+        const isSelected = selectedPackage && selectedPackage.id === pkg.id;
+
+        const card = document.createElement('div');
+        card.className = `p-5 sm:p-6 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          isSelected 
+            ? 'bg-white border-indigoTheme-indigo ring-2 ring-indigoTheme-indigo/20 shadow-md' 
+            : 'bg-white border-indigoTheme-border hover:border-slate-400 shadow-sm'
+        }`;
+        card.onclick = () => pickPackage(pkg);
+
+        let featuresHtml = pkg.features.map(f => `
+          <li class="flex items-center gap-2 text-xs text-slate-700">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-indigoTheme-indigo flex-shrink-0"></i>
+            <span>${f}</span>
+          </li>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-indigoTheme-border pb-3">
+              <div>
+                <span class="text-[10px] font-mono font-bold bg-indigoTheme-indigoBg text-indigoTheme-indigo px-2 py-0.5 rounded border border-indigo-200 uppercase">
+                  ${pkg.badge}
+                </span>
+                <h3 class="font-extrabold text-base text-slate-900 font-display mt-1">${pkg.name}</h3>
+              </div>
+              <div class="text-left sm:text-right font-mono mt-1 sm:mt-0">
+                <span class="text-base font-black text-indigoTheme-indigo">${formatRupiah(pkg.price)}</span>
+                <span class="text-[10px] text-slate-500 block font-sans">${pkg.crewCount}</span>
+              </div>
+            </div>
+
+            <ul class="space-y-2 py-1 font-sans">
+              ${featuresHtml}
+            </ul>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-500">Koordinator: <strong class="text-slate-800">${pkg.crewCount.split(' ')[0]} Petugas</strong></span>
+            <span class="text-xs font-bold ${isSelected ? 'text-indigoTheme-indigo' : 'text-slate-400'}">
+              ${isSelected ? '✓ Terpilih di Slip' : 'Klik untuk Pilih'}
+            </span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function pickPackage(pkg) {
+      selectedPackage = pkg;
+      renderPackageCards();
+      updateBookingSlip();
+    }
+
+    // Update Right Booking Slip
+    function updateBookingSlip() {
+      if (!selectedPackage || !selectedTheme) return;
+
+      document.getElementById('slipPackageBadge').innerText = selectedPackage.name.split(' ')[0].toUpperCase();
+      document.getElementById('slipPackageTitle').innerText = selectedPackage.name;
+      document.getElementById('slipThemeNameText').innerText = `Konsep: ${selectedTheme.name}`;
+      document.getElementById('slipPackagePriceText').innerText = formatRupiah(selectedPackage.price);
+      document.getElementById('slipPackageCapacityText').innerText = `Kapasitas: ${selectedPackage.badge} • ${selectedPackage.crewCount}`;
+
+      document.getElementById('slipContractAmount').innerText = formatRupiah(selectedPackage.price);
+      document.getElementById('slipGrandTotalText').innerText = formatRupiah(selectedPackage.price);
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      if (!selectedPackage) {
+        alert("Silakan pilih paket wedding terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-indigoTheme-indigo text-indigoTheme-indigo pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-indigoTheme-indigo text-white flex items-center justify-center text-[11px] font-bold";
+
+      selectPaymentScheme(selectedPaymentScheme);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    // Select Payment Scheme (Free Consultation vs Priority Token)
+    function selectPaymentScheme(scheme) {
+      selectedPaymentScheme = scheme;
+
+      const labelFree = document.getElementById('labelSchemeFree');
+      const labelLock = document.getElementById('labelSchemeLock');
+      const dotFree = document.getElementById('radioDotFree');
+      const dotLock = document.getElementById('radioDotLock');
+      const qrisLabel = document.getElementById('qrisPayableLabel');
+      const qrisAmount = document.getElementById('qrisPayableAmount');
+
+      if (scheme === 'FREE') {
+        labelFree.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-indigoTheme-indigoBg border-indigoTheme-indigo";
+        labelLock.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-indigoTheme-border hover:border-slate-400";
+        dotFree.className = "w-2 h-2 rounded-full bg-indigoTheme-indigo";
+        dotLock.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Biaya Registrasi Konsultasi:";
+        qrisAmount.innerText = "Rp 0 (Gratis)";
+      } else {
+        labelLock.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-indigoTheme-coralBg border-indigoTheme-coral";
+        labelFree.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-indigoTheme-border hover:border-slate-400";
+        dotLock.className = "w-2 h-2 rounded-full bg-indigoTheme-coral";
+        dotFree.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Priority Date Lock Token:";
+        qrisAmount.innerText = "Rp 500.000";
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi reservasi wedding berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const bride = document.getElementById('brideNameInput').value.trim() || 'Clarissa Lovata';
+      const groom = document.getElementById('groomNameInput').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('contactPhoneInput').value.trim() || '081299998888';
+      const venue = document.getElementById('venuePlanInput').value.trim() || 'Grand Ballroom Hotel Mulia Senayan';
+      const weddingDate = document.getElementById('weddingDateInput').value;
+      const consultSlot = document.getElementById('consultationSlotSelect').value;
+      const requests = document.getElementById('specialRequestsInput').value.trim() || '-';
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-indigoTheme-indigo text-indigoTheme-indigo pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-indigoTheme-indigo text-white flex items-center justify-center text-[11px] font-bold";
+
+      const randomPass = "PASS-FWO-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invPassNumber').innerText = randomPass;
+      document.getElementById('invDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invCouplesName').innerText = `${bride} & ${groom}`;
+      document.getElementById('invContactPhone').innerText = `WhatsApp: ${phone}`;
+      document.getElementById('invVenueLocation').innerText = venue;
+
+      document.getElementById('invWeddingDate').innerText = `Hari H: ${weddingDate}`;
+      document.getElementById('invConsultationSlot').innerText = `Sesi Temu: ${consultSlot.split('(')[0].trim()}`;
+
+      document.getElementById('invPackageTitle').innerText = selectedPackage.name;
+      document.getElementById('invThemeDetailText').innerText = `Konsep: ${selectedTheme.name} • ${selectedPackage.crewCount}`;
+      document.getElementById('invRequestsSummary').innerText = `Catatan: ${requests}`;
+      document.getElementById('invCapacityNumber').innerText = selectedPackage.badge;
+      document.getElementById('invContractPrice').innerText = formatRupiah(selectedPackage.price);
+
+      if (selectedPaymentScheme === 'LOCK') {
+        document.getElementById('invPassBadge').innerText = "PRIORITY DATE LOCKED PASS";
+        document.getElementById('invLockTokenFee').innerText = "Rp 500.000 (Lunas QRIS)";
+      } else {
+        document.getElementById('invPassBadge').innerText = "STANDARD CONSULTATION PASS";
+        document.getElementById('invLockTokenFee').innerText = "Rp 0 (Bebas Biaya)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedTheme = weddingThemesData[0];
+      selectedPackage = weddingPackagesData[0];
+      selectedPaymentScheme = 'FREE';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      renderThemeCards();
+      renderPackageCards();
+      updateBookingSlip();
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

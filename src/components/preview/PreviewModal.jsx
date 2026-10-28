@@ -1,6 +1,17 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Check, Eye, MessageCircle, Monitor, Smartphone, Tablet, X } from '../../lib/icons'
+import {
+  ArrowUpRight,
+  Check,
+  Eye,
+  MessageCircle,
+  Monitor,
+  RotateCcw,
+  ShieldCheck,
+  Smartphone,
+  Tablet,
+  X,
+} from '../../lib/icons'
 import { buildWhatsAppLink } from '../../lib/format'
 import { getCategoryLabel } from '../../data'
 import PreviewRenderer from './PreviewRenderer'
@@ -10,6 +21,20 @@ const VIEWPORTS = {
   tablet: { id: 'tablet', label: 'Tablet', icon: Tablet, widthLabel: '768 px', maxWidth: 768 },
   mobile: { id: 'mobile', label: 'Mobile', icon: Smartphone, widthLabel: '390 px', maxWidth: 390 },
 }
+
+/**
+ * Sandbox ketat: file template dieksekusi di origin opak (tanpa allow-same-origin),
+ * jadi tidak bisa menyentuh cookie/localStorage aplikasi. allow-scripts dibutuhkan
+ * karena tiap file template membawa interaksi sendiri (filter, kalkulator, form).
+ */
+const IFRAME_SANDBOX = [
+  'allow-scripts',
+  'allow-forms',
+  'allow-modals',
+  'allow-popups',
+  'allow-popups-to-escape-sandbox',
+  'allow-downloads',
+].join(' ')
 
 function ViewportSwitcher({ viewport, onChange, compact = false }) {
   return (
@@ -39,9 +64,12 @@ function ViewportSwitcher({ viewport, onChange, compact = false }) {
 }
 
 export default function PreviewModal({ template, viewport, onViewportChange, onClose, onSelect }) {
-  const scrollRef = useRef(null)
   const { theme, brand } = template
   const current = VIEWPORTS[viewport] || VIEWPORTS.desktop
+  const [frameState, setFrameState] = useState('loading')
+  const [reloadKey, setReloadKey] = useState(0)
+  const timeoutRef = useRef(null)
+
   const waLink = buildWhatsAppLink(template.name, {
     extra: `Saya melihat live preview di tampilan ${current.label} (${current.widthLabel}).`,
   })
@@ -54,9 +82,40 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
     onSelect(template)
   }
 
+  const reload = useCallback(() => {
+    setFrameState('loading')
+    setReloadKey((key) => key + 1)
+  }, [])
+
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = 0
-  }, [template.id, viewport])
+    setFrameState('loading')
+    window.clearTimeout(timeoutRef.current)
+    timeoutRef.current = window.setTimeout(() => {
+      setFrameState((state) => (state === 'loading' ? 'slow' : state))
+    }, 9000)
+
+    let alive = true
+    fetch(template.htmlPath, { method: 'HEAD' })
+      .then((response) => {
+        if (alive && !response.ok) setFrameState('error')
+      })
+      .catch(() => {
+        /* biarkan iframe mencoba; fallback diatur oleh state slow/error iframe */
+      })
+
+    return () => {
+      alive = false
+      window.clearTimeout(timeoutRef.current)
+    }
+  }, [template.htmlPath, template.id, reloadKey])
+
+  useEffect(() => {
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previous
+    }
+  }, [])
 
   const content = (
     <div
@@ -75,7 +134,7 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
               className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[12px] font-black"
               style={{ background: theme.accent, color: theme.ink }}
             >
-              {brand.mark}
+              {brand?.mark}
             </span>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
@@ -87,7 +146,7 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
                 )}
               </div>
               <p className="truncate text-[10px] text-slate-500">
-                {getCategoryLabel(template.category)} · {brand.name}
+                {getCategoryLabel(template.category)} · {template.id}.html
               </p>
             </div>
           </div>
@@ -102,6 +161,25 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={reload}
+              title="Muat ulang preview"
+              aria-label="Muat ulang preview"
+              className="grid h-9 w-9 place-items-center rounded-lg border border-white/12 text-slate-400 transition hover:border-white/25 hover:bg-white/5 hover:text-white"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </button>
+            <a
+              href={template.htmlPath}
+              target="_blank"
+              rel="noreferrer"
+              title="Buka file template di tab baru"
+              aria-label="Buka file template di tab baru"
+              className="hidden h-9 w-9 place-items-center rounded-lg border border-white/12 text-slate-400 transition hover:border-white/25 hover:bg-white/5 hover:text-white sm:grid"
+            >
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
             <button
               type="button"
               onClick={() => onSelect(template)}
@@ -161,12 +239,41 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
               </div>
             )}
 
-            <div
-              ref={scrollRef}
-              key={`${template.id}-${viewport}`}
-              className="preview-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white"
-            >
-              <PreviewRenderer template={template} />
+            <div className="relative min-h-0 flex-1 bg-white">
+              {frameState !== 'ready' && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#080c14] text-center">
+                  <span className="h-8 w-8 animate-spin rounded-full border-2 border-white/15 border-t-indigo-400" />
+                  <p className="text-[11.5px] font-semibold text-slate-300">
+                    Memuat {template.id}.html…
+                  </p>
+                  <p className="max-w-[280px] text-[10.5px] leading-relaxed text-slate-500">
+                    {frameState === 'slow'
+                      ? 'Masih memuat aset dari CDN. Tunggu sebentar atau muat ulang preview.'
+                      : 'Menjalankan template di iframe sandbox terisolasi.'}
+                  </p>
+                </div>
+              )}
+
+              {frameState === 'error' ? (
+                <div className="preview-scroll absolute inset-0 overflow-y-auto overscroll-contain">
+                  <PreviewRenderer template={template} />
+                </div>
+              ) : (
+                <iframe
+                  key={`${template.id}-${reloadKey}`}
+                  src={template.htmlPath}
+                  title={`Live preview ${template.name}`}
+                  sandbox={IFRAME_SANDBOX}
+                  referrerPolicy="no-referrer"
+                  loading="eager"
+                  className="h-full w-full border-0 bg-white"
+                  onLoad={() => {
+                    window.clearTimeout(timeoutRef.current)
+                    setFrameState('ready')
+                  }}
+                  onError={() => setFrameState('error')}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -178,8 +285,8 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
               tutup
             </span>
             <span className="hidden items-center gap-1 sm:flex">
-              <Eye className="h-3 w-3" />
-              Preview interaktif — coba filter, kalkulator, dan form
+              <ShieldCheck className="h-3 w-3 text-emerald-400/80" />
+              Iframe sandbox — template berjalan terisolasi, coba semua interaksinya
             </span>
             <span className="flex items-center gap-1 sm:hidden">
               <Eye className="h-3 w-3" />

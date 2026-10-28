@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetCare Clinic - Reservasi Grooming, Kalender Vet & Riwayat Vaksin</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            steel: {
+              ice: '#F0F4F8',        // Ice Gray Background
+              navy: '#102A43',       // Dark Navy Utama
+              navyLight: '#243B53',  // Card Surface
+              denim: '#486581',      // Muted Denim
+              denimLight: '#627D98', // Soft Denim Text
+              blueMuted: '#BCCCDC',  // Light Blue Ice
+              border: '#D9E2EC',     // Border Gray Light
+              accent: '#334E68'      // Deep Steel Button
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(240, 244, 248, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .clinical-pattern {
+      background-color: #F0F4F8;
+      background-image: radial-gradient(#48658115 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableMedicalPass, #printableMedicalPass * {
+        visibility: visible;
+      }
+      #printableMedicalPass {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #102A43 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="clinical-pattern text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-steel-blueMuted selection:text-steel-navy">
+
+  <!-- Top Announcement Bar (Dark Navy & Ice Gray) -->
+  <div class="bg-steel-navy text-slate-300 text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-steel-navyLight font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-steel-denim text-white">VET & GROOMING HOSPITAL</span>
+    <span>Ruang Steril Bertekanan Positif • Dokter Hewan Berizin PBVET • Isolasi Khusus Kucing & Anjing Terpisah</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-steel-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-steel-navy flex items-center justify-center text-white shadow-md shadow-slate-900/10 flex-shrink-0 transition group-hover:bg-steel-navyLight">
+          <i data-lucide="paw-print" class="w-5 h-5 text-steel-blueMuted"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-steel-navy block leading-tight font-display">
+            PETCARE<span class="text-steel-denim ml-0.5">CLINIC</span>
+            <span class="text-[10px] font-mono bg-steel-border text-steel-navy px-1.5 py-0.5 rounded ml-1 font-bold uppercase">ANIMAL HUB</span>
+          </span>
+          <span class="text-[10px] text-steel-denimLight tracking-wider block font-medium">KLINIK HEWAN & GROOMING SPA</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-steel-denim">
+        <a href="#services-hub" onclick="switchTab('grooming')" class="text-steel-navy hover:text-steel-denim transition">Layanan Grooming</a>
+        <a href="#services-hub" onclick="switchTab('vet')" class="hover:text-steel-navy transition">Konsultasi Dokter</a>
+        <a href="#passport-section" class="hover:text-steel-navy transition">Riwayat Vaksin</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-white text-steel-navy font-mono px-3 py-1.5 rounded-lg border border-steel-border">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Dokter Siaga: 3 Vet Aktif
+        </div>
+        <button onclick="scrollToHub()" class="bg-steel-navy hover:bg-steel-navyLight text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-slate-900/10 flex items-center gap-2 active:scale-95">
+          <i data-lucide="calendar" class="w-4 h-4 text-steel-blueMuted"></i>
+          <span>Reservasi Jadwal</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Steel Blue Palette) -->
+  <section class="border-b border-steel-border bg-white py-12 sm:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-steel-ice border border-steel-border text-steel-navy text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-steel-navy animate-ping"></span>
+          Integrated Pet Medical Record & Grooming Scheduler
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-steel-navy tracking-tight leading-[1.18] font-display">
+          Kesehatan & Kenyamanan Sahabat Berbulu Anda, Terpantau Rapi.
+        </h1>
+        <p class="text-steel-denim text-base sm:text-lg leading-relaxed font-sans">
+          Jadwalkan sesi perawatan <strong class="text-steel-navy">Grooming Anti-Kutu/Jamur</strong> tanpa antrean lama, konsultasikan kondisi anabul bersama <strong class="text-steel-navy">Dokter Hewan Berpengalaman</strong>, serta simpan seluruh riwayat vaksinasi dan rekam medis anabul dalam satu paspor digital yang praktis.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-steel-border text-left font-mono">
+        <div class="p-4 rounded-xl bg-steel-ice border border-steel-border">
+          <span class="text-xs text-steel-denim block font-sans">Antrean Terjadwal</span>
+          <span class="text-2xl font-extrabold text-steel-navy font-display mt-0.5 block">0 Menit Tunggu</span>
+        </div>
+        <div class="p-4 rounded-xl bg-steel-ice border border-steel-border">
+          <span class="text-xs text-steel-denim block font-sans">Fasilitas Rawat</span>
+          <span class="text-2xl font-extrabold text-steel-navy font-display mt-0.5 block">Kucing & Anjing Terpisah</span>
+        </div>
+        <div class="p-4 rounded-xl bg-steel-ice border border-steel-border">
+          <span class="text-xs text-steel-denim block font-sans">Sertifikasi Vaksin</span>
+          <span class="text-2xl font-extrabold text-steel-navy font-display mt-0.5 block">Buku Paspor Sah</span>
+        </div>
+        <div class="p-4 rounded-xl bg-steel-ice border border-steel-border">
+          <span class="text-xs text-steel-denim block font-sans">Pembayaran</span>
+          <span class="text-2xl font-extrabold text-steel-navy font-display mt-0.5 block">DP 30% / Lunas</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-steel-navy text-steel-navy pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-steel-navy text-white flex items-center justify-center text-[11px]">1</span>
+          Pilih Servis & Tanggal
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-steel-border text-steel-denimLight pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-steel-denim flex items-center justify-center text-[11px] border border-steel-border font-bold">2</span>
+          Data Pasien & Pembayaran
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-steel-border text-steel-denimLight pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-steel-denim flex items-center justify-center text-[11px] border border-steel-border font-bold">3</span>
+          Paspor Medis & Invoice
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Booking Hub Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="services-hub">
+    
+    <!-- STEP 1: Dual Tab (Grooming vs Vet Calendar) & Live Medical Record Slip -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Service Type Toggle Switcher -->
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-steel-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-steel-navy font-bold whitespace-nowrap">Kategori Layanan:</span>
+          <div class="flex items-center p-1 bg-steel-ice rounded-xl border border-steel-border w-full sm:w-auto">
+            <button id="tabGroomingBtn" onclick="switchTab('grooming')" class="px-4 py-2 rounded-lg font-bold bg-steel-navy text-white shadow-sm transition flex items-center gap-1.5">
+              <i data-lucide="bath" class="w-3.5 h-3.5"></i>
+              <span>1. Grooming & Spa</span>
+            </button>
+            <button id="tabVetBtn" onclick="switchTab('vet')" class="px-4 py-2 rounded-lg font-bold text-steel-denim hover:text-steel-navy transition flex items-center gap-1.5">
+              <i data-lucide="stethoscope" class="w-3.5 h-3.5"></i>
+              <span>2. Konsultasi Dokter (Vet)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Anabul Species Selector -->
+        <div class="flex items-center gap-2">
+          <span class="text-steel-denim font-bold">Jenis Hewan:</span>
+          <div class="flex items-center p-1 bg-steel-ice rounded-xl border border-steel-border">
+            <button id="speciesCatBtn" onclick="selectSpecies('CAT')" class="px-3 py-1 rounded-lg font-bold bg-white text-steel-navy shadow-sm transition">Kucing (Cat)</button>
+            <button id="speciesDogBtn" onclick="selectSpecies('DOG')" class="px-3 py-1 rounded-lg font-bold text-steel-denim hover:text-steel-navy transition">Anjing (Dog)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split Layout: Service Options / Vet Calendar (7 Cols) vs Live Pet Passport Slip (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Dynamic View based on Tab (7 Cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- TAB A: Grooming Packages Section -->
+          <div id="groomingSectionWrapper" class="space-y-4">
+            <div class="flex items-center justify-between border-b border-steel-border pb-3">
+              <div>
+                <h3 class="text-base font-bold text-steel-navy font-display">Pilihan Paket Perawatan Grooming</h3>
+                <p class="text-xs text-steel-denim mt-0.5">Menggunakan sampo hypoallergenic aman untuk kulit anabul sensitif</p>
+              </div>
+              <span class="text-xs font-mono bg-steel-ice text-steel-navy px-2.5 py-1 rounded border border-steel-border">DURASI: ~60-90 MENIT</span>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3.5" id="groomingCardsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- TAB B: Vet Calendar & Consultation Doctor -->
+          <div id="vetSectionWrapper" class="hidden space-y-4">
+            <div class="flex items-center justify-between border-b border-steel-border pb-3">
+              <div>
+                <h3 class="text-base font-bold text-steel-navy font-display">Kalender Konsultasi Dokter Hewan</h3>
+                <p class="text-xs text-steel-denim mt-0.5">Pemeriksaan fisik menyeluruh, vaksinasi, steril, dan tindakan medis</p>
+              </div>
+              <span class="text-xs font-mono bg-steel-ice text-steel-navy px-2.5 py-1 rounded border border-steel-border">RUANG STERIL VET</span>
+            </div>
+
+            <!-- Doctor Profile Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="vetDoctorsContainer">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Consultation Type Selection -->
+            <div class="p-4 bg-white rounded-2xl border border-steel-border space-y-2.5 text-xs font-mono">
+              <label class="block font-bold text-steel-navy">Pilihan Tindakan Medis / Konsultasi:</label>
+              <select id="vetServiceSelect" onchange="onVetServiceChange()" class="w-full bg-steel-ice px-3.5 py-2.5 rounded-xl border border-steel-border focus:outline-none focus:ring-2 focus:ring-steel-navy text-slate-800 font-sans font-medium">
+                <option value="KONSULTASI" selected>Pemeriksaan Umum & Konsultasi Fisik (Rp 120.000)</option>
+                <option value="VAKSIN_TRICAT">Suntik Vaksin Inti / Booster Tahunan (Rp 180.000)</option>
+                <option value="VAKSIN_RABIES">Suntik Vaksin Rabies Resmi Dinas (Rp 150.000)</option>
+                <option value="SCALING_GIGI">Pembersihan Karang Gigi Anabul / Dental (Rp 250.000)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Appointment Schedule Picker (Tanggal & Jam Kedatangan) -->
+          <div class="bg-white p-5 rounded-2xl border border-steel-border space-y-3 font-mono text-xs">
+            <span class="text-steel-navy font-bold block text-sm font-sans flex items-center gap-2">
+              <i data-lucide="clock" class="w-4 h-4 text-steel-denim"></i>
+              Jadwal Kedatangan Klinik:
+            </span>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-600 mb-1">Tanggal Booking:</label>
+                <input type="date" id="appointmentDateInput" onchange="updateRecordSlip()" class="w-full bg-steel-ice px-3 py-2 rounded-xl border border-steel-border focus:outline-none focus:ring-2 focus:ring-steel-navy text-slate-800 font-sans font-medium" />
+              </div>
+              <div>
+                <label class="block text-slate-600 mb-1">Pilihan Sesi Jam:</label>
+                <select id="appointmentSlotSelect" onchange="updateRecordSlip()" class="w-full bg-steel-ice px-3 py-2 rounded-xl border border-steel-border focus:outline-none focus:ring-2 focus:ring-steel-navy text-slate-800 font-sans font-medium">
+                  <option value="Sesi Pagi (09:00 - 10:30 WIB)">Sesi Pagi (09:00 - 10:30 WIB)</option>
+                  <option value="Sesi Siang (11:00 - 12:30 WIB)" selected>Sesi Siang (11:00 - 12:30 WIB)</option>
+                  <option value="Sesi Sore (14:30 - 16:00 WIB)">Sesi Sore (14:30 - 16:00 WIB)</option>
+                  <option value="Sesi Malam (18:30 - 20:00 WIB)">Sesi Malam (18:30 - 20:00 WIB)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Live Pet Health Passport & Booking Summary (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-steel-border shadow-xl space-y-5 sticky top-24 font-mono text-xs" id="passport-section">
+          <div class="flex items-center justify-between border-b border-steel-border pb-3">
+            <div>
+              <span class="text-xs font-bold text-steel-denim uppercase tracking-wider block">Pet Medical Passport</span>
+              <h4 class="text-sm font-bold text-steel-navy font-display mt-0.5">Buku Rekam Medis Anabul</h4>
+            </div>
+            <span class="text-[10px] font-bold bg-steel-ice text-steel-navy px-2 py-0.5 rounded border border-steel-border" id="passportSpeciesBadge">KUCING</span>
+          </div>
+
+          <!-- Pet Passport Summary Card -->
+          <div class="p-4 bg-steel-ice rounded-xl border border-steel-border space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-full bg-steel-navy text-white flex items-center justify-center font-bold font-sans">
+                  <span id="petAvatarInitial">M</span>
+                </div>
+                <div>
+                  <h5 class="font-bold text-steel-navy text-sm font-display leading-tight" id="slipPetName">Mochi (British Shorthair)</h5>
+                  <p class="text-[10px] text-steel-denim font-sans">ID Pasien: #VET-202610-88</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">PASIEN AKTIF</span>
+            </div>
+
+            <!-- Riwayat Vaksinasi Terdaftar (Fitur Inti) -->
+            <div class="pt-2 border-t border-steel-border/80 space-y-1.5 font-sans">
+              <span class="text-[11px] font-bold text-steel-navy block">Riwayat Imunisasi & Vaksin Terakhir:</span>
+              <div class="space-y-1 text-[11px] text-slate-600">
+                <div class="flex justify-between items-center bg-white p-1.5 rounded-lg border border-steel-border">
+                  <span>Vaksin Tricat / Tetracat:</span>
+                  <span class="font-bold text-emerald-700 font-mono text-[10px]">Lengkap (Mei 2026)</span>
+                </div>
+                <div class="flex justify-between items-center bg-white p-1.5 rounded-lg border border-steel-border">
+                  <span>Vaksin Rabies Resmi:</span>
+                  <span class="font-bold text-emerald-700 font-mono text-[10px]">Aktif s/d Nov 2026</span>
+                </div>
+                <div class="flex justify-between items-center bg-white p-1.5 rounded-lg border border-steel-border">
+                  <span>Obat Cacing & Kutu Tetes:</span>
+                  <span class="font-bold text-amber-700 font-mono text-[10px]">Perlu Jadwal Ulang</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Booking Summary -->
+          <div class="space-y-2 border-t border-steel-border pt-3">
+            <div class="flex justify-between text-slate-600">
+              <span>Layanan Terpilih:</span>
+              <strong class="text-steel-navy text-right font-sans" id="slipServiceTitle">Grooming Sehat & Kutu</strong>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Jadwal Jam:</span>
+              <strong class="text-steel-navy font-mono" id="slipScheduleTime">11:00 - 12:30 WIB</strong>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Tanggal:</span>
+              <strong class="text-steel-navy font-mono" id="slipScheduleDate">28 Okt 2026</strong>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Biaya Layanan:</span>
+              <strong class="text-steel-navy font-mono" id="slipServiceCost">Rp 160.000</strong>
+            </div>
+          </div>
+
+          <!-- Grand Total Price Box -->
+          <div class="p-3.5 bg-steel-navy rounded-xl border border-steel-navyLight text-white flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-steel-blueMuted uppercase block">Total Biaya Perawatan</span>
+              <span class="text-xs text-slate-300 font-sans">Garansi Anabul Nyaman</span>
+            </div>
+            <span class="text-xl font-extrabold text-white font-mono" id="slipGrandTotal">Rp 160.000</span>
+          </div>
+
+          <!-- Next Action Button -->
+          <button onclick="goToStep2()" class="w-full bg-steel-navy hover:bg-steel-navyLight text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-slate-900/15 flex items-center justify-center gap-2 active:scale-95 font-sans">
+            <span>Konfirmasi Anabul & Bayar DP</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-steel-blueMuted"></i>
+          </button>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *DP 30% mengunci meja grooming dan waktu konsultasi dokter hewan agar terbebas dari antrean klinik.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Pet Profile Form & QRIS Payment (DP 30% vs Lunas) -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Owner & Pet Profile Form -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-steel-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-steel-border pb-3 font-mono">
+            <h3 class="text-base font-bold text-steel-navy flex items-center gap-2 font-display">
+              <i data-lucide="file-badge" class="w-4 h-4 text-steel-denim"></i>
+              Biodata Anabul & Pemilik
+            </h3>
+            <span class="text-xs text-slate-400">Verifikasi Paspor</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama Anabul *</label>
+                <input type="text" id="petNameInput" value="Mochi" oninput="onPetNameChange()" class="w-full bg-steel-ice px-3.5 py-2.5 rounded-xl border border-steel-border focus:outline-none focus:ring-2 focus:ring-steel-navy text-slate-900 font-sans font-medium" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Ras / Breed Anabul *</label>
+                <input type="text" id="petBreedInput" value="British Shorthair (BSH)" class="w-full bg-steel-ice px-3.5 py-2.5 rounded-xl border border-steel-border focus:outline-none focus:ring-2 focus:ring-steel-navy text-slate-900 font-sans font-medium" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama Pemilik (Owner) *</label>
+                <input type="text" id="ownerNameInput" value="Tedi Mahendra" class="w-full bg-steel-ice px-3.5 py-2.5 rounded-xl border border-steel-border focus:outline-none focus:ring-2 focus:ring-steel-navy text-slate-900 font-sans font-medium" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp Aktif *</label>
+                <input type="tel" id="ownerPhoneInput" value="081299998888" class="w-full bg-steel-ice px-3.5 py-2.5 rounded-xl border border-steel-border focus:outline-none focus:ring-2 focus:ring-steel-navy text-slate-900 font-sans font-medium" />
+              </div>
+            </div>
+
+            <!-- Payment Scheme Choice (DP 30% vs Lunas) -->
+            <div class="space-y-3 pt-2">
+              <label class="block font-bold text-slate-700">Pilihan Skema Pembayaran Klinik:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- DP 30% Card -->
+                <label onclick="selectPaymentScheme('DP')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-steel-ice border-steel-navy" id="labelSchemeDp">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-steel-navy">DP Booking (30%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-steel-navy flex items-center justify-center">
+                      <span id="radioDotDp" class="w-2 h-2 rounded-full bg-steel-navy"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-sans leading-normal">Kunci jadwal reservasi, sisa 70% dilunasi di kasir klinik setelah anabul selesai dirawat.</p>
+                  <span class="text-xs font-black text-steel-navy mt-2 block font-mono" id="schemeDpPriceText">Rp 48.000</span>
+                </label>
+
+                <!-- Full 100% Card -->
+                <label onclick="selectPaymentScheme('FULL')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-steel-border hover:border-slate-400" id="labelSchemeFull">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-steel-navy">Pelunasan Penuh (100%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                      <span id="radioDotFull" class="w-2 h-2 rounded-full bg-transparent"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-sans leading-normal">Langsung serah terima anabul ke ruang perawatan tanpa jeda administrasi kasir.</p>
+                  <span class="text-xs font-black text-slate-800 mt-2 block font-mono" id="schemeFullPriceText">Rp 160.000</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Riwayat Alergi / Sifat Khusus Anabul:</label>
+              <input type="text" id="petNotesInput" value="Agak pemalu dengan suara hairdryer kencang. Suka diberi treat snack basah." class="w-full bg-steel-ice px-3.5 py-2.5 rounded-xl border border-steel-border focus:outline-none focus:ring-2 focus:ring-steel-navy text-slate-900 font-sans" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Gateway Box -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-steel-border shadow-xl space-y-5 font-mono text-xs">
+          <div class="flex items-center justify-between border-b border-steel-border pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gateway QRIS Dinamis</span>
+            <span class="text-[10px] font-bold bg-steel-ice text-steel-navy px-2 py-0.5 rounded border border-steel-border">PET SCHEDULE LOCK</span>
+          </div>
+
+          <!-- QR Box -->
+          <div class="border border-steel-border rounded-xl p-4 bg-steel-ice text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-600 font-black text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-white bg-steel-navy px-2 py-0.5 rounded" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-steel-border">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-PETCARE-CLINIC-RESERVATION" alt="QRIS PetCare" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-500">
+              <p class="font-medium text-slate-700">Scan via BCA, Mandiri, BRI, GoPay, OVO, ShopeePay</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">NMID: ID1099238866 - PT PETCARE KLINIK NUSANTARA</p>
+            </div>
+
+            <!-- Total Amount to Pay Highlight -->
+            <div class="mt-3 pt-3 border-t border-steel-border w-full flex items-center justify-between px-1">
+              <span class="text-xs text-slate-600" id="qrisPayableLabel">Nominal Ditagihkan (DP 30%):</span>
+              <span id="qrisPayableAmount" class="text-base font-extrabold text-steel-navy font-mono">Rp 48.000</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-steel-navy hover:bg-steel-navyLight active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-slate-900/20 font-sans">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+              <span>Simulasi Bayar Berhasil (Callback Webhook)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition font-sans">
+              Kembali / Ubah Layanan
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Setelah verifikasi QRIS, tiket reservasi boarding klinik dan paspor medis digital diterbitkan otomatis.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Pet Medical Pass & Official Invoice (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-900 no-print">
+        <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-sans">Jadwal Perawatan Anabul Berhasil Dikonfirmasi!</h4>
+          <p class="text-xs text-emerald-800 mt-0.5 font-sans">Buku Paspor Medis dan Tiket Check-in Klinik telah terbit. Tunjukkan barcode saat tiba di meja resepsionis.</p>
+        </div>
+      </div>
+
+      <!-- Printable Medical Passport Card -->
+      <div id="printableMedicalPass" class="bg-white rounded-2xl border border-steel-border shadow-2xl p-6 sm:p-9 space-y-6 font-mono text-slate-900">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-steel-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-steel-navy flex items-center justify-center text-white font-bold">
+                <i data-lucide="paw-print" class="w-4 h-4 text-steel-blueMuted"></i>
+              </div>
+              <span class="font-extrabold text-lg text-steel-navy font-display">PETCARE<span class="text-steel-denim">CLINIC</span></span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-sans">Pusat Kesehatan Hewan & Grooming Spa • Jl. Bintaro Utama Sektor 9 No. 42, Tangerang Selatan</p>
+            <p class="text-[11px] text-slate-500 font-sans">Emergency Vet Hotline: +62 812-9999-8888 • vet@petcare.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-steel-ice text-steel-navy uppercase border border-steel-border" id="invStatusBadge">
+              APPOINTMENT CONFIRMED
+            </span>
+            <p id="invReceiptNumber" class="text-xs font-bold text-steel-navy mt-1">PASSPORT-VET-202610-8812</p>
+            <p id="invDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Anabul & Owner Metadata Card -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-steel-ice p-4 rounded-xl border border-steel-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">PASIEN ANABUL:</span>
+            <p id="invPetName" class="font-bold text-steel-navy text-sm font-sans">Mochi</p>
+            <p id="invPetBreed" class="text-slate-600 font-sans">British Shorthair (Kucing)</p>
+            <p id="invOwnerContact" class="text-slate-500 mt-1">Owner: Tedi Mahendra (081299998888)</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">JADWAL KEDATANGAN:</span>
+            <p id="invScheduleDate" class="font-bold text-slate-900 text-sm font-sans">Rabu, 28 Okt 2026</p>
+            <p id="invScheduleTime" class="text-steel-navy font-bold">11:00 - 12:30 WIB</p>
+            <p class="text-emerald-700 font-bold mt-1" id="invPaymentStatusText">DP 30% TERVERIFIKASI</p>
+          </div>
+        </div>
+
+        <!-- Vaccine & Medical History Attached -->
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-steel-border space-y-2 text-xs font-sans">
+          <span class="font-bold text-steel-navy block">Catatan Medis & Status Imunisasi Anabul:</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-600">
+            <div>• Vaksin Inti: <strong>Tricat/Tetracat Lengkap</strong></div>
+            <div>• Vaksin Rabies: <strong>Aktif Masa Berlaku</strong></div>
+            <div class="col-span-2 text-steel-denim italic" id="invSpecialNotes">Catatan: Agak pemalu dengan hairdryer kencang. Suka treat snack basah.</div>
+          </div>
+        </div>
+
+        <!-- Service Table Summary -->
+        <div class="border border-steel-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-steel-ice text-slate-600 border-b border-steel-border font-sans">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Deskripsi Tindakan & Perawatan</th>
+                <th class="py-2.5 px-3 font-bold text-center">Spesies</th>
+                <th class="py-2.5 px-4 font-bold text-right">Tarif</th>
+                <th class="py-2.5 px-4 font-bold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-steel-border font-medium font-sans">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-slate-900 block text-sm" id="invServiceTitle">Grooming Sehat & Kutu</span>
+                  <div class="text-[11px] text-slate-500 mt-0.5" id="invServiceSpecs">Mandi obat anti-kutu/jamur, potong kuku, bersihkan telinga, blow dry steril</div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-700 font-mono" id="invSpeciesText">Kucing (Cat)</td>
+                <td class="py-3 px-4 text-right text-slate-600 font-mono" id="invUnitRate">Rp 160.000</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono" id="invRawTotal">Rp 160.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-steel-ice border-t border-steel-border text-xs font-mono">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-bold">Total Nilai Perawatan:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900" id="invSubtotalAmount">Rp 160.000</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-700 font-bold">Sudah Dibayar (DP 30% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700" id="invPaidAmount">Rp 48.000</td>
+              </tr>
+              <tr class="bg-white border-t border-steel-border">
+                <td colspan="3" class="py-2.5 px-4 text-steel-navy text-right font-extrabold text-xs">
+                  Sisa Pelunasan di Meja Kasir Klinik:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-steel-navy" id="invDueAmount">
+                  Rp 112.000
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Clinic Gate Check-in Barcode -->
+        <div class="p-4 bg-steel-ice rounded-xl border border-steel-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Pet Clinic Check-in Barcode</span>
+            <p class="text-xs font-bold text-steel-navy">Tunjukkan Barcode ke Petugas Resepsionis Saat Tiba di Klinik</p>
+            <p class="text-[11px] text-slate-500">Anabul Anda akan langsung diarahkan ke meja periksa/groomer sesuai jadwal tanpa antre.</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-lg inline-block shadow-sm border border-steel-border">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=PETCARE-PASSPORT-VALID-8812" alt="Passport Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] text-slate-400 mt-1">PASS-8812-OK</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-white hover:bg-slate-100 text-steel-navy text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-steel-border font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Reservasi Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-steel-navy hover:bg-steel-navyLight text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-slate-900/15 font-sans">
+            <i data-lucide="printer" class="w-4 h-4 text-steel-blueMuted"></i>
+            Cetak Paspor Medis & Tiket (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Clinic Standards Strip -->
+  <section class="border-t border-steel-border bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-steel-navy uppercase tracking-wider font-mono">Clinical Standards</span>
+        <h3 class="text-xl font-bold text-steel-navy font-display mt-1">Standar Keamanan Medis PetCare Clinic</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-steel-ice border border-steel-border">
+          <div class="w-9 h-9 rounded-lg bg-white text-steel-navy flex items-center justify-center mb-3 shadow-sm">
+            <i data-lucide="shield-plus" class="w-5 h-5 text-emerald-600"></i>
+          </div>
+          <h4 class="font-bold text-steel-navy text-sm mb-1 font-display">Ruang Tunggu Khusus Terpisah</h4>
+          <p class="text-steel-denim leading-relaxed">Area tunggu kucing dan anjing didesain terpisah dengan partisi akustik kedap suara untuk mencegah stres pada anabul selama kunjungan.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-steel-ice border border-steel-border">
+          <div class="w-9 h-9 rounded-lg bg-white text-steel-navy flex items-center justify-center mb-3 shadow-sm">
+            <i data-lucide="sparkles" class="w-5 h-5 text-steel-denim"></i>
+          </div>
+          <h4 class="font-bold text-steel-navy text-sm mb-1 font-display">Sterilisasi UV Alat Grooming</h4>
+          <p class="text-steel-denim leading-relaxed">Gunting kuku, sisir, dan clipper dicelupkan ke cairan disinfektan medis dan disterilkan menggunakan sinar UV-C setelah setiap pemakaian.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-steel-ice border border-steel-border">
+          <div class="w-9 h-9 rounded-lg bg-white text-steel-navy flex items-center justify-center mb-3 shadow-sm">
+            <i data-lucide="clipboard-check" class="w-5 h-5 text-steel-navy"></i>
+          </div>
+          <h4 class="font-bold text-steel-navy text-sm mb-1 font-display">Buku Vaksin Digital Tersinkron</h4>
+          <p class="text-steel-denim leading-relaxed">Pengingat jadwal booster vaksin rabies dan vaksin inti otomatis dikirimkan ke WhatsApp pemilik anabul 7 hari sebelum jatuh tempo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Steel Blue Theme) -->
+  <footer class="bg-steel-navy text-slate-400 py-8 border-t border-steel-navyLight text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-steel-navyLight border border-steel-blueMuted flex items-center justify-center text-steel-blueMuted font-bold text-[10px]">P</div>
+        <span class="font-bold text-white font-sans">PetCare Clinic & Hospital</span>
+        <span class="text-slate-500">| ID: petcare-clinic</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right font-sans">&copy; 2026 PT PetCare Klinik Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Paket Grooming
+    const groomingPackages = [
+      {
+        id: "GRM-BASIC",
+        name: "Basic Hygiene Grooming",
+        rates: { CAT: 110000, DOG: 130000 },
+        desc: "Mandi bersih sampo organik, potong kuku, bersihkan telinga & blow dry sisir rapi",
+        duration: "45 - 60 Menit"
+      },
+      {
+        id: "GRM-MEDICATED",
+        name: "Grooming Terapi Kutu & Jamur",
+        rates: { CAT: 160000, DOG: 185000 },
+        desc: "Bilas sampo anti-fungal sulfur, sisir kutu halus & oles salep pereda iritasi kulit",
+        duration: "60 - 75 Menit"
+      },
+      {
+        id: "GRM-SPA",
+        name: "Luxury Coat Spa & De-Shedding",
+        rates: { CAT: 210000, DOG: 250000 },
+        desc: "Treatment pelembut bulu kusut, perapian bulu telapak kaki & parfum wangi anabul",
+        duration: "75 - 90 Menit"
+      }
+    ];
+
+    // 2. Data Dokter Hewan (Vet Calendar)
+    const vetDoctors = [
+      {
+        id: "VET-01",
+        name: "drh. Anindya Putri, M.Si",
+        role: "Spesialis Feline (Kucing) & Bedah Minor",
+        schedule: "Senin - Kamis (09:00 - 16:00 WIB)",
+        image: "https://images.unsplash.com/photo-1594824813589-3d964cb77c38?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "VET-02",
+        name: "drh. Dimas Pratama",
+        role: "Dokter Hewan Umum & Vaksinasi",
+        schedule: "Rabu - Minggu (13:00 - 20:00 WIB)",
+        image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80"
+      }
+    ];
+
+    const vetServicesPrices = {
+      KONSULTASI: 120000,
+      VAKSIN_TRICAT: 180000,
+      VAKSIN_RABIES: 150000,
+      SCALING_GIGI: 250000
+    };
+
+    // State Management
+    let currentServiceTab = 'grooming'; // 'grooming' or 'vet'
+    let currentSpecies = 'CAT'; // 'CAT' or 'DOG'
+    let selectedGrooming = groomingPackages[1]; // Default Medicated
+    let selectedVetDoctor = vetDoctors[0];
+    let selectedVetServiceKey = 'KONSULTASI';
+    let selectedPaymentScheme = 'DP'; // 'DP' (30%) or 'FULL'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Default Date: Tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('appointmentDateInput').value = tomorrow.toISOString().split('T')[0];
+
+      renderGroomingCards();
+      renderVetDoctors();
+      updateRecordSlip();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-steel-border text-steel-denimLight pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-steel-denim flex items-center justify-center text-[11px] border border-steel-border font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-steel-border text-steel-denimLight pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-steel-denim flex items-center justify-center text-[11px] border border-steel-border font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToHub() {
+      document.getElementById('services-hub').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Tab Switcher (Grooming vs Vet)
+    function switchTab(tab) {
+      currentServiceTab = tab;
+      const btnGrooming = document.getElementById('tabGroomingBtn');
+      const btnVet = document.getElementById('tabVetBtn');
+      const wrapGrooming = document.getElementById('groomingSectionWrapper');
+      const wrapVet = document.getElementById('vetSectionWrapper');
+
+      if (tab === 'grooming') {
+        btnGrooming.className = "px-4 py-2 rounded-lg font-bold bg-steel-navy text-white shadow-sm transition flex items-center gap-1.5";
+        btnVet.className = "px-4 py-2 rounded-lg font-bold text-steel-denim hover:text-steel-navy transition flex items-center gap-1.5";
+        wrapGrooming.classList.remove('hidden');
+        wrapVet.classList.add('hidden');
+      } else {
+        btnVet.className = "px-4 py-2 rounded-lg font-bold bg-steel-navy text-white shadow-sm transition flex items-center gap-1.5";
+        btnGrooming.className = "px-4 py-2 rounded-lg font-bold text-steel-denim hover:text-steel-navy transition flex items-center gap-1.5";
+        wrapVet.classList.remove('hidden');
+        wrapGrooming.classList.add('hidden');
+      }
+
+      updateRecordSlip();
+    }
+
+    // Species Switcher (Cat vs Dog)
+    function selectSpecies(species) {
+      currentSpecies = species;
+      const btnCat = document.getElementById('speciesCatBtn');
+      const btnDog = document.getElementById('speciesDogBtn');
+
+      if (species === 'CAT') {
+        btnCat.className = "px-3 py-1 rounded-lg font-bold bg-white text-steel-navy shadow-sm transition";
+        btnDog.className = "px-3 py-1 rounded-lg font-bold text-steel-denim hover:text-steel-navy transition";
+        document.getElementById('passportSpeciesBadge').innerText = "KUCING (CAT)";
+        document.getElementById('petBreedInput').value = "British Shorthair (BSH)";
+      } else {
+        btnDog.className = "px-3 py-1 rounded-lg font-bold bg-white text-steel-navy shadow-sm transition";
+        btnCat.className = "px-3 py-1 rounded-lg font-bold text-steel-denim hover:text-steel-navy transition";
+        document.getElementById('passportSpeciesBadge').innerText = "ANJING (DOG)";
+        document.getElementById('petBreedInput').value = "Golden Retriever / Poodle";
+      }
+
+      renderGroomingCards();
+      updateRecordSlip();
+    }
+
+    // Render Grooming Cards
+    function renderGroomingCards() {
+      const container = document.getElementById('groomingCardsContainer');
+      container.innerHTML = '';
+
+      groomingPackages.forEach(pkg => {
+        const isSelected = selectedGrooming && selectedGrooming.id === pkg.id;
+        const rate = pkg.rates[currentSpecies];
+
+        const card = document.createElement('div');
+        card.onclick = () => pickGrooming(pkg);
+        card.className = `p-4 rounded-2xl border-2 transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+          isSelected 
+            ? 'bg-white border-steel-navy ring-2 ring-steel-navy/20 shadow-md' 
+            : 'bg-white/80 border-steel-border hover:border-steel-denim'
+        }`;
+
+        card.innerHTML = `
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-sm text-steel-navy font-display">${pkg.name}</span>
+              <span class="text-[10px] bg-steel-ice text-steel-denim px-2 py-0.5 rounded font-mono">${pkg.duration}</span>
+            </div>
+            <p class="text-xs text-slate-500 font-sans leading-relaxed">${pkg.desc}</p>
+          </div>
+          <div class="text-left sm:text-right font-mono flex-shrink-0">
+            <span class="text-base font-black text-steel-navy">${formatRupiah(rate)}</span>
+            <span class="text-[10px] text-slate-400 block font-sans">${currentSpecies === 'CAT' ? 'Tarif Kucing' : 'Tarif Anjing'}</span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function pickGrooming(pkg) {
+      selectedGrooming = pkg;
+      renderGroomingCards();
+      updateRecordSlip();
+    }
+
+    // Render Vet Doctors
+    function renderVetDoctors() {
+      const container = document.getElementById('vetDoctorsContainer');
+      container.innerHTML = '';
+
+      vetDoctors.forEach(doc => {
+        const isSelected = selectedVetDoctor && selectedVetDoctor.id === doc.id;
+
+        const card = document.createElement('div');
+        card.onclick = () => pickDoctor(doc);
+        card.className = `p-3.5 rounded-2xl border-2 transition cursor-pointer flex items-center gap-3 ${
+          isSelected 
+            ? 'bg-white border-steel-navy ring-2 ring-steel-navy/20 shadow-md' 
+            : 'bg-white border-steel-border hover:border-steel-denim'
+        }`;
+
+        card.innerHTML = `
+          <img src="${doc.image}" alt="${doc.name}" class="w-12 h-12 rounded-xl object-cover border border-steel-border flex-shrink-0" />
+          <div class="space-y-0.5">
+            <h4 class="font-bold text-xs text-steel-navy font-display">${doc.name}</h4>
+            <p class="text-[11px] text-steel-denim leading-tight">${doc.role}</p>
+            <span class="text-[9px] text-slate-400 font-mono block">${doc.schedule}</span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function pickDoctor(doc) {
+      selectedVetDoctor = doc;
+      renderVetDoctors();
+      updateRecordSlip();
+    }
+
+    function onVetServiceChange() {
+      selectedVetServiceKey = document.getElementById('vetServiceSelect').value;
+      updateRecordSlip();
+    }
+
+    function onPetNameChange() {
+      const name = document.getElementById('petNameInput').value.trim() || 'Mochi';
+      document.getElementById('slipPetName').innerText = `${name} (${document.getElementById('petBreedInput').value})`;
+      document.getElementById('petAvatarInitial').innerText = name.charAt(0).toUpperCase();
+    }
+
+    // Update Right Passport Slip
+    function updateRecordSlip() {
+      const dateVal = document.getElementById('appointmentDateInput').value;
+      const slotVal = document.getElementById('appointmentSlotSelect').value;
+      
+      let serviceTitle = "";
+      let serviceCost = 0;
+
+      if (currentServiceTab === 'grooming') {
+        serviceTitle = `${selectedGrooming.name} (${currentSpecies === 'CAT' ? 'Kucing' : 'Anjing'})`;
+        serviceCost = selectedGrooming.rates[currentSpecies];
+      } else {
+        const selectEl = document.getElementById('vetServiceSelect');
+        const selectedText = selectEl.options[selectEl.selectedIndex].text.split('(')[0].trim();
+        serviceTitle = `${selectedText} bersama ${selectedVetDoctor.name.split(',')[0]}`;
+        serviceCost = vetServicesPrices[selectedVetServiceKey] || 120000;
+      }
+
+      const dpAmount = Math.round(serviceCost * 0.3); // DP 30%
+      const dueAmount = serviceCost - dpAmount;
+
+      document.getElementById('slipServiceTitle').innerText = serviceTitle;
+      document.getElementById('slipScheduleTime').innerText = slotVal.split('(')[1].replace(')', '');
+      document.getElementById('slipScheduleDate').innerText = dateVal;
+      document.getElementById('slipServiceCost').innerText = formatRupiah(serviceCost);
+      document.getElementById('slipGrandTotal').innerText = formatRupiah(serviceCost);
+
+      // Set Prices in Step 2 Scheme Cards
+      document.getElementById('schemeDpPriceText').innerText = formatRupiah(dpAmount);
+      document.getElementById('schemeFullPriceText').innerText = formatRupiah(serviceCost);
+
+      return { serviceTitle, serviceCost, dpAmount, dueAmount };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-steel-navy text-steel-navy pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-steel-navy text-white flex items-center justify-center text-[11px] font-bold";
+
+      selectPaymentScheme(selectedPaymentScheme);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-steel-border text-steel-denimLight pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-steel-denim flex items-center justify-center text-[11px] border border-steel-border font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function selectPaymentScheme(scheme) {
+      selectedPaymentScheme = scheme;
+
+      const labelDp = document.getElementById('labelSchemeDp');
+      const labelFull = document.getElementById('labelSchemeFull');
+      const dotDp = document.getElementById('radioDotDp');
+      const dotFull = document.getElementById('radioDotFull');
+      const qrisLabel = document.getElementById('qrisPayableLabel');
+      const qrisAmount = document.getElementById('qrisPayableAmount');
+
+      const slipData = updateRecordSlip();
+
+      if (scheme === 'DP') {
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-steel-ice border-steel-navy";
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-steel-border hover:border-slate-400";
+        dotDp.className = "w-2 h-2 rounded-full bg-steel-navy";
+        dotFull.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Ditagihkan (DP 30%):";
+        qrisAmount.innerText = formatRupiah(slipData.dpAmount);
+      } else {
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-steel-ice border-steel-navy";
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-steel-border hover:border-slate-400";
+        dotFull.className = "w-2 h-2 rounded-full bg-steel-navy";
+        dotDp.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Ditagihkan (Lunas 100%):";
+        qrisAmount.innerText = formatRupiah(slipData.serviceCost);
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi reservasi klinik telah berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const pet = document.getElementById('petNameInput').value.trim() || 'Mochi';
+      const breed = document.getElementById('petBreedInput').value.trim() || 'British Shorthair';
+      const owner = document.getElementById('ownerNameInput').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('ownerPhoneInput').value.trim() || '081299998888';
+      const notes = document.getElementById('petNotesInput').value.trim() || '-';
+      const dateVal = document.getElementById('appointmentDateInput').value;
+      const slotVal = document.getElementById('appointmentSlotSelect').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-steel-navy text-steel-navy pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-steel-navy text-white flex items-center justify-center text-[11px] font-bold";
+
+      const slipData = updateRecordSlip();
+      const paid = selectedPaymentScheme === 'DP' ? slipData.dpAmount : slipData.serviceCost;
+      const due = slipData.serviceCost - paid;
+
+      const randomReceipt = "PASSPORT-VET-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invReceiptNumber').innerText = randomReceipt;
+      document.getElementById('invDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invPetName').innerText = pet;
+      document.getElementById('invPetBreed').innerText = `${breed} (${currentSpecies === 'CAT' ? 'Kucing' : 'Anjing'})`;
+      document.getElementById('invOwnerContact').innerText = `Owner: ${owner} (${phone})`;
+
+      document.getElementById('invScheduleDate').innerText = dateVal;
+      document.getElementById('invScheduleTime').innerText = slotVal;
+      document.getElementById('invSpecialNotes').innerText = `Catatan Anabul: ${notes}`;
+
+      document.getElementById('invServiceTitle').innerText = slipData.serviceTitle;
+      document.getElementById('invSpeciesText').innerText = currentSpecies === 'CAT' ? 'Kucing (Cat)' : 'Anjing (Dog)';
+      document.getElementById('invUnitRate').innerText = formatRupiah(slipData.serviceCost);
+      document.getElementById('invRawTotal').innerText = formatRupiah(slipData.serviceCost);
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(slipData.serviceCost);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+      document.getElementById('invDueAmount').innerText = formatRupiah(due);
+
+      if (selectedPaymentScheme === 'DP') {
+        document.getElementById('invStatusBadge').innerText = "APPOINTMENT DP (30%)";
+        document.getElementById('invPaymentStatusText').innerText = "DP 30% TERVERIFIKASI";
+      } else {
+        document.getElementById('invStatusBadge').innerText = "APPOINTMENT LUNAS (100%)";
+        document.getElementById('invPaymentStatusText').innerText = "LUNAS 100% (EXPRESS PASS)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      currentServiceTab = 'grooming';
+      currentSpecies = 'CAT';
+      selectedGrooming = groomingPackages[1];
+      selectedPaymentScheme = 'DP';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-steel-border text-steel-denimLight pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-steel-denim flex items-center justify-center text-[11px] border border-steel-border font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-steel-border text-steel-denimLight pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-steel-denim flex items-center justify-center text-[11px] border border-steel-border font-bold";
+
+      switchTab('grooming');
+      selectSpecies('CAT');
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

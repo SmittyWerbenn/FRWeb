@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GrosirPangan Sembako - Portal Agen Grosir, Batas MOQ & Re-Order Cepat</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            punch: {
+              black: '#18181B',       // Zinc Hitam Utama
+              surface: '#27272A',     // Card Surface
+              border: '#3F3F46',      // Dark Border
+              gray: '#71717A',        // Muted Gray
+              lightGray: '#A1A1AA',
+              rose: '#F43F5E',        // Rose Pink Punch
+              roseHover: '#E11D48',
+              roseMuted: '#881337',
+              canvas: '#09090B'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(24, 24, 27, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .punch-glow {
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.25);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableInvoice, #printableInvoice * {
+        visibility: visible;
+      }
+      #printableInvoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #18181B !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-punch-canvas text-slate-100 antialiased font-sans min-h-screen flex flex-col selection:bg-punch-rose selection:text-white">
+
+  <!-- Top Announcement Bar (Monochrome & Rose Punch) -->
+  <div class="bg-punch-black text-punch-lightGray text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-punch-border font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-punch-rose text-white">PORTAL DISTRIBUTOR B2B</span>
+    <span>Harga Pabrik Langsung • Suplai Beras, Minyak, Gula & Tepung Skala Tonase • Armada Truk Siap Kirim Hari Ini</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-punch-border shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-punch-surface border border-punch-rose flex items-center justify-center text-punch-rose shadow-md shadow-punch-rose/20 flex-shrink-0 transition group-hover:bg-punch-rose group-hover:text-white">
+          <i data-lucide="boxes" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-white block leading-tight font-display">
+            GROSIR<span class="text-punch-rose">PANGAN</span>
+            <span class="text-[10px] font-mono bg-punch-surface text-punch-lightGray border border-punch-border px-1.5 py-0.5 rounded ml-1.5 font-bold uppercase">SEMBAKO</span>
+          </span>
+          <span class="text-[10px] text-punch-gray tracking-wider block font-mono font-medium">B2B TRADING & SUPPLY NETWORK</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-punch-lightGray">
+        <a href="#quick-reorder" class="text-punch-rose hover:text-white transition">Re-Order Cepat</a>
+        <a href="#matrix-catalog" class="hover:text-punch-rose transition">Tabel Matrix SKU</a>
+        <a href="#tier-portal" class="hover:text-punch-rose transition">Tier Agen</a>
+      </nav>
+
+      <!-- Cart Action & Tier Badge -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-punch-surface text-punch-lightGray font-mono px-3 py-1.5 rounded-lg border border-punch-border">
+          <span class="w-2 h-2 rounded-full bg-punch-rose animate-pulse"></span>
+          Akun: <strong class="text-white" id="headerTierText">Agen Platinum</strong>
+        </div>
+        <button onclick="scrollToMatrix()" class="bg-punch-rose hover:bg-punch-roseHover text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-punch-rose/25 flex items-center gap-2 active:scale-95">
+          <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+          <span>Keranjang PO</span>
+          <span id="headerCartCount" class="w-5 h-5 rounded-full bg-white text-punch-black font-black text-[11px] flex items-center justify-center">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section & Fast Re-Order Bar -->
+  <section class="border-b border-punch-border bg-gradient-to-b from-punch-black via-punch-canvas to-punch-canvas py-10 sm:py-14" id="quick-reorder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-punch-surface border border-punch-border text-punch-rose text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-punch-rose"></span>
+          Direct FMCG Wholesale Distributor
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.18] font-display">
+          Kebutuhan Pokok Toko & Warung. Cepat, Murah, Pasti Ready.
+        </h1>
+        <p class="text-punch-lightGray text-base sm:text-lg leading-relaxed">
+          Pesan kembali stok sembako harian Anda hanya dalam satu klik. Pantau batas minimum order (MOQ) secara otomatis, dan nikmati potongan harga khusus level agen grosir langsung dari gudang pusat.
+        </p>
+      </div>
+
+      <!-- Quick 1-Click Repeat Order Templates Strip -->
+      <div class="p-4 sm:p-5 rounded-2xl bg-punch-black border border-punch-border space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono font-bold text-punch-lightGray uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="history" class="w-4 h-4 text-punch-rose"></i>
+            Templat Repeat Order Cepat (Muat Instan PO)
+          </span>
+          <span class="text-[11px] text-punch-gray font-mono">Simulasi PO Favorit</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+          <!-- Template 1 -->
+          <button onclick="applyRepeatOrder('WARUNG')" class="p-3.5 rounded-xl border border-punch-border bg-punch-surface hover:border-punch-rose text-left transition flex items-center justify-between group">
+            <div>
+              <span class="font-bold text-white block group-hover:text-punch-rose">Paket Restock Warung Madura</span>
+              <span class="text-[11px] text-punch-gray">Beras 50kg, Minyak 10 Dus, Gula 5 Sak</span>
+            </div>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-punch-rose opacity-0 group-hover:opacity-100 transition"></i>
+          </button>
+
+          <!-- Template 2 -->
+          <button onclick="applyRepeatOrder('KATERING')" class="p-3.5 rounded-xl border border-punch-border bg-punch-surface hover:border-punch-rose text-left transition flex items-center justify-between group">
+            <div>
+              <span class="font-bold text-white block group-hover:text-punch-rose">Paket Restoran & Dapur Katering</span>
+              <span class="text-[11px] text-punch-gray">Beras Premium 150kg, Terigu 10 Sak</span>
+            </div>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-punch-rose opacity-0 group-hover:opacity-100 transition"></i>
+          </button>
+
+          <!-- Template 3 -->
+          <button onclick="applyRepeatOrder('DISTRO')" class="p-3.5 rounded-xl border border-punch-border bg-punch-surface hover:border-punch-rose text-left transition flex items-center justify-between group">
+            <div>
+              <span class="font-bold text-white block group-hover:text-punch-rose">Paket Agen Kulakan Tonase</span>
+              <span class="text-[11px] text-punch-gray">Kapasitas 1 Mobil Pick-up Penuh (MOQ Max)</span>
+            </div>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-punch-rose opacity-0 group-hover:opacity-100 transition"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-punch-rose text-punch-rose pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-punch-rose text-white flex items-center justify-center text-[11px]">1</span>
+          Matrix SKU & Batas MOQ
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-punch-border text-punch-gray pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-punch-surface text-punch-gray flex items-center justify-center text-[11px] border border-punch-border">2</span>
+          Verifikasi PO & QRIS Pay
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-punch-border text-punch-gray pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-punch-surface text-punch-gray flex items-center justify-center text-[11px] border border-punch-border">3</span>
+          Surat Jalan DO & Faktur
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Trading Desk Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="matrix-catalog">
+    
+    <!-- STEP 1: Fast Order Matrix Table & Cart Drawer -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Tier Selector Strip & Category Switcher -->
+      <div class="bg-punch-surface p-4 sm:p-5 rounded-2xl border border-punch-border flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs" id="tier-portal">
+        
+        <!-- Tier Level Selector -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <span class="text-punch-lightGray font-bold whitespace-nowrap">Tier Akun Agen:</span>
+          <div class="flex items-center p-1 bg-punch-black rounded-xl border border-punch-border w-full sm:w-auto">
+            <button id="tierRetailBtn" onclick="switchTier('RETAIL')" class="px-3 py-1.5 rounded-lg font-bold text-punch-gray hover:text-white transition">Retail</button>
+            <button id="tierSilverBtn" onclick="switchTier('SILVER')" class="px-3 py-1.5 rounded-lg font-bold text-punch-gray hover:text-white transition">Silver (Warung)</button>
+            <button id="tierPlatinumBtn" onclick="switchTier('PLATINUM')" class="px-3 py-1.5 rounded-lg font-bold bg-punch-rose text-white shadow-sm transition">Platinum (Distro)</button>
+          </div>
+        </div>
+
+        <!-- Margin Info -->
+        <div class="flex items-center gap-2 text-punch-lightGray">
+          <i data-lucide="tag" class="w-4 h-4 text-punch-rose"></i>
+          <span>Margin Keuntungan Tier Aktif: <strong class="text-punch-rose" id="marginDiscountText">Diskon Distributor ~12%</strong></span>
+        </div>
+
+      </div>
+
+      <!-- Split Layout: SKU Order Matrix Table (7 Cols) vs Live PO Summary (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Rapid SKU Table Matrix (7 Cols) -->
+        <div class="lg:col-span-7 bg-punch-surface rounded-2xl border border-punch-border shadow-xl overflow-hidden">
+          <div class="p-4 sm:p-5 border-b border-punch-border flex items-center justify-between font-mono">
+            <div>
+              <h3 class="text-base font-bold text-white font-display">Tabel Kulakan Sembako Grosir</h3>
+              <p class="text-xs text-punch-gray mt-0.5">Input jumlah karton/sak. Perhatikan batas minimum MOQ.</p>
+            </div>
+            <span class="text-xs bg-punch-black px-2.5 py-1 rounded text-punch-rose border border-punch-rose/30 font-bold">READY GUDANG</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-punch-black text-punch-lightGray border-b border-punch-border">
+                <tr>
+                  <th class="py-3 px-4 font-bold">Komoditas & Merk</th>
+                  <th class="py-3 px-3 font-bold text-center">Batas MOQ</th>
+                  <th class="py-3 px-4 font-bold text-right">Harga Tier/Unit</th>
+                  <th class="py-3 px-4 font-bold text-center">Jumlah Order</th>
+                </tr>
+              </thead>
+              <tbody id="matrixTableBody" class="divide-y divide-punch-border font-medium">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Live PO Cart & MOQ Validation Status (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-punch-surface p-6 rounded-2xl border border-punch-border shadow-xl space-y-5 sticky top-24 font-mono" id="po-summary">
+          <div class="flex items-center justify-between border-b border-punch-border pb-3">
+            <div>
+              <span class="text-xs font-bold text-punch-gray uppercase tracking-wider block">Ringkasan Purchase Order (PO)</span>
+              <h4 class="text-sm font-bold text-white font-display mt-0.5">Keranjang Belanja Toko</h4>
+            </div>
+            <span class="text-[11px] font-bold bg-punch-rose text-white px-2 py-0.5 rounded" id="poItemCountBadge">0 Komoditas</span>
+          </div>
+
+          <!-- Empty Notice -->
+          <div id="emptyPoNotice" class="py-10 text-center text-punch-gray space-y-2">
+            <i data-lucide="package-search" class="w-10 h-10 mx-auto text-punch-border"></i>
+            <p class="text-xs font-sans">Belum ada barang yang diinput.<br>Masukkan kuantitas pada tabel di samping atau klik templat re-order cepat.</p>
+          </div>
+
+          <!-- Items Container -->
+          <div id="poItemsContainer" class="hidden space-y-3 max-h-60 overflow-y-auto pr-1">
+            <!-- Injected via JavaScript -->
+          </div>
+
+          <!-- MOQ Warning Strip (Jika ada item di bawah MOQ) -->
+          <div id="moqWarningAlert" class="hidden p-3 bg-punch-roseMuted/40 border border-punch-rose rounded-xl text-xs text-rose-200 space-y-1">
+            <div class="flex items-center gap-1.5 font-bold text-punch-rose">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              Batas Minimum Order (MOQ) Belum Tercapai!
+            </div>
+            <p class="text-[11px] text-punch-lightGray leading-relaxed" id="moqWarningText">
+              Beberapa komoditas belum memenuhi syarat kuota karton/sak minimum untuk tier ini.
+            </p>
+          </div>
+
+          <!-- Calculations -->
+          <div id="poCalculationsBox" class="hidden space-y-2.5 border-t border-punch-border pt-4 text-xs">
+            <div class="flex justify-between text-punch-lightGray">
+              <span>Total Berat Muatan:</span>
+              <span class="font-bold text-white" id="totalWeightDisplay">~0 Kg</span>
+            </div>
+            <div class="flex justify-between text-punch-lightGray">
+              <span>Estimasi Selisih Keuntungan Toko:</span>
+              <span class="font-bold text-emerald-400" id="totalMarginSavings">+ Rp 0</span>
+            </div>
+            <div class="flex justify-between text-punch-lightGray">
+              <span>Ongkos Kirim Armada Truk:</span>
+              <span class="font-bold text-white" id="shippingDisplay">Gratis (Min. Muatan Terpenuhi)</span>
+            </div>
+
+            <!-- Grand Total -->
+            <div class="p-3.5 bg-punch-black rounded-xl border border-punch-border flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-punch-gray uppercase block">Total Nilai Faktur PO</span>
+                <span class="text-xs text-punch-lightGray">Termasuk PPN Beras/Gula</span>
+              </div>
+              <span class="text-xl font-black text-punch-rose font-mono" id="grandTotalPoText">Rp 0</span>
+            </div>
+
+            <!-- Next Button -->
+            <button id="btnProceedToPo" onclick="goToStep2()" class="w-full bg-punch-rose hover:bg-punch-roseHover text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-lg shadow-punch-rose/25 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <span>Lanjut ke Verifikasi PO & Alamat Toko</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <p class="text-[10px] text-punch-gray text-center leading-normal">
+            *Pengiriman langsung dari gudang regional terdekat menggunakan armada pick-up/truk tertutup.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Delivery Store Details & QRIS Payment Commitment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Store Identity & Delivery Destination -->
+        <div class="lg:col-span-7 bg-punch-surface p-6 sm:p-7 rounded-2xl border border-punch-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-punch-border pb-3 font-mono">
+            <h3 class="text-base font-bold text-white flex items-center gap-2 font-display">
+              <i data-lucide="store" class="w-4 h-4 text-punch-rose"></i>
+              Identitas Toko / Agen Penerima
+            </h3>
+            <span class="text-xs text-punch-gray">Data Surat Jalan (DO)</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-punch-lightGray mb-1">Nama Toko / Usaha *</label>
+                <input type="text" id="storeName" value="Toko Sembako Berkah Mandiri" class="w-full bg-punch-black px-3.5 py-2.5 rounded-xl border border-punch-border focus:outline-none focus:ring-2 focus:ring-punch-rose text-white font-sans" />
+              </div>
+              <div>
+                <label class="block font-bold text-punch-lightGray mb-1">Nama Penanggung Jawab *</label>
+                <input type="text" id="ownerName" value="Tedi Mahendra" class="w-full bg-punch-black px-3.5 py-2.5 rounded-xl border border-punch-border focus:outline-none focus:ring-2 focus:ring-punch-rose text-white font-sans" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-punch-lightGray mb-1">Nomor WhatsApp Toko *</label>
+                <input type="tel" id="storePhone" value="081299998888" class="w-full bg-punch-black px-3.5 py-2.5 rounded-xl border border-punch-border focus:outline-none focus:ring-2 focus:ring-punch-rose text-white font-sans" />
+              </div>
+              <div>
+                <label class="block font-bold text-punch-lightGray mb-1">Jadwal Pengantaran Armada *</label>
+                <select id="deliverySlotSelect" class="w-full bg-punch-black px-3.5 py-2.5 rounded-xl border border-punch-border focus:outline-none focus:ring-2 focus:ring-punch-rose text-white">
+                  <option value="Shift Pagi (08:00 - 11:30 WIB)" selected>Shift Pagi (08:00 - 11:30 WIB)</option>
+                  <option value="Shift Siang (13:00 - 16:30 WIB)">Shift Siang (13:00 - 16:30 WIB)</option>
+                  <option value="Shift Malam (Bongkar Muatan 20:00+ WIB)">Shift Malam Bongkar (20:00+ WIB)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-punch-lightGray mb-1">Alamat Gudang / Toko Penerima *</label>
+              <textarea id="storeAddress" rows="2" class="w-full bg-punch-black px-3.5 py-2.5 rounded-xl border border-punch-border focus:outline-none focus:ring-2 focus:ring-punch-rose text-white font-sans">Jl. Raya Cisauk Lapan No. 45, Cisauk, Kabupaten Tangerang, Banten</textarea>
+            </div>
+
+            <div>
+              <label class="block font-bold text-punch-lightGray mb-1">Catatan Khusus Supir / Bongkar Muatan:</label>
+              <input type="text" id="deliveryNotes" value="Akses mobil engkel bisa masuk sampai depan toko. Sedia tenaga kuli bongkar di lokasi." class="w-full bg-punch-black px-3.5 py-2.5 rounded-xl border border-punch-border focus:outline-none focus:ring-2 focus:ring-punch-rose text-white font-sans" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Down Payment / Full QRIS Settlement -->
+        <div class="lg:col-span-5 bg-punch-surface p-6 rounded-2xl border border-punch-border shadow-xl space-y-5">
+          <div class="flex items-center justify-between border-b border-punch-border pb-3 font-mono">
+            <span class="text-xs font-bold text-punch-gray uppercase tracking-wider">Otorisasi Pembayaran PO</span>
+            <span class="text-[10px] font-bold bg-punch-rose text-white px-2 py-0.5 rounded">INSTANT SETTLEMENT</span>
+          </div>
+
+          <!-- QRIS Box -->
+          <div class="border border-punch-border rounded-xl p-4 bg-punch-black text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2 font-mono">
+              <span class="text-red-500 font-bold text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-punch-rose" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-300">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-GROSIRPANGAN-PO-SETTLEMENT" alt="QRIS Grosir" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-punch-gray font-mono">
+              <p class="text-punch-lightGray">BCA, Mandiri, BRI, BNI, GoPay, OVO</p>
+              <p class="text-[10px] text-punch-gray">NMID: ID1088776611 - PT GROSIRPANGAN SEMBAKO</p>
+            </div>
+
+            <!-- Total PO Amount -->
+            <div class="mt-3 pt-3 border-t border-punch-border w-full flex items-center justify-between px-1 font-mono">
+              <span class="text-xs text-punch-lightGray">Total Tagihan PO:</span>
+              <span id="qrisPayableAmount" class="text-base font-black text-punch-rose">Rp 0</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2 font-mono">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-punch-rose hover:bg-punch-roseHover text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-punch-rose/25 active:scale-95 font-sans">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Simulasi Bayar PO (Terbitkan Surat Jalan)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-punch-black hover:bg-punch-surface text-punch-lightGray font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+              Kembali / Koreksi Jumlah Barang
+            </button>
+          </div>
+
+          <p class="text-[10px] text-punch-gray font-mono text-center leading-normal">
+            *Setelah verifikasi sukses, surat jalan pengiriman dan nomor barcode muatan diterbitkan otomatis ke supir truk.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Delivery Order (Surat Jalan DO Sah Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-punch-surface border border-punch-rose rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-white no-print">
+        <div class="w-10 h-10 rounded-full bg-punch-rose text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-display">Pembayaran PO Berhasil & Jadwal Muatan Terkunci!</h4>
+          <p class="text-xs text-punch-lightGray font-mono mt-0.5">Surat Jalan Pengiriman (DO) resmi telah diterbitkan ke bagian gudang pengiriman sembako.</p>
+        </div>
+      </div>
+
+      <!-- Printable DO Document Card -->
+      <div id="printableInvoice" class="bg-punch-surface rounded-2xl border border-punch-border shadow-2xl p-6 sm:p-9 space-y-6 font-mono text-white">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-punch-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-punch-rose flex items-center justify-center text-white font-bold">
+                <i data-lucide="boxes" class="w-4 h-4"></i>
+              </div>
+              <span class="font-bold text-lg text-white font-display">GROSIR<span class="text-punch-rose">PANGAN</span> SEMBAKO</span>
+            </div>
+            <p class="text-[11px] text-punch-gray">PT GrosirPangan Nusantara • Kompleks Pergudangan Marunda Center, Bekasi</p>
+            <p class="text-[11px] text-punch-gray">Dispatching Logistik: +62 812-9999-8888 • order@grosirpangan.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-punch-rose/20 text-punch-rose uppercase border border-punch-rose">
+              OFFICIAL DELIVERY ORDER (DO)
+            </span>
+            <p id="invDoNumber" class="text-xs font-bold text-white mt-1">DO-GP-202610-9921</p>
+            <p id="invDateText" class="text-[11px] text-punch-gray">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Store & Receiver Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-punch-black p-4 rounded-xl border border-punch-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-punch-gray block mb-0.5">TOKO / PENERIMA:</span>
+            <p id="invStoreName" class="font-bold text-white text-sm">Toko Sembako Berkah Mandiri</p>
+            <p id="invOwnerName" class="text-punch-lightGray">PIC: Tedi Mahendra (081299998888)</p>
+            <p id="invStoreAddress" class="text-punch-gray mt-1 leading-relaxed">Cisauk, Kab. Tangerang</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-punch-gray block mb-0.5">JADWAL ARMADA & STATUS:</span>
+            <p id="invDeliverySlot" class="font-bold text-punch-rose text-sm">Shift Pagi (08:00 - 11:30 WIB)</p>
+            <p id="invTierUsed" class="text-punch-lightGray">Akun: Agen Platinum</p>
+            <p class="text-emerald-400 font-bold mt-1">STATUS: LUNAS (QRIS Verified)</p>
+          </div>
+        </div>
+
+        <!-- Commodities Table -->
+        <div class="border border-punch-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-punch-black text-punch-lightGray border-b border-punch-border">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Komoditas Sembako</th>
+                <th class="py-2.5 px-3 font-bold text-center">Volume Qty</th>
+                <th class="py-2.5 px-4 font-bold text-right">Harga Grosir</th>
+                <th class="py-2.5 px-4 font-bold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="doTableBody" class="divide-y divide-punch-border font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+            <tfoot class="bg-punch-black border-t border-punch-border font-bold">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-punch-lightGray">Total Berat Muatan:</td>
+                <td class="py-2 px-4 text-right text-white" id="invTotalWeight">~0 Kg</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-punch-lightGray">Ongkos Kirim Armada Truk:</td>
+                <td class="py-2 px-4 text-right text-emerald-400">GRATIS</td>
+              </tr>
+              <tr class="bg-punch-rose/10 border-t-2 border-punch-rose text-sm">
+                <td colspan="3" class="py-2.5 px-4 text-right text-punch-rose font-extrabold">Total Nilai Faktur DO:</td>
+                <td class="py-2.5 px-4 text-right text-punch-rose font-black font-mono" id="invGrandTotal">Rp 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Driver Check-in Barcode & Warehouse Seal -->
+        <div class="p-4 bg-punch-black rounded-xl border border-punch-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-punch-gray uppercase tracking-wider">Warehouse Cargo Dispatch Pass</span>
+            <p class="text-xs font-bold text-white">Scan Barcode untuk Serah Terima Timbang di Pintu Gudang Toko</p>
+            <p class="text-[11px] text-punch-gray">Sopir wajib menyerahkan nota timbang resmi dan memeriksa segel karung bersama penerima.</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-lg inline-block shadow">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=GROSIRPANGAN-DO-PASS-VALID-202610" alt="DO Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] text-punch-gray mt-1">DO-9921-SEMBAKO</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below DO -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-punch-surface hover:bg-punch-border text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-punch-border">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Buat PO Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-punch-rose hover:bg-punch-roseHover text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-punch-rose/25">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Surat Jalan & Faktur (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-punch-black text-punch-gray py-8 border-t border-punch-border text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-punch-surface border border-punch-rose flex items-center justify-center text-punch-rose font-bold text-[10px]">G</div>
+        <span class="font-bold text-white font-display">GrosirPangan Sembako Platform</span>
+        <span class="text-punch-gray">| ID: grosirpangan-sembako</span>
+      </div>
+      <p class="text-punch-gray text-center md:text-right">&copy; 2026 PT GrosirPangan Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Komoditas Sembako Master dengan Tier Pricing & MOQ
+    const commoditiesData = [
+      {
+        id: "SEM-BRS-01",
+        name: "Beras Premium Ramos Setra (Karung 50kg)",
+        unit: "Sak (50kg)",
+        unitWeightKg: 50,
+        moq: { RETAIL: 2, SILVER: 5, PLATINUM: 10 },
+        priceTier: { RETAIL: 720000, SILVER: 685000, PLATINUM: 650000 },
+        desc: "Beras putih pulen, patahan < 5%, tanpa pemutih"
+      },
+      {
+        id: "SEM-MYK-01",
+        name: "Minyak Goreng Sawit Resto (Dus 12 x 1L)",
+        unit: "Dus (12L)",
+        unitWeightKg: 12,
+        moq: { RETAIL: 5, SILVER: 10, PLATINUM: 25 },
+        priceTier: { RETAIL: 205000, SILVER: 192000, PLATINUM: 182000 },
+        desc: "Kemasan bantal higienis SNI, sertifikasi BPOM"
+      },
+      {
+        id: "SEM-GLA-01",
+        name: "Gula Pasir Kristal Putih GMP (Karung 50kg)",
+        unit: "Sak (50kg)",
+        unitWeightKg: 50,
+        moq: { RETAIL: 2, SILVER: 4, PLATINUM: 10 },
+        priceTier: { RETAIL: 850000, SILVER: 810000, PLATINUM: 775000 },
+        desc: "Gula tebu murni, butiran kristal bersih manis alami"
+      },
+      {
+        id: "SEM-TRG-01",
+        name: "Tepung Terigu Segitiga Biru Protein Sedang (25kg)",
+        unit: "Sak (25kg)",
+        unitWeightKg: 25,
+        moq: { RETAIL: 3, SILVER: 6, PLATINUM: 15 },
+        priceTier: { RETAIL: 260000, SILVER: 245000, PLATINUM: 232000 },
+        desc: "Kualitas Bogasari asli untuk aneka gorengan & kue"
+      },
+      {
+        id: "SEM-TLR-01",
+        name: "Telur Ayam Ras Segar Petelur (Peti Kayu 15kg)",
+        unit: "Peti (15kg)",
+        unitWeightKg: 15,
+        moq: { RETAIL: 2, SILVER: 5, PLATINUM: 10 },
+        priceTier: { RETAIL: 395000, SILVER: 375000, PLATINUM: 355000 },
+        desc: "Telur fresh kandang Jawa Barat, cangkang tebal"
+      }
+    ];
+
+    // State Management
+    let currentTier = 'PLATINUM'; // 'RETAIL', 'SILVER', 'PLATINUM'
+    let poQuantities = {}; // { commodityId: quantity }
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Default: Load Paket Warung Madura
+      applyRepeatOrder('WARUNG');
+      renderMatrixTable();
+      updatePoBasketUI();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-punch-border text-punch-gray pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-punch-surface text-punch-gray flex items-center justify-center text-[11px] border border-punch-border";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-punch-border text-punch-gray pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-punch-surface text-punch-gray flex items-center justify-center text-[11px] border border-punch-border";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToMatrix() {
+      document.getElementById('matrix-catalog').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Tier Switching Logic
+    function switchTier(tier) {
+      currentTier = tier;
+      
+      const btnRetail = document.getElementById('tierRetailBtn');
+      const btnSilver = document.getElementById('tierSilverBtn');
+      const btnPlatinum = document.getElementById('tierPlatinumBtn');
+
+      [btnRetail, btnSilver, btnPlatinum].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg font-bold text-punch-gray hover:text-white transition";
+      });
+
+      const headerTier = document.getElementById('headerTierText');
+      const marginDiscountText = document.getElementById('marginDiscountText');
+
+      if (tier === 'RETAIL') {
+        btnRetail.className = "px-3 py-1.5 rounded-lg font-bold bg-punch-rose text-white shadow-sm transition";
+        headerTier.innerText = "Mitra Retail";
+        marginDiscountText.innerText = "Harga Grosir Standar Retail (0% Potongan Tambahan)";
+      } else if (tier === 'SILVER') {
+        btnSilver.className = "px-3 py-1.5 rounded-lg font-bold bg-punch-rose text-white shadow-sm transition";
+        headerTier.innerText = "Agen Silver";
+        marginDiscountText.innerText = "Diskon Khusus Toko Kelontong ~6%";
+      } else if (tier === 'PLATINUM') {
+        btnPlatinum.className = "px-3 py-1.5 rounded-lg font-bold bg-punch-rose text-white shadow-sm transition";
+        headerTier.innerText = "Agen Platinum";
+        marginDiscountText.innerText = "Diskon Distributor Pabrikan ~12%";
+      }
+
+      renderMatrixTable();
+      updatePoBasketUI();
+    }
+
+    // 1-Click Repeat Order Templates
+    function applyRepeatOrder(type) {
+      poQuantities = {};
+      if (type === 'WARUNG') {
+        poQuantities['SEM-BRS-01'] = 10; // 10 sak
+        poQuantities['SEM-MYK-01'] = 25; // 25 dus
+        poQuantities['SEM-GLA-01'] = 10; // 10 sak
+      } else if (type === 'KATERING') {
+        poQuantities['SEM-BRS-01'] = 15; // 15 sak
+        poQuantities['SEM-TRG-01'] = 15; // 15 sak
+        poQuantities['SEM-MYK-01'] = 30; // 30 dus
+      } else if (type === 'DISTRO') {
+        poQuantities['SEM-BRS-01'] = 20;
+        poQuantities['SEM-MYK-01'] = 40;
+        poQuantities['SEM-GLA-01'] = 15;
+        poQuantities['SEM-TRG-01'] = 20;
+        poQuantities['SEM-TLR-01'] = 15;
+      }
+
+      renderMatrixTable();
+      updatePoBasketUI();
+    }
+
+    // Render Matrix SKU Table
+    function renderMatrixTable() {
+      const tbody = document.getElementById('matrixTableBody');
+      tbody.innerHTML = '';
+
+      commoditiesData.forEach(item => {
+        const qty = poQuantities[item.id] || 0;
+        const currentMoq = item.moq[currentTier];
+        const isBelowMoq = qty > 0 && qty < currentMoq;
+        const currentPrice = item.priceTier[currentTier];
+
+        const tr = document.createElement('tr');
+        tr.className = `hover:bg-punch-black/60 transition ${isBelowMoq ? 'bg-rose-950/20' : ''}`;
+
+        tr.innerHTML = `
+          <td class="py-3 px-4">
+            <span class="font-bold text-white block text-xs">${item.name}</span>
+            <div class="text-[10px] text-punch-gray mt-0.5">${item.desc}</div>
+          </td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isBelowMoq ? 'bg-punch-rose text-white' : 'bg-punch-black text-punch-lightGray border border-punch-border'}">
+              Min. ${currentMoq} ${item.unit.split(' ')[0]}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right font-bold text-punch-rose font-mono text-xs">
+            ${formatRupiah(currentPrice)}
+            <span class="text-[10px] text-punch-gray block font-normal">/${item.unit}</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <div class="inline-flex items-center gap-1.5">
+              <button onclick="changeQty('${item.id}', -5)" class="w-7 h-7 rounded-lg bg-punch-black border border-punch-border text-white font-bold hover:bg-punch-surface active:scale-95 transition">-</button>
+              <input type="number" min="0" value="${qty}" onchange="setQty('${item.id}', this.value)" class="w-14 text-center font-bold font-mono py-1 bg-punch-black text-white border border-punch-border rounded-lg focus:ring-1 focus:ring-punch-rose text-xs" />
+              <button onclick="changeQty('${item.id}', 5)" class="w-7 h-7 rounded-lg bg-punch-black border border-punch-border text-white font-bold hover:bg-punch-surface active:scale-95 transition">+</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function changeQty(id, delta) {
+      const current = poQuantities[id] || 0;
+      const next = Math.max(0, current + delta);
+      if (next === 0) {
+        delete poQuantities[id];
+      } else {
+        poQuantities[id] = next;
+      }
+      renderMatrixTable();
+      updatePoBasketUI();
+    }
+
+    function setQty(id, value) {
+      const parsed = parseInt(value);
+      if (isNaN(parsed) || parsed <= 0) {
+        delete poQuantities[id];
+      } else {
+        poQuantities[id] = parsed;
+      }
+      renderMatrixTable();
+      updatePoBasketUI();
+    }
+
+    // Update PO Basket & Validate MOQ
+    function updatePoBasketUI() {
+      const container = document.getElementById('poItemsContainer');
+      const emptyNotice = document.getElementById('emptyPoNotice');
+      const calcBox = document.getElementById('poCalculationsBox');
+      const itemCountBadge = document.getElementById('poItemCountBadge');
+      const headerCart = document.getElementById('headerCartCount');
+      const moqAlert = document.getElementById('moqWarningAlert');
+      const moqWarningText = document.getElementById('moqWarningText');
+      const btnProceed = document.getElementById('btnProceedToPo');
+
+      container.innerHTML = '';
+      const keys = Object.keys(poQuantities);
+      itemCountBadge.innerText = `${keys.length} Komoditas`;
+      headerCart.innerText = keys.length;
+
+      if (keys.length === 0) {
+        emptyNotice.classList.remove('hidden');
+        container.classList.add('hidden');
+        calcBox.classList.add('hidden');
+        moqAlert.classList.add('hidden');
+        return;
+      }
+
+      emptyNotice.classList.add('hidden');
+      container.classList.remove('hidden');
+      calcBox.classList.remove('hidden');
+
+      let grandTotal = 0;
+      let totalWeightKg = 0;
+      let totalRetailEquivalent = 0;
+      let hasMoqViolation = false;
+      let violatedItems = [];
+
+      keys.forEach(id => {
+        const item = commoditiesData.find(c => c.id === id);
+        if (!item) return;
+
+        const qty = poQuantities[id];
+        const currentMoq = item.moq[currentTier];
+        const isBelow = qty < currentMoq;
+
+        if (isBelow) {
+          hasMoqViolation = true;
+          violatedItems.push(`${item.name} (Qty: ${qty}, Min: ${currentMoq})`);
+        }
+
+        const price = item.priceTier[currentTier];
+        const lineTotal = price * qty;
+        grandTotal += lineTotal;
+        totalWeightKg += (item.unitWeightKg * qty);
+        totalRetailEquivalent += (item.priceTier['RETAIL'] * qty);
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border text-xs space-y-1.5 ${
+          isBelow ? 'bg-punch-roseMuted/20 border-punch-rose' : 'bg-punch-black border-punch-border'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-bold text-white block">${item.name}</span>
+              <span class="text-[10px] text-punch-gray font-mono">${qty} ${item.unit} @ ${formatRupiah(price)}</span>
+            </div>
+            <span class="font-bold font-mono text-punch-rose">${formatRupiah(lineTotal)}</span>
+          </div>
+          ${isBelow ? `
+            <div class="text-[10px] text-rose-400 font-bold flex items-center gap-1">
+              <i data-lucide="alert-circle" class="w-3 h-3"></i>
+              Kurang ${currentMoq - qty} ${item.unit.split(' ')[0]} untuk capai batas MOQ ${currentMoq}
+            </div>
+          ` : ''}
+        `;
+        container.appendChild(card);
+      });
+
+      // Validasi MOQ Alert
+      if (hasMoqViolation) {
+        moqAlert.classList.remove('hidden');
+        moqWarningText.innerHTML = `Komoditas berikut di bawah batas MOQ: <br>• ${violatedItems.join('<br>• ')}`;
+        btnProceed.disabled = true;
+        btnProceed.className = "w-full bg-punch-border text-punch-gray font-bold text-xs py-3.5 px-4 rounded-xl cursor-not-allowed font-sans";
+      } else {
+        moqAlert.classList.add('hidden');
+        btnProceed.disabled = false;
+        btnProceed.className = "w-full bg-punch-rose hover:bg-punch-roseHover text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-lg shadow-punch-rose/25 active:scale-95 font-sans cursor-pointer";
+      }
+
+      const savings = Math.max(0, totalRetailEquivalent - grandTotal);
+      document.getElementById('totalWeightDisplay').innerText = `~${totalWeightKg.toLocaleString('id-ID')} Kg (${(totalWeightKg/1000).toFixed(2)} Ton)`;
+      document.getElementById('totalMarginSavings').innerText = `Hemat ${formatRupiah(savings)} (Tier Margin)`;
+      document.getElementById('grandTotalPoText').innerText = formatRupiah(grandTotal);
+
+      return { grandTotal, totalWeightKg, hasMoqViolation };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      const summary = updatePoBasketUI();
+      if (!summary || summary.hasMoqViolation) {
+        alert("Harap penuhi semua batas minimum order (MOQ) sebelum melanjutkan.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-punch-rose text-punch-rose pb-2 flex items-center justify-center gap-1.5 font-bold";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-punch-rose text-white flex items-center justify-center text-[11px] font-bold";
+
+      document.getElementById('qrisPayableAmount').innerText = formatRupiah(summary.grandTotal);
+
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-punch-border text-punch-gray pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-punch-surface text-punch-gray flex items-center justify-center text-[11px] border border-punch-border";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi pembayaran PO berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const store = document.getElementById('storeName').value.trim() || 'Toko Sembako Berkah Mandiri';
+      const owner = document.getElementById('ownerName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('storePhone').value.trim() || '081299998888';
+      const address = document.getElementById('storeAddress').value.trim() || 'Cisauk, Tangerang';
+      const slot = document.getElementById('deliverySlotSelect').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-punch-rose text-punch-rose pb-2 flex items-center justify-center gap-1.5 font-bold";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-punch-rose text-white flex items-center justify-center text-[11px] font-bold";
+
+      const summary = updatePoBasketUI();
+
+      const randomDo = "DO-GP-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invDoNumber').innerText = randomDo;
+      document.getElementById('invDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invStoreName').innerText = store;
+      document.getElementById('invOwnerName').innerText = `PIC: ${owner} (${phone})`;
+      document.getElementById('invStoreAddress').innerText = address;
+      document.getElementById('invDeliverySlot').innerText = slot;
+      document.getElementById('invTierUsed').innerText = `Akun: ${document.getElementById('headerTierText').innerText}`;
+
+      // Populate DO Items Table
+      const tbody = document.getElementById('doTableBody');
+      tbody.innerHTML = '';
+
+      for (let id in poQuantities) {
+        const item = commoditiesData.find(c => c.id === id);
+        if (!item) continue;
+        const qty = poQuantities[id];
+        const price = item.priceTier[currentTier];
+        const lineTotal = price * qty;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2.5 px-4">
+            <span class="font-bold text-white block">${item.name}</span>
+            <div class="text-[10px] text-punch-gray">${item.desc}</div>
+          </td>
+          <td class="py-2.5 px-3 text-center text-punch-lightGray font-bold">${qty} ${item.unit.split(' ')[0]}</td>
+          <td class="py-2.5 px-4 text-right text-punch-lightGray font-mono">${formatRupiah(price)}</td>
+          <td class="py-2.5 px-4 text-right font-bold text-white font-mono">${formatRupiah(lineTotal)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      document.getElementById('invTotalWeight').innerText = `~${summary.totalWeightKg.toLocaleString('id-ID')} Kg (${(summary.totalWeightKg/1000).toFixed(2)} Ton)`;
+      document.getElementById('invGrandTotal').innerText = formatRupiah(summary.grandTotal);
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      poQuantities = {};
+      applyRepeatOrder('WARUNG');
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-punch-border text-punch-gray pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-punch-surface text-punch-gray flex items-center justify-center text-[11px] border border-punch-border";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-punch-border text-punch-gray pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-punch-surface text-punch-gray flex items-center justify-center text-[11px] border border-punch-border";
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

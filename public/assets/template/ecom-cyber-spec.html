@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeonSpec Store - Hardware Datasheet & Enterprise Component Procurement</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            corp: {
+              navy: '#0A2540',       // Deep Navy Utama
+              navyDark: '#071A2E',   // Darker Navy
+              navyCard: '#103459',   // Navy Surface
+              slate: '#F4F6F8',      // Light Slate Canvas
+              border: '#E2E8F0',     // Light Gray Border
+              teal: '#00D4B2',       // Teal Cyan Accent
+              tealHover: '#00B89A',  // Darker Teal
+              tealBg: '#E6FAF6',     // Teal Tint Soft
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(10, 37, 64, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .teal-glow {
+      box-shadow: 0 0 20px rgba(0, 212, 178, 0.22);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableDatasheet, #printableDatasheet * {
+        visibility: visible;
+      }
+      #printableDatasheet {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #0A2540 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-corp-slate text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-corp-teal selection:text-corp-navy">
+
+  <!-- Top Announcement Bar (Deep Navy & Teal Accent) -->
+  <div class="bg-corp-navyDark text-slate-300 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-corp-navyCard font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-corp-teal text-corp-navy">DATASHEET VERIFIED</span>
+    <span class="font-medium text-slate-300">Komponen Server & Workstation AI Asli Garansi Distributor Resmi • Full Technical Specs • Fast Delivery</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-corp-navyCard shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-corp-navyCard border border-corp-teal flex items-center justify-center text-corp-teal shadow-md shadow-corp-teal/20 flex-shrink-0 transition group-hover:bg-corp-teal group-hover:text-corp-navy">
+          <i data-lucide="cpu" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-white block leading-tight font-display">
+            NEON<span class="text-corp-teal">SPEC</span>
+            <span class="text-[10px] font-mono bg-corp-navyCard text-corp-teal border border-corp-teal/40 px-1.5 py-0.5 rounded ml-1 font-bold uppercase">STORE</span>
+          </span>
+          <span class="text-[10px] text-slate-400 tracking-wider block font-mono font-medium">ENTERPRISE HARDWARE & DATASHEET</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
+        <a href="#datasheet-matrix" class="text-corp-teal hover:text-white transition">Katalog Datasheet</a>
+        <a href="#hardware-filter" class="hover:text-corp-teal transition">Filter Teknis</a>
+        <a href="#benchmark" class="hover:text-corp-teal transition">Benchmark & Garansi</a>
+      </nav>
+
+      <!-- Cart Action & Quick Tray -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-corp-navyCard text-slate-300 font-mono px-3.5 py-1.5 rounded-lg border border-slate-700">
+          <span class="w-2 h-2 rounded-full bg-corp-teal animate-pulse"></span>
+          Warehouse Status: Ready Stock
+        </div>
+        <button onclick="scrollToTray()" class="bg-corp-teal hover:bg-corp-tealHover text-corp-navy font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-corp-teal/20 flex items-center gap-2 active:scale-95">
+          <i data-lucide="shopping-cart" class="w-4 h-4 text-corp-navy"></i>
+          <span>Hardware Tray</span>
+          <span id="headerCartCount" class="w-5 h-5 rounded-full bg-corp-navy text-corp-teal font-black text-[11px] flex items-center justify-center">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="bg-corp-navy text-white border-b border-corp-navyCard py-12 sm:py-16 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-corp-navyCard border border-corp-teal/30 text-corp-teal text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-corp-teal animate-ping"></span>
+          Direct B2B Enterprise Component Sourcing
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.18] font-display">
+          Pengadaan Hardware Komputasi dengan Spesifikasi Lengkap & Transparan.
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
+          Bandingkan spesifikasi teknis GPU AI, prosesor server, dan storage Gen5 secara rinci layaknya lembar <strong class="text-corp-teal font-mono">Datasheet Engineering</strong>. Dapatkan kepastian kompatibilitas soket, kalkulasi TDP daya, dan checkout instan via QRIS atau faktur pengadaan resmi.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-corp-navyCard text-left font-mono">
+        <div class="p-4 rounded-xl bg-corp-navyDark/60 border border-corp-navyCard">
+          <span class="text-xs text-slate-400 block">Parameter Teknis</span>
+          <span class="text-2xl font-extrabold text-corp-teal font-display mt-0.5 block">100% Valid</span>
+        </div>
+        <div class="p-4 rounded-xl bg-corp-navyDark/60 border border-corp-navyCard">
+          <span class="text-xs text-slate-400 block">Garansi Resmi</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">3 - 5 Tahun</span>
+        </div>
+        <div class="p-4 rounded-xl bg-corp-navyDark/60 border border-corp-navyCard">
+          <span class="text-xs text-slate-400 block">Sertifikasi Legalitas</span>
+          <span class="text-2xl font-extrabold text-corp-teal font-display mt-0.5 block">Faktur Pajak</span>
+        </div>
+        <div class="p-4 rounded-xl bg-corp-navyDark/60 border border-corp-navyCard">
+          <span class="text-xs text-slate-400 block">Pilihan Pembayaran</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">DP 50% / Full</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-corp-teal text-corp-navy pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-corp-teal text-corp-navy flex items-center justify-center text-[11px] font-bold">1</span>
+          Pilih Komponen & Datasheet
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-corp-border text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px] border border-corp-border font-bold">2</span>
+          Alamat Deployment & QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-corp-border text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px] border border-corp-border font-bold">3</span>
+          Invoice & Sertifikat Teknis
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Hardware Sourcing Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="datasheet-matrix">
+    
+    <!-- STEP 1: Interactive Datasheet Matrix & Hardware Tray -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Multi-Attribute Hardware Filter Bar -->
+      <section class="bg-white p-4 sm:p-5 rounded-2xl border border-corp-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs" id="hardware-filter">
+        
+        <!-- Category Segment Switcher -->
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <span class="text-slate-600 font-bold whitespace-nowrap">Kategori:</span>
+          <div class="flex items-center p-1 bg-corp-slate rounded-xl border border-corp-border w-full md:w-auto overflow-x-auto">
+            <button id="catAllBtn" onclick="filterCategory('all')" class="px-3.5 py-1.5 rounded-lg font-bold bg-white text-corp-navy shadow-sm transition whitespace-nowrap">Semua Hardware</button>
+            <button id="catGpuBtn" onclick="filterCategory('gpu')" class="px-3.5 py-1.5 rounded-lg font-bold text-slate-600 hover:text-corp-navy transition whitespace-nowrap">AI & Workstation GPU</button>
+            <button id="catCpuBtn" onclick="filterCategory('cpu')" class="px-3.5 py-1.5 rounded-lg font-bold text-slate-600 hover:text-corp-navy transition whitespace-nowrap">Server / Enterprise CPU</button>
+            <button id="catStorageBtn" onclick="filterCategory('storage')" class="px-3.5 py-1.5 rounded-lg font-bold text-slate-600 hover:text-corp-navy transition whitespace-nowrap">PCIe Gen5 Storage</button>
+          </div>
+        </div>
+
+        <!-- Search by Spec / SKU -->
+        <div class="relative w-full md:w-72">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5"></i>
+          <input type="text" id="specSearchInput" oninput="onSearchInput()" placeholder="Cari VRAM, Socket, TDP, SKU..." class="w-full text-xs font-mono pl-9 pr-4 py-2 rounded-xl border border-corp-border focus:outline-none focus:ring-2 focus:ring-corp-teal bg-corp-slate text-slate-900" />
+        </div>
+
+      </section>
+
+      <!-- Split Layout: Datasheet Spec Grid (7 Cols) vs Live Hardware Tray (5 Cols Sticky) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Datasheet Spec Grid Cards (7 Cols) -->
+        <div class="lg:col-span-7 space-y-4" id="componentCardsContainer">
+          <!-- Rendered via JavaScript -->
+        </div>
+
+        <!-- Right: Live Hardware Procurement Tray (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-corp-border shadow-xl space-y-5 sticky top-24 font-mono text-xs" id="hardware-tray">
+          <div class="flex items-center justify-between border-b border-corp-border pb-3">
+            <div>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Deployment Tray</span>
+              <h4 class="text-sm font-bold text-corp-navy font-display mt-0.5">Keranjang Pengadaan Unit</h4>
+            </div>
+            <span class="text-[11px] font-bold bg-corp-teal text-corp-navy px-2 py-0.5 rounded" id="trayCountBadge">0 Komponen</span>
+          </div>
+
+          <!-- Empty Tray State -->
+          <div id="emptyTrayNotice" class="py-10 text-center text-slate-400 space-y-2">
+            <i data-lucide="cpu" class="w-10 h-10 mx-auto text-slate-300"></i>
+            <p class="text-xs font-sans">Belum ada komponen yang dipilih.<br>Klik tombol "+ Tambah ke Tray" pada kartu spesifikasi teknis.</p>
+          </div>
+
+          <!-- Populated Items List -->
+          <div id="trayItemsContainer" class="hidden space-y-3 max-h-60 overflow-y-auto pr-1 divide-y divide-slate-100">
+            <!-- Injected via JavaScript -->
+          </div>
+
+          <!-- Power & Thermal Budget Calculation -->
+          <div id="trayMetricsBox" class="hidden space-y-2.5 border-t border-corp-border pt-3">
+            <div class="flex justify-between text-slate-600">
+              <span>Total Estimasi Konsumsi Daya (TDP):</span>
+              <span class="font-bold text-corp-navy" id="totalTdpDisplay">0 Watt</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Subtotal Komponen:</span>
+              <span class="font-bold text-slate-900" id="traySubtotalDisplay">Rp 0</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>PPN 11% (Faktur Pajak):</span>
+              <span class="font-bold text-slate-900" id="trayTaxDisplay">Rp 0</span>
+            </div>
+
+            <!-- Grand Total -->
+            <div class="p-3.5 bg-corp-navy text-white rounded-xl border border-corp-navyCard flex items-center justify-between mt-2">
+              <div>
+                <span class="text-[10px] font-bold text-corp-teal uppercase block">Total Nilai Pengadaan</span>
+                <span class="text-[11px] text-slate-400 font-sans">Termasuk PPN & Asuransi</span>
+              </div>
+              <span class="text-xl font-black text-corp-teal font-mono" id="trayGrandTotalDisplay">Rp 0</span>
+            </div>
+
+            <!-- Next Button -->
+            <button onclick="goToStep2()" class="w-full bg-corp-teal hover:bg-corp-tealHover text-corp-navy font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-corp-teal/20 flex items-center justify-center gap-2 active:scale-95 font-sans mt-3">
+              <span>Lanjut ke Verifikasi & Pembayaran</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Semua unit hardware dikirim dalam kemasan original anti-statis lengkap dengan segel distributor resmi.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Delivery Details & QRIS Payment Gateway -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Destination & Enterprise Recipient -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-corp-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-corp-border pb-3 font-mono">
+            <h3 class="text-base font-bold text-corp-navy flex items-center gap-2 font-display">
+              <i data-lucide="server" class="w-4 h-4 text-corp-teal"></i>
+              Data Pemesan & Lokasi Server / Kantor
+            </h3>
+            <span class="text-xs text-slate-400">Faktur Pajak Ready</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama Perusahaan / Instansi *</label>
+                <input type="text" id="custOrg" value="PT Reliantradha Solusi Digital" class="w-full bg-corp-slate px-3.5 py-2.5 rounded-xl border border-corp-border focus:outline-none focus:ring-2 focus:ring-corp-teal text-slate-900 font-sans" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama PIC Pengadaan (IT Lead) *</label>
+                <input type="text" id="custPic" value="Tedi Mahendra" class="w-full bg-corp-slate px-3.5 py-2.5 rounded-xl border border-corp-border focus:outline-none focus:ring-2 focus:ring-corp-teal text-slate-900 font-sans" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp PIC *</label>
+                <input type="tel" id="custPhone" value="081299998888" class="w-full bg-corp-slate px-3.5 py-2.5 rounded-xl border border-corp-border focus:outline-none focus:ring-2 focus:ring-corp-teal text-slate-900 font-sans" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">NPWP Perusahaan (E-Faktur) *</label>
+                <input type="text" id="custNpwp" value="01.234.567.8-012.000" class="w-full bg-corp-slate px-3.5 py-2.5 rounded-xl border border-corp-border focus:outline-none focus:ring-2 focus:ring-corp-teal text-slate-900" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Alamat Tujuan Pengiriman / Data Center *</label>
+              <textarea id="custAddress" rows="2" class="w-full bg-corp-slate px-3.5 py-2.5 rounded-xl border border-corp-border focus:outline-none focus:ring-2 focus:ring-corp-teal text-slate-900 font-sans">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said Kav. C-5, Setiabudi, Jakarta Selatan</textarea>
+            </div>
+
+            <!-- Payment Scheme Choice (DP 50% vs Lunas) -->
+            <div class="space-y-3 pt-2">
+              <label class="block font-bold text-slate-700">Pilihan Skema Pembayaran:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label onclick="selectPaymentScheme('DP')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-corp-tealBg border-corp-teal" id="labelSchemeDp">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-corp-navy">Down Payment (DP 50%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-corp-teal flex items-center justify-center">
+                      <span id="radioDotDp" class="w-2 h-2 rounded-full bg-corp-teal"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-sans leading-normal">Kunci alokasi serial number gudang. Sisa 50% dilunasi saat serah terima barang (COD/TOP).</p>
+                  <span class="text-xs font-black text-corp-navy mt-2 block font-mono" id="schemeDpPriceText">Rp 0</span>
+                </label>
+
+                <label onclick="selectPaymentScheme('FULL')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-corp-border hover:border-slate-400" id="labelSchemeFull">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-corp-navy">Pelunasan Penuh (100%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                      <span id="radioDotFull" class="w-2 h-2 rounded-full bg-transparent"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-sans leading-normal">Pengiriman prioritas instant kurir aman anti-guncangan langsung ke data center.</p>
+                  <span class="text-xs font-black text-corp-navy mt-2 block font-mono" id="schemeFullPriceText">Rp 0</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Catatan Tambahan untuk Tim Logistik (Opsional):</label>
+              <input type="text" id="custNotes" value="Sertakan surat jalan bermaterai & serial number certificate resmi" class="w-full bg-corp-slate px-3.5 py-2.5 rounded-xl border border-corp-border focus:outline-none focus:ring-2 focus:ring-corp-teal text-slate-900 font-sans" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Settlement Gateway -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-corp-border shadow-xl space-y-5 font-mono">
+          <div class="flex items-center justify-between border-b border-corp-border pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gateway QRIS Dinamis</span>
+            <span class="text-[10px] font-bold bg-corp-teal text-corp-navy px-2 py-0.5 rounded">INSTANT SETTLEMENT</span>
+          </div>
+
+          <!-- QR Box -->
+          <div class="border border-corp-border rounded-xl p-4 bg-corp-slate text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-600 font-black text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-corp-navy bg-corp-teal px-2 py-0.5 rounded" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-corp-border">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-NEONSPEC-HARDWARE-SETTLEMENT" alt="QRIS Hardware" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-500">
+              <p class="font-medium text-slate-700">Scan via BCA, Mandiri, BRI, BNI, GoPay, OVO</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">NMID: ID1099238855 - PT NEONSPEC HARDWARE INDONESIA</p>
+            </div>
+
+            <!-- Total to Pay Highlight -->
+            <div class="mt-3 pt-3 border-t border-corp-border w-full flex items-center justify-between px-1">
+              <span class="text-xs text-slate-600" id="qrisPayableLabel">Nominal Ditagihkan (DP 50%):</span>
+              <span id="qrisPayableAmount" class="text-base font-extrabold text-corp-navy font-mono">Rp 0</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-corp-navy hover:bg-slate-900 active:scale-95 text-corp-teal font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-slate-900/20 font-sans">
+              <i data-lucide="check-circle" class="w-4 h-4 text-corp-teal"></i>
+              <span>Simulasi Bayar Berhasil (Callback Webhook)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition font-sans">
+              Kembali / Ubah Konfigurasi Hardware
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Setelah verifikasi QRIS diterima, nomor resi pengiriman berpendingin dan sertifikat serial unit langsung terbit.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Invoice & Technical Spec Certificate (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-900 no-print font-mono">
+        <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-sans">Pembayaran Terverifikasi & Alokasi Serial Hardware Terkunci!</h4>
+          <p class="text-xs text-emerald-800 mt-0.5 font-sans">Faktur Pengadaan Komersial dan Sertifikat Uji Lab Hardware telah diterbitkan secara resmi.</p>
+        </div>
+      </div>
+
+      <!-- Printable Commercial Invoice Document -->
+      <div id="printableDatasheet" class="bg-white rounded-2xl border border-corp-border shadow-xl p-6 sm:p-9 space-y-6 font-mono text-slate-900">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-corp-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-corp-navy flex items-center justify-center text-corp-teal font-bold">
+                <i data-lucide="cpu" class="w-4 h-4 text-corp-teal"></i>
+              </div>
+              <span class="font-bold text-lg text-corp-navy font-display">NEON<span class="text-corp-teal">SPEC</span> STORE</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-sans">PT NeonSpec Hardware Indonesia • Cyber 2 Tower Lt. 18, HR Rasuna Said, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-500 font-sans">Hotline Sourcing: +62 812-9999-8888 • enterprise@neonspec.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-corp-teal text-corp-navy uppercase" id="invStatusBadge">
+              HARDWARE ALLOCATED
+            </span>
+            <p id="invReceiptNumber" class="text-xs font-bold text-corp-navy mt-1">INV-NSP-202610-8812</p>
+            <p id="invDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Enterprise Client Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-corp-slate p-4 rounded-xl border border-corp-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">INSTANSI / PEMBELI:</span>
+            <p id="invClientOrg" class="font-bold text-corp-navy text-sm font-sans">PT Reliantradha Solusi Digital</p>
+            <p id="invClientPic" class="text-slate-600 font-sans">PIC: Tedi Mahendra (081299998888)</p>
+            <p id="invClientNpwp" class="text-slate-500 mt-1">NPWP: 01.234.567.8-012.000</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">LOKASI DATA CENTER / KANTOR:</span>
+            <p id="invDestinationAddress" class="font-bold text-slate-900 text-sm font-sans">Gedung Wirausaha, Jakarta Selatan</p>
+            <p id="invCourierMode" class="text-slate-600 font-sans mt-0.5">Kurir: Secure Van Anti-Static Box</p>
+            <p class="text-emerald-700 font-bold mt-1" id="invPaymentModeText">DP 50% VERIFIED</p>
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="border border-corp-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-corp-slate text-slate-600 border-b border-corp-border">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Deskripsi Hardware & Spesifikasi Datasheet</th>
+                <th class="py-2.5 px-3 font-bold text-center">Qty</th>
+                <th class="py-2.5 px-4 font-bold text-right">Harga Satuan</th>
+                <th class="py-2.5 px-4 font-bold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="invoiceTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Injected via JavaScript -->
+            </tbody>
+            <tfoot class="bg-corp-slate border-t border-corp-border text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-bold">Subtotal Komponen:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900 font-mono" id="invSubtotalAmount">Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-bold">PPN 11% (Faktur Pajak):</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900 font-mono" id="invTaxAmount">Rp 0</td>
+              </tr>
+              <tr class="bg-slate-200/60 border-t border-slate-300">
+                <td colspan="3" class="py-2 px-4 text-right text-corp-navy font-bold">Total Nilai Faktur Pengadaan:</td>
+                <td class="py-2 px-4 text-right font-black text-corp-navy font-mono" id="invGrandTotal">Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-700 font-bold" id="invPaidLabel">Uang Muka Diterima (DP 50% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700 font-mono" id="invPaidAmount">Rp 0</td>
+              </tr>
+              <tr class="bg-corp-tealBg border-t border-corp-teal/30">
+                <td colspan="3" class="py-2.5 px-4 text-right text-corp-navy font-extrabold text-xs" id="invDueLabel">Sisa Tagihan / Pelunasan:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-corp-navy font-mono" id="invDueAmount">Rp 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Serial Authentication Barcode -->
+        <div class="p-4 bg-corp-slate rounded-xl border border-corp-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Hardware Serial Verification Seal</span>
+            <p class="text-xs font-bold text-slate-900 font-sans">Scan Barcode untuk Cek Status Garansi Distributor & Uji Benchmark Lab</p>
+            <p class="text-[11px] text-slate-500 font-sans">Garansi resmi 3-5 tahun mencakup penggantian unit baru (1-to-1 replacement) bila terjadi cacat produksi.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-lg inline-block shadow-sm border border-corp-border">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=NEONSPEC-HW-SERIAL-VERIFIED-202610" alt="Serial Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1">CERT: NSP-8812-HW</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-corp-border font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Pilih Komponen Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-corp-navy hover:bg-slate-900 text-corp-teal text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-slate-900/20 font-sans">
+            <i data-lucide="printer" class="w-4 h-4 text-corp-teal"></i>
+            Cetak Faktur & Datasheet (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Technical Benchmarks & Warranty Strip -->
+  <section id="benchmark" class="border-t border-corp-border bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-corp-navy uppercase tracking-wider font-mono">Enterprise Assurance</span>
+        <h3 class="text-xl font-bold text-corp-navy font-display mt-1">Standar Pengujian Lab Sebelum Pengiriman</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-corp-slate border border-corp-border">
+          <div class="w-9 h-9 rounded-lg bg-corp-navy text-corp-teal flex items-center justify-center mb-3">
+            <i data-lucide="flame" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-corp-navy text-sm mb-1 font-display">24-Hour Stress Testing</h4>
+          <p class="text-slate-600 leading-relaxed">Setiap unit GPU dan CPU melewati uji stres komputasi termal penuh 24 jam untuk memastikan zero clock throttling pada beban puncak.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-corp-slate border border-corp-border">
+          <div class="w-9 h-9 rounded-lg bg-corp-navy text-corp-teal flex items-center justify-center mb-3">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-corp-navy text-sm mb-1 font-display">Serial Number Traceability</h4>
+          <p class="text-slate-600 leading-relaxed">Serial number terintegrasi langsung dengan database garansi distributor resmi Indonesia untuk klaim RMA tanpa hambatan.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-corp-slate border border-corp-border">
+          <div class="w-9 h-9 rounded-lg bg-corp-navy text-corp-teal flex items-center justify-center mb-3">
+            <i data-lucide="package" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-corp-navy text-sm mb-1 font-display">Anti-Static Sealed Packaging</h4>
+          <p class="text-slate-600 leading-relaxed">Pengiriman dilindungi busa anti-statis berlapis ganda dan silica gel industri untuk mencegah kelembaban dan bahaya pelepasan elektrostatik.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Deep Navy Corporate) -->
+  <footer class="bg-corp-navyDark text-slate-400 py-8 border-t border-corp-navyCard text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-corp-navy border border-corp-teal flex items-center justify-center text-corp-teal font-bold text-[10px]">N</div>
+        <span class="font-bold text-white">NeonSpec Store Architecture</span>
+        <span class="text-slate-500">| ID: ecom-cyber-spec</span>
+      </div>
+      <p class="text-slate-500 text-center md:text-right font-sans">&copy; 2026 PT NeonSpec Hardware Indonesia. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Katalog Hardware Enterprise ala Datasheet
+    const hardwareCatalog = [
+      {
+        id: "HW-GPU-01",
+        name: "NVIDIA RTX 6000 Ada Generation (48GB GDDR6 ECC)",
+        category: "gpu",
+        price: 118000000,
+        tdp: 300,
+        skuCode: "NV-RTX6000-ADA-48G",
+        specs: {
+          arch: "Ada Lovelace (AD102)",
+          cores: "18.176 CUDA • 568 Tensor Gen-4",
+          vram: "48 GB GDDR6 with ECC",
+          bus: "PCIe 4.0 x16 • 384-bit Memory Bus",
+          power: "300W TDP (1x PCIe 16-pin 12VHPWR)",
+          display: "4x DisplayPort 1.4a"
+        },
+        useCase: "Large Language Model (LLM) Fine-Tuning & 3D Neural Rendering"
+      },
+      {
+        id: "HW-CPU-01",
+        name: "AMD EPYC 9654 Genoa Server CPU (96 Cores / 192 Threads)",
+        category: "cpu",
+        price: 165000000,
+        tdp: 360,
+        skuCode: "AMD-EPYC-9654-SP5",
+        specs: {
+          arch: "Zen 4 Server Architecture (5nm)",
+          cores: "96 Cores / 192 Threads",
+          clock: "2.4 GHz Base • 3.7 GHz Boost",
+          cache: "384 MB L3 Cache",
+          memory: "12-Channel DDR5-4800 ECC Registered",
+          socket: "Socket SP5 (LGA 6096)"
+        },
+        useCase: "High-Density Virtualization & Cloud Microservices Host"
+      },
+      {
+        id: "HW-STORAGE-01",
+        name: "Solidigm D7-P5520 Enterprise U.2 NVMe SSD (7.68TB Gen4)",
+        category: "storage",
+        price: 16500000,
+        tdp: 20,
+        skuCode: "SSD-SLD-P5520-7T68",
+        specs: {
+          form: "U.2 15mm PCIe 4.0 x4 NVMe 1.4",
+          capacity: "7.68 TB TLC 144-Layer 3D NAND",
+          readWrite: "7.100 MB/s Read • 4.200 MB/s Write",
+          iops: "1.000.000 4K Random Read IOPS",
+          endurance: "14.0 PBW (1.0 DWPD / 5 Tahun)",
+          features: "Power Loss Data Protection • AES 256-bit"
+        },
+        useCase: "OLTP Database Tier-0 & Distributed Ceph Storage Pool"
+      },
+      {
+        id: "HW-GPU-02",
+        name: "NVIDIA RTX 4500 Ada Generation (24GB GDDR6 ECC)",
+        category: "gpu",
+        price: 43500000,
+        tdp: 210,
+        skuCode: "NV-RTX4500-ADA-24G",
+        specs: {
+          arch: "Ada Lovelace (AD104)",
+          cores: "7.680 CUDA • 240 Tensor Gen-4",
+          vram: "24 GB GDDR6 with ECC",
+          bus: "PCIe 4.0 x16 • 192-bit Memory Bus",
+          power: "210W TDP (1x PCIe 8-pin)",
+          display: "4x DisplayPort 1.4a"
+        },
+        useCase: "Mid-scale Deep Learning Training & CAD Engineering Station"
+      },
+      {
+        id: "HW-CPU-02",
+        name: "Intel Xeon Platinum 8480+ Sapphire Rapids (56 Cores / 112 Threads)",
+        category: "cpu",
+        price: 148000000,
+        tdp: 350,
+        skuCode: "INT-XEON-8480P-LGA4677",
+        specs: {
+          arch: "Sapphire Rapids-SP (Intel 7)",
+          cores: "56 Cores / 112 Threads",
+          clock: "2.0 GHz Base • 3.8 GHz Turbo",
+          cache: "105 MB Intel Smart Cache",
+          memory: "8-Channel DDR5-4800 with Intel AMX AI Engine",
+          socket: "FCLGA4677"
+        },
+        useCase: "In-Memory Analytics & AI Inference Accelerators"
+      }
+    ];
+
+    // State Management
+    let currentCategoryFilter = 'all';
+    let searchQuery = '';
+    let hardwareTray = {}; // { hwId: quantity }
+    let selectedPaymentScheme = 'DP'; // 'DP' or 'FULL'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Default: 1 Unit GPU RTX 6000 dimasukkan ke tray agar user langsung melihat kalkulasi datasheet
+      hardwareTray["HW-GPU-01"] = 1;
+
+      renderDatasheetCards();
+      updateTrayUI();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-corp-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px] border border-corp-border font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-corp-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px] border border-corp-border font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToTray() {
+      document.getElementById('hardware-tray').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Category Filtering
+    function filterCategory(cat) {
+      currentCategoryFilter = cat;
+
+      const btnAll = document.getElementById('catAllBtn');
+      const btnGpu = document.getElementById('catGpuBtn');
+      const btnCpu = document.getElementById('catCpuBtn');
+      const btnStorage = document.getElementById('catStorageBtn');
+
+      [btnAll, btnGpu, btnCpu, btnStorage].forEach(b => {
+        b.className = "px-3.5 py-1.5 rounded-lg font-bold text-slate-600 hover:text-corp-navy transition whitespace-nowrap";
+      });
+
+      if (cat === 'all') btnAll.className = "px-3.5 py-1.5 rounded-lg font-bold bg-white text-corp-navy shadow-sm transition whitespace-nowrap";
+      if (cat === 'gpu') btnGpu.className = "px-3.5 py-1.5 rounded-lg font-bold bg-white text-corp-navy shadow-sm transition whitespace-nowrap";
+      if (cat === 'cpu') btnCpu.className = "px-3.5 py-1.5 rounded-lg font-bold bg-white text-corp-navy shadow-sm transition whitespace-nowrap";
+      if (cat === 'storage') btnStorage.className = "px-3.5 py-1.5 rounded-lg font-bold bg-white text-corp-navy shadow-sm transition whitespace-nowrap";
+
+      renderDatasheetCards();
+    }
+
+    function onSearchInput() {
+      searchQuery = document.getElementById('specSearchInput').value.toLowerCase().trim();
+      renderDatasheetCards();
+    }
+
+    // Render Component Cards ala Datasheet Grid
+    function renderDatasheetCards() {
+      const container = document.getElementById('componentCardsContainer');
+      container.innerHTML = '';
+
+      const filtered = hardwareCatalog.filter(item => {
+        const matchCategory = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
+        const matchSearch = item.name.toLowerCase().includes(searchQuery) || 
+                            item.skuCode.toLowerCase().includes(searchQuery) ||
+                            item.useCase.toLowerCase().includes(searchQuery) ||
+                            JSON.stringify(item.specs).toLowerCase().includes(searchQuery);
+        return matchCategory && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-white rounded-2xl border border-corp-border text-slate-400 font-mono text-xs">
+            Tidak ada komponen hardware yang sesuai dengan filter spesifikasi "${searchQuery}".
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(hw => {
+        const qtyInTray = hardwareTray[hw.id] || 0;
+
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl border border-corp-border shadow-sm hover:shadow-md transition overflow-hidden p-5 sm:p-6 space-y-4";
+
+        let specRowsHtml = "";
+        for (let key in hw.specs) {
+          specRowsHtml += `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-100 last:border-none text-[11px] font-mono">
+              <span class="text-slate-400 uppercase tracking-wider">${key}</span>
+              <span class="font-bold text-slate-800">${hw.specs[key]}</span>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <!-- Card Header & Pricing -->
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-corp-border pb-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] font-mono font-bold bg-corp-tealBg text-corp-navy border border-corp-teal/30 px-2 py-0.5 rounded uppercase">
+                  ${hw.category}
+                </span>
+                <span class="text-[11px] font-mono text-slate-400">SKU: ${hw.skuCode}</span>
+                <span class="text-[11px] font-mono text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">TDP: ${hw.tdp}W</span>
+              </div>
+              <h3 class="font-extrabold text-base text-corp-navy font-display leading-snug">${hw.name}</h3>
+              <p class="text-xs text-slate-500 font-sans mt-0.5"><strong class="text-slate-700">Target Beban:</strong> ${hw.useCase}</p>
+            </div>
+            
+            <div class="text-left sm:text-right font-mono">
+              <span class="text-lg font-black text-corp-navy">${formatRupiah(hw.price)}</span>
+              <span class="text-[10px] text-slate-400 block font-sans">Belum Termasuk PPN 11%</span>
+            </div>
+          </div>
+
+          <!-- Datasheet Spec Table Grid -->
+          <div class="bg-corp-slate p-3.5 rounded-xl border border-slate-200 space-y-0.5">
+            <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 block mb-1">Datasheet Matrix:</span>
+            ${specRowsHtml}
+          </div>
+
+          <!-- Action Tray Button -->
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-xs text-slate-500 font-sans font-medium">Garansi 3 Tahun Distributor Resmi</span>
+            
+            ${qtyInTray === 0 ? `
+              <button onclick="addToTray('${hw.id}')" class="bg-corp-navy hover:bg-slate-900 active:scale-95 text-corp-teal font-mono text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm border border-corp-teal/40">
+                <i data-lucide="plus" class="w-3.5 h-3.5 text-corp-teal"></i>
+                <span>+ Tambah ke Tray</span>
+              </button>
+            ` : `
+              <div class="flex items-center gap-2 font-mono">
+                <button onclick="changeTrayQty('${hw.id}', -1)" class="w-8 h-8 rounded-lg bg-slate-100 border border-slate-300 text-slate-800 font-bold text-xs hover:bg-slate-200 active:scale-95 transition">-</button>
+                <span class="w-8 text-center font-bold text-xs text-corp-navy font-mono">${qtyInTray}</span>
+                <button onclick="changeTrayQty('${hw.id}', 1)" class="w-8 h-8 rounded-lg bg-corp-teal text-corp-navy font-bold text-xs hover:bg-corp-tealHover active:scale-95 transition">+</button>
+              </div>
+            `}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Hardware Tray Cart Management
+    function addToTray(hwId) {
+      hardwareTray[hwId] = 1;
+      renderDatasheetCards();
+      updateTrayUI();
+    }
+
+    function changeTrayQty(hwId, delta) {
+      if (!hardwareTray[hwId]) return;
+      hardwareTray[hwId] += delta;
+      if (hardwareTray[hwId] <= 0) {
+        delete hardwareTray[hwId];
+      }
+      renderDatasheetCards();
+      updateTrayUI();
+    }
+
+    function updateTrayUI() {
+      const container = document.getElementById('trayItemsContainer');
+      const emptyNotice = document.getElementById('emptyTrayNotice');
+      const metricsBox = document.getElementById('trayMetricsBox');
+      const trayBadge = document.getElementById('trayCountBadge');
+      const headerCart = document.getElementById('headerCartCount');
+
+      container.innerHTML = '';
+      const hwKeys = Object.keys(hardwareTray);
+
+      trayBadge.innerText = `${hwKeys.length} Komponen`;
+      headerCart.innerText = hwKeys.length;
+
+      if (hwKeys.length === 0) {
+        emptyNotice.classList.remove('hidden');
+        container.classList.add('hidden');
+        metricsBox.classList.add('hidden');
+        return;
+      }
+
+      emptyNotice.classList.add('hidden');
+      container.classList.remove('hidden');
+      metricsBox.classList.remove('hidden');
+
+      let subtotal = 0;
+      let totalTdp = 0;
+
+      hwKeys.forEach(id => {
+        const hw = hardwareCatalog.find(h => h.id === id);
+        if (!hw) return;
+
+        const qty = hardwareTray[id];
+        const lineTotal = hw.price * qty;
+        subtotal += lineTotal;
+        totalTdp += (hw.tdp * qty);
+
+        const row = document.createElement('div');
+        row.className = "py-2 space-y-1";
+        row.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-bold text-corp-navy block">${hw.name}</span>
+              <p class="text-[10px] text-slate-400 font-mono">${qty}x @ ${formatRupiah(hw.price)} • TDP ${hw.tdp}W</p>
+            </div>
+            <span class="font-bold text-corp-navy font-mono">${formatRupiah(lineTotal)}</span>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      const taxAmount = Math.round(subtotal * 0.11);
+      const grandTotal = subtotal + taxAmount;
+
+      document.getElementById('totalTdpDisplay').innerText = `${totalTdp} Watt (Perlu PSU ${Math.round(totalTdp * 1.35)}W+)`;
+      document.getElementById('traySubtotalDisplay').innerText = formatRupiah(subtotal);
+      document.getElementById('trayTaxDisplay').innerText = formatRupiah(taxAmount);
+      document.getElementById('trayGrandTotalDisplay').innerText = formatRupiah(grandTotal);
+
+      // Set Prices for Step 2
+      const dp50 = Math.round(grandTotal * 0.5);
+      document.getElementById('schemeDpPriceText').innerText = formatRupiah(dp50);
+      document.getElementById('schemeFullPriceText').innerText = formatRupiah(grandTotal);
+
+      return { subtotal, taxAmount, grandTotal, totalTdp, dp50 };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      const summary = updateTrayUI();
+      if (!summary || summary.grandTotal === 0) {
+        alert("Tray hardware Anda masih kosong. Silakan pilih komponen terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-corp-teal text-corp-navy pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-corp-teal text-corp-navy flex items-center justify-center text-[11px] font-bold";
+
+      selectPaymentScheme(selectedPaymentScheme);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-corp-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px] border border-corp-border font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function selectPaymentScheme(scheme) {
+      selectedPaymentScheme = scheme;
+
+      const labelDp = document.getElementById('labelSchemeDp');
+      const labelFull = document.getElementById('labelSchemeFull');
+      const dotDp = document.getElementById('radioDotDp');
+      const dotFull = document.getElementById('radioDotFull');
+      const qrisLabel = document.getElementById('qrisPayableLabel');
+      const qrisAmount = document.getElementById('qrisPayableAmount');
+
+      const summary = updateTrayUI();
+
+      if (scheme === 'DP') {
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-corp-tealBg border-corp-teal";
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-corp-border hover:border-slate-400";
+        dotDp.className = "w-2 h-2 rounded-full bg-corp-teal";
+        dotFull.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Ditagihkan (DP 50%):";
+        qrisAmount.innerText = formatRupiah(summary.dp50);
+      } else {
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-corp-tealBg border-corp-teal";
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-corp-border hover:border-slate-400";
+        dotFull.className = "w-2 h-2 rounded-full bg-corp-teal";
+        dotDp.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Ditagihkan (Lunas 100%):";
+        qrisAmount.innerText = formatRupiah(summary.grandTotal);
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi pembayaran QRIS berakhir. Alokasi serial hardware dibatalkan.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const org = document.getElementById('custOrg').value.trim() || 'PT Reliantradha Solusi Digital';
+      const pic = document.getElementById('custPic').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('custPhone').value.trim() || '081299998888';
+      const npwp = document.getElementById('custNpwp').value.trim() || '01.234.567.8-012.000';
+      const address = document.getElementById('custAddress').value.trim() || 'Gedung Wirausaha, Jakarta Selatan';
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-corp-teal text-corp-navy pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-corp-teal text-corp-navy flex items-center justify-center text-[11px] font-bold";
+
+      const summary = updateTrayUI();
+      const paid = selectedPaymentScheme === 'DP' ? summary.dp50 : summary.grandTotal;
+      const due = summary.grandTotal - paid;
+
+      const randomInv = "INV-NSP-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invReceiptNumber').innerText = randomInv;
+      document.getElementById('invDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invClientOrg').innerText = org;
+      document.getElementById('invClientPic').innerText = `PIC: ${pic} (${phone})`;
+      document.getElementById('invClientNpwp').innerText = `NPWP: ${npwp}`;
+      document.getElementById('invDestinationAddress').innerText = address;
+
+      // Populate Invoice Table
+      const tbody = document.getElementById('invoiceTableBody');
+      tbody.innerHTML = '';
+
+      for (let id in hardwareTray) {
+        const hw = hardwareCatalog.find(h => h.id === id);
+        if (!hw) continue;
+        const qty = hardwareTray[id];
+        const lineTotal = hw.price * qty;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2.5 px-4 font-mono">
+            <span class="font-bold text-corp-navy">${hw.name}</span>
+            <div class="text-[10px] text-slate-500 font-sans">SKU: ${hw.skuCode} • TDP: ${hw.tdp}W</div>
+          </td>
+          <td class="py-2.5 px-3 text-center text-slate-700">${qty}</td>
+          <td class="py-2.5 px-4 text-right text-slate-700 font-mono">${formatRupiah(hw.price)}</td>
+          <td class="py-2.5 px-4 text-right font-bold text-corp-navy font-mono">${formatRupiah(lineTotal)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(summary.subtotal);
+      document.getElementById('invTaxAmount').innerText = formatRupiah(summary.taxAmount);
+      document.getElementById('invGrandTotal').innerText = formatRupiah(summary.grandTotal);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+      document.getElementById('invDueAmount').innerText = formatRupiah(due);
+
+      if (selectedPaymentScheme === 'DP') {
+        document.getElementById('invStatusBadge').innerText = "ALLOCATED (DP 50% PAID)";
+        document.getElementById('invPaymentModeText').innerText = "DP 50% TERVERIFIKASI";
+        document.getElementById('invPaidLabel').innerText = "Uang Muka Diterima (DP 50% QRIS):";
+        document.getElementById('invDueLabel').innerText = "Sisa Pelunasan Saat Serah Terima:";
+      } else {
+        document.getElementById('invStatusBadge').innerText = "PAID IN FULL (READY TO DEPLOY)";
+        document.getElementById('invPaymentModeText').innerText = "LUNAS 100% (QRIS)";
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (Lunas 100%):";
+        document.getElementById('invDueLabel').innerText = "Status Tagihan:";
+        document.getElementById('invDueAmount').innerText = "LUNAS (Rp 0)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      hardwareTray = { "HW-GPU-01": 1 };
+      selectedPaymentScheme = 'DP';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-corp-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px] border border-corp-border font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-corp-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px] border border-corp-border font-bold";
+
+      renderDatasheetCards();
+      updateTrayUI();
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

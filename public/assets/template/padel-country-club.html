@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padel Country Club - Private Court, Membership Tier & Lounge Reservation</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Cinzel"', 'serif'],
+          },
+          colors: {
+            slate: {
+              850: '#151e2e',
+              900: '#0f172a',
+            },
+            ice: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8', // Biru Muda Utama
+              500: '#0ea5e9',
+              600: '#0284c7',
+            },
+            gold: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#eab308',
+              500: '#d4af37', // Gold Mewah
+              600: '#b48c28',
+              700: '#8a681c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .gold-gradient-btn {
+      background: linear-gradient(135deg, #d4af37 0%, #b48c28 100%);
+    }
+    .gold-gradient-btn:hover {
+      background: linear-gradient(135deg, #e4bf47 0%, #c49c38 100%);
+    }
+    .gold-border-glow {
+      border-color: #d4af37;
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.22);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printablePass, #printablePass * {
+        visibility: visible;
+      }
+      #printablePass {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-ice-200 selection:text-slate-900">
+
+  <!-- Top Announcement Bar (Abu Gelap & Aksen Emas & Biru Muda) -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-2.5 border-b border-slate-800">
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold-500/20 text-gold-300 border border-gold-400/40">COUNTRY CLUB VIP</span>
+    <span class="flex items-center gap-1.5">
+      <span>Eksklusif: Private Court Booking, Membership Privileges & VIP Lounge Access</span>
+      <span class="w-1.5 h-1.5 rounded-full bg-ice-400"></span>
+      <span class="text-ice-300 font-medium">Boutique Padel Society</span>
+    </span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-nav sticky top-0 z-40 border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3.5 select-none focus:outline-none transition transform active:scale-95" title="Kembali ke Beranda">
+        <div class="w-11 h-11 rounded-xl bg-slate-900 group-hover:bg-slate-800 border border-gold-500/50 flex items-center justify-center text-gold-400 shadow-md shadow-gold-500/15 flex-shrink-0 transition">
+          <i data-lucide="crown" class="w-5 h-5 text-gold-400"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 block leading-tight font-serif">
+            ROYAL<span class="text-ice-500 font-sans tracking-normal ml-0.5 font-black">PADEL</span>
+          </span>
+          <span class="text-[10px] font-bold text-slate-400 tracking-widest block uppercase">COUNTRY CLUB & PRIVATE LOUNGE</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+        <a href="#courts" class="text-ice-600 hover:text-ice-700 transition">Private Courts</a>
+        <a href="#tiers" class="hover:text-gold-600 transition">Membership Tiers</a>
+        <a href="#lounges" class="hover:text-ice-600 transition">Clubhouse Lounge</a>
+      </nav>
+
+      <!-- Action & VIP Tier Status Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-ice-50 text-slate-700 font-semibold px-3 py-1.5 rounded-full border border-ice-200">
+          <span class="w-2 h-2 rounded-full bg-gold-500 animate-pulse"></span>
+          Member Tier: <span class="font-bold text-gold-700 font-serif">Royal VIP</span>
+        </div>
+        <button onclick="scrollToCourts()" class="gold-gradient-btn text-slate-950 font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-gold-500/20 flex items-center gap-2 active:scale-95 border border-gold-300">
+          <span>Reservasi Court</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-b from-white via-slate-50 to-[#F8FAFC] pt-12 sm:pt-16 pb-16 sm:pb-20 border-b border-slate-200 overflow-hidden">
+    <!-- Subtle Ice Blue & Gold Glow Background -->
+    <div class="absolute -top-24 right-1/4 w-96 h-96 bg-ice-200/40 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/2 left-10 w-72 h-72 bg-gold-100/50 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-ice-50 border border-ice-200 text-ice-700 text-xs font-semibold">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-gold-500"></i>
+            The Epitome of Private Padel Living
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.18]">
+            Eksklusivitas Lapangan Privat & Kenyamanan Lounge Kelas Dunia.
+          </h1>
+          <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+            Rasakan standar permainan tertinggi di <strong class="text-slate-900">Panoramic Glass Courts</strong> berspesifikasi WPT. Nikmati keistimewaan <strong class="text-gold-700 font-serif">Membership Tier</strong>, valet privat, sauna pemulihan, dan akses instan ke <strong class="text-ice-600">Executive Clubhouse Lounge</strong>.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="scrollToCourts()" class="gold-gradient-btn text-slate-950 font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-gold-500/25 transition flex items-center gap-2.5 border border-gold-300">
+              <i data-lucide="calendar" class="w-4 h-4 text-slate-900"></i>
+              Booking Private Court
+            </button>
+            <button onclick="scrollToTiers()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold px-5 py-3.5 rounded-xl transition flex items-center gap-2 shadow-sm">
+              <i data-lucide="award" class="w-4 h-4 text-gold-600"></i>
+              Lihat Membership Tier
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200 text-left">
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-slate-900">100%</p>
+              <p class="text-xs text-slate-500 mt-0.5">Akses Privat Anti-Bising</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-gold-600 font-serif">3 Tiers</p>
+              <p class="text-xs text-slate-500 mt-0.5">Silver, Gold & Royal VIP</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-ice-500">Gratis</p>
+              <p class="text-xs text-slate-500 mt-0.5">Complimentary Lounge</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Snapshot: Interactive VIP Pass Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-200/80 border border-slate-200 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-ice-100 rounded-bl-full -z-0 opacity-60"></div>
+            
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 relative z-10">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-gold-500"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Exclusive Country Club Pass</span>
+              </div>
+              <span class="text-xs font-serif font-bold text-gold-700 bg-gold-50 px-2.5 py-1 rounded-md border border-gold-300">ROYAL VIP MEMBER</span>
+            </div>
+
+            <!-- Card Body -->
+            <div class="mt-5 space-y-4 relative z-10">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900">Presidential Court 01</span>
+                  <span class="text-[10px] font-bold text-ice-600 bg-ice-50 px-2 py-0.5 rounded border border-ice-200">Panoramic WPT Glass</span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-relaxed">Dedicated Ball Boy • Private Recovery Tub & Sauna • New Head Padel Pro Balls</p>
+              </div>
+
+              <!-- Lounge Privilege Box -->
+              <div class="p-3.5 bg-gradient-to-r from-ice-50 to-white border border-ice-200 rounded-xl space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-800 flex items-center gap-1.5">
+                    <i data-lucide="coffee" class="w-3.5 h-3.5 text-gold-600"></i>
+                    Executive Lounge Privilege:
+                  </span>
+                  <span class="text-gold-700 font-bold font-serif">Included (Complimentary)</span>
+                </div>
+                <div class="text-[11px] text-slate-600 leading-normal">
+                  Free flow artisan espresso & hydration mocktails di Terrace Lounge pasca-pertandingan.
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 relative z-10">
+              <span>Gate Valet: #BAY-VIP-09</span>
+              <span class="font-bold text-slate-800">QRIS Verified Dynamic</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Membership Tier Explainer Strip -->
+  <section id="tiers" class="bg-white border-b border-slate-200 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-8">
+        <span class="text-[11px] font-bold text-gold-600 uppercase tracking-widest">Privilege Levels</span>
+        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-serif">Pilih Keanggotaan Anda</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">Tier yang dipilih akan otomatis menghitung potongan harga court dan akses lounge pada saat checkout.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Silver Tier -->
+        <div onclick="selectGlobalTier('SILVER')" class="tier-card p-5 rounded-2xl border-2 transition cursor-pointer bg-slate-50 hover:bg-white border-slate-200" id="cardTierSilver">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Silver Member</span>
+            <span class="text-[10px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded">Standard</span>
+          </div>
+          <p class="text-sm font-extrabold text-slate-900">Tarif Regular Court</p>
+          <p class="text-[11px] text-slate-500 mt-1">Diskon 0% sewa court, akses lounge berbayar tambahan Rp 75.000/orang.</p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-600 font-semibold flex items-center justify-between">
+            <span>Status:</span>
+            <span class="text-slate-700 font-bold" id="badgeSilver">Pilih Tier Ini</span>
+          </div>
+        </div>
+
+        <!-- Gold Tier -->
+        <div onclick="selectGlobalTier('GOLD')" class="tier-card p-5 rounded-2xl border-2 transition cursor-pointer bg-slate-50 hover:bg-white border-slate-200" id="cardTierGold">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-xs font-bold text-gold-600 uppercase tracking-wider font-serif">Gold Society</span>
+            <span class="text-[10px] bg-gold-100 text-gold-800 font-bold px-2 py-0.5 rounded border border-gold-300">15% Off Court</span>
+          </div>
+          <p class="text-sm font-extrabold text-slate-900">Diskon 15% Sewa Court</p>
+          <p class="text-[11px] text-slate-500 mt-1">Free 2 pax akses Clubhouse Lounge & handuk dingin aroma eucalyptus.</p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-600 font-semibold flex items-center justify-between">
+            <span>Status:</span>
+            <span class="text-slate-700 font-bold" id="badgeGold">Pilih Tier Ini</span>
+          </div>
+        </div>
+
+        <!-- Royal VIP Tier (Default) -->
+        <div onclick="selectGlobalTier('ROYAL')" class="tier-card p-5 rounded-2xl border-2 transition cursor-pointer bg-white border-gold-500 shadow-md ring-2 ring-gold-400/20" id="cardTierRoyal">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-xs font-bold text-gold-700 uppercase tracking-wider font-serif">Platinum Royal VIP</span>
+            <span class="text-[10px] bg-slate-900 text-gold-300 font-bold px-2 py-0.5 rounded border border-gold-400">25% Off + VIP Lounge</span>
+          </div>
+          <p class="text-sm font-extrabold text-slate-900">Diskon 25% Sewa Court</p>
+          <p class="text-[11px] text-slate-500 mt-1">Unlimited Free Lounge, dedicated court attendant & reservasi prioritas.</p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-gold-700 font-bold flex items-center justify-between">
+            <span>Status:</span>
+            <span class="text-gold-600 font-bold" id="badgeRoyal">✓ Tier Aktif</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Booking App Container -->
+  <main id="courts" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex-1 w-full">
+    
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-serif">Pilih Private Court & Jadwal</h2>
+      <p class="text-sm text-slate-500 mt-2">Didesain dengan tingkat isolasi akustik tinggi dan kaca monolitik tanpa tiang sudut untuk permainan tanpa kompromi.</p>
+    </div>
+
+    <!-- Step Progress Indicator -->
+    <div class="max-w-3xl mx-auto mb-10">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-gold-500 text-gold-700 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full gold-gradient-btn text-slate-950 flex items-center justify-center text-[11px] font-bold">1</span>
+          Pilih Court & Lounge
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]">2</span>
+          Konfirmasi & QRIS Pay
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]">3</span>
+          VIP Pass & Invoice
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Court Selection, Timeslot & Lounge Reservation Option -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Date Picker & Filter Bar -->
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-ice-50 border border-ice-200 flex items-center justify-center text-ice-600">
+            <i data-lucide="shield" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-slate-800">Private Country Club Sanctuary</h4>
+            <p class="text-[11px] text-slate-500">Maksimal 4 pemain + 4 tamu per sesi court privat</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <span class="text-xs font-bold text-slate-500 whitespace-nowrap">Tanggal Main:</span>
+          <div class="relative flex-1">
+            <input type="date" id="bookingDateInput" onchange="renderCourts()" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-ice-400" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Private Courts Grid -->
+      <div id="courtsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Lounge Reservation Add-On Card -->
+      <div id="lounges" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-ice-600 bg-ice-50 px-2 py-0.5 rounded border border-ice-200">OPTIONAL ADD-ON</span>
+            <h3 class="text-base font-bold text-slate-900 mt-1 flex items-center gap-2">
+              <i data-lucide="cocktail" class="w-4 h-4 text-gold-600"></i>
+              Reservasi Clubhouse Lounge Pasca-Main
+            </h3>
+          </div>
+          <span id="loungeTierBenefitNote" class="text-xs text-gold-700 font-bold bg-gold-50 px-3 py-1 rounded-full border border-gold-200">
+            Gratis untuk Royal VIP Member
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <!-- Lounge 1 -->
+          <label class="p-4 rounded-2xl border-2 border-slate-200 cursor-pointer hover:border-ice-400 transition bg-slate-50 flex items-start gap-3 select-none" id="labelLounge1">
+            <input type="radio" name="loungeOption" value="NONE" onchange="toggleLoungeOption('NONE')" checked class="mt-1 text-ice-600 focus:ring-ice-400" />
+            <div>
+              <span class="font-bold text-slate-800 block text-xs">Tanpa Reservasi Lounge</span>
+              <p class="text-[11px] text-slate-500 mt-0.5">Hanya sewa private court & fasilitas ruang ganti standar.</p>
+              <span class="text-[11px] font-extrabold text-slate-700 mt-2 block">Rp 0</span>
+            </div>
+          </label>
+
+          <!-- Lounge 2 -->
+          <label class="p-4 rounded-2xl border-2 border-slate-200 cursor-pointer hover:border-ice-400 transition bg-slate-50 flex items-start gap-3 select-none" id="labelLounge2">
+            <input type="radio" name="loungeOption" value="TERRACE" onchange="toggleLoungeOption('TERRACE')" class="mt-1 text-ice-600 focus:ring-ice-400" />
+            <div>
+              <span class="font-bold text-slate-800 block text-xs">Panoramic Terrace Lounge</span>
+              <p class="text-[11px] text-slate-500 mt-0.5">Meja privat 90 menit, free hydration & cold cold-pressed juice.</p>
+              <span class="text-[11px] font-extrabold text-ice-600 mt-2 block" id="loungeTerracePrice">Rp 150.000 / meja</span>
+            </div>
+          </label>
+
+          <!-- Lounge 3 -->
+          <label class="p-4 rounded-2xl border-2 border-slate-200 cursor-pointer hover:border-ice-400 transition bg-slate-50 flex items-start gap-3 select-none" id="labelLounge3">
+            <input type="radio" name="loungeOption" value="PRESIDENTIAL" onchange="toggleLoungeOption('PRESIDENTIAL')" class="mt-1 text-ice-600 focus:ring-ice-400" />
+            <div>
+              <span class="font-bold text-slate-800 block text-xs">Presidential Cigar & Wine Salon</span>
+              <p class="text-[11px] text-slate-500 mt-0.5">Sofa privat mewah, sommelier service & sound system audiophile.</p>
+              <span class="text-[11px] font-extrabold text-gold-600 mt-2 block" id="loungePresPrice">Rp 300.000 / ruangan</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Bottom Floating / Summary Selection Bar -->
+      <div id="selectionSummaryBar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-3xl bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-30 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gold-500 text-slate-950 flex items-center justify-center font-bold">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h5 id="summaryCourtName" class="text-sm font-bold leading-tight font-serif">Nama Court</h5>
+            <p id="summarySlotInfo" class="text-xs text-slate-400">Jadwal: -</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block uppercase font-medium">Total Termasuk Diskon Tier</span>
+            <span id="summaryPrice" class="text-base font-extrabold text-gold-400 font-mono">Rp 0</span>
+          </div>
+          <button onclick="goToStep2()" class="gold-gradient-btn text-slate-950 text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-gold-500/20 active:scale-95 border border-gold-300">
+            <span>Lanjut Pembayaran</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Checkout & Prototype QRIS Payment Gateway -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Member Data & Payment Options -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="user-check" class="w-4 h-4 text-ice-500"></i>
+                Identitas Anggota / Tamu VIP
+              </h3>
+              <span id="checkoutTierBadge" class="text-[10px] font-bold font-serif px-2 py-0.5 rounded bg-gold-100 text-gold-800 border border-gold-300">
+                ROYAL VIP TIER
+              </span>
+            </div>
+            
+            <div class="space-y-4 text-xs">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama Pemesan / Member *</label>
+                <input type="text" id="custName" value="Tedi Mahendra" class="w-full bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-ice-400 font-medium" />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp *</label>
+                  <input type="tel" id="custPhone" value="081299998888" class="w-full bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-ice-400 font-medium" />
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Nomor Plat Mobil (Valet VIP)</label>
+                  <input type="text" id="custPlate" value="B 1928 RYD" class="w-full bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-ice-400 font-medium uppercase font-mono" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Permintaan Khusus (Opsional)</label>
+                <input type="text" id="custNotes" placeholder="Contoh: Raket demo Babolat Viper / Minuman dingin siap di court" class="w-full bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-ice-400 font-medium" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Option: DP 50% vs Lunas -->
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="wallet" class="w-4 h-4 text-gold-600"></i>
+              Opsi Pembayaran Country Club
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- DP 50% Option -->
+              <label class="relative flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition select-none hover:bg-slate-50" id="labelOptionDP">
+                <input type="radio" name="paymentType" value="DP" onchange="togglePaymentType('DP')" checked class="sr-only" />
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-slate-800">Uang Muka DP 50%</span>
+                  <span class="w-4 h-4 rounded-full border-2 border-gold-500 flex items-center justify-center">
+                    <span id="radioCheckDP" class="w-2 h-2 rounded-full bg-gold-500"></span>
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-normal">Kunci slot court & lounge, sisa 50% ditagihkan di resepsionis clubhouse.</p>
+                <div class="mt-3 text-xs font-extrabold text-gold-700 font-mono" id="dpAmountText">Rp 0</div>
+              </label>
+
+              <!-- Full 100% Option -->
+              <label class="relative flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition select-none hover:bg-slate-50" id="labelOptionFull">
+                <input type="radio" name="paymentType" value="FULL" onchange="togglePaymentType('FULL')" class="sr-only" />
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-slate-800">Pelunasan Penuh (100%)</span>
+                  <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                    <span id="radioCheckFull" class="w-2 h-2 rounded-full bg-transparent"></span>
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-normal">Langsung tiba di venue & scan barcode pintu tanpa jeda administrasi.</p>
+                <div class="mt-3 text-xs font-extrabold text-slate-800 font-mono" id="fullAmountText">Rp 0</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Prototype QRIS Gateway & Pay Summary -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Settlement Gateway</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-ice-50 text-ice-700 border border-ice-200">Instant Verification</span>
+            </div>
+
+            <!-- QRIS Gateway Box -->
+            <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 text-center flex flex-col items-center">
+              <div class="flex items-center justify-between w-full px-2 mb-3">
+                <div class="flex items-center gap-1.5 font-extrabold text-xs tracking-tight text-slate-800">
+                  <span class="text-red-600 font-black">QRIS</span>
+                  <span class="text-[10px] text-slate-400 font-normal">| Standar Bank Indonesia</span>
+                </div>
+                <div class="flex items-center gap-1 text-[11px] text-gold-800 bg-gold-100/80 px-2 py-0.5 rounded font-mono font-bold border border-gold-300">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span id="qrisTimer">09:59</span>
+                </div>
+              </div>
+
+              <!-- Dummy QR Code UI -->
+              <div class="relative bg-white p-3 rounded-2xl border border-slate-200 shadow-inner group">
+                <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PROTOTYPE-PADEL-COUNTRY-CLUB-ROYAL-VIP" alt="QRIS Prototype" class="w-40 h-40 object-contain mx-auto transition group-hover:scale-105 duration-200" />
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div class="w-8 h-8 bg-slate-900 rounded-md p-1 shadow border border-gold-400 flex items-center justify-center text-gold-400">
+                    <i data-lucide="crown" class="w-4 h-4"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 text-xs text-slate-500 space-y-1">
+                <p class="font-medium text-slate-700">Scan via m-BCA, Mandiri Livin, GoPay, OVO, ShopeePay</p>
+                <p class="text-[10px] text-slate-400">NMID: ID1099228833 - ROYAL PADEL COUNTRY CLUB</p>
+              </div>
+
+              <!-- Price to Pay Highlight -->
+              <div class="mt-4 pt-3 border-t border-slate-200 w-full flex items-center justify-between px-2">
+                <span class="text-xs font-semibold text-slate-600">Total Ditagihkan:</span>
+                <span id="checkoutPayableText" class="text-lg font-black text-slate-900 font-mono">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Simulator Payment Action Button -->
+            <div class="space-y-2">
+              <button onclick="simulatePaymentSuccess()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20 border border-slate-700">
+                <i data-lucide="check-circle" class="w-4 h-4 text-gold-400"></i>
+                <span>Simulasi Bayar Berhasil (Callback Webhook)</span>
+              </button>
+              <button onclick="backToStep1()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+                Kembali / Ganti Court
+              </button>
+            </div>
+
+            <p class="text-[10px] text-slate-400 text-center leading-tight">
+              *Di lingkungan produksi, webhook gateway otomatis mengirim notifikasi reservasi & kunci loker via WhatsApp.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated VIP Pass & Official Invoice (Printable) -->
+    <div id="step3View" class="hidden max-w-2xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-ice-50 border border-ice-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-slate-800 no-print">
+        <div class="w-10 h-10 rounded-full bg-slate-900 text-gold-400 flex items-center justify-center flex-shrink-0 border border-gold-400">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-slate-900 font-serif">Reservasi Private Court Dikonfirmasi!</h4>
+          <p class="text-xs text-slate-600">VIP Pass resmi dan invoice telah digenerate. Tunjukkan barcode saat tiba di pintu gerbang valet.</p>
+        </div>
+      </div>
+
+      <!-- The Printable Invoice Paper Card (Country Club Style) -->
+      <div id="printablePass" class="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-9 space-y-6">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-slate-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center text-gold-400 border border-gold-400">
+                <i data-lucide="crown" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-lg tracking-tight text-slate-900 font-serif">ROYAL<span class="text-ice-500 font-sans">PADEL</span></span>
+            </div>
+            <p class="text-[11px] text-slate-500">Royal Padel Country Club • Jl. Senayan Golf No. 1, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-500">Concierge Desk: +62 812-9999-8888 • concierge@royalpadel.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span id="passTierBadgeDoc" class="inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-gold-100 text-gold-800 font-serif uppercase tracking-wider mb-1 border border-gold-300">
+              ROYAL VIP INVOICE
+            </span>
+            <p id="invNumber" class="text-xs font-mono font-bold text-slate-800">RPCC-202610-0982</p>
+            <p id="invDate" class="text-[10px] text-slate-400">Dibuat: 28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Customer & Booking Info -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Member Terdaftar:</span>
+            <p id="invCustName" class="font-bold text-slate-900 text-sm">Tedi Mahendra</p>
+            <p id="invCustPhone" class="text-slate-500">081299998888</p>
+            <p id="invCustPlate" class="text-ice-600 font-semibold font-mono mt-0.5">Valet Bay: B 1928 RYD</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Jadwal Private Court:</span>
+            <p id="invScheduleDate" class="font-bold text-slate-900 text-sm">Rabu, 28 Okt 2026</p>
+            <p id="invScheduleTime" class="text-gold-700 font-bold">19:00 - 21:00 WIB (2 Jam)</p>
+            <p id="invCourtName" class="text-slate-600">Presidential Panoramic Glass 01</p>
+          </div>
+        </div>
+
+        <!-- Table Summary -->
+        <div class="border border-slate-200 rounded-2xl overflow-hidden">
+          <table class="w-full text-xs">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-bold">Deskripsi Fasilitas & Sesi</th>
+                <th class="py-2.5 px-4 text-center font-bold">Durasi / Sesi</th>
+                <th class="py-2.5 px-4 text-right font-bold">Nominal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-800" id="invItemTitle">Sewa Presidential Panoramic Glass 01</div>
+                  <div class="text-[11px] text-slate-400">Termasuk Sauna Privat, Loker Digital & Ball Boy Siaga</div>
+                </td>
+                <td class="py-3 px-4 text-center text-slate-600">2 Jam</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-800 font-mono" id="invItemRate">Rp 700.000</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-800" id="invLoungeTitle">Clubhouse Lounge Privilege</div>
+                  <div class="text-[11px] text-slate-400" id="invLoungeDesc">Terrace Lounge Access 90 Menit</div>
+                </td>
+                <td class="py-3 px-4 text-center text-slate-600">1 Sesi</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-800 font-mono" id="invLoungeFee">Rp 0 (Tier Included)</td>
+              </tr>
+              <tr class="bg-slate-50/60">
+                <td colspan="2" class="py-2 px-4 text-slate-600 text-right font-bold">Total Nilai Reservasi (Setelah Diskon Tier):</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-800 font-mono" id="invTotalValue">Rp 525.000</td>
+              </tr>
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-emerald-600 text-right font-bold" id="invPaidLabel">Sudah Dibayar (DP QRIS 50%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-600 font-mono" id="invPaidAmount">Rp 262.500</td>
+              </tr>
+              <tr class="border-t-2 border-slate-200 bg-gold-50/40">
+                <td colspan="2" class="py-2.5 px-4 text-slate-800 text-right font-extrabold text-xs" id="invDueLabel">Sisa Pelunasan di Clubhouse:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-gold-700 font-mono" id="invDueAmount">Rp 262.500</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Venue Access Barcode Box -->
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fast Check-in Barcode</span>
+            <p class="text-xs font-bold text-slate-800">Scan di Pintu Putar Private Court & Meja Concierge</p>
+            <p class="text-[11px] text-slate-500">Membawa sepatu padel sol non-marking (tersedia penyewaan di pro-shop).</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-slate-200 inline-block shadow-sm">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=ROYAL-PADEL-VIP-AUTH-VALID-202610" alt="Entry Barcode" class="w-18 h-18 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1">TOKEN: RPCC-VIP-9912</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below invoice -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-slate-200">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Booking Sesi Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="gold-gradient-btn text-slate-950 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-gold-500/20 border border-gold-300">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak VIP Pass & Invoice (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Clubhouse Lounge Feature Section -->
+  <section class="border-t border-slate-200 bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-serif">Kenyamanan Country Club Eksklusif</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-2">Padukan intensitas olahraga padel dengan relaksasi berstandar resort bintang lima.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-ice-50 text-ice-600 flex items-center justify-center mb-4 border border-ice-200">
+            <i data-lucide="lock" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Akses Private Court Tanpa Antre</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">Sistem booking yang memastikan tidak ada pengunjung umum melintas di area permainan privat Anda.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center mb-4 border border-gold-200">
+            <i data-lucide="award" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Tier Membership Bertingkat</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">Nikmati potongan harga hingga 25% sewa court dan benefit complimentary lounge serta reservasi loker permanen.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-ice-50 text-ice-600 flex items-center justify-center mb-4 border border-ice-200">
+            <i data-lucide="coffee" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Clubhouse & Recovery Suite</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">Fasilitas cold plunge, sauna inframerah, dan hidangan nutrisi sehat yang diracik langsung oleh in-house chef.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-10 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-slate-800 border border-gold-400 flex items-center justify-center text-gold-400 font-bold text-xs">R</div>
+        <span class="font-bold text-slate-200 font-serif">Royal Padel Country Club</span>
+        <span class="text-slate-500">| ID: padel-country-club</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right">&copy; 2026 Royal Padel Society. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Court Privat
+    const privateCourtsData = [
+      {
+        id: "court-presidential",
+        name: "Presidential Panoramic Glass 01",
+        badge: "WPT World Panoramic",
+        ratePerHour: 350000,
+        image: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=700&q=80",
+        specs: ["Monolithic 12mm Panoramic Glass", "Supercourt XN World Turf", "Private Sauna & Cold Plunge", "Dedicated Attendant"],
+        slots: [
+          { time: "08:00 - 10:00", available: true },
+          { time: "10:00 - 12:00", available: false },
+          { time: "15:00 - 17:00", available: true },
+          { time: "17:00 - 19:00", available: false },
+          { time: "19:00 - 21:00", available: true },
+          { time: "21:00 - 23:00", available: true }
+        ]
+      },
+      {
+        id: "court-royal-center",
+        name: "Center Royal Glass Court 02",
+        badge: "Indoor Climate Controlled",
+        ratePerHour: 320000,
+        image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=700&q=80",
+        specs: ["Indoor High-Ceiling AC", "Anti-Glare LED 1000 Lux", "Private Changing Suite", "Complimentary Head Balls"],
+        slots: [
+          { time: "09:00 - 11:00", available: true },
+          { time: "11:00 - 13:00", available: true },
+          { time: "16:00 - 18:00", available: false },
+          { time: "18:00 - 20:00", available: true },
+          { time: "20:00 - 22:00", available: true }
+        ]
+      },
+      {
+        id: "court-sunset-roof",
+        name: "Skyline Sunset Court 03",
+        badge: "Rooftop Open-Air View",
+        ratePerHour: 300000,
+        image: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=700&q=80",
+        specs: ["360° Skyline Jakarta View", "Acoustic Dampening Wall", "Private Terrace Direct Access", "Towel & Hydration Station"],
+        slots: [
+          { time: "07:00 - 09:00", available: true },
+          { time: "09:00 - 11:00", available: false },
+          { time: "15:30 - 17:30", available: true },
+          { time: "17:30 - 19:30", available: false },
+          { time: "19:30 - 21:30", available: true }
+        ]
+      }
+    ];
+
+    // State Management
+    let selectedCourt = null;
+    let selectedSlotTime = null;
+    let currentTier = 'ROYAL'; // 'SILVER', 'GOLD', 'ROYAL'
+    let currentLounge = 'NONE'; // 'NONE', 'TERRACE', 'PRESIDENTIAL'
+    let paymentOption = 'DP'; // 'DP' or 'FULL'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('bookingDateInput').value = today;
+      renderCourts();
+      updateTierStyles();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToCourts() {
+      document.getElementById('courts').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToTiers() {
+      document.getElementById('tiers').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Membership Tier Switcher
+    function selectGlobalTier(tier) {
+      currentTier = tier;
+      updateTierStyles();
+      renderCourts();
+      if (selectedCourt && selectedSlotTime) {
+        updateSummaryBar();
+      }
+    }
+
+    function updateTierStyles() {
+      const cardSilver = document.getElementById('cardTierSilver');
+      const cardGold = document.getElementById('cardTierGold');
+      const cardRoyal = document.getElementById('cardTierRoyal');
+
+      const badgeSilver = document.getElementById('badgeSilver');
+      const badgeGold = document.getElementById('badgeGold');
+      const badgeRoyal = document.getElementById('badgeRoyal');
+
+      // Reset
+      [cardSilver, cardGold, cardRoyal].forEach(c => {
+        c.className = "tier-card p-5 rounded-2xl border-2 transition cursor-pointer bg-slate-50 hover:bg-white border-slate-200";
+      });
+      badgeSilver.innerText = "Pilih Tier Ini";
+      badgeGold.innerText = "Pilih Tier Ini";
+      badgeRoyal.innerText = "Pilih Tier Ini";
+
+      const loungeNote = document.getElementById('loungeTierBenefitNote');
+      const loungeTerracePrice = document.getElementById('loungeTerracePrice');
+      const loungePresPrice = document.getElementById('loungePresPrice');
+
+      if (currentTier === 'SILVER') {
+        cardSilver.className = "tier-card p-5 rounded-2xl border-2 transition cursor-pointer bg-white border-slate-800 shadow-md ring-2 ring-slate-400/20";
+        badgeSilver.innerText = "✓ Tier Aktif";
+        loungeNote.innerText = "Biaya Normal untuk Silver Member";
+        loungeTerracePrice.innerText = "Rp 150.000 / meja";
+        loungePresPrice.innerText = "Rp 300.000 / ruangan";
+      } else if (currentTier === 'GOLD') {
+        cardGold.className = "tier-card p-5 rounded-2xl border-2 transition cursor-pointer bg-white border-gold-500 shadow-md ring-2 ring-gold-400/20";
+        badgeGold.innerText = "✓ Tier Aktif";
+        loungeNote.innerText = "Terrace Lounge Diskon 50% untuk Gold";
+        loungeTerracePrice.innerText = "Rp 75.000 (Diskon 50%)";
+        loungePresPrice.innerText = "Rp 200.000 / ruangan";
+      } else if (currentTier === 'ROYAL') {
+        cardRoyal.className = "tier-card p-5 rounded-2xl border-2 transition cursor-pointer bg-white border-gold-500 shadow-md ring-2 ring-gold-400/20";
+        badgeRoyal.innerText = "✓ Tier Aktif";
+        loungeNote.innerText = "Gratis untuk Royal VIP Member";
+        loungeTerracePrice.innerText = "Gratis (Complimentary)";
+        loungePresPrice.innerText = "Rp 100.000 (VIP Dedicated)";
+      }
+    }
+
+    // Render Private Courts
+    function renderCourts() {
+      const container = document.getElementById('courtsGrid');
+      container.innerHTML = '';
+
+      privateCourtsData.forEach(court => {
+        const isSelected = selectedCourt && selectedCourt.id === court.id;
+        
+        // Slot buttons (2-hour private sessions)
+        let slotsHtml = court.slots.map(s => {
+          const isSlotActive = isSelected && selectedSlotTime === s.time;
+          if (!s.available) {
+            return `
+              <div class="py-2.5 px-2 text-[11px] font-bold text-slate-400 bg-slate-100 rounded-xl text-center cursor-not-allowed line-through">
+                ${s.time}
+              </div>
+            `;
+          }
+          return `
+            <button onclick="pickCourtSlot('${court.id}', '${s.time}')" 
+              class="py-2.5 px-2 text-[11px] font-bold rounded-xl border transition text-center ${
+                isSlotActive 
+                  ? 'bg-slate-900 text-gold-400 border-slate-900 shadow-sm ring-2 ring-gold-400/40' 
+                  : 'bg-white hover:bg-ice-50 text-slate-700 border-slate-200 hover:border-ice-400'
+              }">
+              ${s.time}
+            </button>
+          `;
+        }).join('');
+
+        // Apply Tier Discount to Displayed Price
+        let discountRate = 0;
+        if (currentTier === 'GOLD') discountRate = 0.15;
+        if (currentTier === 'ROYAL') discountRate = 0.25;
+
+        const normalPrice2Hours = court.ratePerHour * 2;
+        const discountedPrice2Hours = normalPrice2Hours * (1 - discountRate);
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-3xl border transition overflow-hidden shadow-sm hover:shadow-md flex flex-col justify-between ${
+          isSelected ? 'border-gold-500 ring-2 ring-gold-500/20' : 'border-slate-200'
+        }`;
+
+        card.innerHTML = `
+          <div>
+            <div class="relative h-48 w-full bg-slate-100 overflow-hidden">
+              <img src="${court.image}" alt="${court.name}" class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+              <div class="absolute top-3 left-3 bg-slate-900/90 backdrop-blur text-gold-300 text-[10px] font-bold px-2.5 py-1 rounded-md tracking-wider border border-gold-400/30 uppercase font-serif">
+                ${court.badge}
+              </div>
+              <div class="absolute bottom-3 right-3 bg-white/95 backdrop-blur px-2.5 py-1 rounded-lg text-xs font-black text-slate-900 shadow">
+                ${formatRupiah(discountedPrice2Hours)}<span class="text-[10px] font-normal text-slate-500">/2 Jam</span>
+              </div>
+            </div>
+
+            <div class="p-5">
+              <h3 class="font-extrabold text-base text-slate-900 leading-snug font-serif">${court.name}</h3>
+              
+              <div class="flex flex-wrap gap-1.5 mt-2.5">
+                ${court.specs.map(spec => `
+                  <span class="text-[10px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">${spec}</span>
+                `).join('')}
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-slate-100">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-700">Pilih Slot Sesi Privat (2 Jam):</span>
+                  <span class="text-[10px] text-slate-400">Anti-bentrok</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  ${slotsHtml}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function pickCourtSlot(courtId, time) {
+      selectedCourt = privateCourtsData.find(c => c.id === courtId);
+      selectedSlotTime = time;
+      renderCourts();
+      updateSummaryBar();
+    }
+
+    function toggleLoungeOption(loungeType) {
+      currentLounge = loungeType;
+      
+      const label1 = document.getElementById('labelLounge1');
+      const label2 = document.getElementById('labelLounge2');
+      const label3 = document.getElementById('labelLounge3');
+
+      [label1, label2, label3].forEach(l => {
+        l.classList.remove('border-ice-500', 'bg-ice-50/50');
+        l.classList.add('border-slate-200');
+      });
+
+      if (loungeType === 'NONE') label1.classList.add('border-ice-500', 'bg-ice-50/50');
+      if (loungeType === 'TERRACE') label2.classList.add('border-ice-500', 'bg-ice-50/50');
+      if (loungeType === 'PRESIDENTIAL') label3.classList.add('border-ice-500', 'bg-ice-50/50');
+
+      if (selectedCourt && selectedSlotTime) {
+        updateSummaryBar();
+      }
+    }
+
+    function calculateTotalCost() {
+      if (!selectedCourt) return 0;
+      
+      let discountRate = 0;
+      if (currentTier === 'GOLD') discountRate = 0.15;
+      if (currentTier === 'ROYAL') discountRate = 0.25;
+
+      const courtCost = (selectedCourt.ratePerHour * 2) * (1 - discountRate);
+
+      let loungeCost = 0;
+      if (currentLounge === 'TERRACE') {
+        if (currentTier === 'SILVER') loungeCost = 150000;
+        else if (currentTier === 'GOLD') loungeCost = 75000;
+        else if (currentTier === 'ROYAL') loungeCost = 0; // Complimentary
+      } else if (currentLounge === 'PRESIDENTIAL') {
+        if (currentTier === 'SILVER') loungeCost = 300000;
+        else if (currentTier === 'GOLD') loungeCost = 200000;
+        else if (currentTier === 'ROYAL') loungeCost = 100000;
+      }
+
+      return courtCost + loungeCost;
+    }
+
+    function updateSummaryBar() {
+      const summaryBar = document.getElementById('selectionSummaryBar');
+      summaryBar.classList.remove('hidden');
+
+      const dateVal = document.getElementById('bookingDateInput').value;
+      const total = calculateTotalCost();
+
+      document.getElementById('summaryCourtName').innerText = selectedCourt.name;
+      document.getElementById('summarySlotInfo').innerText = `${dateVal} | ${selectedSlotTime} WIB | Tier: ${currentTier}`;
+      document.getElementById('summaryPrice').innerText = formatRupiah(total);
+    }
+
+    // Navigation Step 2
+    function goToStep2() {
+      if (!selectedCourt || !selectedSlotTime) {
+        alert("Silakan pilih court privat dan slot jam bermain terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+      document.getElementById('selectionSummaryBar').classList.add('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-gold-500 text-gold-700 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full gold-gradient-btn text-slate-950 font-bold flex items-center justify-center text-[11px]";
+
+      const total = calculateTotalCost();
+      const dp = total * 0.5;
+
+      document.getElementById('dpAmountText').innerText = formatRupiah(dp);
+      document.getElementById('fullAmountText').innerText = formatRupiah(total);
+      document.getElementById('checkoutTierBadge').innerText = `${currentTier} MEMBER ACCESS`;
+
+      togglePaymentType(paymentOption);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+      document.getElementById('selectionSummaryBar').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function togglePaymentType(type) {
+      paymentOption = type;
+      const dpCard = document.getElementById('labelOptionDP');
+      const fullCard = document.getElementById('labelOptionFull');
+      const checkDP = document.getElementById('radioCheckDP');
+      const checkFull = document.getElementById('radioCheckFull');
+      const payableText = document.getElementById('checkoutPayableText');
+
+      const total = calculateTotalCost();
+      const dp = total * 0.5;
+
+      if (type === 'DP') {
+        dpCard.classList.add('border-gold-500', 'bg-gold-50/30');
+        dpCard.classList.remove('border-slate-200');
+        fullCard.classList.remove('border-gold-500', 'bg-gold-50/30');
+        fullCard.classList.add('border-slate-200');
+
+        checkDP.className = "w-2 h-2 rounded-full bg-gold-500";
+        checkFull.className = "w-2 h-2 rounded-full bg-transparent";
+
+        payableText.innerText = formatRupiah(dp);
+      } else {
+        fullCard.classList.add('border-gold-500', 'bg-gold-50/30');
+        fullCard.classList.remove('border-gold-500', 'bg-gold-50/30');
+        dpCard.classList.remove('border-gold-500', 'bg-gold-50/30');
+        dpCard.classList.add('border-slate-200');
+
+        checkFull.className = "w-2 h-2 rounded-full bg-gold-500";
+        checkDP.className = "w-2 h-2 rounded-full bg-transparent";
+
+        payableText.innerText = formatRupiah(total);
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Sesi otorisasi pembayaran Country Club telah kedaluwarsa. Silakan refresh.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulasi Pembayaran Sukses
+    function simulatePaymentSuccess() {
+      const name = document.getElementById('custName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('custPhone').value.trim() || '081299998888';
+      const plate = document.getElementById('custPlate').value.trim() || 'B 1928 RYD';
+      const dateVal = document.getElementById('bookingDateInput').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      // Hide step 2, show step 3
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-emerald-600 text-emerald-700 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]";
+
+      const total = calculateTotalCost();
+      const paid = paymentOption === 'DP' ? total * 0.5 : total;
+      const due = total - paid;
+
+      const randomInvoiceCode = "RPCC-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invNumber').innerText = randomInvoiceCode;
+      document.getElementById('invDate').innerText = "Dibuat: " + new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invCustName').innerText = name;
+      document.getElementById('invCustPhone').innerText = phone;
+      document.getElementById('invCustPlate').innerText = `Valet Bay: ${plate}`;
+
+      document.getElementById('invScheduleDate').innerText = dateVal;
+      document.getElementById('invScheduleTime').innerText = `${selectedSlotTime} WIB (2 Jam)`;
+      document.getElementById('invCourtName').innerText = selectedCourt.name;
+      document.getElementById('invItemTitle').innerText = `Sewa Private Court: ${selectedCourt.name}`;
+      
+      const normalCourtPrice = selectedCourt.ratePerHour * 2;
+      document.getElementById('invItemRate').innerText = formatRupiah(normalCourtPrice);
+
+      // Detail Lounge
+      if (currentLounge === 'NONE') {
+        document.getElementById('invLoungeTitle').innerText = "Tanpa Reservasi Lounge";
+        document.getElementById('invLoungeDesc').innerText = "Fasilitas loker standar & recovery mandiri";
+        document.getElementById('invLoungeFee').innerText = "Rp 0";
+      } else if (currentLounge === 'TERRACE') {
+        document.getElementById('invLoungeTitle').innerText = "Panoramic Terrace Lounge";
+        document.getElementById('invLoungeDesc').innerText = "Private Table 90 Mins + Mocktail";
+        document.getElementById('invLoungeFee').innerText = currentTier === 'ROYAL' ? "Rp 0 (Tier Included)" : (currentTier === 'GOLD' ? "Rp 75.000" : "Rp 150.000");
+      } else if (currentLounge === 'PRESIDENTIAL') {
+        document.getElementById('invLoungeTitle').innerText = "Presidential Cigar & Wine Salon";
+        document.getElementById('invLoungeDesc').innerText = "Dedicated Sommelier & Private Salon";
+        document.getElementById('invLoungeFee').innerText = currentTier === 'ROYAL' ? "Rp 100.000 (VIP Disc)" : (currentTier === 'GOLD' ? "Rp 200.000" : "Rp 300.000");
+      }
+
+      document.getElementById('invTotalValue').innerText = formatRupiah(total);
+
+      if (paymentOption === 'DP') {
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (DP QRIS 50%):";
+        document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+        document.getElementById('invDueLabel').innerText = "Sisa Pelunasan di Clubhouse Concierge:";
+        document.getElementById('invDueAmount').innerText = formatRupiah(due);
+      } else {
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (Lunas QRIS 100%):";
+        document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+        document.getElementById('invDueLabel').innerText = "Status Pelunasan:";
+        document.getElementById('invDueAmount').innerText = "LUNAS (Rp 0)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedCourt = null;
+      selectedSlotTime = null;
+      currentLounge = 'NONE';
+      paymentOption = 'DP';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+
+      renderCourts();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

@@ -7,7 +7,7 @@ import Stepper from '../order/Stepper'
 const VALUES = [
   'Tanpa ribet teknis & tanpa coding',
   'SSL, domain, dan hosting disiapkan',
-  '18 template siap pakai, 4 kategori industri',
+  '25 template siap pakai, 5 kategori industri',
   'Go-live hari ini, bukan minggu depan',
 ]
 

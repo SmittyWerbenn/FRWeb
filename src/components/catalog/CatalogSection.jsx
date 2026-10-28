@@ -7,8 +7,9 @@ const CATEGORY_NOTES = {
   all: 'Semua template unggulan FRWeb — tiap kategori punya varian visual yang berlawanan.',
   sports: 'Booking lapangan, kelas, dan venue. Bandingkan gaya Neon Athletic vs Luxury Country Club.',
   fnb: 'Reservasi meja, kalkulator catering, dan toko D2C. Dari warm dining sampai wabi-sabi.',
-  service: 'Booking jasa, kalkulator produksi, dan agency engagement. Brutalist grid sampai glass bento.',
+  service: 'Booking jasa, kalkulator produksi, dan agency engagement. Brutalist grid sampai luxe editorial.',
   retail: 'Katalog produk fisik, RFQ grosir, dan toko D2C. Editorial bersih atau cyberpunk spec grid.',
+  events: 'Travel, wedding organizer, dan event organizer. Hero destinasi sampai portfolio gathering.',
 }
 
 /**

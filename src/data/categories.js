@@ -2,8 +2,9 @@ export const CATEGORIES = [
   { id: 'all', label: 'Semua', short: 'Semua' },
   { id: 'sports', label: 'Sport & Club', short: 'Sport & Club' },
   { id: 'fnb', label: 'F&B', short: 'F&B' },
-  { id: 'service', label: 'Corporate & Agency', short: 'Corporate & Agency' },
   { id: 'retail', label: 'Online Store', short: 'Online Store' },
+  { id: 'service', label: 'Corporate & Service', short: 'Corporate & Service' },
+  { id: 'events', label: 'Event & Hospitality', short: 'Event & Hospitality' },
 ]
 
 export const categoryLabel = (id) =>

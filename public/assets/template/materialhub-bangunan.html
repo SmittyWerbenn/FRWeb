@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MaterialHub Bangunan - Portal Pengadaan & RFQ Material Konstruksi B2B</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            saas: {
+              canvas: '#F8FAFC',   // Off-White
+              dark: '#1E293B',     // Dark Navy
+              card: '#FFFFFF',
+              border: '#E2E8F0',
+              blue: '#2563EB',     // Royal Blue
+              blueHover: '#1D4ED8',
+              blueMuted: '#EFF6FF',
+              slateText: '#64748B'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableQuotation, #printableQuotation * {
+        visibility: visible;
+      }
+      #printableQuotation {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #1E293B !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-saas-canvas text-saas-dark antialiased font-sans min-h-screen flex flex-col selection:bg-saas-blueMuted selection:text-saas-blue">
+
+  <!-- Top Announcement Bar (Clean SaaS B2B) -->
+  <div class="bg-saas-dark text-slate-300 text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-slate-700">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-saas-blue text-white">B2B PROCUREMENT HUB</span>
+    <span class="font-medium text-slate-300">Suplai Material Skala Proyek Kontraktor • Sertifikasi SNI & TKDN Lengkap • Armada CDD & Tronton Siap Kirim</span>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="glass-header sticky top-0 z-40 border-b border-saas-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-saas-blue flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 transition group-hover:bg-saas-blueHover">
+          <i data-lucide="layers" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-saas-dark block leading-tight font-display">
+            MATERIAL<span class="text-saas-blue">HUB</span>
+            <span class="text-[10px] font-mono bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded ml-1.5 font-bold align-middle">GROSIR B2B</span>
+          </span>
+          <span class="text-[10px] text-saas-slateText tracking-wider block font-semibold">SUPPLY CHAIN KONSTRUKSI</span>
+        </div>
+      </a>
+
+      <!-- Procurement Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+        <a href="#catalog" class="text-saas-blue hover:text-saas-blueHover transition">Katalog Material</a>
+        <a href="#procurement-standards" class="hover:text-saas-blue transition">Standar Mutu SNI</a>
+        <a href="#fleet" class="hover:text-saas-blue transition">Armada Logistik</a>
+      </nav>
+
+      <!-- Cart Action & RFQ Drawer Trigger -->
+      <div class="flex items-center gap-3">
+        <button onclick="scrollToRFQ()" class="relative bg-white border border-saas-border hover:border-saas-blue text-saas-dark font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-sm active:scale-95">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4 text-saas-blue"></i>
+          <span>Daftar RFQ Proyek</span>
+          <span id="headerRfqCount" class="w-5 h-5 rounded-full bg-saas-blue text-white text-[11px] font-bold flex items-center justify-center">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Procurement Stats & Search Strip -->
+  <section class="bg-white border-b border-saas-border py-10 sm:py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-saas-blueMuted border border-blue-200 text-saas-blue text-xs font-semibold">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          Official Distributor Pabrikan Semen, Besi Baja, & Bata Ringan
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-saas-dark tracking-tight leading-[1.18] font-display">
+          Pengadaan Material Konstruksi Tanpa Hambatan Rantai Pasok.
+        </h1>
+        <p class="text-saas-slateText text-base sm:text-lg leading-relaxed">
+          Ajukan penawaran harga grosir (RFQ) untuk ribuan SKU material bangunan dengan volume besar. Dapatkan harga distributor langsung dari pabrik, term pembayaran fleksibel, serta pengiriman tepat waktu langsung ke titik proyek Anda.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-100 text-left">
+        <div class="p-4 rounded-xl bg-saas-canvas border border-saas-border">
+          <span class="text-xs text-saas-slateText block">SKU Material Terdaftar</span>
+          <span class="text-2xl font-extrabold text-saas-dark font-display mt-0.5 block">2.400+ SKU</span>
+        </div>
+        <div class="p-4 rounded-xl bg-saas-canvas border border-saas-border">
+          <span class="text-xs text-saas-slateText block">Standar Kelayakan</span>
+          <span class="text-2xl font-extrabold text-saas-blue font-display mt-0.5 block">100% SNI</span>
+        </div>
+        <div class="p-4 rounded-xl bg-saas-canvas border border-saas-border">
+          <span class="text-xs text-saas-slateText block">Kapasitas Armada Harian</span>
+          <span class="text-2xl font-extrabold text-saas-dark font-display mt-0.5 block">150+ Truk</span>
+        </div>
+        <div class="p-4 rounded-xl bg-saas-canvas border border-saas-border">
+          <span class="text-xs text-saas-slateText block">Kecepatan Terbit RFQ</span>
+          <span class="text-2xl font-extrabold text-saas-blue font-display mt-0.5 block">< 5 Menit</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-semibold">
+        <div id="stepIndicator1" class="border-b-2 border-saas-blue text-saas-blue pb-2 flex items-center justify-center gap-1.5 font-bold">
+          <span class="w-5 h-5 rounded-full bg-saas-blue text-white flex items-center justify-center text-[11px]">1</span>
+          Pilih SKU & Susun RFQ
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200">2</span>
+          Data PO & DP Logistik
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200">3</span>
+          Faktur Penawaran Sah (PDF)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Procurement Container (Split Workspace Layout) -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    
+    <!-- STEP 1: Catalog Browser & Live RFQ Basket -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Catalog Controls: Category Filter + Search Bar -->
+      <section id="catalog" class="bg-white p-4 sm:p-5 rounded-2xl border border-saas-border shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          
+          <!-- Category Pills -->
+          <div class="flex items-center p-1 bg-slate-100 rounded-xl w-full sm:w-auto border border-slate-200 overflow-x-auto">
+            <button id="catAll" onclick="filterCategory('all')" class="px-4 py-2 rounded-lg text-xs font-bold bg-white text-saas-dark shadow-sm transition whitespace-nowrap">Semua Material</button>
+            <button id="catSemen" onclick="filterCategory('semen')" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-saas-dark transition whitespace-nowrap">Semen & Perekat</button>
+            <button id="catBesi" onclick="filterCategory('besi')" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-saas-dark transition whitespace-nowrap">Besi Beton SNI</button>
+            <button id="catBata" onclick="filterCategory('bata')" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-saas-dark transition whitespace-nowrap">Bata Ringan AAC</button>
+            <button id="catBaja" onclick="filterCategory('baja')" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-saas-dark transition whitespace-nowrap">Baja Ringan & Atap</button>
+          </div>
+
+          <!-- Quick SKU Search Input -->
+          <div class="relative w-full sm:w-72">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+            <input type="text" id="searchInput" oninput="onSearchChange()" placeholder="Cari SKU atau merk material..." class="w-full text-xs font-medium pl-9 pr-4 py-2.5 rounded-xl border border-saas-border focus:outline-none focus:ring-2 focus:ring-saas-blue bg-saas-canvas text-saas-dark" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Split Layout: Data-Dense Material Table (7 Cols) vs Live RFQ Project Basket (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Product Table Grid (7 Cols) -->
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-saas-border shadow-sm overflow-hidden">
+          <div class="p-4 sm:p-5 border-b border-saas-border flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-saas-dark font-display">Tabel SKU Material Ready Stock</h3>
+              <p class="text-xs text-saas-slateText">Gunakan tombol tambah untuk memasukkan ke antrean RFQ proyek</p>
+            </div>
+            <span class="text-xs font-mono bg-saas-blueMuted text-saas-blue px-2.5 py-1 rounded font-bold border border-blue-200">GUDANG UTAMA: JABODETABEK</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-600 border-b border-saas-border">
+                <tr>
+                  <th class="py-3 px-4 font-bold">Deskripsi SKU & Merk</th>
+                  <th class="py-3 px-3 font-bold text-center">Satuan</th>
+                  <th class="py-3 px-4 font-bold text-right">Harga Grosir/Unit</th>
+                  <th class="py-3 px-4 font-bold text-center">Aksi Tambah</th>
+                </tr>
+              </thead>
+              <tbody id="catalogTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Live RFQ Procurement Basket (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-saas-border shadow-xl space-y-5 sticky top-24" id="rfq-basket">
+          <div class="flex items-center justify-between border-b border-saas-border pb-3">
+            <div>
+              <span class="text-xs font-bold text-saas-slateText uppercase tracking-wider block font-mono">Daftar RFQ Proyek</span>
+              <h4 class="text-sm font-bold text-saas-dark font-display mt-0.5">Keranjang Pengadaan Material</h4>
+            </div>
+            <span class="text-[11px] font-bold bg-saas-blueMuted text-saas-blue px-2 py-0.5 rounded border border-blue-200" id="rfqStatusBadge">0 Item</span>
+          </div>
+
+          <!-- Empty Notice -->
+          <div id="emptyRfqNotice" class="py-10 text-center text-slate-400 space-y-2">
+            <i data-lucide="package-search" class="w-10 h-10 mx-auto text-slate-300"></i>
+            <p class="text-xs font-medium">Belum ada material yang dipilih.<br>Klik tombol "Tambah ke RFQ" pada tabel katalog.</p>
+          </div>
+
+          <!-- Populated RFQ Items Container -->
+          <div id="rfqItemsContainer" class="hidden space-y-3 max-h-64 overflow-y-auto pr-1">
+            <!-- Injected via JavaScript -->
+          </div>
+
+          <!-- Estimated Total & Logistics Tier -->
+          <div id="rfqCalculationsBox" class="hidden space-y-3 border-t border-saas-border pt-4 text-xs font-mono">
+            <div class="flex justify-between text-slate-600">
+              <span>Subtotal Material:</span>
+              <span class="font-bold text-saas-dark" id="rfqSubtotalText">Rp 0</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Estimasi Volume Muatan:</span>
+              <span class="font-bold text-saas-blue" id="rfqWeightEstimate">~0 Ton (0 Armada)</span>
+            </div>
+            <div class="flex justify-between text-emerald-700 font-semibold bg-emerald-50 p-2 rounded-lg" id="tierDiscountNotice">
+              <span id="tierDiscountLabel">Diskon Grosir Volume (5%):</span>
+              <span id="tierDiscountValue">- Rp 0</span>
+            </div>
+
+            <!-- Grand Total -->
+            <div class="p-3.5 bg-saas-canvas rounded-xl border border-saas-border flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-saas-slateText uppercase block">Estimasi Nilai Kontrak</span>
+                <span class="text-xs text-slate-500 font-sans">Belum Termasuk PPN 11%</span>
+              </div>
+              <span class="text-xl font-extrabold text-saas-dark font-mono" id="rfqGrandTotalText">Rp 0</span>
+            </div>
+
+            <!-- Next Button -->
+            <button onclick="goToStep2()" class="w-full bg-saas-blue hover:bg-saas-blueHover text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <span>Lanjut ke Form PO & Lokasi Proyek</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Harga bersifat final setelah diterbitkan Surat Penawaran Resmi oleh tim procurement MaterialHub.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: PO Contractor Form & Down Payment QRIS Commitment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Contractor & Delivery Site Form -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-saas-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-saas-border pb-3">
+            <h3 class="text-base font-bold text-saas-dark flex items-center gap-2 font-display">
+              <i data-lucide="building" class="w-4 h-4 text-saas-blue"></i>
+              Identitas Kontraktor & Alamat Proyek
+            </h3>
+            <span class="text-xs font-mono text-slate-400">Tahap PO / DO</span>
+          </div>
+
+          <div class="space-y-4 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nama Perusahaan / PT / CV *</label>
+                <input type="text" id="companyName" value="PT Reliantradha Solusi Digital" class="w-full bg-saas-canvas px-3.5 py-2.5 rounded-xl border border-saas-border focus:outline-none focus:ring-2 focus:ring-saas-blue font-medium" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nama PIC Pengadaan (Procurement) *</label>
+                <input type="text" id="picName" value="Tedi Mahendra" class="w-full bg-saas-canvas px-3.5 py-2.5 rounded-xl border border-saas-border focus:outline-none focus:ring-2 focus:ring-saas-blue font-medium" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nomor WhatsApp PIC Lapangan *</label>
+                <input type="tel" id="picPhone" value="081299998888" class="w-full bg-saas-canvas px-3.5 py-2.5 rounded-xl border border-saas-border focus:outline-none focus:ring-2 focus:ring-saas-blue font-medium" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Email Dokumen Faktur Pajak *</label>
+                <input type="email" id="picEmail" value="procurement@reliansolusi.co.id" class="w-full bg-saas-canvas px-3.5 py-2.5 rounded-xl border border-saas-border focus:outline-none focus:ring-2 focus:ring-saas-blue font-medium" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Lokasi Titik Drop Material (Alamat Proyek) *</label>
+              <textarea id="projectAddress" rows="2" class="w-full bg-saas-canvas px-3.5 py-2.5 rounded-xl border border-saas-border focus:outline-none focus:ring-2 focus:ring-saas-blue font-medium">Proyek Pembangunan Gedung Komersial Wirausaha Kav. B-12, Jl. HR Rasuna Said, Jakarta Selatan</textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Akses Masuk Armada Truk:</label>
+              <select id="accessFleetSelect" class="w-full bg-saas-canvas px-3.5 py-2.5 rounded-xl border border-saas-border focus:outline-none focus:ring-2 focus:ring-saas-blue text-slate-800">
+                <option value="Akses Tronton / Trailer 10 Roda (Bebas Hambatan)" selected>Akses Tronton / Trailer 10 Roda (Jalan Luas)</option>
+                <option value="Hanya Truk Colt Diesel Double (CDD 6 Roda)">Hanya Truk Colt Diesel Double (CDD 6 Roda)</option>
+                <option value="Truk Engkel / Pickup L300 (Gang Sedang)">Truk Engkel / Pickup L300 (Akses Terbatas)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: DP Commitment / PO Lock via QRIS -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-saas-border shadow-xl space-y-5">
+          <div class="flex items-center justify-between border-b border-saas-border pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">Uang Muka / DP Komitmen 30%</span>
+            <span class="text-[10px] font-bold bg-saas-blueMuted text-saas-blue px-2 py-0.5 rounded border border-blue-200">LOCK ALOKASI</span>
+          </div>
+
+          <!-- QRIS Gateway Box -->
+          <div class="border border-saas-border rounded-xl p-4 bg-saas-canvas text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2 font-mono">
+              <span class="text-red-600 font-bold text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-saas-blue" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-200">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-MATERIALHUB-RFQ-DEPOSIT" alt="QRIS DP Material" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-500 font-mono">
+              <p>Transfer Bank / QRIS Multi-Bank</p>
+              <p class="text-[10px] text-slate-400">NMID: ID1099238877 - PT MATERIALHUB BANGUNAN</p>
+            </div>
+
+            <!-- Total DP to Pay -->
+            <div class="mt-3 pt-3 border-t border-saas-border w-full flex items-center justify-between px-1 font-mono">
+              <span class="text-xs text-slate-600">Total DP 30% Alokasi:</span>
+              <span id="dpPayableAmount" class="text-base font-extrabold text-saas-blue">Rp 0</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-saas-blue hover:bg-saas-blueHover text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Simulasi Bayar DP (Terbitkan Faktur Sah)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+              Kembali / Ubah Kuantitas SKU
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Pelunasan sisa 70% dapat diterbitkan dengan term tempo pembayaran SCF/B2B sesuai perjanjian kontrak kerja sama.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Quotation (Faktur Penawaran Sah Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-900 no-print">
+        <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold">Alokasi Material Berhasil Dikunci & PO Diterbitkan!</h4>
+          <p class="text-xs text-emerald-800 mt-0.5">Surat Penawaran Resmi dan Faktur Proforma sah telah digenerate otomatis ke sistem logistik gudang.</p>
+        </div>
+      </div>
+
+      <!-- Printable Commercial Quotation Document -->
+      <div id="printableQuotation" class="bg-white rounded-2xl border border-saas-border shadow-xl p-6 sm:p-9 space-y-6">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-saas-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-saas-blue flex items-center justify-center text-white font-bold">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-lg text-saas-dark font-display">MATERIAL<span class="text-saas-blue">HUB</span></span>
+            </div>
+            <p class="text-[11px] text-saas-slateText">PT MaterialHub Bangunan Nusantara • Kawasan Industri Pulogadung, Jakarta Timur</p>
+            <p class="text-[11px] text-saas-slateText">Hotline B2B Procurement: +62 812-9999-8888 • rfq@materialhub.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-saas-blueMuted text-saas-blue uppercase border border-blue-200">
+              OFFICIAL COMMERCIAL QUOTATION
+            </span>
+            <p id="rfqDocNumber" class="text-xs font-bold text-saas-dark font-mono mt-1">RFQ-202610-8891</p>
+            <p id="rfqDateText" class="text-[11px] text-saas-slateText">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Project & Contractor Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-saas-border font-mono">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">KONTRAKTOR / PELAKSANA:</span>
+            <p id="invCompanyName" class="font-bold text-saas-dark text-sm">PT Reliantradha Solusi Digital</p>
+            <p id="invPicName" class="text-slate-600">PIC: Tedi Mahendra (081299998888)</p>
+            <p id="invProjectAddress" class="text-slate-500 mt-1 leading-relaxed">Proyek Gedung Wirausaha, Jakarta Selatan</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">STATUS LOGISTIK:</span>
+            <p class="font-bold text-saas-blue text-sm">Jadwal Pengiriman Terjadwal</p>
+            <p id="invFleetType" class="text-slate-600">Akses Tronton / Trailer 10 Roda</p>
+            <p class="text-emerald-700 font-bold mt-1">DP 30% ALOKASI LUNAS</p>
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="border border-saas-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 text-slate-600 border-b border-saas-border">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Rincian SKU Material Bangunan</th>
+                <th class="py-2.5 px-3 font-bold text-center">Volume</th>
+                <th class="py-2.5 px-4 font-bold text-right">Harga Satuan</th>
+                <th class="py-2.5 px-4 font-bold text-right">Jumlah</th>
+              </tr>
+            </thead>
+            <tbody id="quotationTableBody" class="divide-y divide-slate-100 font-medium font-mono">
+              <!-- Rendered via JS -->
+            </tbody>
+            <tfoot class="bg-slate-50 border-t border-saas-border font-mono text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600">Subtotal Nilai Material:</td>
+                <td class="py-2 px-4 text-right font-bold text-saas-dark" id="invRawSubtotal">Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-700">Diskon Volume Tonase (5%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700" id="invDiscountTotal">- Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600">PPN 11%:</td>
+                <td class="py-2 px-4 text-right font-bold text-saas-dark" id="invTaxAmount">Rp 0</td>
+              </tr>
+              <tr class="bg-saas-blueMuted border-t-2 border-blue-200 font-extrabold text-sm">
+                <td colspan="3" class="py-2.5 px-4 text-right text-saas-blue">Total Faktur Penawaran Sah:</td>
+                <td class="py-2.5 px-4 text-right text-saas-blue font-black" id="invGrandTotal">Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600">Uang Muka Diterima (DP 30% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-600" id="invPaidAmount">Rp 0</td>
+              </tr>
+              <tr class="bg-slate-100 border-t border-slate-200">
+                <td colspan="3" class="py-2 px-4 text-right text-slate-700 font-bold">Sisa Tagihan / Term Of Payment (TOP):</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900" id="invDueAmount">Rp 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Dispatch Barcode & Guarantee -->
+        <div class="p-4 bg-slate-50 rounded-xl border border-saas-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Surat Jalan (DO) Tracking Hub</span>
+            <p class="text-xs font-bold text-saas-dark">Scan Barcode untuk Surat Izin Masuk Muatan Proyek</p>
+            <p class="text-[11px] text-saas-slateText">Sertifikat hasil uji tarik lab & sertifikat SNI disertakan bersama armada pengirim.</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-lg inline-block shadow border border-slate-200">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=MATERIALHUB-DO-VALID-202610" alt="DO Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] text-slate-400 mt-1">DO-8891-B2B</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-saas-border">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Buat RFQ Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-saas-blue hover:bg-saas-blueHover text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-blue-500/20">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Surat Penawaran (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Technical Standards & Logistics Strip -->
+  <section id="procurement-standards" class="border-t border-saas-border bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-saas-blue uppercase tracking-wider font-mono">Procurement Quality Standards</span>
+        <h3 class="text-xl font-bold text-saas-dark font-display mt-1">Mengapa Ribuan Kontraktor Memilih MaterialHub?</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+        <div class="p-5 rounded-xl bg-saas-canvas border border-saas-border">
+          <div class="w-9 h-9 rounded-lg bg-saas-blueMuted text-saas-blue flex items-center justify-center mb-3">
+            <i data-lucide="award" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-saas-dark text-sm mb-1">Jaminan Toleransi SNI Penuh</h4>
+          <p class="text-saas-slateText leading-relaxed">Besi beton ulir dan polos bersertifikat SNI resmi dengan toleransi ketebalan baku tanpa besi banci yang merugikan struktur gedung.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-saas-canvas border border-saas-border">
+          <div class="w-9 h-9 rounded-lg bg-saas-blueMuted text-saas-blue flex items-center justify-center mb-3">
+            <i data-lucide="truck" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-saas-dark text-sm mb-1">Armada Logistik Sendiri</h4>
+          <p class="text-saas-slateText leading-relaxed">Didukung armada terpadu dari truk engkel hingga tronton trailer berkapasitas 30 ton untuk suplai cepat ke area proyek padat maupun pelosok.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-saas-canvas border border-saas-border">
+          <div class="w-9 h-9 rounded-lg bg-saas-blueMuted text-saas-blue flex items-center justify-center mb-3">
+            <i data-lucide="file-check-2" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-saas-dark text-sm mb-1">Faktur Pajak & Legalitas Sah</h4>
+          <p class="text-saas-slateText leading-relaxed">Lengkap dengan e-faktur PPN resmi, surat jalan bermaterai, dan laporan timbang digital untuk kepatuhan audit perusahaan konstruksi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="fleet" class="bg-saas-dark text-slate-400 py-8 border-t border-slate-700 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-saas-blue flex items-center justify-center text-white font-bold text-[10px]">M</div>
+        <span class="font-bold text-white">MaterialHub Bangunan B2B Platform</span>
+        <span class="text-slate-500">| ID: materialhub-bangunan</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right">&copy; 2026 PT MaterialHub Bangunan Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Katalog SKU Ribuan Produk (Sampel Master B2B)
+    const masterCatalog = [
+      {
+        id: "SKU-SMN-01",
+        name: "Semen Tiga Roda Portland Composite (PCC 50kg)",
+        category: "semen",
+        unit: "Sak (50kg)",
+        pricePerUnit: 67000,
+        minOrder: 100,
+        weightKg: 50,
+        stock: "Gudang Sentral: 12.000 Sak",
+        spec: "SNI 7064:2014 • Kuat Tekan 28 Hari > 280 kg/cm²"
+      },
+      {
+        id: "SKU-BSI-01",
+        name: "Besi Beton Ulir D16 SNI BJTS 420B (Panjang 12m)",
+        category: "besi",
+        unit: "Batang (12m)",
+        pricePerUnit: 182000,
+        minOrder: 50,
+        weightKg: 18.96,
+        stock: "Gudang Sentral: 4.500 Batang",
+        spec: "SNI 2052:2017 • Sertifikat Uji Tarik Krakatau Steel"
+      },
+      {
+        id: "SKU-BTA-01",
+        name: "Bata Ringan AAC Broco / Hebel (10 x 20 x 60 cm)",
+        category: "bata",
+        unit: "m³ (Kubik)",
+        pricePerUnit: 585000,
+        minOrder: 12,
+        weightKg: 650,
+        stock: "Gudang Sentral: 850 m³",
+        spec: "Presisi Tinggi • Densitas Kering 550 kg/m³"
+      },
+      {
+        id: "SKU-BJA-01",
+        name: "Baja Ringan Kencana Canal C75 Tebal 0.75mm TCT",
+        category: "baja",
+        unit: "Batang (6m)",
+        pricePerUnit: 98000,
+        minOrder: 80,
+        weightKg: 4.8,
+        stock: "Gudang Sentral: 3.200 Batang",
+        spec: "Galvalume G550 • Anti-Karat Bersertifikat SNI"
+      },
+      {
+        id: "SKU-SMN-02",
+        name: "Semen Mortar MU-380 Perekat Bata Ringan (40kg)",
+        category: "semen",
+        unit: "Sak (40kg)",
+        pricePerUnit: 92000,
+        minOrder: 50,
+        weightKg: 40,
+        stock: "Gudang Sentral: 2.800 Sak",
+        spec: "Daya Rekat Tinggi • Tebal Aplikasi 3mm Hemat"
+      },
+      {
+        id: "SKU-BSI-02",
+        name: "Besi Beton Polos 10mm SNI TP 280 (Panjang 12m)",
+        category: "besi",
+        unit: "Batang (12m)",
+        pricePerUnit: 74000,
+        minOrder: 80,
+        weightKg: 7.4,
+        stock: "Gudang Sentral: 6.000 Batang",
+        spec: "SNI Resmi • Diameter Full Tanpa Banci"
+      }
+    ];
+
+    // State Management
+    let currentCategory = 'all';
+    let searchQuery = '';
+    let rfqBasket = {}; // { skuId: quantity }
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCatalogTable();
+      updateRfqBasketUI();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToRFQ() {
+      document.getElementById('rfq-basket').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Filter Logic
+    function filterCategory(cat) {
+      currentCategory = cat;
+      ['catAll', 'catSemen', 'catBesi', 'catBata', 'catBaja'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.className = "px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-saas-dark transition whitespace-nowrap";
+      });
+
+      const activeBtnMap = {
+        all: 'catAll',
+        semen: 'catSemen',
+        besi: 'catBesi',
+        bata: 'catBata',
+        baja: 'catBaja'
+      };
+
+      const activeBtn = document.getElementById(activeBtnMap[cat]);
+      if (activeBtn) activeBtn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-white text-saas-dark shadow-sm transition whitespace-nowrap";
+
+      renderCatalogTable();
+    }
+
+    function onSearchChange() {
+      searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+      renderCatalogTable();
+    }
+
+    // Render Data-Dense Catalog Table
+    function renderCatalogTable() {
+      const tbody = document.getElementById('catalogTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = masterCatalog.filter(item => {
+        const matchCat = currentCategory === 'all' || item.category === currentCategory;
+        const matchSearch = item.name.toLowerCase().includes(searchQuery) || item.id.toLowerCase().includes(searchQuery);
+        return matchCat && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="py-8 text-center text-slate-400">
+              Tidak ada material yang cocok dengan kriteria pencarian Anda.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4">
+            <span class="font-bold text-saas-dark block text-xs">${item.name}</span>
+            <div class="text-[11px] text-saas-slateText mt-0.5">${item.spec}</div>
+            <div class="text-[10px] text-emerald-700 font-mono mt-0.5">${item.stock}</div>
+          </td>
+          <td class="py-3 px-3 text-center text-slate-600 font-mono">${item.unit}</td>
+          <td class="py-3 px-4 text-right font-bold text-saas-dark font-mono">${formatRupiah(item.pricePerUnit)}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="addToRfq('${item.id}', ${item.minOrder})" class="bg-saas-blue hover:bg-saas-blueHover active:scale-95 text-white font-bold text-[11px] px-3 py-1.5 rounded-lg transition shadow-sm inline-flex items-center gap-1">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Tambah (${item.minOrder})</span>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // RFQ Basket Logic
+    function addToRfq(skuId, defaultQty) {
+      if (!rfqBasket[skuId]) {
+        rfqBasket[skuId] = defaultQty;
+      } else {
+        rfqBasket[skuId] += defaultQty;
+      }
+      updateRfqBasketUI();
+    }
+
+    function changeRfqQty(skuId, newQty) {
+      const qty = parseInt(newQty);
+      if (isNaN(qty) || qty <= 0) {
+        delete rfqBasket[skuId];
+      } else {
+        rfqBasket[skuId] = qty;
+      }
+      updateRfqBasketUI();
+    }
+
+    function removeRfqItem(skuId) {
+      delete rfqBasket[skuId];
+      updateRfqBasketUI();
+    }
+
+    function updateRfqBasketUI() {
+      const container = document.getElementById('rfqItemsContainer');
+      const emptyNotice = document.getElementById('emptyRfqNotice');
+      const calcBox = document.getElementById('rfqCalculationsBox');
+      const statusBadge = document.getElementById('rfqStatusBadge');
+      const headerCount = document.getElementById('headerRfqCount');
+
+      container.innerHTML = '';
+
+      const skuKeys = Object.keys(rfqBasket);
+      headerCount.innerText = skuKeys.length;
+      statusBadge.innerText = `${skuKeys.length} Item SKU`;
+
+      if (skuKeys.length === 0) {
+        emptyNotice.classList.remove('hidden');
+        container.classList.add('hidden');
+        calcBox.classList.add('hidden');
+        return;
+      }
+
+      emptyNotice.classList.add('hidden');
+      container.classList.remove('hidden');
+      calcBox.classList.remove('hidden');
+
+      let rawSubtotal = 0;
+      let totalWeightKg = 0;
+
+      skuKeys.forEach(skuId => {
+        const item = masterCatalog.find(m => m.id === skuId);
+        if (!item) return;
+
+        const qty = rfqBasket[skuId];
+        const lineTotal = item.pricePerUnit * qty;
+        rawSubtotal += lineTotal;
+        totalWeightKg += (item.weightKg * qty);
+
+        const card = document.createElement('div');
+        card.className = "p-3 rounded-xl border border-saas-border bg-saas-canvas text-xs space-y-2";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-bold text-saas-dark block">${item.name}</span>
+              <span class="text-[10px] text-saas-slateText font-mono">${formatRupiah(item.pricePerUnit)} / ${item.unit}</span>
+            </div>
+            <button onclick="removeRfqItem('${skuId}')" class="text-rose-500 hover:text-rose-700 text-xs font-bold" title="Hapus">✕</button>
+          </div>
+          <div class="flex items-center justify-between pt-1 border-t border-slate-200">
+            <div class="flex items-center gap-1.5 font-mono">
+              <span class="text-slate-500 text-[11px]">Vol Qty:</span>
+              <input type="number" value="${qty}" min="1" onchange="changeRfqQty('${skuId}', this.value)" class="w-16 px-2 py-0.5 text-center font-bold bg-white border border-slate-300 rounded focus:ring-1 focus:ring-saas-blue" />
+            </div>
+            <span class="font-bold text-saas-dark font-mono">${formatRupiah(lineTotal)}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      // Volume Tier Calculation (Grosir Volume Proyek)
+      let discountRate = 0;
+      if (rawSubtotal >= 50000000) {
+        discountRate = 0.08; // 8% untuk order >= 50 Juta
+      } else if (rawSubtotal >= 20000000) {
+        discountRate = 0.05; // 5% untuk order >= 20 Juta
+      }
+
+      const discountVal = Math.round(rawSubtotal * discountRate);
+      const grandTotal = rawSubtotal - discountVal;
+      const totalTons = (totalWeightKg / 1000).toFixed(1);
+      const truckEstimate = Math.ceil(totalWeightKg / 8000); // Rata-rata CDD 8 ton
+
+      document.getElementById('rfqSubtotalText').innerText = formatRupiah(rawSubtotal);
+      document.getElementById('rfqWeightEstimate').innerText = `~${totalTons} Ton (${truckEstimate} Armada CDD)`;
+
+      const discountNotice = document.getElementById('tierDiscountNotice');
+      if (discountRate > 0) {
+        discountNotice.classList.remove('hidden');
+        document.getElementById('tierDiscountLabel').innerText = `Diskon Tonase Grosir (${discountRate * 100}%):`;
+        document.getElementById('tierDiscountValue').innerText = `- ${formatRupiah(discountVal)}`;
+      } else {
+        discountNotice.classList.add('hidden');
+      }
+
+      document.getElementById('rfqGrandTotalText').innerText = formatRupiah(grandTotal);
+
+      return { rawSubtotal, discountVal, grandTotal, totalTons, truckEstimate };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      const summary = updateRfqBasketUI();
+      if (!summary || summary.grandTotal === 0) {
+        alert("Keranjang RFQ masih kosong. Silakan pilih SKU material terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-saas-blue text-saas-blue pb-2 flex items-center justify-center gap-1.5 font-bold";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-saas-blue text-white flex items-center justify-center text-[11px] font-bold";
+
+      const dp30Val = Math.round(summary.grandTotal * 0.3);
+      document.getElementById('dpPayableAmount').innerText = formatRupiah(dp30Val);
+
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi DP alokasi telah berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const company = document.getElementById('companyName').value.trim() || 'PT Reliantradha Solusi Digital';
+      const pic = document.getElementById('picName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('picPhone').value.trim() || '081299998888';
+      const address = document.getElementById('projectAddress').value.trim() || 'Proyek Gedung Wirausaha, Jakarta Selatan';
+      const fleet = document.getElementById('accessFleetSelect').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-saas-blue text-saas-blue pb-2 flex items-center justify-center gap-1.5 font-bold";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-saas-blue text-white flex items-center justify-center text-[11px] font-bold";
+
+      const summary = updateRfqBasketUI();
+      const taxVal = Math.round(summary.grandTotal * 0.11);
+      const totalContract = summary.grandTotal + taxVal;
+      const dp30 = Math.round(totalContract * 0.3);
+      const dueContract = totalContract - dp30;
+
+      const randomRfq = "RFQ-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('rfqDocNumber').innerText = randomRfq;
+      document.getElementById('rfqDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invCompanyName').innerText = company;
+      document.getElementById('invPicName').innerText = `PIC: ${pic} (${phone})`;
+      document.getElementById('invProjectAddress').innerText = address;
+      document.getElementById('invFleetType').innerText = fleet;
+
+      // Populate Table
+      const tbody = document.getElementById('quotationTableBody');
+      tbody.innerHTML = '';
+
+      for (let skuId in rfqBasket) {
+        const item = masterCatalog.find(m => m.id === skuId);
+        if (!item) continue;
+        const qty = rfqBasket[skuId];
+        const lineTotal = item.pricePerUnit * qty;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2.5 px-4 font-sans">
+            <span class="font-bold text-saas-dark">${item.name}</span>
+            <div class="text-[10px] text-saas-slateText">${item.spec}</div>
+          </td>
+          <td class="py-2.5 px-3 text-center text-slate-700">${qty} ${item.unit.split(' ')[0]}</td>
+          <td class="py-2.5 px-4 text-right text-slate-700 font-mono">${formatRupiah(item.pricePerUnit)}</td>
+          <td class="py-2.5 px-4 text-right font-bold text-saas-dark font-mono">${formatRupiah(lineTotal)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      document.getElementById('invRawSubtotal').innerText = formatRupiah(summary.rawSubtotal);
+      document.getElementById('invDiscountTotal').innerText = summary.discountVal > 0 ? `- ${formatRupiah(summary.discountVal)}` : "Rp 0";
+      document.getElementById('invTaxAmount').innerText = formatRupiah(taxVal);
+      document.getElementById('invGrandTotal').innerText = formatRupiah(totalContract);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(dp30);
+      document.getElementById('invDueAmount').innerText = formatRupiah(dueContract);
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      rfqBasket = {};
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+
+      updateRfqBasketUI();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

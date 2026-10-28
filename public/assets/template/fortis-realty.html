@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fortis Realty - Listing Properti Premium, Simulasi KPR & Booking Survei</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            terra: {
+              bone: '#FAF5F0',       // Bone White Canvas
+              umber: '#4A3E3D',      // Deep Umber Utama
+              umberDark: '#362D2C',  // Darker Umber
+              umberSurface: '#5C4E4D',
+              rust: '#C85A32',       // Rust Orange Accent
+              rustHover: '#A84420',  // Darker Rust
+              rustLight: '#FCEFE9',  // Tint Soft Rust
+              border: '#E8DFD5'      // Soft Warm Border
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(250, 245, 240, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .bone-pattern {
+      background-color: #FAF5F0;
+      background-image: radial-gradient(#4A3E3D15 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .rust-glow {
+      box-shadow: 0 0 25px rgba(200, 90, 50, 0.22);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printablePass, #printablePass * {
+        visibility: visible;
+      }
+      #printablePass {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #4A3E3D !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bone-pattern text-terra-umber antialiased font-sans min-h-screen flex flex-col selection:bg-terra-rustLight selection:text-terra-rust">
+
+  <!-- Top Announcement Bar (Deep Umber & Rust Accent) -->
+  <div class="bg-terra-umberDark text-slate-300 text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-terra-umberSurface font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-terra-rust text-white">BOUTIQUE REALTY ATELIER</span>
+    <span>Listing Hunian Mewah Terverifikasi Legalitas SHM • Pendampingan Konsultan KPR Mandiri & BCA • Layanan Private Showing</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-terra-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-terra-umber border border-terra-rust flex items-center justify-center text-terra-rust shadow-md shadow-amber-950/20 flex-shrink-0 transition group-hover:bg-terra-rust group-hover:text-white">
+          <i data-lucide="home" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-terra-umber block leading-tight font-serif">
+            FORTIS<span class="text-terra-rust ml-1 font-sans font-bold">REALTY</span>
+          </span>
+          <span class="text-[9px] text-terra-umberSurface tracking-widest block font-mono font-medium uppercase">PREMIUM PROPERTY ADVISORY</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-terra-umber">
+        <a href="#property-section" class="text-terra-rust hover:text-terra-rustHover transition">Listing Kurasi</a>
+        <a href="#kpr-calculator" class="hover:text-terra-rust transition">Simulasi KPR</a>
+        <a href="#survey-booking" class="hover:text-terra-rust transition">Jadwal Survei</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-white text-terra-umber font-mono px-3.5 py-1.5 rounded-lg border border-terra-border">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Advisor Siaga: 4 Senior Broker Aktif
+        </div>
+        <button onclick="scrollToProperties()" class="bg-terra-rust hover:bg-terra-rustHover text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-orange-950/20 flex items-center gap-2 active:scale-95 font-display">
+          <i data-lucide="compass" class="w-4 h-4 text-white"></i>
+          <span>Jelajahi Listing</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Warm Terracotta Aesthetic) -->
+  <section class="border-b border-terra-border bg-white py-12 sm:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terra-rustLight border border-terra-rust/30 text-terra-rust text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-terra-rust animate-ping"></span>
+          Exclusive Curated Real Estate Portfolio
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-bold text-terra-umber tracking-tight leading-[1.18] font-serif">
+          Menemukan Ruang Tinggal Sempurna dengan Kepastian Legalitas Mutlak.
+        </h1>
+        <p class="text-terra-umberSurface text-base sm:text-lg leading-relaxed font-sans">
+          Jelajahi portofolio hunian prestisius di lokasi paling strategis. Hitung simulasi cicilan KPR dengan suku bunga fixed terkini, dan agendakan sesi survei privat bersama Senior Property Advisor tanpa biaya komitmen tersembunyi.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-terra-border text-left font-mono">
+        <div class="p-4 rounded-xl bg-terra-bone border border-terra-border">
+          <span class="text-xs text-terra-umberSurface block font-sans">Sertifikat Hak Milik</span>
+          <span class="text-2xl font-bold text-terra-rust font-serif mt-0.5 block">100% On-Hand</span>
+        </div>
+        <div class="p-4 rounded-xl bg-terra-bone border border-terra-border">
+          <span class="text-xs text-terra-umberSurface block font-sans">Suku Bunga KPR Fixed</span>
+          <span class="text-2xl font-bold text-terra-umber font-serif mt-0.5 block">Mulai 3.75%</span>
+        </div>
+        <div class="p-4 rounded-xl bg-terra-bone border border-terra-border">
+          <span class="text-xs text-terra-umberSurface block font-sans">Layanan Survei</span>
+          <span class="text-2xl font-bold text-terra-rust font-serif mt-0.5 block">Private VIP Car</span>
+        </div>
+        <div class="p-4 rounded-xl bg-terra-bone border border-terra-border">
+          <span class="text-xs text-terra-umberSurface block font-sans">Mitra Perbankan</span>
+          <span class="text-2xl font-bold text-terra-umber font-serif mt-0.5 block">8 Bank Utama</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-terra-rust text-terra-rust pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-terra-rust text-white flex items-center justify-center text-[11px]">1</span>
+          Pilih Properti & KPR
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold">2</span>
+          Jadwal Survei & QRIS DP
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold">3</span>
+          E-Pass Survei & Simulasi
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Boutique Real Estate Workspace -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="property-section">
+    
+    <!-- STEP 1: Property Curated Showcase + Financial KPR Calculator -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Split Layout: Property Cards (7 Cols) vs Live KPR & Survey Slip (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Curated Property Showcase (7 Cols) -->
+        <div class="lg:col-span-7 space-y-5">
+          <div class="flex items-center justify-between border-b border-terra-border pb-3">
+            <div>
+              <h3 class="text-base font-bold text-terra-umber font-serif">Katalog Properti Terkurasi</h3>
+              <p class="text-xs text-terra-umberSurface font-sans mt-0.5">Pilih unit untuk melihat rincian spesifikasi tanah, bangunan, dan simulasi cicilan KPR.</p>
+            </div>
+            <span class="text-xs font-mono bg-white text-terra-rust px-2.5 py-1 rounded-lg border border-terra-border font-bold">VERIFIED SHM</span>
+          </div>
+
+          <div class="space-y-4" id="propertyCardsContainer">
+            <!-- Rendered via JavaScript -->
+          </div>
+
+          <!-- KPR Financial Calculator Module -->
+          <div class="bg-white p-6 rounded-2xl border border-terra-border shadow-sm space-y-5" id="kpr-calculator">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 font-mono text-xs">
+              <span class="font-bold text-terra-umber flex items-center gap-2 font-sans">
+                <i data-lucide="calculator" class="w-4 h-4 text-terra-rust"></i>
+                Kalkulator Simulasi KPR Mandiri & Bank Rekanan
+              </span>
+              <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">SUKU BUNGA PROMO</span>
+            </div>
+
+            <div class="space-y-4 font-mono text-xs">
+              <!-- Slider DP (Down Payment) -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-600 font-sans font-medium">Uang Muka (Down Payment):</span>
+                  <span class="font-bold text-terra-rust text-sm" id="kprDpPercentDisplay">20% (Rp 640.000.000)</span>
+                </div>
+                <input type="range" id="kprDpSlider" min="10" max="50" step="5" value="20" oninput="calculateKprEstimate()" class="w-full accent-terra-rust cursor-pointer" />
+                <div class="flex justify-between text-[10px] text-slate-400 font-sans">
+                  <span>Min: 10%</span>
+                  <span>Standar: 20%</span>
+                  <span>Max: 50%</span>
+                </div>
+              </div>
+
+              <!-- Slider Tenor KPR -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-600 font-sans font-medium">Jangka Waktu Cicilan (Tenor):</span>
+                  <span class="font-bold text-terra-umber text-sm" id="kprTenorDisplay">15 Tahun (180 Bulan)</span>
+                </div>
+                <input type="range" id="kprTenorSlider" min="5" max="25" step="1" value="15" oninput="calculateKprEstimate()" class="w-full accent-terra-rust cursor-pointer" />
+                <div class="flex justify-between text-[10px] text-slate-400 font-sans">
+                  <span>5 Tahun</span>
+                  <span>15 Tahun (Paling Populer)</span>
+                  <span>25 Tahun</span>
+                </div>
+              </div>
+
+              <!-- Suku Bunga Fixed Selector -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <span class="text-slate-600 font-sans font-medium block mb-1">Pilihan Suku Bunga Fixed:</span>
+                  <select id="kprInterestSelect" onchange="calculateKprEstimate()" class="w-full bg-terra-bone px-3 py-2 rounded-xl border border-terra-border text-slate-800 font-medium">
+                    <option value="3.75">Fixed 3 Tahun: 3.75% p.a</option>
+                    <option value="4.88" selected>Fixed 5 Tahun: 4.88% p.a</option>
+                    <option value="6.50">Fixed 10 Tahun: 6.50% p.a</option>
+                  </select>
+                </div>
+                <div class="p-3 bg-terra-bone rounded-xl border border-terra-border flex flex-col justify-between">
+                  <span class="text-[10px] text-slate-500 font-sans">Estimasi Pokok Pinjaman:</span>
+                  <span class="font-black text-terra-umber text-sm" id="kprLoanPrincipalText">Rp 2.560.000.000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Live Selected Property Slip & Booking Overview (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-terra-border shadow-xl space-y-5 sticky top-24 font-mono text-xs" id="booking-slip">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block font-sans">Property Slip</span>
+              <h4 class="text-sm font-bold text-terra-umber font-serif mt-0.5">Rincian Properti Terpilih</h4>
+            </div>
+            <span class="text-[11px] font-bold bg-terra-rustLight text-terra-rust px-2 py-0.5 rounded border border-terra-rust/30" id="slipPropertyTypeBadge">VILLA</span>
+          </div>
+
+          <!-- Empty State Notice -->
+          <div id="emptyPropertyNotice" class="py-10 text-center text-slate-400 space-y-2">
+            <i data-lucide="building-2" class="w-10 h-10 mx-auto text-slate-300"></i>
+            <p class="text-xs font-sans">Belum ada properti yang dipilih.<br>Silakan klik tombol "Pilih Properti Ini" pada listing di samping.</p>
+          </div>
+
+          <!-- Selected Property Details Box -->
+          <div id="selectedPropertySlipBox" class="hidden space-y-4">
+            <div class="p-4 bg-terra-bone rounded-xl border border-terra-border space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="font-bold text-terra-umber text-base font-serif block leading-tight" id="slipPropertyTitle">NavaPark Botanical Villa</span>
+                  <p class="text-[11px] text-slate-500 font-sans mt-0.5" id="slipPropertyLocation">BSD City, Tangerang Selatan</p>
+                </div>
+                <span class="text-xs font-bold text-terra-rust font-mono" id="slipPropertyPrice">Rp 3.200.000.000</span>
+              </div>
+              <p class="text-[11px] text-slate-600 font-sans leading-relaxed" id="slipPropertySpecs">LT: 220 m² • LB: 280 m² • 4+1 KT • 4 KM • SHM On Hand</p>
+            </div>
+
+            <!-- KPR Monthly Installment Calculation Highlight -->
+            <div class="p-4 bg-terra-umber text-white rounded-xl border border-terra-umberDark space-y-1">
+              <span class="text-[10px] font-bold text-terra-rust uppercase block font-sans">Estimasi Cicilan KPR / Bulan</span>
+              <div class="flex justify-between items-baseline">
+                <span class="text-2xl font-bold font-mono text-white" id="slipMonthlyInstallmentText">Rp 20.120.000</span>
+                <span class="text-[10px] text-slate-300 font-sans">/ Bulan (Fixed 5 Thn)</span>
+              </div>
+              <p class="text-[10px] text-slate-400 font-sans pt-1 border-t border-terra-umberSurface">
+                *Simulasi cicilan anuitas murni. Pajak BPHTB & biaya notaris dapat dikonsultasikan saat survei.
+              </p>
+            </div>
+
+            <!-- Survey Schedule Parameters -->
+            <div class="space-y-2.5 text-xs font-sans border-t border-b border-slate-100 py-3" id="survey-booking">
+              <span class="font-bold text-terra-umber block">Jadwalkan Kunjungan Survei Privat:</span>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono">
+                <div>
+                  <span class="text-[10px] text-slate-400 block mb-1">Tanggal Kunjungan:</span>
+                  <input type="date" id="surveyDateInput" onchange="updateSurveyScheduleText()" class="w-full bg-terra-bone px-2.5 py-1.5 rounded-lg border border-terra-border text-slate-800 text-xs font-medium" />
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block mb-1">Waktu Sesi:</span>
+                  <select id="surveyTimeSlotSelect" onchange="updateSurveyScheduleText()" class="w-full bg-terra-bone px-2.5 py-1.5 rounded-lg border border-terra-border text-slate-800 text-xs font-medium">
+                    <option value="Sesi Pagi (09:30 - 11:30 WIB)" selected>Pagi (09:30 - 11:30 WIB)</option>
+                    <option value="Sesi Siang (13:30 - 15:30 WIB)">Siang (13:30 - 15:30 WIB)</option>
+                    <option value="Sesi Senja (16:30 - 18:00 WIB)">Golden Hour (16:30 - 18:00 WIB)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="p-2.5 bg-emerald-50 rounded-lg border border-emerald-200 flex items-center justify-between text-[11px] text-emerald-900">
+                <span>Pendampingan Senior Advisor & Golf Car</span>
+                <strong class="font-mono text-emerald-700">GRATIS</strong>
+              </div>
+            </div>
+
+            <!-- Booking Commitment Fee Option (Gratis vs Hold Unit DP) -->
+            <div class="space-y-2 text-xs font-sans">
+              <div class="flex justify-between items-center text-slate-600">
+                <span>Biaya Booking Survei Unit:</span>
+                <span class="font-bold text-emerald-700">Rp 0 (Survei Bebas Biaya)</span>
+              </div>
+              <div class="flex justify-between items-center text-slate-600">
+                <span>Hold Unit Priority Token (Opsional):</span>
+                <span class="font-bold text-terra-rust font-mono" id="priorityHoldTokenText">Rp 100.000</span>
+              </div>
+            </div>
+
+            <!-- Next Button to Step 2 -->
+            <button onclick="goToStep2()" class="w-full bg-terra-rust hover:bg-terra-rustHover text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-orange-950/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <span>Lanjut Isi Data Kunjungan & E-Pass</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal font-sans">
+            *Advisor kami akan menyambut Anda di gerbang cluster dengan fasilitas unit kendaraan survei.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Client Verification, Survey Confirmation & QRIS Priority Pass -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Client Profile & Showing Requirements Form -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-terra-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3 font-mono">
+            <h3 class="text-base font-bold text-terra-umber flex items-center gap-2 font-serif">
+              <i data-lucide="user-check" class="w-4 h-4 text-terra-rust"></i>
+              Konfirmasi Data Tamu Kunjungan Survei
+            </h3>
+            <span class="text-xs text-slate-400">Private Showing</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-sans">Nama Lengkap Tamu *</label>
+                <input type="text" id="clientNameInput" value="Tedi Mahendra" class="w-full bg-terra-bone px-3.5 py-2.5 rounded-xl border border-terra-border focus:outline-none focus:ring-2 focus:ring-terra-rust text-slate-900 font-sans font-medium" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-sans">Nomor WhatsApp Aktif *</label>
+                <input type="tel" id="clientPhoneInput" value="081299998888" class="w-full bg-terra-bone px-3.5 py-2.5 rounded-xl border border-terra-border focus:outline-none focus:ring-2 focus:ring-terra-rust text-slate-900 font-sans font-medium" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-sans">Alamat Email Konfirmasi *</label>
+                <input type="email" id="clientEmailInput" value="tedi.work@example.com" class="w-full bg-terra-bone px-3.5 py-2.5 rounded-xl border border-terra-border focus:outline-none focus:ring-2 focus:ring-terra-rust text-slate-900 font-sans font-medium" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-sans">Preferensi Metode Beli:</label>
+                <select id="clientBuyMethodSelect" class="w-full bg-terra-bone px-3.5 py-2.5 rounded-xl border border-terra-border focus:outline-none focus:ring-2 focus:ring-terra-rust text-slate-900 font-sans font-medium">
+                  <option value="KPR_BANK" selected>Kredit Pemilikan Rumah (KPR)</option>
+                  <option value="HARD_CASH">Cash Keras (Diskon Khusus Pelunasan)</option>
+                  <option value="CASH_BERTAHAP">Cash Bertahap 12x / 24x Developer</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Priority Token Option (DP Komitmen vs Free Pass) -->
+            <div class="space-y-3 pt-2 font-sans">
+              <label class="block font-bold text-slate-700">Pilihan Tipe Tiket Kunjungan:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Free Survey Pass -->
+                <label onclick="selectPassType('FREE')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-terra-bone border-terra-umber" id="labelPassFree">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-terra-umber">Standard Showing (Gratis)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-terra-umber flex items-center justify-center">
+                      <span id="radioDotFree" class="w-2 h-2 rounded-full bg-terra-umber"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 leading-normal">Kunjungan survei fisik didampingi broker tanpa biaya pendaftaran.</p>
+                  <span class="text-xs font-black text-emerald-700 mt-2 block font-mono">Gratis (Rp 0)</span>
+                </label>
+
+                <!-- Priority Hold Token Pass -->
+                <label onclick="selectPassType('PRIORITY')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-terra-border hover:border-slate-400" id="labelPassPriority">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-terra-umber">Priority Lock Pass</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                      <span id="radioDotPriority" class="w-2 h-2 rounded-full bg-transparent"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 leading-normal">Hold unit tidak dijual ke tamu lain selama 7 hari + gratis appraisal bank.</p>
+                  <span class="text-xs font-black text-terra-rust mt-2 block font-mono">Token Rp 100.000</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 font-sans">Permintaan Khusus / Jam Kunjungan Tambahan:</label>
+              <input type="text" id="clientSpecialNotes" value="Ingin inspeksi pencahayaan alami sore hari & cek kekuatan sinyal seluler di dalam rumah." class="w-full bg-terra-bone px-3.5 py-2.5 rounded-xl border border-terra-border focus:outline-none focus:ring-2 focus:ring-terra-rust text-slate-900 font-sans" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Gateway & Booking Authorization -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-terra-border shadow-xl space-y-5 font-mono text-xs">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gateway Verifikasi Instan</span>
+            <span class="text-[10px] font-bold bg-terra-rustLight text-terra-rust px-2 py-0.5 rounded border border-terra-rust/30">ADVISOR ASSIGNED</span>
+          </div>
+
+          <!-- QR Box -->
+          <div class="border border-terra-border rounded-xl p-4 bg-terra-bone text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-600 font-black text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-white bg-terra-rust px-2 py-0.5 rounded" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-300">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-FORTIS-REALTY-SHOWING-PASS" alt="QRIS Fortis Realty" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-500 font-sans">
+              <p class="font-medium text-slate-700">Scan via BCA, Mandiri, BRI, BNI, GoPay, OVO</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 font-mono">NMID: ID1099238821 - FORTIS REALTY INDONESIA</p>
+            </div>
+
+            <!-- Payable Highlight -->
+            <div class="mt-3 pt-3 border-t border-terra-border w-full flex items-center justify-between px-1">
+              <span class="text-xs text-slate-600 font-sans" id="qrisPayableLabel">Biaya Registrasi Survei:</span>
+              <span id="qrisPayableAmount" class="text-base font-extrabold text-terra-rust font-mono">Rp 0 (Gratis)</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2 font-sans">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-terra-rust hover:bg-terra-rustHover active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-orange-950/20">
+              <i data-lucide="check-circle" class="w-4 h-4 text-white"></i>
+              <span>Konfirmasi Survei (Terbitkan E-Pass Kunjungan)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-terra-bone hover:bg-stone-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+              Kembali / Ubah Properti
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal font-sans">
+            *Setelah konfirmasi, E-Pass kunjungan ber-barcode langsung aktif untuk izin akses gerbang satpam cluster.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Showing Pass & KPR Pre-Approval Slip (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-900 no-print font-sans">
+        <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-serif text-emerald-950">Jadwal Survei Berhasil Dikonfirmasi & E-Pass Aktif!</h4>
+          <p class="text-xs text-emerald-800 mt-0.5">Senior Property Advisor kami telah menerima jadwal Anda. Tunjukkan tiket ini kepada petugas keamanan gerbang cluster.</p>
+        </div>
+      </div>
+
+      <!-- Printable Property Pass Document Card -->
+      <div id="printablePass" class="bg-white rounded-2xl border border-terra-border shadow-xl p-6 sm:p-9 space-y-6 font-mono text-slate-900">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-terra-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-terra-umber flex items-center justify-center text-terra-rust font-bold">
+                <i data-lucide="home" class="w-4 h-4 text-terra-rust"></i>
+              </div>
+              <span class="font-extrabold text-lg text-terra-umber font-serif">FORTIS<span class="text-terra-rust ml-1 font-sans">REALTY</span></span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-sans">PT Fortis Realty Indonesia • Sudirman Central Business District (SCBD) Lot 9, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-500 font-sans">Concierge VIP Showing: +62 812-9999-8888 • vip@fortisrealty.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-terra-rustLight text-terra-rust uppercase border border-terra-rust/30" id="invPassBadge">
+              PRIVATE SHOWING PASS
+            </span>
+            <p id="invPassNumber" class="text-xs font-bold text-slate-900 mt-1">SHOW-FTR-202610-8812</p>
+            <p id="invDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Guest & Schedule Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-terra-bone p-4 rounded-xl border border-terra-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">TAMU KUNJUNGAN:</span>
+            <p id="invClientName" class="font-bold text-terra-umber text-sm font-serif">Tedi Mahendra</p>
+            <p id="invClientContact" class="text-slate-600">WhatsApp: 081299998888</p>
+            <p id="invBuyMethod" class="text-terra-rust font-semibold mt-0.5">Rencana: Kredit Pemilikan Rumah (KPR)</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">JADWAL KEDATANGAN SURVEI:</span>
+            <p id="invSurveyDate" class="font-bold text-slate-900 text-sm font-sans">Rabu, 28 Okt 2026</p>
+            <p id="invSurveyTime" class="text-terra-rust font-bold">Pagi (09:30 - 11:30 WIB)</p>
+            <p class="text-emerald-700 font-bold mt-1">STATUS: TERJADWAL DI SYSTEM</p>
+          </div>
+        </div>
+
+        <!-- Property & KPR Simulation Details Table -->
+        <div class="border border-terra-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-terra-bone text-slate-700 border-b border-terra-border font-serif">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Rincian Properti & Estimasi Finansial</th>
+                <th class="py-2.5 px-3 font-bold text-center">Spesifikasi Unit</th>
+                <th class="py-2.5 px-4 font-bold text-right">Nilai Properti</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-slate-900 block text-sm font-serif" id="invPropertyTitle">NavaPark Botanical Villa</span>
+                  <div class="text-[11px] text-slate-500 font-sans mt-0.5" id="invPropertyLocationText">Lokasi: BSD City, Tangerang Selatan • Sertifikat Hak Milik (SHM)</div>
+                  <div class="text-[10px] text-terra-rust font-mono mt-1" id="invKprBreakdownText">
+                    Simulasi KPR: DP 20% • Tenor 15 Tahun • Fixed 4.88% (Cicilan ~Rp 20.120.000/Bulan)
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-700 font-sans" id="invPropertySpecsText">LT: 220 m² / LB: 280 m²</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono" id="invPropertyPriceText">Rp 3.200.000.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-terra-bone border-t border-terra-border text-xs font-mono">
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-right text-slate-600 font-bold">Biaya Reservasi Survei Lokasi:</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700" id="invShowingFeeText">Rp 0 (Gratis)</td>
+              </tr>
+              <tr class="bg-terra-rustLight border-t border-terra-rust/20">
+                <td colspan="2" class="py-2.5 px-4 text-terra-umber text-right font-extrabold text-xs">
+                  Biaya Komitmen Priority Lock (Jika Ada):
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-terra-rust font-mono" id="invPriorityHoldFee">
+                  Rp 0
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Security Gate Cluster QR Barcode -->
+        <div class="p-4 bg-terra-bone rounded-xl border border-terra-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Cluster Gate Pass & Advisor Clearance</span>
+            <p class="text-xs font-bold text-slate-900">Tunjukkan Barcode ke Security Gerbang Utama Cluster untuk Memasuki Kawasan</p>
+            <p class="text-[11px] text-slate-500">Senior Advisor kami telah diinstruksikan menyambut Anda di Marketing Gallery / Lokasi Unit.</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-lg inline-block shadow-sm border border-terra-border">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=FORTIS-REALTY-SHOWING-PASS-8812" alt="Gate Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] text-slate-400 mt-1">GATE-PASS-8812</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-white hover:bg-stone-100 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-terra-border font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Pilih Properti Lain
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-terra-rust hover:bg-terra-rustHover text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-orange-950/20 font-sans">
+            <i data-lucide="printer" class="w-4 h-4 text-white"></i>
+            Cetak Tiket Kunjungan & Simulasi KPR (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Standards & Legal Security Strip -->
+  <section class="border-t border-terra-border bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-terra-rust uppercase tracking-wider font-mono">Legal & Advisory Standards</span>
+        <h3 class="text-xl font-bold text-terra-umber font-serif mt-1">Standar Keamanan Transaksi Fortis Realty</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-terra-bone border border-terra-border">
+          <div class="w-9 h-9 rounded-lg bg-white text-terra-rust flex items-center justify-center mb-3 shadow-sm border border-terra-border">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-serif">Verifikasi Keaslian SHM On-Hand</h4>
+          <p class="text-slate-600 leading-relaxed">Seluruh sertifikat tanah telah dicek ke BPN (Badan Pertanahan Nasional) untuk memastikan bebas sengketa hukum dan siap AJB.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-terra-bone border border-terra-border">
+          <div class="w-9 h-9 rounded-lg bg-white text-terra-rust flex items-center justify-center mb-3 shadow-sm border border-terra-border">
+            <i data-lucide="calculator" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-serif">Fasilitas Pre-Approval KPR Kilat</h4>
+          <p class="text-slate-600 leading-relaxed">Kemitraan langsung dengan 8 bank nasional terkemuka memudahkan pengecekan kelayakan kredit (BI Checking/SLIK OJK) dalam 24 jam.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-terra-bone border border-terra-border">
+          <div class="w-9 h-9 rounded-lg bg-white text-terra-rust flex items-center justify-center mb-3 shadow-sm border border-terra-border">
+            <i data-lucide="award" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-serif">Pendampingan Notaris Independen</h4>
+          <p class="text-slate-600 leading-relaxed">PPAT resmi mendampingi seluruh proses perjanjian pengikatan jual beli (PPJB) hingga akta jual beli selesai ditandatangani.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Deep Umber Theme) -->
+  <footer class="bg-terra-umberDark text-slate-400 py-8 border-t border-terra-umberSurface text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-terra-umber border border-terra-rust flex items-center justify-center text-terra-rust font-bold text-[10px]">F</div>
+        <span class="font-bold text-white font-serif">Fortis Realty Indonesia</span>
+        <span class="text-slate-500">| ID: fortis-realty</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right font-sans">&copy; 2026 PT Fortis Realty Advisory Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Listing Properti Premium Terkurasi
+    const propertiesData = [
+      {
+        id: "PROP-NAVAPARK",
+        title: "NavaPark Botanical Villa",
+        type: "VILLA",
+        location: "BSD City, Tangerang Selatan",
+        price: 3200000000,
+        landM2: 220,
+        buildingM2: 280,
+        bedrooms: "4+1 KT",
+        bathrooms: "4 KM",
+        certificate: "SHM On-Hand",
+        image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80",
+        features: ["Private Garden", "Smart Home System", "Clubhouse Golf Access"]
+      },
+      {
+        id: "PROP-SENOPATI",
+        title: "Senopati Suites Penthouse",
+        type: "APARTMENT",
+        location: "Kebayoran Baru, Jakarta Selatan",
+        price: 5800000000,
+        landM2: 0,
+        buildingM2: 215,
+        bedrooms: "3 KT",
+        bathrooms: "3 KM",
+        certificate: "Strata Title Hak Milik",
+        image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=700&q=80",
+        features: ["Private Lift Entrance", "Skyline Sunset View 360°", "Concierge 24 Jam"]
+      },
+      {
+        id: "PROP-MENTENG",
+        title: "Classic Residence Menteng Heritage",
+        type: "HERITAGE HOUSE",
+        location: "Menteng, Jakarta Pusat",
+        price: 9500000000,
+        landM2: 380,
+        buildingM2: 450,
+        bedrooms: "5+2 KT",
+        bathrooms: "5 KM",
+        certificate: "SHM Murni Lengkap",
+        image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=80",
+        features: ["Arsitektur Kolonial Modern", "Garasi 4 Mobil", "Kolam Renang Privat"]
+      }
+    ];
+
+    // State Management
+    let selectedProperty = propertiesData[0];
+    let selectedPassType = 'FREE'; // 'FREE' or 'PRIORITY'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set Default Survey Date to Tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('surveyDateInput').value = tomorrow.toISOString().split('T')[0];
+
+      renderPropertyCards();
+      calculateKprEstimate();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToProperties() {
+      document.getElementById('property-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Render Property Cards
+    function renderPropertyCards() {
+      const container = document.getElementById('propertyCardsContainer');
+      container.innerHTML = '';
+
+      propertiesData.forEach(prop => {
+        const isSelected = selectedProperty && selectedProperty.id === prop.id;
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-2xl border-2 transition overflow-hidden shadow-sm hover:shadow-md cursor-pointer ${
+          isSelected ? 'border-terra-rust ring-2 ring-terra-rust/20' : 'border-terra-border'
+        }`;
+        card.onclick = () => pickProperty(prop);
+
+        let featuresHtml = prop.features.map(f => `
+          <span class="inline-flex items-center gap-1 text-[11px] bg-terra-bone text-terra-umber px-2 py-0.5 rounded border border-terra-border font-sans">
+            <i data-lucide="check" class="w-3 h-3 text-terra-rust"></i>
+            ${f}
+          </span>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-0">
+            <!-- Property Image (5 Cols) -->
+            <div class="sm:col-span-5 relative h-48 sm:h-auto bg-stone-100 overflow-hidden">
+              <img src="${prop.image}" alt="${prop.title}" class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+              <div class="absolute top-2.5 left-2.5 bg-terra-umber/90 backdrop-blur text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-terra-umberSurface uppercase">
+                ${prop.type}
+              </div>
+              <div class="absolute bottom-2.5 left-2.5 bg-emerald-800/90 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                ${prop.certificate}
+              </div>
+            </div>
+
+            <!-- Property Details (7 Cols) -->
+            <div class="sm:col-span-7 p-5 space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-1">
+                <div>
+                  <h4 class="font-bold text-base text-terra-umber font-serif leading-tight">${prop.title}</h4>
+                  <p class="text-xs text-slate-500 font-sans mt-0.5 flex items-center gap-1">
+                    <i data-lucide="map-pin" class="w-3 h-3 text-terra-rust"></i>
+                    ${prop.location}
+                  </p>
+                </div>
+                <div class="text-left sm:text-right font-mono mt-1 sm:mt-0">
+                  <span class="text-base font-black text-terra-rust font-mono">${formatRupiah(prop.price)}</span>
+                </div>
+              </div>
+
+              <!-- Spec Details (Bedrooms, Bathrooms, Surface Area) -->
+              <div class="grid grid-cols-3 gap-2 text-center text-xs py-2 bg-terra-bone rounded-xl border border-terra-border font-mono">
+                <div>
+                  <span class="text-[10px] text-slate-400 block font-sans">Luas Tanah:</span>
+                  <strong class="text-slate-800">${prop.landM2 > 0 ? prop.landM2 + ' m²' : '-'}</strong>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block font-sans">Bangunan:</span>
+                  <strong class="text-slate-800">${prop.buildingM2} m²</strong>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block font-sans">Kamar:</span>
+                  <strong class="text-slate-800">${prop.bedrooms}</strong>
+                </div>
+              </div>
+
+              <!-- Feature Pills -->
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                ${featuresHtml}
+              </div>
+
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-400 font-sans text-[11px]">Free Legal Check</span>
+                <span class="font-bold ${isSelected ? 'text-terra-rust' : 'text-slate-400'}">
+                  ${isSelected ? '✓ Properti Terpilih' : 'Klik untuk Simulasi KPR →'}
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function pickProperty(prop) {
+      selectedProperty = prop;
+      renderPropertyCards();
+      calculateKprEstimate();
+    }
+
+    // KPR Financial Calculator Engine
+    function calculateKprEstimate() {
+      if (!selectedProperty) return;
+
+      const dpPercent = parseInt(document.getElementById('kprDpSlider').value) || 20;
+      const tenorYears = parseInt(document.getElementById('kprTenorSlider').value) || 15;
+      const annualRate = parseFloat(document.getElementById('kprInterestSelect').value) || 4.88;
+
+      const propPrice = selectedProperty.price;
+      const dpNominal = Math.round((dpPercent / 100) * propPrice);
+      const loanPrincipal = propPrice - dpNominal;
+
+      // Formula Anuitas Bulanan KPR: M = P * [r(1+r)^n] / [(1+r)^n - 1]
+      const monthlyRate = (annualRate / 100) / 12;
+      const totalMonths = tenorYears * 12;
+
+      let monthlyInstallment = 0;
+      if (monthlyRate > 0) {
+        monthlyInstallment = Math.round(loanPrincipal * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1));
+      } else {
+        monthlyInstallment = Math.round(loanPrincipal / totalMonths);
+      }
+
+      // Update UI Text
+      document.getElementById('kprDpPercentDisplay').innerText = `${dpPercent}% (${formatRupiah(dpNominal)})`;
+      document.getElementById('kprTenorDisplay').innerText = `${tenorYears} Tahun (${totalMonths} Bulan)`;
+      document.getElementById('kprLoanPrincipalText').innerText = formatRupiah(loanPrincipal);
+
+      // Update Live Slip UI
+      document.getElementById('emptyPropertyNotice').classList.add('hidden');
+      document.getElementById('selectedPropertySlipBox').classList.remove('hidden');
+
+      document.getElementById('slipPropertyTypeBadge').innerText = selectedProperty.type;
+      document.getElementById('slipPropertyTitle').innerText = selectedProperty.title;
+      document.getElementById('slipPropertyLocation').innerText = selectedProperty.location;
+      document.getElementById('slipPropertyPrice').innerText = formatRupiah(selectedProperty.price);
+      document.getElementById('slipPropertySpecs').innerText = `LT: ${selectedProperty.landM2 > 0 ? selectedProperty.landM2 + ' m²' : '-'} • LB: ${selectedProperty.buildingM2} m² • ${selectedProperty.bedrooms} • ${selectedProperty.certificate}`;
+
+      document.getElementById('slipMonthlyInstallmentText').innerText = formatRupiah(monthlyInstallment);
+
+      updateSurveyScheduleText();
+
+      return { propPrice, dpPercent, dpNominal, loanPrincipal, tenorYears, annualRate, monthlyInstallment };
+    }
+
+    function updateSurveyScheduleText() {
+      // Date & Slot
+      const dateVal = document.getElementById('surveyDateInput').value;
+      const slotVal = document.getElementById('surveyTimeSlotSelect').value;
+      return { dateVal, slotVal };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      if (!selectedProperty) {
+        alert("Silakan pilih properti terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-terra-rust text-terra-rust pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-terra-rust text-white flex items-center justify-center text-[11px] font-bold";
+
+      selectPassType(selectedPassType);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    // Select Pass Type (Free Showing vs Priority Lock Token)
+    function selectPassType(type) {
+      selectedPassType = type;
+
+      const labelFree = document.getElementById('labelPassFree');
+      const labelPriority = document.getElementById('labelPassPriority');
+      const dotFree = document.getElementById('radioDotFree');
+      const dotPriority = document.getElementById('radioDotPriority');
+      const qrisLabel = document.getElementById('qrisPayableLabel');
+      const qrisAmount = document.getElementById('qrisPayableAmount');
+
+      if (type === 'FREE') {
+        labelFree.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-terra-bone border-terra-umber";
+        labelPriority.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-terra-border hover:border-slate-400";
+        dotFree.className = "w-2 h-2 rounded-full bg-terra-umber";
+        dotPriority.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Biaya Registrasi Survei:";
+        qrisAmount.innerText = "Rp 0 (Gratis)";
+      } else {
+        labelPriority.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-terra-rustLight border-terra-rust";
+        labelFree.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-terra-border hover:border-slate-400";
+        dotPriority.className = "w-2 h-2 rounded-full bg-terra-rust";
+        dotFree.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Hold Priority Token (7 Hari):";
+        qrisAmount.innerText = "Rp 100.000";
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Sesi reservasi survei berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const client = document.getElementById('clientNameInput').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('clientPhoneInput').value.trim() || '081299998888';
+      const buyMethod = document.getElementById('clientBuyMethodSelect').value;
+      const surveyDate = document.getElementById('surveyDateInput').value;
+      const surveyTime = document.getElementById('surveyTimeSlotSelect').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-terra-rust text-terra-rust pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-terra-rust text-white flex items-center justify-center text-[11px] font-bold";
+
+      const kpr = calculateKprEstimate();
+
+      const randomPass = "SHOW-FTR-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invPassNumber').innerText = randomPass;
+      document.getElementById('invDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invClientName').innerText = client;
+      document.getElementById('invClientContact').innerText = `WhatsApp: ${phone}`;
+      
+      const methodMap = { KPR_BANK: "Rencana KPR Bank", HARD_CASH: "Cash Keras (Pelunasan)", CASH_BERTAHAP: "Cash Bertahap Developer" };
+      document.getElementById('invBuyMethod').innerText = `Metode: ${methodMap[buyMethod] || 'KPR'}`;
+
+      document.getElementById('invSurveyDate').innerText = surveyDate;
+      document.getElementById('invSurveyTime').innerText = surveyTime;
+
+      document.getElementById('invPropertyTitle').innerText = selectedProperty.title;
+      document.getElementById('invPropertyLocationText').innerText = `Lokasi: ${selectedProperty.location} • ${selectedProperty.certificate}`;
+      document.getElementById('invKprBreakdownText').innerText = `Simulasi: DP ${kpr.dpPercent}% (${formatRupiah(kpr.dpNominal)}) • Tenor ${kpr.tenorYears} Thn • Bunga ${kpr.annualRate}% (Cicilan ${formatRupiah(kpr.monthlyInstallment)}/Bln)`;
+      document.getElementById('invPropertySpecsText').innerText = `LT: ${selectedProperty.landM2 > 0 ? selectedProperty.landM2 + ' m²' : '-'} / LB: ${selectedProperty.buildingM2} m²`;
+      document.getElementById('invPropertyPriceText').innerText = formatRupiah(selectedProperty.price);
+
+      if (selectedPassType === 'PRIORITY') {
+        document.getElementById('invPassBadge').innerText = "PRIORITY UNIT LOCK PASS";
+        document.getElementById('invPriorityHoldFee').innerText = "Rp 100.000 (Lunas QRIS)";
+      } else {
+        document.getElementById('invPassBadge').innerText = "STANDARD SHOWING PASS";
+        document.getElementById('invPriorityHoldFee').innerText = "Rp 0 (Bebas Biaya)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedProperty = propertiesData[0];
+      selectedPassType = 'FREE';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      document.getElementById('kprDpSlider').value = 20;
+      document.getElementById('kprTenorSlider').value = 15;
+      document.getElementById('kprInterestSelect').value = "4.88";
+
+      renderPropertyCards();
+      calculateKprEstimate();
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

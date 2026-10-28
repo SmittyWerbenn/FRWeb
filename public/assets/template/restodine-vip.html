@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RestoDine VIP - Reservasi Meja & VIP Room Anti No-Show</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          },
+          colors: {
+            resto: {
+              green: '#059669',
+              lightGreen: '#10b981',
+              greenBg: '#ecfdf5',
+              orange: '#f97316',
+              deepOrange: '#ea580c',
+              orangeBg: '#fff7ed',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .restaurant-pattern {
+      background-color: #ffffff;
+      background-image: radial-gradient(#10b98115 1px, transparent 1px), radial-gradient(#f9731615 1px, #ffffff 1px);
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableTicket, #printableTicket * {
+        visibility: visible;
+      }
+      #printableTicket {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-resto-orangeBg selection:text-resto-deepOrange">
+
+  <!-- Top Announcement Bar (Hijau Botani & Aksen Oranye) -->
+  <div class="bg-resto-green text-emerald-50 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-2.5 shadow-sm">
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-resto-green">ANTI NO-SHOW SYSTEM</span>
+    <span class="font-medium">Deposit reservasi otomatis dipotong 100% dari tagihan makanan Anda di meja kasir</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-nav sticky top-0 z-40 border-b border-stone-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3.5 select-none focus:outline-none transition transform active:scale-95" title="Kembali ke Beranda">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-resto-green to-resto-lightGreen flex items-center justify-center text-white shadow-md shadow-emerald-500/20 flex-shrink-0 transition">
+          <i data-lucide="utensils-crossed" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 block leading-tight font-serif">
+            RESTO<span class="text-resto-orange font-sans tracking-normal ml-0.5 font-black">DINE</span>
+            <span class="text-xs bg-resto-orange text-white px-1.5 py-0.5 rounded font-sans uppercase font-bold ml-1">VIP</span>
+          </span>
+          <span class="text-[10px] font-bold text-stone-400 tracking-wider block uppercase">FINE DINING & EXCLUSIVE SUITES</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+        <a href="#booking-floor" class="text-resto-green hover:text-resto-lightGreen transition">Denah & Reservasi Meja</a>
+        <a href="#vip-suites" class="hover:text-resto-orange transition">VIP Room Suites</a>
+        <a href="#anti-noshow" class="hover:text-resto-green transition">Kebijakan Deposit</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-resto-orangeBg text-resto-deepOrange font-semibold px-3 py-1.5 rounded-full border border-orange-200">
+          <span class="w-2 h-2 rounded-full bg-resto-orange animate-ping"></span>
+          Live Service: Dinner Shift Aktif
+        </div>
+        <button onclick="scrollToFloor()" class="bg-resto-orange hover:bg-resto-deepOrange text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-orange-500/20 flex items-center gap-2 active:scale-95">
+          <span>Pilih Meja Sekarang</span>
+          <i data-lucide="arrow-down" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="restaurant-pattern pt-12 sm:pt-16 pb-16 sm:pb-20 border-b border-stone-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-resto-greenBg border border-emerald-200 text-resto-green text-xs font-semibold">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            Gastronomy Table Management Experience
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.18]">
+            Jamuan Istimewa Tanpa Cemas Meja Terisi Tamu Lain.
+          </h1>
+          <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+            Pilih spot meja favorit secara visual dari denah digital kami. Kunci slot waktu dengan sistem <strong class="text-slate-900">Deposit Anti No-Show via QRIS Instant</strong>, dan nikmati potongan penuh pada struk hidangan Anda saat bersantap.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="scrollToFloor()" class="bg-resto-green hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center gap-2.5">
+              <i data-lucide="layout-grid" class="w-4 h-4"></i>
+              Buka Denah Meja Interaktif
+            </button>
+            <div class="flex items-center gap-2 text-xs text-slate-500 px-2 py-1">
+              <i data-lucide="shield-check" class="w-4 h-4 text-resto-orange"></i>
+              <span>Garansi 100% meja ditahan hingga 30 menit dari jam reservasi</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-stone-200 text-left">
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-slate-900">0% Potongan</p>
+              <p class="text-xs text-stone-500 mt-0.5">Deposit Masuk Saldo Bill</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-resto-orange">10 Menit</p>
+              <p class="text-xs text-stone-500 mt-0.5">Hold Lock Meja di Sistem</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-resto-green">4 VIP Rooms</p>
+              <p class="text-xs text-stone-500 mt-0.5">Kapasitas 8 s/d 20 Tamu</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Snapshot: Interactive Live Floor Preview Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-stone-200/70 border border-stone-200 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-stone-100">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-resto-orange animate-pulse"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Denah Live Malam Ini</span>
+              </div>
+              <span class="text-xs font-mono font-bold text-resto-green bg-resto-greenBg px-2 py-0.5 rounded border border-emerald-200">TERSEDIA 14 MEJA</span>
+            </div>
+
+            <!-- Mini Floorplan Map Graphic -->
+            <div class="mt-5 p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+              <div class="flex justify-between items-center text-xs text-stone-500 pb-2 border-b border-stone-200">
+                <span>Area: <strong>Indoor Botanical Garden</strong></span>
+                <span class="text-[11px] text-resto-orange font-bold">Dinner Shift (18:00 - 21:00)</span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3 py-2 text-center text-xs font-bold">
+                <div class="p-3 bg-white rounded-xl border-2 border-resto-lightGreen text-resto-green shadow-sm">
+                  <span class="block text-[10px] text-stone-400">Meja 02</span>
+                  2-4 Pax (Free)
+                </div>
+                <div class="p-3 bg-stone-200 rounded-xl border border-stone-300 text-stone-400 line-through opacity-60">
+                  <span class="block text-[10px] text-stone-400">Meja 05</span>
+                  Occupied
+                </div>
+                <div class="p-3 bg-resto-orangeBg rounded-xl border-2 border-resto-orange text-resto-deepOrange shadow-sm">
+                  <span class="block text-[10px] text-stone-400">VIP Suite 01</span>
+                  8-12 Pax (Open)
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-emerald-50/70 rounded-xl border border-emerald-100 flex items-start gap-2.5 text-xs text-slate-600">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-resto-green flex-shrink-0 mt-0.5"></i>
+              <p class="leading-relaxed">
+                Tamu yang membayar deposit <strong class="text-resto-green">anti no-show</strong> otomatis mendapatkan prioritas sambutan tanpa antrean di resepsionis depan.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Booking App Container (Split UI: Floorplan Map on Left + Reservation Slip on Right) -->
+  <main id="booking-floor" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex-1 w-full">
+    
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-serif">Pilih Meja & Waktu Kedatangan</h2>
+      <p class="text-sm text-stone-500 mt-2">Pilih ruangan favorit Anda. Meja hijau berarti tersedia untuk direservasi saat ini.</p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="max-w-3xl mx-auto mb-10">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-resto-green text-resto-green pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-resto-green text-white flex items-center justify-center text-[11px]">1</span>
+          Pilih Area & Meja
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]">2</span>
+          Detail & QRIS Deposit
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]">3</span>
+          Dining Pass & E-Slip
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Interactive Split-View (Visual Table Map & Live Order Slip) -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Top Filters (Area Tabs & Date Time) -->
+      <div class="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Area Selector Tabs -->
+        <div class="flex items-center p-1 bg-stone-100 rounded-2xl w-full md:w-auto border border-stone-200">
+          <button id="tabMain" onclick="filterArea('main')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition">Main Dining Hall</button>
+          <button id="tabGarden" onclick="filterArea('garden')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition">Alfresco Terrace</button>
+          <button id="tabVip" onclick="filterArea('vip')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition">VIP Suites Room</button>
+        </div>
+
+        <!-- Date & Guest Count Pickers -->
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-stone-500">Tanggal:</span>
+            <input type="date" id="bookingDateInput" class="text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-resto-green" />
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-stone-500">Shift Jam:</span>
+            <select id="bookingShiftInput" onchange="renderFloorMap()" class="text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-resto-green">
+              <option value="12:00 - 14:30">Lunch (12:00 - 14:30)</option>
+              <option value="18:00 - 20:30" selected>Dinner 1 (18:00 - 20:30)</option>
+              <option value="20:30 - 23:00">Dinner 2 (20:30 - 23:00)</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Split Layout: Floorplan on Left (8 Cols) vs Live Slip on Right (4 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Visual Floorplan Canvas -->
+        <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-stone-100">
+            <div>
+              <h3 id="currentAreaTitle" class="text-base font-bold text-slate-900">Denah Meja: Main Dining Hall</h3>
+              <p class="text-xs text-stone-500">Klik meja yang tersedia (warna hijau) untuk memilih tempat duduk Anda.</p>
+            </div>
+            
+            <!-- Legend -->
+            <div class="flex items-center gap-3 text-[11px] font-semibold text-stone-500">
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-resto-lightGreen"></span>
+                <span>Tersedia</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-stone-300"></span>
+                <span>Terisi</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-resto-orange"></span>
+                <span>Pilihan Anda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floorplan Interactive Grid -->
+          <div id="floorMapGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 min-h-[360px]">
+            <!-- Injected via JavaScript -->
+          </div>
+
+          <!-- Room Amenities Info Bar -->
+          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-600">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="music-2" class="w-4 h-4 text-resto-orange"></i>
+              Acoustic Live Jazz (Setiap Malam)
+            </span>
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="wine" class="w-4 h-4 text-resto-green"></i>
+              Sommelier Wine Pairing
+            </span>
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="car" class="w-4 h-4 text-stone-500"></i>
+              Free Valet Parking
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: Real-time Reservation Slip (Sticky) -->
+        <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-stone-200 shadow-lg space-y-5 sticky top-24">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+            <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Ringkasan Reservasi</span>
+            <span class="text-[10px] font-bold bg-resto-orangeBg text-resto-deepOrange px-2 py-0.5 rounded border border-orange-200">Anti No-Show</span>
+          </div>
+
+          <!-- Selected Table Details -->
+          <div id="noSelectionNotice" class="py-8 text-center text-stone-400 space-y-2">
+            <i data-lucide="hand-pointer" class="w-8 h-8 mx-auto text-stone-300 animate-bounce"></i>
+            <p class="text-xs font-medium">Silakan klik salah satu meja pada denah di samping kiri.</p>
+          </div>
+
+          <div id="selectedTableDetails" class="hidden space-y-4">
+            <div class="p-4 bg-resto-orangeBg/50 rounded-2xl border border-orange-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-800" id="slipTableName">Meja 04 - Center Hall</span>
+                <span class="text-[10px] font-bold bg-resto-green text-white px-2 py-0.5 rounded" id="slipTableCapacity">4 Pax</span>
+              </div>
+              <p class="text-[11px] text-stone-600" id="slipTableDesc">Pemandangan interior terbuka dengan pencahayaan lilin hangat.</p>
+            </div>
+
+            <div class="space-y-2 text-xs text-stone-600 border-t border-b border-stone-100 py-3">
+              <div class="flex justify-between">
+                <span>Tanggal Sesi:</span>
+                <strong class="text-slate-900" id="slipDateDisplay">28 Okt 2026</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Shift Jam:</span>
+                <strong class="text-slate-900" id="slipShiftDisplay">Dinner 1 (18:00 - 20:30)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Area Ruangan:</span>
+                <strong class="text-resto-green" id="slipAreaDisplay">Main Dining Hall</strong>
+              </div>
+            </div>
+
+            <!-- Deposit Calculation Notice -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs font-bold text-slate-700">Komitmen Deposit:</span>
+                <span class="text-base font-black text-resto-deepOrange" id="slipDepositAmount">Rp 100.000</span>
+              </div>
+              <p class="text-[10px] text-stone-400 leading-normal">
+                *Deposit ini bukan biaya sewa, melainkan saldo jaminan yang langsung memotong bill pesanan Anda saat pembayaran di restoran.
+              </p>
+            </div>
+
+            <button onclick="goToStep2()" class="w-full bg-resto-orange hover:bg-resto-deepOrange text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-orange-500/25 flex items-center justify-center gap-2 active:scale-95">
+              <span>Lanjut ke Pembayaran QRIS</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Checkout Guest Information & QRIS Deposit Gateway -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: Guest Details Form -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="user" class="w-4 h-4 text-resto-green"></i>
+                Data Pemesan Meja
+              </h3>
+              <span class="text-xs text-stone-400">Untuk greeting host & kartu reservasi</span>
+            </div>
+
+            <div class="space-y-4 text-xs">
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Nama Lengkap Pemesan *</label>
+                <input type="text" id="custName" value="Tedi Mahendra" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-resto-green font-medium" />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Nomor WhatsApp *</label>
+                  <input type="tel" id="custPhone" value="081299998888" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-resto-green font-medium" />
+                </div>
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Alamat Email *</label>
+                  <input type="email" id="custEmail" value="tedi.work@example.com" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-resto-green font-medium" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Catatan Khusus / Acara (Opsional)</label>
+                <input type="text" id="custNotes" value="Anniversary Dinner - Mohon complimentary cake candle" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-resto-green font-medium" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Anti No-Show Commitment Notice Box -->
+          <div class="bg-resto-greenBg p-5 rounded-3xl border border-emerald-200 space-y-3 text-xs text-emerald-950">
+            <div class="flex items-center gap-2 font-bold text-resto-green text-sm">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+              Garansi Kebijakan Deposit Meja
+            </div>
+            <p class="leading-relaxed text-emerald-900">
+              Deposit sejumlah <strong id="depositNoticeText" class="text-resto-deepOrange font-bold">Rp 100.000</strong> akan otomatis dipotongkan dari tagihan makanan Anda saat kasir mencetak total bill makan malam. Pembatalan hingga H-4 jam sebelum kedatangan berhak atas refund penuh.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Deposit Gateway -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">QRIS Deposit Gateway</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-resto-greenBg text-resto-green border border-emerald-200">Anti No-Show</span>
+            </div>
+
+            <!-- QRIS Gateway Box -->
+            <div class="border border-stone-200 rounded-2xl p-4 bg-stone-50 text-center flex flex-col items-center">
+              <div class="flex items-center justify-between w-full px-2 mb-3">
+                <div class="flex items-center gap-1.5 font-extrabold text-xs tracking-tight text-slate-800">
+                  <span class="text-red-600 font-black">QRIS</span>
+                  <span class="text-[10px] text-stone-400 font-normal">| Standar Bank Indonesia</span>
+                </div>
+                <div class="flex items-center gap-1 text-[11px] text-resto-deepOrange bg-resto-orangeBg px-2 py-0.5 rounded font-mono font-bold border border-orange-200">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span id="qrisTimer">09:59</span>
+                </div>
+              </div>
+
+              <!-- Dummy QR Code -->
+              <div class="relative bg-white p-3 rounded-2xl border border-stone-200 shadow-inner group">
+                <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PROTOTYPE-RESTODINE-VIP-DEPOSIT" alt="QRIS Deposit" class="w-40 h-40 object-contain mx-auto" />
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div class="w-8 h-8 bg-white text-resto-orange rounded-md p-1 shadow border border-orange-200 flex items-center justify-center">
+                    <i data-lucide="utensils" class="w-4 h-4"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 text-xs text-stone-500 space-y-1">
+                <p class="font-medium text-stone-700">Scan via m-BCA, Mandiri Livin, GoPay, OVO, ShopeePay</p>
+                <p class="text-[10px] text-stone-400">NMID: ID1099238844 - RESTODINE GASTRONOMY VIP</p>
+              </div>
+
+              <!-- Total Deposit Payable -->
+              <div class="mt-4 pt-3 border-t border-stone-200 w-full flex items-center justify-between px-2">
+                <span class="text-xs font-semibold text-stone-600">Nominal Deposit Meja:</span>
+                <span id="checkoutPayableText" class="text-lg font-black text-resto-deepOrange font-mono">Rp 100.000</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+              <button onclick="simulatePaymentSuccess()" class="w-full bg-resto-green hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>Simulasi Bayar Deposit (Webhook Sukses)</span>
+              </button>
+              <button onclick="backToStep1()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+                Kembali / Ganti Meja
+              </button>
+            </div>
+
+            <p class="text-[10px] text-stone-400 text-center leading-tight">
+              *Setelah scan berhasil, status meja di sistem kasir otomatis berganti menjadi 'Reserved - Locked'.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated VIP Dining Pass & Reservation Invoice (Printable) -->
+    <div id="step3View" class="hidden max-w-2xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-resto-greenBg border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-950 no-print">
+        <div class="w-10 h-10 rounded-full bg-resto-green text-white flex items-center justify-center flex-shrink-0">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-slate-900">Deposit Terverifikasi & Meja Berhasil Diamankan!</h4>
+          <p class="text-xs text-emerald-800">Tunjukkan Dining Pass ini ke resepsionis restoran saat Anda tiba. Meja Anda telah dipersiapkan.</p>
+        </div>
+      </div>
+
+      <!-- Printable Dining Ticket Card -->
+      <div id="printableTicket" class="bg-white rounded-3xl border border-stone-200 shadow-xl p-6 sm:p-9 space-y-6 relative overflow-hidden">
+        
+        <!-- Header Document -->
+        <div class="flex items-start justify-between border-b border-stone-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-resto-green flex items-center justify-center text-white">
+                <i data-lucide="utensils-crossed" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-lg tracking-tight text-slate-900 font-serif">RESTO<span class="text-resto-orange font-sans">DINE</span> <span class="text-xs font-bold bg-resto-orange text-white px-1.5 py-0.5 rounded font-sans uppercase">VIP</span></span>
+            </div>
+            <p class="text-[11px] text-stone-500">Jl. Gunawarman No. 28, Senopati, Kebayoran Baru, Jakarta Selatan</p>
+            <p class="text-[11px] text-stone-500">Concierge & Host Reservation: +62 812-9999-8888</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-resto-greenBg text-resto-green uppercase tracking-wider mb-1 border border-emerald-200">
+              CONFIRMED DINING PASS
+            </span>
+            <p id="invNumber" class="text-xs font-mono font-bold text-slate-800">RES-202610-8812</p>
+            <p id="invDate" class="text-[10px] text-stone-400">Diterbitkan: 28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Guest & Dining Information -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-stone-50 p-4 rounded-2xl border border-stone-200">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5">Atas Nama Tamu:</span>
+            <p id="invCustName" class="font-bold text-slate-900 text-sm">Tedi Mahendra</p>
+            <p id="invCustPhone" class="text-stone-500">081299998888</p>
+            <p id="invCustNotes" class="text-resto-deepOrange font-semibold mt-1 italic">Catatan: Anniversary Dinner</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5">Alokasi Meja & Shift:</span>
+            <p id="invTableName" class="font-bold text-resto-green text-sm">VIP Suite 01 (Imperial Room)</p>
+            <p id="invScheduleDate" class="font-bold text-slate-800">Rabu, 28 Okt 2026</p>
+            <p id="invScheduleShift" class="text-slate-500">Dinner 1 (18:00 - 20:30 WIB)</p>
+          </div>
+        </div>
+
+        <!-- Table Summary of Deposit Deductible -->
+        <div class="border border-stone-200 rounded-2xl overflow-hidden">
+          <table class="w-full text-xs">
+            <thead class="bg-stone-50 text-stone-600 border-b border-stone-200">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-bold">Rincian Komitmen Reservasi</th>
+                <th class="py-2.5 px-4 text-center font-bold">Kapasitas</th>
+                <th class="py-2.5 px-4 text-right font-bold">Status Deposit</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-800" id="invItemTitle">Reservasi Meja Restoran (Anti No-Show)</div>
+                  <div class="text-[11px] text-stone-400">Garansi penahanan meja selama 30 menit dari jam reservasi</div>
+                </td>
+                <td class="py-3 px-4 text-center text-slate-700" id="invTableCap">4-8 Pax</td>
+                <td class="py-3 px-4 text-right font-bold text-resto-green" id="invDepositStatus">TERBAYAR VIA QRIS</td>
+              </tr>
+              <tr class="bg-stone-50/60">
+                <td colspan="2" class="py-2 px-4 text-slate-600 text-right font-bold">Total Deposit Terverifikasi:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900 font-mono" id="invDepositTotal">Rp 100.000</td>
+              </tr>
+              <tr class="bg-resto-orangeBg/40 border-t border-orange-200">
+                <td colspan="2" class="py-2.5 px-4 text-resto-deepOrange text-right font-extrabold text-xs">
+                  Kredit Potongan pada Tagihan Bill Akhir:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-resto-deepOrange font-mono" id="invDeductibleBill">
+                  - Rp 100.000 (100% Deducted)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Host Check-in QR Code Box -->
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Fast Host Scanner Barcode</span>
+            <p class="text-xs font-bold text-slate-800">Tunjukkan Barcode ke Meja Resepsionis / Head Host</p>
+            <p class="text-[11px] text-stone-500">Host akan langsung mengantarkan Anda ke meja yang telah didekorasi.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-stone-200 inline-block shadow-sm">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=RESTODINE-VIP-SEAT-AUTH-VALID-202610" alt="Host Scan QR" class="w-18 h-18 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-stone-400 mt-1">TOKEN: TABLE-PASS-9821</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Dining Pass -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Reservasi Meja Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-resto-orange hover:bg-resto-deepOrange text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-orange-500/20">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Dining Pass (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Anti No-Show Feature Strip -->
+  <section id="anti-noshow" class="border-t border-stone-200 bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-serif">Mengapa Sistem Deposit RestoDine VIP?</h3>
+        <p class="text-xs sm:text-sm text-stone-500 mt-2">Komitmen saling menghargai waktu antara tamu dengan tim dapur dan peracik hidangan kami.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-resto-greenBg text-resto-green flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="percent" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">100% Saldo Tagihan Makanan</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Deposit bukan biaya tambahan. Seluruh nominal yang dibayarkan langsung dipotong dari total belanja menu Anda di kasir.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-resto-orangeBg text-resto-orange flex items-center justify-center mb-4 border border-orange-200">
+            <i data-lucide="ban" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Bebas Meja 'Ghost Booking'</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Mencegah meja terbuang sia-sia oleh pemesan fiktif, sehingga tamu yang benar-benar berniat berkunjung selalu mendapat meja terbaik.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200">
+          <div class="w-10 h-10 rounded-xl bg-resto-greenBg text-resto-green flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="clock" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Grace Period 30 Menit</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Terjebak macet Jakarta? Meja Anda tetap ditahan dengan aman hingga 30 menit dari jam reservasi tanpa dialihkan ke tamu walk-in.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-stone-400 py-10 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-resto-green flex items-center justify-center text-white font-bold text-xs">R</div>
+        <span class="font-bold text-white font-serif">RestoDine VIP Dining Group</span>
+        <span class="text-stone-500">| ID: restodine-vip</span>
+      </div>
+      <p class="text-stone-400 text-center md:text-right">&copy; 2026 RestoDine Hospitality Systems. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Denah Meja berdasarkan Area
+    const floorplanData = {
+      main: {
+        title: "Denah Meja: Main Dining Hall",
+        depositAmount: 100000,
+        tables: [
+          { id: "T-01", name: "Meja 01", type: "Booth Cozy", capacity: "2-4 Pax", available: true, desc: "Sofa sudut nyaman dekat live jazz band." },
+          { id: "T-02", name: "Meja 02", type: "Center Hall", capacity: "4 Pax", available: true, desc: "Pemandangan terbuka dengan chandelier gantung mewah." },
+          { id: "T-03", name: "Meja 03", type: "Booth Cozy", capacity: "2-4 Pax", available: false, desc: "Sofa tengah restoran (Sudah direservasi)." },
+          { id: "T-04", name: "Meja 04", type: "Center Hall", capacity: "4 Pax", available: true, desc: "Pencahayaan lilin hangat, cocok untuk double-date." },
+          { id: "T-05", name: "Meja 05", type: "Window Side", capacity: "2 Pax", available: true, desc: "Meja romantis berdampingan dengan kaca jalan Senopati." },
+          { id: "T-06", name: "Meja 06", type: "Window Side", capacity: "2 Pax", available: false, desc: "Meja pasangan romantis (Sudah terisi)." }
+        ]
+      },
+      garden: {
+        title: "Denah Meja: Alfresco Terrace & Garden",
+        depositAmount: 150000,
+        tables: [
+          { id: "G-01", name: "Garden Cabana 01", type: "Semi-Outdoor", capacity: "4-6 Pax", available: true, desc: "Dikelilingi tanaman palem asri & kipas misting sejuk." },
+          { id: "G-02", name: "Terrace High-Top 02", type: "Bistro Table", capacity: "2-3 Pax", available: true, desc: "Dekat mocktail bar terbuka dengan angin sepoi alami." },
+          { id: "G-03", name: "Garden Cabana 03", type: "Semi-Outdoor", capacity: "4-6 Pax", available: false, desc: "Cabana privat taman (Sudah dibooking tamu)." },
+          { id: "G-04", name: "Terrace Table 04", type: "Open Sky", capacity: "4 Pax", available: true, desc: "Meja bawah pepohonan rindang berlampu peri hangat." }
+        ]
+      },
+      vip: {
+        title: "Denah Meja: VIP Suites Private Room",
+        depositAmount: 500000,
+        tables: [
+          { id: "VIP-01", name: "VIP Suite 01 (The Imperial)", type: "Private Suite", capacity: "8-12 Pax", available: true, desc: "Pintu privat, dedicated butler, AC mandiri & smart TV presentasi." },
+          { id: "VIP-02", name: "VIP Suite 02 (Botanical Lounge)", type: "Private Suite", capacity: "6-8 Pax", available: true, desc: "Interior hijau botani dengan private bar station pribadi." },
+          { id: "VIP-03", name: "VIP Suite 03 (The Grand Salon)", type: "Boardroom Suite", capacity: "14-20 Pax", available: false, desc: "Ruangan banquet terbesar untuk jamuan korporat eksklusif." }
+        ]
+      }
+    };
+
+    // State Management
+    let currentArea = 'main';
+    let selectedTable = null;
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('bookingDateInput').value = today;
+      renderFloorMap();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToFloor() {
+      document.getElementById('booking-floor').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Area Tab Filter
+    function filterArea(area) {
+      currentArea = area;
+      
+      const tabMain = document.getElementById('tabMain');
+      const tabGarden = document.getElementById('tabGarden');
+      const tabVip = document.getElementById('tabVip');
+
+      [tabMain, tabGarden, tabVip].forEach(t => {
+        t.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition";
+      });
+
+      if (area === 'main') tabMain.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition";
+      if (area === 'garden') tabGarden.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition";
+      if (area === 'vip') tabVip.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition";
+
+      selectedTable = null;
+      document.getElementById('noSelectionNotice').classList.remove('hidden');
+      document.getElementById('selectedTableDetails').classList.add('hidden');
+
+      renderFloorMap();
+    }
+
+    // Render Visual Floorplan Map
+    function renderFloorMap() {
+      const activeData = floorplanData[currentArea];
+      document.getElementById('currentAreaTitle').innerText = activeData.title;
+
+      const grid = document.getElementById('floorMapGrid');
+      grid.innerHTML = '';
+
+      activeData.tables.forEach(table => {
+        const isSelected = selectedTable && selectedTable.id === table.id;
+
+        if (!table.available) {
+          // Occupied Table Card
+          const occupiedCard = document.createElement('div');
+          occupiedCard.className = "p-4 rounded-2xl border-2 border-stone-200 bg-stone-100/80 text-stone-400 flex flex-col justify-between cursor-not-allowed opacity-60";
+          occupiedCard.innerHTML = `
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-bold line-through">${table.name}</span>
+                <span class="text-[9px] font-bold bg-stone-200 text-stone-500 px-1.5 py-0.5 rounded">TERISI</span>
+              </div>
+              <p class="text-[10px] text-stone-400">${table.type}</p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-stone-200 text-[10px] text-stone-400 font-semibold">
+              Kapasitas: ${table.capacity}
+            </div>
+          `;
+          grid.appendChild(occupiedCard);
+        } else {
+          // Available Table Card (Clickable)
+          const availCard = document.createElement('div');
+          availCard.onclick = () => pickTable(table);
+          availCard.className = `p-4 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between select-none ${
+            isSelected 
+              ? 'bg-resto-orangeBg border-resto-orange ring-2 ring-orange-400/30 shadow-md' 
+              : 'bg-white hover:bg-emerald-50/50 border-emerald-300 hover:border-resto-lightGreen shadow-sm'
+          }`;
+
+          availCard.innerHTML = `
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-extrabold text-slate-900">${table.name}</span>
+                <span class="text-[9px] font-bold ${isSelected ? 'bg-resto-orange text-white' : 'bg-resto-greenBg text-resto-green'} px-1.5 py-0.5 rounded">
+                  ${isSelected ? 'TERPILIH' : 'TERSEDIA'}
+                </span>
+              </div>
+              <p class="text-[11px] font-medium text-stone-500">${table.type}</p>
+              <p class="text-[10px] text-stone-400 mt-1 line-clamp-2">${table.desc}</p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-stone-100 flex items-center justify-between text-[11px]">
+              <span class="text-stone-500 font-semibold">${table.capacity}</span>
+              <span class="font-extrabold text-resto-green font-mono">Pilih Meja →</span>
+            </div>
+          `;
+          grid.appendChild(availCard);
+        }
+      });
+
+      lucide.createIcons();
+    }
+
+    // Pick Table Action
+    function pickTable(table) {
+      selectedTable = table;
+      renderFloorMap();
+
+      // Show details on the right live slip
+      document.getElementById('noSelectionNotice').classList.add('hidden');
+      document.getElementById('selectedTableDetails').classList.remove('hidden');
+
+      const activeData = floorplanData[currentArea];
+      const dateVal = document.getElementById('bookingDateInput').value;
+      const shiftVal = document.getElementById('bookingShiftInput').value;
+
+      document.getElementById('slipTableName').innerText = `${selectedTable.name} (${selectedTable.type})`;
+      document.getElementById('slipTableCapacity').innerText = selectedTable.capacity;
+      document.getElementById('slipTableDesc').innerText = selectedTable.desc;
+
+      document.getElementById('slipDateDisplay').innerText = dateVal;
+      document.getElementById('slipShiftDisplay').innerText = shiftVal;
+      document.getElementById('slipAreaDisplay').innerText = activeData.title.replace('Denah Meja: ', '');
+
+      document.getElementById('slipDepositAmount').innerText = formatRupiah(activeData.depositAmount);
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      if (!selectedTable) {
+        alert("Silakan pilih meja terlebih dahulu pada denah.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-resto-green text-resto-green pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-resto-green text-white flex items-center justify-center text-[11px]";
+
+      const activeData = floorplanData[currentArea];
+      const depositVal = activeData.depositAmount;
+
+      document.getElementById('depositNoticeText').innerText = formatRupiah(depositVal);
+      document.getElementById('checkoutPayableText').innerText = formatRupiah(depositVal);
+
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi deposit berakhir. Meja dikembalikan ke antrean publik.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const name = document.getElementById('custName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('custPhone').value.trim() || '081299998888';
+      const notes = document.getElementById('custNotes').value.trim() || '-';
+      const dateVal = document.getElementById('bookingDateInput').value;
+      const shiftVal = document.getElementById('bookingShiftInput').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-resto-green text-resto-green pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-resto-green text-white flex items-center justify-center text-[11px]";
+
+      const activeData = floorplanData[currentArea];
+      const depositVal = activeData.depositAmount;
+
+      const randomResCode = "RES-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invNumber').innerText = randomResCode;
+      document.getElementById('invDate').innerText = "Dibuat: " + new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invCustName').innerText = name;
+      document.getElementById('invCustPhone').innerText = phone;
+      document.getElementById('invCustNotes').innerText = `Catatan: ${notes}`;
+
+      document.getElementById('invTableName').innerText = `${selectedTable.name} (${floorplanData[currentArea].title.replace('Denah Meja: ', '')})`;
+      document.getElementById('invScheduleDate').innerText = dateVal;
+      document.getElementById('invScheduleShift').innerText = shiftVal;
+      document.getElementById('invTableCap').innerText = selectedTable.capacity;
+
+      document.getElementById('invDepositTotal').innerText = formatRupiah(depositVal);
+      document.getElementById('invDeductibleBill').innerText = `- ${formatRupiah(depositVal)} (100% Saldo Bill)`;
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedTable = null;
+      document.getElementById('noSelectionNotice').classList.remove('hidden');
+      document.getElementById('selectedTableDetails').classList.add('hidden');
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      renderFloorMap();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

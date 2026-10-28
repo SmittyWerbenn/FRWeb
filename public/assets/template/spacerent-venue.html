@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpaceRent Venue - Sewa Venue Harian/Half-Day dengan E-Contract</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            emerald: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669', // Emerald Utama
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableContract, #printableContract * {
+        visibility: visible;
+      }
+      #printableContract {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- Top Announcement Bar (Abu Gelap & Aksen Hijau Emerald) -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-2.5 border-b border-slate-800">
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">DEMO PREVIEW</span>
+    <span>Platform Sewa Venue Eksklusif: Fleksibilitas Full/Half-Day, Otomasi E-Contract & QRIS Instant</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-nav sticky top-0 z-40 border-b border-slate-200/90 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3.5 select-none focus:outline-none transition transform active:scale-95" title="Kembali ke Beranda">
+        <div class="w-11 h-11 rounded-xl bg-emerald-600 group-hover:bg-emerald-700 flex items-center justify-center text-white shadow-md shadow-emerald-500/25 flex-shrink-0 transition">
+          <i data-lucide="building-2" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 block leading-tight">
+            SPACERENT<span class="text-emerald-600 font-display">VENUE</span>
+          </span>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider block uppercase">EVENT SPACE & E-CONTRACT</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+        <a href="#venues" class="text-emerald-600 hover:text-emerald-700 transition">Katalog Venue</a>
+        <a href="#econtract-info" class="hover:text-emerald-600 transition">Keabsahan E-Contract</a>
+        <a href="#packages" class="hover:text-emerald-600 transition">Opsi Paket Sewa</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-emerald-50 text-emerald-800 font-semibold px-3 py-1.5 rounded-full border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Legally Binding E-Sign Ready
+        </div>
+        <button onclick="scrollToVenues()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-emerald-600/20 flex items-center gap-2 active:scale-95">
+          <span>Sewa Venue</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-b from-white via-slate-50 to-[#F8FAFC] pt-12 sm:pt-16 pb-16 sm:pb-20 border-b border-slate-200 overflow-hidden">
+    <!-- Emerald Ambient Glow -->
+    <div class="absolute -top-24 right-1/4 w-96 h-96 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+            Platform Sewa Ruang Legal & Otomasi Kontrak Digital
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.18]">
+            Sewa Hall & Studio Eksklusif Tanpa Ribet Tanda Tangan Fisik.
+          </h1>
+          <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+            Pesan ballroom, rooftop, atau multifunctional space untuk kebutuhan <strong class="text-slate-800">Half-Day (4-5 Jam)</strong> maupun <strong class="text-slate-800">Full-Day (10 Jam)</strong>. Dilengkapi penerbitan <strong>E-Contract resmi</strong> secara real-time dan pembayaran DP QRIS instan.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="scrollToVenues()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-emerald-600/25 transition flex items-center gap-2.5">
+              <i data-lucide="calendar" class="w-4 h-4"></i>
+              Jelajahi & Sewa Venue
+            </button>
+            <div class="flex items-center gap-3 text-xs text-slate-500 px-2 py-1">
+              <div class="w-8 h-8 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 font-bold text-xs">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+              </div>
+              <span>Sudah menerbitkan 1.200+ E-Contract sah bagi korporat & EO</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200 text-left">
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-slate-900">100%</p>
+              <p class="text-xs text-slate-500 mt-0.5">Sah Secara Digital</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-emerald-600">DP 30%</p>
+              <p class="text-xs text-slate-500 mt-0.5">Kunci Tanggal Acara</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-slate-900">0 Hari</p>
+              <p class="text-xs text-slate-500 mt-0.5">Tanpa Antre Kontrak Pos</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Snapshot: Interactive E-Contract Preview Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-200/60 border border-slate-200 relative overflow-hidden group">
+            
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Agreement Protocol</span>
+              </div>
+              <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">DIGITAL CONTRACT</span>
+            </div>
+
+            <div class="mt-5 space-y-4">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-150 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-800">The Glasshouse Grand Ballroom</span>
+                  <span class="text-[11px] font-bold text-emerald-600 bg-emerald-100/60 px-2 py-0.5 rounded">Full-Day Slot</span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-relaxed">Kapasitas hingga 450 tamu • Termasuk AV Sound System 10.000W & Operator Listrik Siaga</p>
+              </div>
+
+              <!-- Contract Status Indicator -->
+              <div class="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-emerald-900 flex items-center gap-1.5">
+                    <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    Status Tanda Tangan:
+                  </span>
+                  <span class="text-emerald-700 font-bold">Terverifikasi (SHA-256)</span>
+                </div>
+                <div class="text-[11px] text-emerald-800/80 leading-normal">
+                  Klausul pembatalan sewa, jaminan kebersihan, dan proteksi deposit tercatat langsung ke sistem kontrak.
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>SLA Booking: Otomatis Konfirmasi</span>
+              <span class="font-bold text-slate-700">QRIS Multi-Bank Ready</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Booking & E-Contract Container -->
+  <main id="venues" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex-1 w-full">
+    
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Katalog Ruang & Form E-Contract</h2>
+      <p class="text-sm text-slate-500 mt-2">Pilih venue, tentukan durasi sewa (Half-Day atau Full-Day), dan tanda tangani surat perjanjian secara digital.</p>
+    </div>
+
+    <!-- Step Progress Indicator -->
+    <div class="max-w-3xl mx-auto mb-10">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-emerald-600 text-emerald-700 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]">1</span>
+          Pilih Venue & Durasi
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]">2</span>
+          E-Contract & QRIS Pay
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]">3</span>
+          Kontrak Sah & Invoice
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Venue Selection & Duration Package Toggle -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Filter Bar -->
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Category Toggle -->
+        <div class="flex items-center p-1 bg-slate-100 rounded-xl w-full md:w-auto border border-slate-200/80">
+          <button id="filterAll" onclick="filterVenue('all')" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition">Semua Venue</button>
+          <button id="filterBallroom" onclick="filterVenue('ballroom')" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">Ballroom & Hall</button>
+          <button id="filterRooftop" onclick="filterVenue('rooftop')" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">Rooftop Garden</button>
+          <button id="filterCreative" onclick="filterVenue('creative')" class="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">Studio Kreatif</button>
+        </div>
+
+        <!-- Date Picker -->
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <span class="text-xs font-bold text-slate-500 whitespace-nowrap">Tanggal Sewa:</span>
+          <div class="relative flex-1">
+            <input type="date" id="rentalDateInput" onchange="renderVenues()" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Venues Grid -->
+      <div id="venuesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Bottom Floating / Summary Selection Bar -->
+      <div id="selectionSummaryBar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-3xl bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-30 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+            <i data-lucide="file-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h5 id="summaryVenueName" class="text-sm font-bold leading-tight">Nama Venue</h5>
+            <p id="summarySlotInfo" class="text-xs text-slate-400">Paket: -</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block uppercase font-medium">Nilai Sewa Kontrak</span>
+            <span id="summaryPrice" class="text-base font-extrabold text-emerald-400">Rp 0</span>
+          </div>
+          <button onclick="goToStep2()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-600/30">
+            <span>Lanjut ke E-Contract</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STEP 2: E-Contract Review, Digital Signature & QRIS Payment -->
+    <div id="step2View" class="hidden max-w-5xl mx-auto space-y-8">
+      
+      <!-- Tenant Form & Identity -->
+      <div class="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i>
+            Identitas Penyewa (Pihak Kedua)
+          </h3>
+          <span class="text-xs text-slate-400">Diperlukan untuk klausul hukum E-Contract</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Penanggung Jawab *</label>
+            <input type="text" id="tenantName" value="Tedi Mahendra" class="w-full bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nama Institusi / Perusahaan / Event *</label>
+            <input type="text" id="tenantOrg" value="PT Solusi Digital Kreatif" class="w-full bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp Resmi *</label>
+            <input type="tel" id="tenantPhone" value="081299998888" class="w-full bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Legal E-Contract Preview Box -->
+      <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">ELECTRONIC LEASE AGREEMENT</span>
+            <h3 class="text-lg font-bold text-slate-900 mt-1">Perjanjian Sewa Menyewa Ruang Venue</h3>
+          </div>
+          <span id="draftContractNumber" class="text-xs font-mono text-slate-400">DRAFT: CTR-202610-PENDING</span>
+        </div>
+
+        <!-- Scrollable Legal Clauses -->
+        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-xs text-slate-600 max-h-56 overflow-y-auto space-y-3 leading-relaxed">
+          <p class="font-bold text-slate-800">PASAL 1: HAK DAN PENGGUNAAN RUANG</p>
+          <p>Pihak Pertama (SpaceRent Venue) memberikan hak izin penggunaan venue kepada Pihak Kedua sesuai durasi paket yang dipilih (Full-Day atau Half-Day). Pihak Kedua dilarang memindahtangankan sewa kepada pihak ketiga tanpa persetujuan tertulis.</p>
+          
+          <p class="font-bold text-slate-800">PASAL 2: TATA TERTIB DAN KEAMANAN</p>
+          <p>Pihak Kedua wajib menjaga keutuhan fasilitas, kebersihan ruang, dan mematuhi batas beban listrik maksimal yang disediakan. Segala kerusakan struktural atau properti venue menjadi tanggung jawab Pihak Kedua.</p>
+
+          <p class="font-bold text-slate-800">PASAL 3: DEPOSIT DAN PEMBAYARAN</p>
+          <p>Sewa dianggap sah dan tanggal acara terkunci setelah Pihak Kedua membayarkan Uang Muka (DP 30% atau 50%) atau Pelunasan Penuh melalui payment gateway QRIS. Sisa pelunasan diselesaikan sebelum sesi acara dimulai.</p>
+          
+          <p class="font-bold text-slate-800">PASAL 4: KEABSAHAN HUKUM TANDA TANGAN ELEKTRONIK</p>
+          <p>Perjanjian ini ditandatangani secara elektronik sesuai ketentuan UU ITE yang berlaku di Indonesia dan memiliki kekuatan hukum yang setara dengan perjanjian tertulis bermeterai.</p>
+        </div>
+
+        <!-- Checkbox & Digital Signature Pad Simulator -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-2 items-center">
+          <div class="md:col-span-7 space-y-3">
+            <label class="flex items-start gap-3 cursor-pointer select-none">
+              <input type="checkbox" id="contractAgreeCheckbox" checked class="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300" />
+              <span class="text-xs text-slate-600 leading-normal">
+                Saya telah membaca, memahami, dan menyetujui seluruh klausul dalam <strong>Perjanjian Sewa Menyewa Ruang</strong> ini atas nama penanggung jawab acara.
+              </span>
+            </label>
+            <div class="flex items-center gap-2 text-[11px] text-slate-400">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Enkripsi sertifikat digital tersimpan otomatis saat pembayaran berhasil.</span>
+            </div>
+          </div>
+
+          <!-- Signature Canvas Box -->
+          <div class="md:col-span-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Goresan Tanda Tangan Digital</span>
+            <div class="h-20 bg-white border border-dashed border-slate-300 rounded-xl flex items-center justify-center relative overflow-hidden">
+              <span class="text-xs italic text-slate-300 font-serif">Tanda tangan digital terotentikasi</span>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="font-serif italic text-xl font-bold text-slate-700 tracking-wider rotate-[-3deg]">Tedi Mahendra</span>
+              </div>
+            </div>
+            <span class="text-[9px] text-slate-400 mt-1 block">Otomatis digenerate dari nama penanggung jawab resmi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Option & Prototype QRIS Settlement -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: Payment Type Selector -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="wallet" class="w-4 h-4 text-emerald-600"></i>
+              Opsi Pembayaran E-Contract
+            </h3>
+
+            <div class="space-y-3">
+              <!-- DP 30% Option -->
+              <label class="relative flex items-start gap-3 p-4 border-2 rounded-2xl cursor-pointer transition select-none bg-emerald-50/50 border-emerald-600" id="labelOptionDP30">
+                <input type="radio" name="paymentOption" value="DP30" onchange="togglePaymentOption('DP30')" checked class="sr-only" />
+                <div class="mt-0.5">
+                  <span class="w-4 h-4 rounded-full border-2 border-emerald-600 flex items-center justify-center">
+                    <span id="radioCheckDP30" class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  </span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">Uang Muka DP 30% (Kunci Tanggal & Terbitkan Kontrak)</span>
+                    <span id="dp30PriceBadge" class="text-xs font-extrabold text-emerald-700">Rp 0</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1 leading-normal">E-Contract resmi langsung terbit. Sisa 70% dilunasi H-3 sebelum hari acara.</p>
+                </div>
+              </label>
+
+              <!-- DP 50% Option -->
+              <label class="relative flex items-start gap-3 p-4 border-2 rounded-2xl cursor-pointer transition select-none bg-slate-50 border-slate-200 hover:border-emerald-300" id="labelOptionDP50">
+                <input type="radio" name="paymentOption" value="DP50" onchange="togglePaymentOption('DP50')" class="sr-only" />
+                <div class="mt-0.5">
+                  <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                    <span id="radioCheckDP50" class="w-2 h-2 rounded-full bg-transparent"></span>
+                  </span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">Uang Muka DP 50% (Standar Korporat)</span>
+                    <span id="dp50PriceBadge" class="text-xs font-extrabold text-slate-700">Rp 0</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1 leading-normal">Pilihan fleksibel untuk korporat / EO. Sisa 50% dilunasi saat serah terima kunci venue.</p>
+                </div>
+              </label>
+
+              <!-- Full Payment 100% -->
+              <label class="relative flex items-start gap-3 p-4 border-2 rounded-2xl cursor-pointer transition select-none bg-slate-50 border-slate-200 hover:border-emerald-300" id="labelOptionFull">
+                <input type="radio" name="paymentOption" value="FULL" onchange="togglePaymentOption('FULL')" class="sr-only" />
+                <div class="mt-0.5">
+                  <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                    <span id="radioCheckFull" class="w-2 h-2 rounded-full bg-transparent"></span>
+                  </span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">Pelunasan Penuh 100% (Full Settlement)</span>
+                    <span id="fullPriceBadge" class="text-xs font-extrabold text-slate-700">Rp 0</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1 leading-normal">Bebas antre pelunasan di lokasi. Langsung terima surat izin venue resmi dan barcode akses kru.</p>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Gateway Box -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Gateway Otorisasi QRIS</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Auto Verification</span>
+            </div>
+
+            <!-- QR Box -->
+            <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 text-center flex flex-col items-center">
+              <div class="flex items-center justify-between w-full px-2 mb-3">
+                <div class="flex items-center gap-1.5 font-extrabold text-xs tracking-tight text-slate-800">
+                  <span class="text-red-600 font-black">QRIS</span>
+                  <span class="text-[10px] text-slate-400 font-normal">| Standar Bank Indonesia</span>
+                </div>
+                <div class="flex items-center gap-1 text-[11px] text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-mono font-bold">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span id="qrisTimer">09:59</span>
+                </div>
+              </div>
+
+              <!-- Dummy QR Code -->
+              <div class="relative bg-white p-3 rounded-2xl border border-slate-200 shadow-inner group">
+                <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PROTOTYPE-SPACERENT-ECONTRACT-DEPOSIT" alt="QRIS Prototype" class="w-40 h-40 object-contain mx-auto transition group-hover:scale-105 duration-200" />
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div class="w-8 h-8 bg-white text-emerald-600 rounded-md p-1 shadow border border-slate-200 flex items-center justify-center">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 text-xs text-slate-500 space-y-1">
+                <p class="font-medium text-slate-700">Scan via m-BCA, Mandiri Livin, GoPay, OVO, ShopeePay</p>
+                <p class="text-[10px] text-slate-400">NMID: ID1088776655 - PT SPACERENT VENUE NUSANTARA</p>
+              </div>
+
+              <!-- Price Highlight -->
+              <div class="mt-4 pt-3 border-t border-slate-200 w-full flex items-center justify-between px-2">
+                <span class="text-xs font-semibold text-slate-600">Total Ditagihkan:</span>
+                <span id="checkoutPayableText" class="text-lg font-black text-emerald-600">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="space-y-2">
+              <button onclick="simulateContractAndPaySuccess()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>Tandatangani E-Contract & Bayar (Simulasi)</span>
+              </button>
+              <button onclick="backToStep1()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+                Kembali / Ubah Paket Durasi
+              </button>
+            </div>
+
+            <p class="text-[10px] text-slate-400 text-center leading-tight">
+              *Setelah pembayaran diverifikasi, nomor kontrak legal dan invoice resmi akan diterbitkan seketika.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 3: Automated Legal E-Contract & Official Invoice (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-800 no-print">
+        <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-slate-900">E-Contract & Pembayaran Berhasil Divalidasi!</h4>
+          <p class="text-xs text-emerald-700">Surat Perjanjian Sewa dan tanda terima invoice telah diterbitkan secara digital dengan segel legal.</p>
+        </div>
+      </div>
+
+      <!-- Printable Legal Document Container -->
+      <div id="printableContract" class="bg-white text-slate-900 rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-9 space-y-6">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-slate-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
+                <i data-lucide="building-2" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-lg tracking-tight text-slate-900">SPACERENT<span class="text-emerald-600 font-display">VENUE</span></span>
+            </div>
+            <p class="text-[11px] text-slate-500">PT SpaceRent Venue Nusantara • Gedung Wirausaha, Kuningan, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-500">Departemen Legal & Operasional • Email: legal@spacerent.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-emerald-100 text-emerald-800 uppercase tracking-wider mb-1">
+              LEGALLY BINDING E-CONTRACT
+            </span>
+            <p id="contractDocNumber" class="text-xs font-mono font-bold text-slate-800">CTR-202610-8892</p>
+            <p id="contractDateText" class="text-[10px] text-slate-400">Tanggal Terbit: 28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Contract Party Details -->
+        <div class="grid grid-cols-2 gap-6 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">PIHAK KEDUA (PENYEWA):</span>
+            <p id="invTenantName" class="font-bold text-slate-900 text-sm">Tedi Mahendra</p>
+            <p id="invTenantOrg" class="text-slate-600">PT Solusi Digital Kreatif</p>
+            <p id="invTenantPhone" class="text-slate-500">081299998888</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">LOKASI & PERIODE SEWA:</span>
+            <p id="invVenueName" class="font-bold text-slate-900 text-sm">The Glasshouse Grand Ballroom</p>
+            <p id="invEventDate" class="text-emerald-700 font-bold">Rabu, 28 Okt 2026</p>
+            <p id="invPackageType" class="text-slate-500">Paket Full-Day (08:00 - 18:00 WIB)</p>
+          </div>
+        </div>
+
+        <!-- Table Summary of Charges -->
+        <div class="border border-slate-200 rounded-2xl overflow-hidden">
+          <table class="w-full text-xs">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-bold">Deskripsi Sewa Ruang & Fasilitas</th>
+                <th class="py-2.5 px-4 text-center font-bold">Durasi Sewa</th>
+                <th class="py-2.5 px-4 text-right font-bold">Nominal Kontrak</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-800" id="invItemTitle">Sewa Venue The Glasshouse Grand Ballroom</div>
+                  <div class="text-[11px] text-slate-500">Termasuk Sound System Utama, AC Central, Stage & Ruang Transit VIP</div>
+                </td>
+                <td class="py-3 px-4 text-center text-slate-700" id="invDurationText">Full-Day (10 Jam)</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-800" id="invTotalValue">Rp 25.000.000</td>
+              </tr>
+              <tr class="bg-slate-50/60">
+                <td colspan="2" class="py-2 px-4 text-slate-600 text-right font-bold">Total Nilai Sewa:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-800" id="invSubtotalAmount">Rp 25.000.000</td>
+              </tr>
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-emerald-600 text-right font-bold" id="invPaidLabel">Uang Muka Diterima (DP QRIS 30%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-600" id="invPaidAmount">Rp 7.500.000</td>
+              </tr>
+              <tr class="border-t-2 border-slate-200 bg-emerald-50/40">
+                <td colspan="2" class="py-2.5 px-4 text-slate-800 text-right font-extrabold text-xs" id="invDueLabel">Sisa Pelunasan Sebelum Acara:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-emerald-700" id="invDueAmount">Rp 17.500.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Dual Signature & Legal Seal Box -->
+        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-150">
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 text-center space-y-2">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pihak Pertama (Pengelola Venue)</span>
+            <div class="py-2">
+              <span class="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                VERIFIED BY SPACERENT
+              </span>
+            </div>
+            <p class="text-xs font-bold text-slate-800">SpaceRent Venue Authority</p>
+            <p class="text-[9px] text-slate-400">Digital Hash: SHA256-8893-AC88</p>
+          </div>
+
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 text-center space-y-2">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pihak Kedua (Penyewa Ruang)</span>
+            <div class="py-1">
+              <span class="font-serif italic text-lg font-bold text-slate-800 block" id="signedNameDisplay">Tedi Mahendra</span>
+            </div>
+            <p class="text-xs font-bold text-slate-800" id="signedCompanyDisplay">PT Solusi Digital Kreatif</p>
+            <p class="text-[9px] text-emerald-600 font-semibold">Telah Menyetujui E-Contract via OTP & QRIS</p>
+          </div>
+        </div>
+
+        <!-- Venue Access Barcode Box -->
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fast Access Crew & Loading Pass</span>
+            <p class="text-xs font-bold text-slate-800">Tunjukkan Barcode ke Security & Facility Manager Venue</p>
+            <p class="text-[11px] text-slate-500">Termasuk izin loading in logistik & gladi bersih 2 jam sebelum sesi.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-slate-200 inline-block shadow-sm">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=SPACERENT-PASS-CTR-VALID-202610" alt="Crew Pass QR" class="w-18 h-18 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1">TOKEN: VENUE-PASS-8892</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Contract -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-slate-200">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Sewa Venue Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak E-Contract & Invoice (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- E-Contract Legal Explainer Section -->
+  <section id="econtract-info" class="border-t border-slate-200 bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">Perjanjian Digital yang Aman, Sah & Transparan</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-2">Didesain khusus untuk mempercepat approval korporat, agency, dan wedding organizer tanpa hambatan birokrasi manual.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="file-signature" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">E-Contract Otomatis</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">Format kontrak baku yang mencantumkan nama penyewa, durasi sewa, batas tamu, dan klausul tanggung jawab secara langsung.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="clock-3" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Fleksibilitas Half / Full Day</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">Pilihan sewa Half-Day Pagi (08:00 - 13:00) atau Siang-Malam (14:00 - 21:00) menghemat anggaran dibanding tarif satu hari penuh.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 border border-emerald-200">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Proteksi DP & Keamanan Jadwal</h4>
+          <p class="text-xs text-slate-600 leading-relaxed">Slot tanggal acara langsung terkunci di kalender manajemen venue setelah verifikasi QRIS, mencegah bentrok jadwal acara lain.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Abu Netral Slate & Hijau Emerald) -->
+  <footer id="packages" class="bg-slate-900 text-slate-400 py-10 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-emerald-600 flex items-center justify-center text-white font-bold text-xs">S</div>
+        <span class="font-bold text-slate-200">SpaceRent Venue Solutions</span>
+        <span class="text-slate-500">| ID: spacerent-venue</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right">&copy; 2026 SpaceRent Venue Platform. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Venue & Harga Paket (Full-Day vs Half-Day)
+    const venuesData = [
+      {
+        id: "vn-glasshouse",
+        name: "The Glasshouse Grand Ballroom",
+        category: "ballroom",
+        capacity: "450 Tamu",
+        location: "Mega Kuningan, Jakarta Selatan",
+        image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=700&q=80",
+        specs: ["Luas 650 m²", "Ceiling 7 Meter", "Listrik Siaga 30.000 Watt", "VIP Holding Room"],
+        fullDayPrice: 25000000,
+        halfDayPrice: 15000000,
+        halfDayTime: "08:00 - 13:00 / 14:00 - 19:00 (5 Jam)",
+        fullDayTime: "08:00 - 18:00 (10 Jam)"
+      },
+      {
+        id: "vn-skyline",
+        name: "Skyline Panorama Rooftop Garden",
+        category: "rooftop",
+        capacity: "180 Tamu",
+        location: "SCBD, Jakarta Selatan",
+        image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=700&q=80",
+        specs: ["Open-Air & Canopy Area", "City Sunset View 360°", "Bar & Catering Station", "Dedicated Lift"],
+        fullDayPrice: 18000000,
+        halfDayPrice: 11000000,
+        halfDayTime: "15:00 - 21:00 (6 Jam Sunset Slot)",
+        fullDayTime: "11:00 - 22:00 (11 Jam)"
+      },
+      {
+        id: "vn-creative",
+        name: "Artisan Loft & Creative Auditorium",
+        category: "creative",
+        capacity: "120 Tamu",
+        location: "Cilandak, Jakarta Selatan",
+        image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=700&q=80",
+        specs: ["Acoustic Soundproofing", "Motorized Projector Screen 4K", "Flexible Modular Stage", "High-speed WiFi 1 Gbps"],
+        fullDayPrice: 12000000,
+        halfDayPrice: 7500000,
+        halfDayTime: "09:00 - 14:00 / 14:30 - 19:30 (5 Jam)",
+        fullDayTime: "08:30 - 18:30 (10 Jam)"
+      }
+    ];
+
+    // State Management
+    let currentCategory = 'all';
+    let selectedVenue = null;
+    let selectedDurationType = 'FULL_DAY'; // 'FULL_DAY' or 'HALF_DAY'
+    let currentPaymentOption = 'DP30'; // 'DP30', 'DP50', 'FULL'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('rentalDateInput').value = today;
+      renderVenues();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToVenues() {
+      document.getElementById('venues').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Filter Logic
+    function filterVenue(cat) {
+      currentCategory = cat;
+      ['filterAll', 'filterBallroom', 'filterRooftop', 'filterCreative'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.className = "flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition";
+      });
+
+      if (cat === 'all') document.getElementById('filterAll').className = "flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition";
+      if (cat === 'ballroom') document.getElementById('filterBallroom').className = "flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition";
+      if (cat === 'rooftop') document.getElementById('filterRooftop').className = "flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition";
+      if (cat === 'creative') document.getElementById('filterCreative').className = "flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition";
+
+      renderVenues();
+    }
+
+    // Render Venues with Interactive Package Selection (Full-Day vs Half-Day)
+    function renderVenues() {
+      const container = document.getElementById('venuesGrid');
+      container.innerHTML = '';
+
+      const filtered = venuesData.filter(v => currentCategory === 'all' || v.category === currentCategory);
+
+      filtered.forEach(venue => {
+        const isVenueSelected = selectedVenue && selectedVenue.id === venue.id;
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-3xl border transition overflow-hidden shadow-sm hover:shadow-md flex flex-col justify-between ${
+          isVenueSelected ? 'border-emerald-600 ring-2 ring-emerald-500/20' : 'border-slate-200'
+        }`;
+
+        card.innerHTML = `
+          <div>
+            <div class="relative h-48 w-full bg-slate-100 overflow-hidden">
+              <img src="${venue.image}" alt="${venue.name}" class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+              <div class="absolute top-3 left-3 bg-white/95 backdrop-blur text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-md tracking-wider border border-emerald-200 shadow-sm">
+                ${venue.capacity}
+              </div>
+              <div class="absolute bottom-3 right-3 bg-slate-900/90 backdrop-blur px-2.5 py-1 rounded-lg text-xs font-extrabold text-white shadow">
+                Mulai ${formatRupiah(venue.halfDayPrice)}
+              </div>
+            </div>
+
+            <div class="p-5 space-y-3">
+              <div>
+                <span class="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                  <i data-lucide="map-pin" class="w-3 h-3"></i>
+                  ${venue.location}
+                </span>
+                <h3 class="font-extrabold text-base text-slate-900 leading-snug mt-0.5">${venue.name}</h3>
+              </div>
+
+              <div class="flex flex-wrap gap-1.5">
+                ${venue.specs.map(spec => `
+                  <span class="text-[10px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">${spec}</span>
+                `).join('')}
+              </div>
+
+              <!-- Package Durations Toggle -->
+              <div class="pt-3 border-t border-slate-100 space-y-2">
+                <span class="text-xs font-bold text-slate-700 block">Pilih Durasi Paket Sewa:</span>
+                
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <!-- Half-day Button -->
+                  <button onclick="pickVenuePackage('${venue.id}', 'HALF_DAY')" 
+                    class="p-2.5 rounded-xl border text-left transition ${
+                      isVenueSelected && selectedDurationType === 'HALF_DAY'
+                        ? 'bg-emerald-50 border-emerald-600 ring-2 ring-emerald-500/20 text-emerald-950 font-bold'
+                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                    }">
+                    <span class="block text-[11px] font-extrabold text-emerald-700">Half-Day (4-5 Jam)</span>
+                    <span class="block text-xs font-black text-slate-900 mt-0.5">${formatRupiah(venue.halfDayPrice)}</span>
+                  </button>
+
+                  <!-- Full-day Button -->
+                  <button onclick="pickVenuePackage('${venue.id}', 'FULL_DAY')" 
+                    class="p-2.5 rounded-xl border text-left transition ${
+                      isVenueSelected && selectedDurationType === 'FULL_DAY'
+                        ? 'bg-emerald-50 border-emerald-600 ring-2 ring-emerald-500/20 text-emerald-950 font-bold'
+                        : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                    }">
+                    <span class="block text-[11px] font-extrabold text-slate-700">Full-Day (10 Jam)</span>
+                    <span class="block text-xs font-black text-slate-900 mt-0.5">${formatRupiah(venue.fullDayPrice)}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Select Venue & Package
+    function pickVenuePackage(venueId, durationType) {
+      selectedVenue = venuesData.find(v => v.id === venueId);
+      selectedDurationType = durationType;
+
+      renderVenues();
+
+      const summaryBar = document.getElementById('selectionSummaryBar');
+      summaryBar.classList.remove('hidden');
+
+      const dateVal = document.getElementById('rentalDateInput').value;
+      const durationLabel = selectedDurationType === 'FULL_DAY' ? 'Full-Day (10 Jam)' : 'Half-Day (5 Jam)';
+      const finalPrice = selectedDurationType === 'FULL_DAY' ? selectedVenue.fullDayPrice : selectedVenue.halfDayPrice;
+
+      document.getElementById('summaryVenueName').innerText = selectedVenue.name;
+      document.getElementById('summarySlotInfo').innerText = `Tgl: ${dateVal} | ${durationLabel}`;
+      document.getElementById('summaryPrice').innerText = formatRupiah(finalPrice);
+    }
+
+    // Navigation Step 2
+    function goToStep2() {
+      if (!selectedVenue) {
+        alert("Silakan pilih venue dan paket durasi sewa terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+      document.getElementById('selectionSummaryBar').classList.add('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-emerald-600 text-emerald-700 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]";
+
+      // Hitung Nominal Kontrak
+      const totalCost = selectedDurationType === 'FULL_DAY' ? selectedVenue.fullDayPrice : selectedVenue.halfDayPrice;
+      const dp30 = totalCost * 0.3;
+      const dp50 = totalCost * 0.5;
+
+      document.getElementById('dp30PriceBadge').innerText = formatRupiah(dp30);
+      document.getElementById('dp50PriceBadge').innerText = formatRupiah(dp50);
+      document.getElementById('fullPriceBadge').innerText = formatRupiah(totalCost);
+
+      togglePaymentOption(currentPaymentOption);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+      document.getElementById('selectionSummaryBar').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function togglePaymentOption(opt) {
+      currentPaymentOption = opt;
+
+      const cardDP30 = document.getElementById('labelOptionDP30');
+      const cardDP50 = document.getElementById('labelOptionDP50');
+      const cardFull = document.getElementById('labelOptionFull');
+
+      const checkDP30 = document.getElementById('radioCheckDP30');
+      const checkDP50 = document.getElementById('radioCheckDP50');
+      const checkFull = document.getElementById('radioCheckFull');
+
+      const payableText = document.getElementById('checkoutPayableText');
+
+      // Reset style
+      [cardDP30, cardDP50, cardFull].forEach(c => {
+        c.classList.remove('border-emerald-600', 'bg-emerald-50/50');
+        c.classList.add('border-slate-200');
+      });
+      checkDP30.className = "w-2 h-2 rounded-full bg-transparent";
+      checkDP50.className = "w-2 h-2 rounded-full bg-transparent";
+      checkFull.className = "w-2 h-2 rounded-full bg-transparent";
+
+      const totalCost = selectedDurationType === 'FULL_DAY' ? selectedVenue.fullDayPrice : selectedVenue.halfDayPrice;
+
+      if (opt === 'DP30') {
+        cardDP30.classList.add('border-emerald-600', 'bg-emerald-50/50');
+        checkDP30.className = "w-2 h-2 rounded-full bg-emerald-600";
+        payableText.innerText = formatRupiah(totalCost * 0.3);
+      } else if (opt === 'DP50') {
+        cardDP50.classList.add('border-emerald-600', 'bg-emerald-50/50');
+        checkDP50.className = "w-2 h-2 rounded-full bg-emerald-600";
+        payableText.innerText = formatRupiah(totalCost * 0.5);
+      } else if (opt === 'FULL') {
+        cardFull.classList.add('border-emerald-600', 'bg-emerald-50/50');
+        checkFull.className = "w-2 h-2 rounded-full bg-emerald-600";
+        payableText.innerText = formatRupiah(totalCost);
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Sesi verifikasi kontrak QRIS berakhir. Silakan ulangi pemesanan.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulasi Sukses E-Contract & Pembayaran
+    function simulateContractAndPaySuccess() {
+      const isAgreed = document.getElementById('contractAgreeCheckbox').checked;
+      if (!isAgreed) {
+        alert("Harap centang persetujuan seluruh klausul perjanjian sewa untuk melanjutkan.");
+        return;
+      }
+
+      const name = document.getElementById('tenantName').value.trim() || 'Tedi Mahendra';
+      const org = document.getElementById('tenantOrg').value.trim() || 'PT Solusi Digital Kreatif';
+      const phone = document.getElementById('tenantPhone').value.trim() || '081299998888';
+      const dateVal = document.getElementById('rentalDateInput').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      // Hide step 2, show step 3
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-emerald-600 text-emerald-700 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]";
+
+      const totalCost = selectedDurationType === 'FULL_DAY' ? selectedVenue.fullDayPrice : selectedVenue.halfDayPrice;
+      let paid = 0;
+      let labelPaid = "";
+      
+      if (currentPaymentOption === 'DP30') {
+        paid = totalCost * 0.3;
+        labelPaid = "Uang Muka Diterima (DP QRIS 30%):";
+      } else if (currentPaymentOption === 'DP50') {
+        paid = totalCost * 0.5;
+        labelPaid = "Uang Muka Diterima (DP QRIS 50%):";
+      } else {
+        paid = totalCost;
+        labelPaid = "Pelunasan Penuh Diterima (QRIS 100%):";
+      }
+
+      const due = totalCost - paid;
+      const contractNumber = "CTR-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      
+      document.getElementById('contractDocNumber').innerText = contractNumber;
+      document.getElementById('contractDateText').innerText = "Tanggal Terbit: " + new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invTenantName').innerText = name;
+      document.getElementById('invTenantOrg').innerText = org;
+      document.getElementById('invTenantPhone').innerText = phone;
+      document.getElementById('signedNameDisplay').innerText = name;
+      document.getElementById('signedCompanyDisplay').innerText = org;
+
+      document.getElementById('invVenueName').innerText = selectedVenue.name;
+      document.getElementById('invEventDate').innerText = dateVal;
+      
+      const durationTitle = selectedDurationType === 'FULL_DAY' ? 'Paket Full-Day (10 Jam)' : 'Paket Half-Day (5 Jam)';
+      document.getElementById('invPackageType').innerText = durationTitle;
+      document.getElementById('invItemTitle').innerText = `Sewa Venue ${selectedVenue.name}`;
+      document.getElementById('invDurationText').innerText = durationTitle;
+      document.getElementById('invTotalValue').innerText = formatRupiah(totalCost);
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(totalCost);
+
+      document.getElementById('invPaidLabel').innerText = labelPaid;
+      document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+
+      if (due > 0) {
+        document.getElementById('invDueLabel').innerText = "Sisa Pelunasan Sebelum Acara:";
+        document.getElementById('invDueAmount').innerText = formatRupiah(due);
+      } else {
+        document.getElementById('invDueLabel').innerText = "Status Pelunasan Kontrak:";
+        document.getElementById('invDueAmount').innerText = "LUNAS (Rp 0)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedVenue = null;
+      selectedDurationType = 'FULL_DAY';
+      currentPaymentOption = 'DP30';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-200 text-slate-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]";
+
+      renderVenues();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

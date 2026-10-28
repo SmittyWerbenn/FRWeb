@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Florist Bloom Express - Visualizer Buket, Kartu Ucapan & Jam Antar</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Cormorant Garamond & Dancing Script -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'serif'],
+            script: ['"Dancing Script"', 'cursive'],
+          },
+          colors: {
+            emeraldMin: {
+              white: '#FFFFFF',
+              deep: '#064E3B',       // Deep Emerald
+              mint: '#10B981',       // Mint Green
+              mintLight: '#ECFDF5',  // Mint Tint Soft
+              border: '#D1FAE5',
+              dark: '#022C22'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .floral-pattern {
+      background-color: #FFFFFF;
+      background-image: radial-gradient(#10B98118 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .card-parchment {
+      background: linear-gradient(135deg, #FAFDFB 0%, #FFFFFF 100%);
+      box-shadow: 0 10px 30px -10px rgba(6, 78, 59, 0.08);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableTicket, #printableTicket * {
+        visibility: visible;
+      }
+      #printableTicket {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #064E3B !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAF9] text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-emeraldMin-mintLight selection:text-emeraldMin-deep">
+
+  <!-- Top Announcement Bar (Deep Emerald & Mint) -->
+  <div class="bg-emeraldMin-deep text-emerald-50 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-emerald-900/40">
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emeraldMin-mint text-emeraldMin-deep">SAME DAY COLD-VAN</span>
+    <span class="font-medium">Garansi Bunga Segar Mekar 100% • Pengiriman Mobil Khusus Ber-AC • Gratis Kartu Ucapan Kaligrafi</span>
+  </div>
+
+  <!-- Header / Navigation (Lega, Bersih, Clickable Logo) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-emeraldMin-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3.5 select-none focus:outline-none transition transform active:scale-95" title="Kembali ke Beranda">
+        <div class="w-11 h-11 rounded-2xl bg-emeraldMin-deep flex items-center justify-center text-emeraldMin-mint shadow-md shadow-emerald-950/20 flex-shrink-0 transition group-hover:bg-emeraldMin-dark">
+          <i data-lucide="flower-2" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl sm:text-2xl tracking-tight text-emeraldMin-deep block leading-tight font-serif">
+            FLORIST<span class="text-emeraldMin-mint font-sans ml-1 font-bold">BLOOM</span>
+            <span class="text-[10px] bg-emeraldMin-mintLight text-emeraldMin-deep border border-emerald-200 px-1.5 py-0.5 rounded font-sans uppercase font-bold ml-1 align-middle">EXPRESS</span>
+          </span>
+          <span class="text-[10px] text-slate-400 tracking-wider block font-semibold uppercase">ARTISAN BOUQUET & SURPRISE DELIVERY</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+        <a href="#visualizer" class="text-emeraldMin-deep font-bold hover:text-emeraldMin-mint transition">Rakit Buket</a>
+        <a href="#greeting-card" class="hover:text-emeraldMin-deep transition">Kartu Ucapan</a>
+        <a href="#delivery-time" class="hover:text-emeraldMin-deep transition">Pilih Jam Antar</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-emeraldMin-mintLight text-emeraldMin-deep font-semibold px-3.5 py-1.5 rounded-full border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emeraldMin-mint animate-pulse"></span>
+          Studio Toko Bunga: Buka 07:00 - 22:00 WIB
+        </div>
+        <button onclick="scrollToVisualizer()" class="bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-emerald-950/15 flex items-center gap-2 active:scale-95">
+          <span>Kustom Buket</span>
+          <i data-lucide="sparkles" class="w-4 h-4 text-emeraldMin-mint"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="floral-pattern pt-12 sm:pt-16 pb-16 sm:pb-20 border-b border-emeraldMin-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emeraldMin-mintLight border border-emerald-200 text-emeraldMin-deep text-xs font-semibold">
+            <i data-lucide="heart" class="w-3.5 h-3.5 text-emeraldMin-mint"></i>
+            Sentuhan Kasih Sayang yang Dirangkai Sempurna
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-emeraldMin-deep tracking-tight leading-[1.18] font-serif">
+            Ekspresikan Perasaan dengan Buket Bunga Cantik & Tepat Waktu.
+          </h1>
+          <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+            Rakit buket secara visual dengan bunga potong segar kualitas premium. Tuliskan pesan tulus Anda di kartu ucapan kaligrafi, dan tentukan jam kedatangan kurir kejutan tanpa cemas terlambat di momen spesial.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="scrollToVisualizer()" class="bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-emerald-950/20 transition flex items-center gap-2.5">
+              <i data-lucide="palette" class="w-4 h-4 text-emeraldMin-mint"></i>
+              Mulai Desain Buket
+            </button>
+            <div class="flex items-center gap-2 text-xs text-slate-500 px-2 py-1">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emeraldMin-mint"></i>
+              <span>Garansi 100% ganti baru jika bunga layu saat diterima</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200 text-left">
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-emeraldMin-deep font-serif">2 Jam</p>
+              <p class="text-xs text-slate-500 mt-0.5">Pengiriman Cepat Express</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-emeraldMin-mint font-serif">Gratis</p>
+              <p class="text-xs text-slate-500 mt-0.5">Kartu Ucapan Kaligrafi</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-serif">100%</p>
+              <p class="text-xs text-slate-500 mt-0.5">Bunga Segar Petik Harian</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Snapshot: Interactive Bouquet Preview Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-emerald-950/5 border border-emeraldMin-border relative">
+            <div class="flex items-center justify-between pb-4 border-b border-emeraldMin-border">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emeraldMin-mint"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-emeraldMin-deep">Bouquet Atelier Preview</span>
+              </div>
+              <span class="text-[10px] font-bold text-emeraldMin-deep bg-emeraldMin-mintLight px-2.5 py-1 rounded-md border border-emerald-200">FRESH ARRANGEMENT</span>
+            </div>
+
+            <!-- Visualizer Card Body -->
+            <div class="mt-5 p-5 bg-[#FAFDFB] rounded-2xl border border-emerald-100 space-y-4">
+              <div class="relative h-44 rounded-xl overflow-hidden shadow-inner flex items-center justify-center bg-stone-100" id="heroBouquetImageWrapper">
+                <img id="heroBouquetImage" src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=700&q=80" alt="Buket Mawar" class="w-full h-full object-cover transition duration-300" />
+                <div class="absolute bottom-2.5 left-2.5 bg-emeraldMin-deep/90 backdrop-blur px-2.5 py-1 rounded text-[11px] font-serif text-white border border-emerald-700">
+                  <span id="heroFlowerNameBadge">Red Velvet Roses (12 Tangkai)</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="p-2.5 bg-white rounded-xl border border-emerald-100">
+                  <span class="text-[10px] text-slate-400 block font-medium">Bunga Pelengkap:</span>
+                  <span class="font-bold text-emeraldMin-deep" id="heroFillerBadge">Baby's Breath Putih</span>
+                </div>
+                <div class="p-2.5 bg-white rounded-xl border border-emerald-100">
+                  <span class="text-[10px] text-slate-400 block font-medium">Kertas Pembungkus:</span>
+                  <span class="font-bold text-emeraldMin-deep" id="heroWrapBadge">Sage Green & Mint Ribbon</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-emeraldMin-mintLight/80 rounded-xl border border-emerald-200 flex items-center justify-between text-xs text-emeraldMin-deep">
+              <span class="flex items-center gap-1.5 font-medium">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-emeraldMin-mint"></i>
+                Slot Waktu Pengantaran: <strong>Kejutan Siang (12:00 - 14:00)</strong>
+              </span>
+              <span class="text-[10px] font-bold bg-white text-emeraldMin-deep px-2 py-0.5 rounded border border-emerald-200">Surprise Ready</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-semibold">
+        <div id="stepIndicator1" class="border-b-2 border-emeraldMin-deep text-emeraldMin-deep pb-2 flex items-center justify-center gap-1.5 font-bold">
+          <span class="w-5 h-5 rounded-full bg-emeraldMin-deep text-white flex items-center justify-center text-[11px]">1</span>
+          Rakit Buket & Pesan
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200">2</span>
+          Alamat, Jam Antar & QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200">3</span>
+          Sertifikat Buket & Faktur
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Atelier Studio Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    
+    <!-- STEP 1: Interactive Bouquet Visualizer & Greeting Card Studio -->
+    <div id="step1View" class="space-y-10">
+      
+      <div id="visualizer" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Arrangement Customizer Studio (7 Cols) -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-emeraldMin-border shadow-sm space-y-6">
+          <div class="flex items-center justify-between border-b border-emeraldMin-border pb-3">
+            <div>
+              <h3 class="text-lg font-bold text-emeraldMin-deep font-serif">1. Pilih Komposisi Bunga & Pembungkus</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Tentukan bunga utama, pemanis dedaunan, dan warna kertas pembungkus premium</p>
+            </div>
+            <span class="text-xs font-serif font-bold text-emeraldMin-deep bg-emeraldMin-mintLight px-2.5 py-1 rounded-lg border border-emerald-200">FRESH HAND-TIED</span>
+          </div>
+
+          <!-- Bunga Utama Selection -->
+          <div class="space-y-2.5">
+            <label class="block text-xs font-bold text-slate-700">A. Bunga Utama (Focal Flower):</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="mainFlowerContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Bunga Pelengkap (Filler & Foliage) -->
+          <div class="space-y-2.5">
+            <label class="block text-xs font-bold text-slate-700">B. Bunga Pelengkap & Dedaunan (Foliage):</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="fillerContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Warna Kertas Pembungkus (Wrapping Paper) -->
+          <div class="space-y-2.5">
+            <label class="block text-xs font-bold text-slate-700">C. Kertas Pembungkus Matte (Korean Wrapping):</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs" id="wrappingContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Editor Kartu Ucapan Personal -->
+          <div id="greeting-card" class="pt-4 border-t border-emeraldMin-border space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-emeraldMin-deep font-serif flex items-center gap-1.5">
+                <i data-lucide="mail-heart" class="w-4 h-4 text-emeraldMin-mint"></i>
+                2. Kartu Ucapan Personal (Gratis):
+              </label>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] text-slate-400">Template Cepat:</span>
+                <button onclick="applyGreetingTemplate('ULTAH')" class="text-[10px] bg-emeraldMin-mintLight text-emeraldMin-deep px-2 py-0.5 rounded font-medium hover:bg-emerald-100">Ulang Tahun</button>
+                <button onclick="applyGreetingTemplate('ANNIV')" class="text-[10px] bg-emeraldMin-mintLight text-emeraldMin-deep px-2 py-0.5 rounded font-medium hover:bg-emerald-100">Anniversary</button>
+                <button onclick="applyGreetingTemplate('LEKAS')" class="text-[10px] bg-emeraldMin-mintLight text-emeraldMin-deep px-2 py-0.5 rounded font-medium hover:bg-emerald-100">Lekas Sembuh</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div>
+                <span class="text-[11px] font-semibold text-slate-600 block mb-1">Nama Penerima (Di Luar Amplop):</span>
+                <input type="text" id="cardRecipientInput" value="Clarissa Lovata" oninput="updateCardLivePreview()" class="w-full bg-[#FAFDFB] px-3 py-2 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint text-slate-800" />
+              </div>
+              <div>
+                <span class="text-[11px] font-semibold text-slate-600 block mb-1">Nama Pengirim:</span>
+                <input type="text" id="cardSenderInput" value="Tedi Mahendra" oninput="updateCardLivePreview()" class="w-full bg-[#FAFDFB] px-3 py-2 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint text-slate-800" />
+              </div>
+            </div>
+
+            <div>
+              <span class="text-[11px] font-semibold text-slate-600 block mb-1">Isi Pesan Kartu (Dicetak Rapi):</span>
+              <textarea id="cardMessageInput" rows="2" oninput="updateCardLivePreview()" class="w-full bg-[#FAFDFB] px-3 py-2 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint text-slate-800 text-xs">Selamat hari istimewa, semoga hari-harimu selalu seindah dan sewangi bunga-bunga ini.</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Live Visual Canvas & Price Summary (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-emeraldMin-border shadow-lg space-y-5 sticky top-24">
+          <div class="flex items-center justify-between border-b border-emeraldMin-border pb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-emeraldMin-deep font-serif">Live Visualizer</span>
+            <span class="text-[10px] font-bold text-emeraldMin-deep bg-emeraldMin-mintLight border border-emerald-200 px-2 py-0.5 rounded">AUTO-UPDATED</span>
+          </div>
+
+          <!-- Dynamic Visualizer Canvas -->
+          <div class="rounded-2xl border border-emerald-100 p-4 bg-[#FAFDFB] space-y-4">
+            
+            <!-- Real-time Image Stage -->
+            <div class="relative h-56 rounded-xl overflow-hidden shadow-sm">
+              <img id="stageBouquetImg" src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=700&q=80" alt="Buket Bunga" class="w-full h-full object-cover transition-all duration-300" />
+              <div class="absolute inset-0 bg-gradient-to-t from-emeraldMin-deep/60 via-transparent to-transparent flex items-end p-3">
+                <span class="text-white text-xs font-serif font-bold drop-shadow" id="stageFlowerTitle">Red Velvet Roses (12 Tangkai)</span>
+              </div>
+            </div>
+
+            <!-- Live Card Parchment Graphic -->
+            <div class="card-parchment p-3.5 rounded-xl border border-emerald-200/80 space-y-1 relative">
+              <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                <span>ARTISAN FLORAL NOTE</span>
+                <i data-lucide="sparkle" class="w-3 h-3 text-emeraldMin-mint"></i>
+              </div>
+              <p class="text-xs font-serif italic text-emeraldMin-deep font-bold" id="previewTo">Untuk: Clarissa Lovata</p>
+              <p class="text-[11px] font-script text-slate-700 leading-snug line-clamp-3" id="previewMsg">
+                Selamat hari istimewa, semoga hari-harimu selalu seindah dan sewangi bunga-bunga ini.
+              </p>
+              <p class="text-right text-[10px] font-serif text-slate-500 font-bold" id="previewFrom">- Tedi Mahendra</p>
+            </div>
+
+          </div>
+
+          <!-- Pricing Breakdown -->
+          <div class="space-y-2 text-xs border-t border-emeraldMin-border pt-3">
+            <div class="flex justify-between text-slate-600">
+              <span>Bunga Utama (<span id="calcMainName">Mawar Merah</span>):</span>
+              <span class="font-bold text-emeraldMin-deep" id="calcMainCost">Rp 350.000</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Bunga Pelengkap (<span id="calcFillerName">Baby's Breath</span>):</span>
+              <span class="font-bold text-emeraldMin-deep" id="calcFillerCost">Rp 45.000</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Kertas Pembungkus & Pita:</span>
+              <span class="font-bold text-emeraldMin-deep" id="calcWrapCost">Termasuk (Gratis)</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Kartu Ucapan Kaligrafi:</span>
+              <span class="font-bold text-emeraldMin-mint">Termasuk (Gratis)</span>
+            </div>
+          </div>
+
+          <!-- Total Calculation -->
+          <div class="p-3.5 bg-emeraldMin-mintLight rounded-xl border border-emerald-200 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-emeraldMin-deep uppercase block">Total Nilai Buket</span>
+              <span class="text-xs text-slate-500">Kualitas Bunga Segar Segar Terjamin</span>
+            </div>
+            <span class="text-xl font-black text-emeraldMin-deep font-mono" id="calcTotalCost">Rp 395.000</span>
+          </div>
+
+          <!-- Next Button -->
+          <button onclick="goToStep2()" class="w-full bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-emerald-950/15 flex items-center justify-center gap-2 active:scale-95">
+            <span>Pilih Jam Antar & Alamat</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-emeraldMin-mint"></i>
+          </button>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Kurir mobil berpendingin siap mengantarkan buket dengan posisi tegak agar air batang bunga tidak tumpah.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Address, Time-Slot Picker & QRIS Instant Payment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Destination & Precision Delivery Hour -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-emeraldMin-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-emeraldMin-border pb-3">
+            <h3 class="text-base font-bold text-emeraldMin-deep flex items-center gap-2 font-serif">
+              <i data-lucide="map-pin" class="w-4 h-4 text-emeraldMin-mint"></i>
+              Tujuan Pengantaran & Jam Kejutan
+            </h3>
+            <span class="text-xs text-slate-400">Cold-Chain Express</span>
+          </div>
+
+          <div class="space-y-4 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nama Penerima Bunga di Lokasi *</label>
+                <input type="text" id="destReceiverName" value="Clarissa Lovata" class="w-full bg-[#FAFDFB] px-3.5 py-2.5 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint font-medium" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nomor Telepon / WA Penerima *</label>
+                <input type="tel" id="destReceiverPhone" value="081399887766" class="w-full bg-[#FAFDFB] px-3.5 py-2.5 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint font-medium" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Alamat Lengkap Pengantaran *</label>
+              <textarea id="destFullAddress" rows="2" class="w-full bg-[#FAFDFB] px-3.5 py-2.5 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint font-medium">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Kuningan, Setiabudi, Jakarta Selatan</textarea>
+            </div>
+
+            <!-- Pemilih Tanggal & Jam Antar Khusus (Fitur Utama) -->
+            <div id="delivery-time" class="p-4 bg-emeraldMin-mintLight/60 rounded-2xl border border-emerald-200 space-y-3">
+              <span class="text-xs font-bold text-emeraldMin-deep block flex items-center gap-1.5 font-serif">
+                <i data-lucide="calendar-clock" class="w-4 h-4 text-emeraldMin-mint"></i>
+                Jadwal & Jam Antar Presisi (Surprise Hour)
+              </span>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <span class="text-[11px] font-semibold text-slate-600 block mb-1">Tanggal Tiba:</span>
+                  <input type="date" id="deliveryDateInput" class="w-full bg-white px-3 py-2 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint text-slate-800 font-medium" />
+                </div>
+                <div>
+                  <span class="text-[11px] font-semibold text-slate-600 block mb-1">Pilihan Rentang Jam Antar:</span>
+                  <select id="deliveryTimeSlotSelect" class="w-full bg-white px-3 py-2 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint text-slate-800 font-medium">
+                    <option value="Pagi Segar (08:00 - 10:00 WIB)">Pagi Segar (08:00 - 10:00 WIB)</option>
+                    <option value="Kejutan Siang (12:00 - 14:00 WIB)" selected>Kejutan Siang (12:00 - 14:00 WIB)</option>
+                    <option value="Romantis Senja (16:30 - 18:30 WIB)">Romantis Senja (16:30 - 18:30 WIB)</option>
+                    <option value="Malam Spesial (19:30 - 21:00 WIB)">Malam Spesial (19:30 - 21:00 WIB)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Instruksi Pengantaran Rahasia:</label>
+              <input type="text" id="secretInstruction" value="Jangan telepon penerima sebelumnya, ini kejutan anniversary!" class="w-full bg-[#FAFDFB] px-3.5 py-2.5 rounded-xl border border-emeraldMin-border focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint text-slate-800" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: QRIS Payment Box -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-emeraldMin-border shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-emeraldMin-border pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">Pembayaran Instan</span>
+            <span class="text-[10px] font-bold bg-emeraldMin-mintLight text-emeraldMin-deep border border-emerald-200 px-2 py-0.5 rounded">QRIS RESMI</span>
+          </div>
+
+          <!-- QR Box -->
+          <div class="border border-emeraldMin-border rounded-2xl p-4 bg-[#FAFDFB] text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2 font-mono">
+              <span class="text-red-600 font-bold text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-emeraldMin-deep bg-emeraldMin-mintLight px-2 py-0.5 rounded border border-emerald-200" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-emerald-100">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-FLORIST-BLOOM-EXPRESS" alt="QRIS Buket" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-500 font-mono">
+              <p>Scan via BCA, Mandiri, GoPay, OVO, ShopeePay</p>
+              <p class="text-[10px] text-slate-400">NMID: ID1099238833 - FLORIST BLOOM EXPRESS</p>
+            </div>
+
+            <!-- Price Breakdown Summary -->
+            <div class="mt-3 pt-3 border-t border-emeraldMin-border w-full flex items-center justify-between px-1 font-mono">
+              <span class="text-xs text-slate-600">Total Pembayaran:</span>
+              <span id="checkoutTotalPayable" class="text-base font-extrabold text-emeraldMin-deep">Rp 395.000</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-emeraldMin-deep hover:bg-emeraldMin-dark active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-950/20">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emeraldMin-mint"></i>
+              <span>Simulasi Bayar Berhasil (Instant Webhook)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-[#FAFDFB] hover:bg-stone-100 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition border border-emeraldMin-border">
+              Kembali / Ubah Buket
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Setelah konfirmasi pembayaran, florist kami langsung merangkai bunga segar dan menyematkan kartu ucapan Anda.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Bouquet Certificate & Delivery Ticket (Printable) -->
+    <div id="step3View" class="hidden max-w-2xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emeraldMin-mintLight border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emeraldMin-deep no-print">
+        <div class="w-10 h-10 rounded-full bg-emeraldMin-deep text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-serif">Pesanan Buket Berhasil Dikonfirmasi & Terjadwal!</h4>
+          <p class="text-xs text-emerald-800 mt-0.5">Sertifikat keaslian bunga dan tiket pengiriman express telah digenerate secara resmi.</p>
+        </div>
+      </div>
+
+      <!-- Printable Bouquet Ticket Document -->
+      <div id="printableTicket" class="bg-white rounded-3xl border border-emeraldMin-border shadow-xl p-6 sm:p-9 space-y-6 relative overflow-hidden">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-emeraldMin-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-emeraldMin-deep flex items-center justify-center text-emeraldMin-mint font-bold">
+                <i data-lucide="flower-2" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-lg text-emeraldMin-deep font-serif">FLORIST<span class="text-emeraldMin-mint">BLOOM</span></span>
+            </div>
+            <p class="text-[11px] text-slate-400">Atelier Bunga Segar • Jl. Senopati No. 88, Kebayoran Baru, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-400">Hotline Florist: +62 812-9999-8888 • bloom@florist.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-emeraldMin-mintLight text-emeraldMin-deep uppercase border border-emerald-200">
+              OFFICIAL BOUQUET PASS
+            </span>
+            <p id="ticketDocNumber" class="text-xs font-bold text-emeraldMin-deep font-mono mt-1">BLM-202610-9921</p>
+            <p id="ticketDateText" class="text-[11px] text-slate-400">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Recipient & Delivery Schedule Detail -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#FAFDFB] p-4 rounded-2xl border border-emeraldMin-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">PENERIMA KEJUTAN:</span>
+            <p id="invReceiverName" class="font-bold text-emeraldMin-deep text-sm font-serif">Clarissa Lovata</p>
+            <p id="invReceiverPhone" class="text-slate-500 font-mono">081399887766</p>
+            <p id="invDestinationAddress" class="text-slate-600 mt-1 leading-relaxed">Gedung Wirausaha Lt. 5, Jaksel</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">JADWAL JAM ANTAR (SLOT):</span>
+            <p id="invDeliverySlot" class="font-bold text-emeraldMin-deep text-sm font-serif">Kejutan Siang (12:00 - 14:00 WIB)</p>
+            <p id="invDeliveryDate" class="text-slate-600">Kamis, 29 Okt 2026</p>
+            <p class="text-emeraldMin-mint font-bold mt-1">Armada: Mobil Khusus Ber-AC</p>
+          </div>
+        </div>
+
+        <!-- Greeting Card Insert Replica -->
+        <div class="card-parchment p-4 rounded-2xl border border-emerald-200 space-y-1.5">
+          <div class="flex justify-between items-center text-[10px] text-slate-400">
+            <span class="font-serif font-bold text-emeraldMin-deep uppercase">Isi Kartu Ucapan yang Disematkan:</span>
+            <span class="text-emeraldMin-mint font-serif">Hand-Crafted Note</span>
+          </div>
+          <p class="text-xs font-serif italic text-emeraldMin-deep font-bold" id="invCardTo">Kepada: Clarissa Lovata</p>
+          <p class="text-xs font-script text-slate-700 leading-relaxed" id="invCardMsg">
+            Selamat hari istimewa, semoga hari-harimu selalu seindah dan sewangi bunga-bunga ini.
+          </p>
+          <p class="text-right text-[11px] font-serif text-slate-600 font-bold" id="invCardFrom">Dari: Tedi Mahendra</p>
+        </div>
+
+        <!-- Bouquet Specs & Fee Table -->
+        <div class="border border-emeraldMin-border rounded-2xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-[#FAFDFB] text-slate-600 border-b border-emeraldMin-border">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Rincian Rangkaian Buket</th>
+                <th class="py-2.5 px-4 font-bold text-center">Spesifikasi</th>
+                <th class="py-2.5 px-4 font-bold text-right">Harga</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-emeraldMin-border font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-emeraldMin-deep text-sm font-serif" id="invMainFlowerTitle">Red Velvet Roses (12 Tangkai)</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5" id="invBouquetSubspecs">
+                    Filler: Baby's Breath • Kertas: Sage Green • Pita: Satin Mint
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-center text-slate-600">Fresh Cut A-Grade</td>
+                <td class="py-3 px-4 text-right font-bold text-emeraldMin-deep font-mono" id="invItemRate">Rp 395.000</td>
+              </tr>
+              <tr class="bg-[#FAFDFB]">
+                <td colspan="2" class="py-2 px-4 text-slate-600 text-right font-bold">Total Nilai Buket:</td>
+                <td class="py-2 px-4 text-right font-bold text-emeraldMin-deep font-mono" id="invSubtotalAmount">Rp 395.000</td>
+              </tr>
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-emerald-700 text-right font-bold">Status Pembayaran (QRIS 100%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700 font-mono">LUNAS (Rp 395.000)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Delivery Courier QR Barcode -->
+        <div class="p-4 bg-[#FAFDFB] rounded-2xl border border-emeraldMin-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Courier Surprise Dispatch Barcode</span>
+            <p class="text-xs font-bold text-emeraldMin-deep">Scan Barcode untuk Verifikasi Kurir di Pintu Penerima</p>
+            <p class="text-[11px] text-slate-500">Dilengkapi penyerap air kapas segar di ujung tangkai untuk menjaga kesegaran hingga 72 jam.</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-xl inline-block shadow-sm border border-emerald-100">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=FLORIST-BLOOM-SURPRISE-PASS-9921" alt="DO Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1">TOKEN: BLM-PASS-9921</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-white hover:bg-stone-50 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-emeraldMin-border">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Rakit Buket Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-950/20">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Tiket Buket (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer (Deep Emerald & Mint Minimal) -->
+  <footer class="bg-emeraldMin-deep text-slate-300 py-8 border-t border-emerald-900 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-emeraldMin-dark flex items-center justify-center text-emeraldMin-mint font-bold text-xs border border-emerald-700">F</div>
+        <span class="font-bold text-white font-serif">Florist Bloom Express Boutique</span>
+        <span class="text-emerald-400">| ID: florist-bloom-express</span>
+      </div>
+      <p class="text-emerald-200/80 text-center md:text-right">&copy; 2026 Florist Bloom Express. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Pilihan Bunga & Kustomisasi
+    const floristData = {
+      mains: [
+        {
+          id: "fl-rose",
+          name: "Red Velvet Roses (12 Tangkai)",
+          price: 350000,
+          desc: "Mawar merah beludru segar grade A",
+          image: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=700&q=80"
+        },
+        {
+          id: "fl-lily",
+          name: "White Casablanca Lilies (5 Stem)",
+          price: 395000,
+          desc: "Bunga lili putih mekar harum semerbak",
+          image: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=700&q=80"
+        },
+        {
+          id: "fl-hydra",
+          name: "Pastel Blue Hydrangea Cloud",
+          price: 320000,
+          desc: "Pancawarna biru lembut ukuran jumbo",
+          image: "https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=700&q=80"
+        }
+      ],
+      fillers: [
+        { id: "fil-baby", name: "Baby's Breath Putih", price: 45000, tag: "Favorit Romantis" },
+        { id: "fil-euca", name: "Silver Dollar Eucalyptus", price: 50000, tag: "Aroma Terapi" },
+        { id: "fil-casp", name: "Caspia Ungu Kering", price: 40000, tag: "Rustic Elegan" }
+      ],
+      wrappings: [
+        { id: "wr-sage", name: "Sage Green Matte", color: "#84A98C" },
+        { id: "wr-blush", name: "Frosted Blush Pink", color: "#F4ACB7" },
+        { id: "wr-emerald", name: "Deep Emerald Paper", color: "#064E3B" },
+        { id: "wr-white", name: "Pure Ivory White", color: "#F8F9FA" }
+      ]
+    };
+
+    // State Management
+    let selectedMain = floristData.mains[0];
+    let selectedFiller = floristData.fillers[0];
+    let selectedWrap = floristData.wrappings[0];
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set default delivery date to Tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('deliveryDateInput').value = tomorrow.toISOString().split('T')[0];
+
+      renderMainFlowers();
+      renderFillers();
+      renderWrappings();
+      updateVisualizer();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToVisualizer() {
+      document.getElementById('visualizer').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Render Components
+    function renderMainFlowers() {
+      const container = document.getElementById('mainFlowerContainer');
+      container.innerHTML = floristData.mains.map(m => `
+        <div onclick="selectMainFlower('${m.id}')" class="p-3.5 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          selectedMain.id === m.id 
+            ? 'border-emeraldMin-deep bg-emeraldMin-mintLight ring-2 ring-emeraldMin-mint/20' 
+            : 'border-emeraldMin-border bg-[#FAFDFB] hover:bg-white'
+        }">
+          <div>
+            <span class="font-extrabold text-xs text-emeraldMin-deep font-serif block">${m.name}</span>
+            <p class="text-[11px] text-slate-500 mt-0.5 leading-normal">${m.desc}</p>
+          </div>
+          <span class="text-xs font-black text-emeraldMin-deep font-mono mt-3 block">${formatRupiah(m.price)}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectMainFlower(id) {
+      selectedMain = floristData.mains.find(m => m.id === id);
+      renderMainFlowers();
+      updateVisualizer();
+    }
+
+    function renderFillers() {
+      const container = document.getElementById('fillerContainer');
+      container.innerHTML = floristData.fillers.map(f => `
+        <div onclick="selectFiller('${f.id}')" class="p-3 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          selectedFiller.id === f.id 
+            ? 'border-emeraldMin-deep bg-emeraldMin-mintLight ring-2 ring-emeraldMin-mint/20' 
+            : 'border-emeraldMin-border bg-[#FAFDFB] hover:bg-white'
+        }">
+          <div>
+            <span class="font-bold text-xs text-emeraldMin-deep block">${f.name}</span>
+            <span class="text-[9px] text-emeraldMin-mint font-bold uppercase">${f.tag}</span>
+          </div>
+          <span class="text-xs font-bold text-slate-700 font-mono mt-2 block">+ ${formatRupiah(f.price)}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectFiller(id) {
+      selectedFiller = floristData.fillers.find(f => f.id === id);
+      renderFillers();
+      updateVisualizer();
+    }
+
+    function renderWrappings() {
+      const container = document.getElementById('wrappingContainer');
+      container.innerHTML = floristData.wrappings.map(w => `
+        <div onclick="selectWrapping('${w.id}')" class="p-2.5 rounded-xl border-2 transition cursor-pointer flex items-center gap-2 select-none ${
+          selectedWrap.id === w.id 
+            ? 'border-emeraldMin-deep bg-emeraldMin-mintLight font-bold' 
+            : 'border-emeraldMin-border bg-white hover:bg-stone-50'
+        }">
+          <span class="w-4 h-4 rounded-full border border-slate-300 flex-shrink-0" style="background-color: ${w.color}"></span>
+          <span class="text-[11px] text-slate-800 leading-tight">${w.name}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectWrapping(id) {
+      selectedWrap = floristData.wrappings.find(w => w.id === id);
+      renderWrappings();
+      updateVisualizer();
+    }
+
+    // Greeting Card Helpers
+    function applyGreetingTemplate(type) {
+      const msgArea = document.getElementById('cardMessageInput');
+      if (type === 'ULTAH') {
+        msgArea.value = "Selamat bertambah usia! Semoga harimu dipenuhi kebahagiaan, tawa, dan wewangian indah seperti bunga-bunga ini.";
+      } else if (type === 'ANNIV') {
+        msgArea.value = "Happy anniversary tercinta. Terima kasih telah mewarnai setiap hari dalam hidupku dengan kelembutan yang abadi.";
+      } else if (type === 'LEKAS') {
+        msgArea.value = "Semoga lekas sembuh dan kembali ceria. Kiriman bunga ini hadir untuk menyemangati hari-harimu agar pulih lebih cepat!";
+      }
+      updateCardLivePreview();
+    }
+
+    function updateCardLivePreview() {
+      const toVal = document.getElementById('cardRecipientInput').value || 'Clarissa Lovata';
+      const fromVal = document.getElementById('cardSenderInput').value || 'Tedi Mahendra';
+      const msgVal = document.getElementById('cardMessageInput').value || 'Pesan terhangat untukmu...';
+
+      document.getElementById('previewTo').innerText = `Untuk: ${toVal}`;
+      document.getElementById('previewFrom').innerText = `- ${fromVal}`;
+      document.getElementById('previewMsg').innerText = msgVal;
+    }
+
+    // Dynamic Visualizer & Price Updates
+    function updateVisualizer() {
+      // Stage Image Update
+      const stageImg = document.getElementById('stageBouquetImg');
+      const stageTitle = document.getElementById('stageFlowerTitle');
+      const heroImg = document.getElementById('heroBouquetImage');
+      const heroBadge = document.getElementById('heroFlowerNameBadge');
+
+      stageImg.src = selectedMain.image;
+      stageTitle.innerText = `${selectedMain.name} & ${selectedFiller.name}`;
+      heroImg.src = selectedMain.image;
+      heroBadge.innerText = selectedMain.name;
+
+      document.getElementById('heroFillerBadge').innerText = selectedFiller.name;
+      document.getElementById('heroWrapBadge').innerText = `${selectedWrap.name} & Mint Ribbon`;
+
+      // Cost Calculation
+      const total = selectedMain.price + selectedFiller.price;
+
+      document.getElementById('calcMainName').innerText = selectedMain.name.split(' ')[0] + ' ' + (selectedMain.name.split(' ')[1] || '');
+      document.getElementById('calcMainCost').innerText = formatRupiah(selectedMain.price);
+
+      document.getElementById('calcFillerName').innerText = selectedFiller.name;
+      document.getElementById('calcFillerCost').innerText = formatRupiah(selectedFiller.price);
+
+      document.getElementById('calcTotalCost').innerText = formatRupiah(total);
+
+      updateCardLivePreview();
+      return total;
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-emeraldMin-deep text-emeraldMin-deep pb-2 flex items-center justify-center gap-1.5 font-bold";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-emeraldMin-deep text-white flex items-center justify-center text-[11px] font-bold";
+
+      const total = updateVisualizer();
+      document.getElementById('checkoutTotalPayable').innerText = formatRupiah(total);
+
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi pembayaran QRIS berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const receiver = document.getElementById('destReceiverName').value.trim() || 'Clarissa Lovata';
+      const phone = document.getElementById('destReceiverPhone').value.trim() || '081399887766';
+      const address = document.getElementById('destFullAddress').value.trim() || 'Gedung Wirausaha, Jakarta Selatan';
+      const deliveryDate = document.getElementById('deliveryDateInput').value;
+      const deliverySlot = document.getElementById('deliveryTimeSlotSelect').value;
+
+      const cardTo = document.getElementById('cardRecipientInput').value || 'Clarissa Lovata';
+      const cardFrom = document.getElementById('cardSenderInput').value || 'Tedi Mahendra';
+      const cardMsg = document.getElementById('cardMessageInput').value || 'Selamat hari istimewa!';
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-emeraldMin-deep text-emeraldMin-deep pb-2 flex items-center justify-center gap-1.5 font-bold";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-emeraldMin-deep text-white flex items-center justify-center text-[11px] font-bold";
+
+      const total = updateVisualizer();
+
+      const randomTicket = "BLM-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('ticketDocNumber').innerText = randomTicket;
+      document.getElementById('ticketDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invReceiverName').innerText = receiver;
+      document.getElementById('invReceiverPhone').innerText = phone;
+      document.getElementById('invDestinationAddress').innerText = address;
+
+      document.getElementById('invDeliveryDate').innerText = deliveryDate;
+      document.getElementById('invDeliverySlot').innerText = deliverySlot;
+
+      document.getElementById('invCardTo').innerText = `Kepada: ${cardTo}`;
+      document.getElementById('invCardFrom').innerText = `Dari: ${cardFrom}`;
+      document.getElementById('invCardMsg').innerText = `"${cardMsg}"`;
+
+      document.getElementById('invMainFlowerTitle').innerText = selectedMain.name;
+      document.getElementById('invBouquetSubspecs').innerText = `Filler: ${selectedFiller.name} • Wrapping: ${selectedWrap.name} • Cold Van Delivery`;
+      document.getElementById('invItemRate').innerText = formatRupiah(total);
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(total);
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedMain = floristData.mains[0];
+      selectedFiller = floristData.fillers[0];
+      selectedWrap = floristData.wrappings[0];
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-200 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold border border-slate-200";
+
+      renderMainFlowers();
+      renderFillers();
+      renderWrappings();
+      updateVisualizer();
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

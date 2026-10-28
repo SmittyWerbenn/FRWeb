@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Vista Indonesia - Sewa & Jual Videotron, Kalkulator Modul & RFQ</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            trust: {
+              forest: '#132A13',      // Forest Green Utama
+              oliveDark: '#31572C',   // Olive Dark Card Surface
+              oliveMid: '#4F772D',    // Secondary Olive
+              sage: '#ECF39E',        // Pale Sage Accent
+              sageHover: '#DCE775',   // Slightly deeper sage
+              canvas: '#0B1A0B',      // Dark Canvas
+              border: 'rgba(236, 243, 158, 0.22)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(19, 42, 19, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .led-grid-pattern {
+      background-color: #0B1A0B;
+      background-image: 
+        radial-gradient(#ECF39E20 1px, transparent 1px),
+        radial-gradient(#4F772D20 1px, #0B1A0B 1px);
+      background-size: 18px 18px;
+    }
+    .screen-bezel {
+      box-shadow: 0 0 25px rgba(236, 243, 158, 0.18), inset 0 0 15px rgba(0, 0, 0, 0.8);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableQuotation, #printableQuotation * {
+        visibility: visible;
+      }
+      #printableQuotation {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #132A13 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-trust-canvas text-slate-100 antialiased font-sans min-h-screen flex flex-col selection:bg-trust-sage selection:text-trust-forest">
+
+  <!-- Top Announcement Bar (Forest Green & Pale Sage) -->
+  <div class="bg-[#081408] text-slate-300 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-trust-border font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-trust-sage text-trust-forest">PROFESSIONAL AV INTEGRATOR</span>
+    <span>Sewa Harian Event & Penjualan Videotron Permanen • Refresh Rate 3840Hz • Garansi Panel 2 Tahun</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-trust-border shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-trust-oliveDark border border-trust-sage flex items-center justify-center text-trust-sage shadow-md shadow-emerald-950/20 flex-shrink-0 transition group-hover:bg-trust-sage group-hover:text-trust-forest">
+          <i data-lucide="monitor" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-white block leading-tight font-display">
+            LED<span class="text-trust-sage">VISTA</span>
+            <span class="text-[10px] font-mono bg-trust-oliveDark text-trust-sage border border-trust-border px-1.5 py-0.5 rounded ml-1 font-bold uppercase">INDONESIA</span>
+          </span>
+          <span class="text-[10px] text-slate-400 tracking-wider block font-mono font-medium">VIDEOTRON SYSTEM & EVENT RENTAL</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
+        <a href="#simulator" class="text-trust-sage hover:text-white transition">Kalkulator Ukuran</a>
+        <a href="#catalog" class="hover:text-trust-sage transition">Katalog Pitch</a>
+        <a href="#tech-specs" class="hover:text-trust-sage transition">Standar Rigging</a>
+      </nav>
+
+      <!-- Action & Stock Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-trust-oliveDark text-slate-200 font-mono px-3.5 py-1.5 rounded-lg border border-trust-border">
+          <span class="w-2 h-2 rounded-full bg-trust-sage animate-pulse"></span>
+          Warehouse: 850+ Modul Die-Cast Ready
+        </div>
+        <button onclick="scrollToSimulator()" class="bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-lime-950/20 flex items-center gap-2 active:scale-95 font-display">
+          <i data-lucide="calculator" class="w-4 h-4 text-trust-forest"></i>
+          <span>Simulasi Ukuran</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Forest Green & Pale Sage Aesthetic) -->
+  <section class="bg-gradient-to-b from-trust-forest via-trust-canvas to-trust-canvas text-white border-b border-trust-border py-12 sm:py-16 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-trust-oliveDark border border-trust-border text-trust-sage text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-trust-sage animate-ping"></span>
+          Interactive LED Cabinet & Video Processor Calculator
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.18] font-display">
+          Solusi Layar LED Screen Presisi. Sewa Event & Instalasi Permanen.
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
+          Hitung kebutuhan modul kabinet videotron secara presisi milimeter. Pilih pixel pitch ideal (Indoor P1.8 - P2.5 atau Outdoor P3.9 anti-air IP65), ketahui kebutuhan daya listrik (kVA), dan ajukan <strong class="text-trust-sage font-mono">Surat Penawaran Resmi (RFQ)</strong> langsung dari distributor.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-trust-border text-left font-mono">
+        <div class="p-4 rounded-xl bg-trust-forest/80 border border-trust-border">
+          <span class="text-xs text-slate-400 block">Pixel Pitch Pilihan</span>
+          <span class="text-2xl font-extrabold text-trust-sage font-display mt-0.5 block">P1.8 s/d P4.8</span>
+        </div>
+        <div class="p-4 rounded-xl bg-trust-forest/80 border border-trust-border">
+          <span class="text-xs text-slate-400 block">Tingkat Kecerahan</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">5.500+ Nits</span>
+        </div>
+        <div class="p-4 rounded-xl bg-trust-forest/80 border border-trust-border">
+          <span class="text-xs text-slate-400 block">Kamera Anti-Flicker</span>
+          <span class="text-2xl font-extrabold text-trust-sage font-display mt-0.5 block">3.840 Hz</span>
+        </div>
+        <div class="p-4 rounded-xl bg-trust-forest/80 border border-trust-border">
+          <span class="text-xs text-slate-400 block">Sistem Konstruksi</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">Truss & Stacking</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-trust-sage text-trust-sage pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-trust-sage text-trust-forest flex items-center justify-center text-[11px] font-bold">1</span>
+          Kalkulator Ukuran & Pitch
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-trust-border text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-trust-forest text-slate-400 flex items-center justify-center text-[11px] border border-trust-border font-bold">2</span>
+          Lokasi Rigging & DP QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-trust-border text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-trust-forest text-slate-400 flex items-center justify-center text-[11px] border border-trust-border font-bold">3</span>
+          Surat Penawaran RFQ (PDF)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Calculator & Stage Workspace Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="simulator">
+    
+    <!-- STEP 1: Interactive Video Wall Simulator & RFQ Basket -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Operational Mode Switcher (Sewa Event vs Jual Beli) -->
+      <div class="bg-trust-forest p-4 sm:p-5 rounded-2xl border border-trust-border flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+        <div class="flex items-center gap-3">
+          <span class="text-slate-300 font-bold whitespace-nowrap">Tipe Kebutuhan Proyek:</span>
+          <div class="flex items-center p-1 bg-[#0B1A0B] rounded-xl border border-trust-border">
+            <button id="modeRentalBtn" onclick="selectServiceMode('RENTAL')" class="px-4 py-2 rounded-lg font-bold bg-trust-sage text-trust-forest shadow-sm transition">
+              Sewa Event Harian (Rental)
+            </button>
+            <button id="modeBuyBtn" onclick="selectServiceMode('BUY')" class="px-4 py-2 rounded-lg font-bold text-slate-400 hover:text-white transition">
+              Beli Permanen (Fixed Install)
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-slate-300">
+          <i data-lucide="tv" class="w-4 h-4 text-trust-sage"></i>
+          <span>Mode Aktif: <strong class="text-trust-sage" id="serviceModeNoticeText">Sewa Lengkap Operator & Rigging</strong></span>
+        </div>
+      </div>
+
+      <!-- Split Layout: Controls & Sliders (7 Cols) vs Live Video Wall Canvas (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Interactive Sliders & Pixel Pitch Selection (7 Cols) -->
+        <div class="lg:col-span-7 bg-trust-forest p-6 sm:p-7 rounded-2xl border border-trust-border shadow-xl space-y-6">
+          <div class="flex items-center justify-between border-b border-trust-border pb-3">
+            <div>
+              <h3 class="text-lg font-bold text-white font-display">Parameter Dimensi Layar (Meter)</h3>
+              <p class="text-xs text-slate-400 font-sans mt-0.5">Ubah slider ukuran untuk melihat kalkulasi jumlah modul kabinet 500x500mm.</p>
+            </div>
+            <span class="text-xs font-mono bg-[#0B1A0B] text-trust-sage px-2.5 py-1 rounded border border-trust-border">MODUL: 500×500 mm</span>
+          </div>
+
+          <!-- Dimension Sliders (Lebar & Tinggi dalam Meter) -->
+          <div class="space-y-5 bg-[#0B1A0B] p-5 rounded-xl border border-trust-border font-mono">
+            <!-- Slider Lebar (Width) -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-300">Lebar Layar (Width):</span>
+                <span class="text-trust-sage font-bold text-sm" id="widthDisplay">4.0 Meter (8 Modul)</span>
+              </div>
+              <input type="range" id="widthSlider" min="2" max="14" step="0.5" value="4.0" oninput="updateCalculator()" class="w-full accent-trust-sage cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-500">
+                <span>Min: 2.0 m</span>
+                <span>Standar Panggung: 4.0 - 6.0 m</span>
+                <span>Max: 14.0 m</span>
+              </div>
+            </div>
+
+            <!-- Slider Tinggi (Height) -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-300">Tinggi Layar (Height):</span>
+                <span class="text-trust-sage font-bold text-sm" id="heightDisplay">3.0 Meter (6 Modul)</span>
+              </div>
+              <input type="range" id="heightSlider" min="1.5" max="6" step="0.5" value="3.0" oninput="updateCalculator()" class="w-full accent-trust-sage cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-500">
+                <span>Min: 1.5 m</span>
+                <span>Rasio 16:9: ~2.5 - 3.5 m</span>
+                <span>Max: 6.0 m</span>
+              </div>
+            </div>
+
+            <!-- Hari Sewa (Hanya aktif di Mode Rental) -->
+            <div id="rentalDaysWrapper" class="space-y-2 pt-2 border-t border-slate-800">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-300">Durasi Pemakaian Event:</span>
+                <span class="text-trust-sage font-bold text-sm" id="daysDisplay">1 Hari</span>
+              </div>
+              <input type="range" id="daysSlider" min="1" max="14" step="1" value="1" oninput="updateCalculator()" class="w-full accent-trust-sage cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-500">
+                <span>1 Hari</span>
+                <span>3 Hari (Diskon 10%)</span>
+                <span>7+ Hari (Diskon 20%)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pilihan Kategori Pixel Pitch LED Panel -->
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-300 mb-2.5">Pilihan Spesifikasi Pixel Pitch:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="pitchOptionsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Pilihan Konstruksi Dudukan (Rigging Type) -->
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-300 mb-2.5">Metode Konstruksi & Instalasi:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs" id="riggingOptionsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Real-time Live Video Wall Stage & Technical Specs Box (5 Cols) -->
+        <div class="lg:col-span-5 bg-trust-forest p-6 sm:p-7 rounded-2xl border border-trust-border shadow-xl space-y-5 sticky top-24 font-mono text-xs" id="live-stage">
+          <div class="flex items-center justify-between border-b border-trust-border pb-3">
+            <div>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Video Wall Visualizer</span>
+              <h4 class="text-sm font-bold text-white font-display mt-0.5">Simulasi Rasio & Modul Layar</h4>
+            </div>
+            <span class="text-[10px] font-bold bg-trust-sage text-trust-forest px-2 py-0.5 rounded" id="aspectRatioBadge">Rasio 4:3</span>
+          </div>
+
+          <!-- Live LED Screen Display Simulation Stage -->
+          <div class="led-grid-pattern p-5 rounded-xl border border-trust-border flex flex-col items-center justify-center min-h-[220px] relative screen-bezel overflow-hidden">
+            <!-- Simulated LED Wall Cabinet Matrix -->
+            <div id="simulatedLedWall" class="border-2 border-trust-sage bg-gradient-to-tr from-[#132A13] to-[#31572C] rounded shadow-2xl flex flex-col items-center justify-center p-3 text-center transition-all duration-300 relative group" style="width: 240px; height: 160px;">
+              <span class="text-[11px] font-bold text-trust-sage font-display drop-shadow block" id="simResolutionLabel">1024 × 768 px</span>
+              <span class="text-[9px] text-slate-300 font-mono mt-0.5" id="simCabinetCountLabel">48 Kabinet (8 × 6)</span>
+              
+              <!-- Subtle LED scanlines pattern overlay -->
+              <div class="absolute inset-0 bg-repeat opacity-15 pointer-events-none" style="background-image: repeating-linear-gradient(0deg, #ECF39E, #ECF39E 1px, transparent 1px, transparent 4px);"></div>
+            </div>
+
+            <!-- Ground Stacking / Hanging Truss Visual Mockup -->
+            <div class="w-3/4 h-3 bg-trust-oliveDark border-t border-trust-sage/50 mt-2 rounded-b flex justify-between px-6" id="simRiggingFeet">
+              <span class="w-1.5 h-4 bg-trust-sage inline-block -mt-1"></span>
+              <span class="w-1.5 h-4 bg-trust-sage inline-block -mt-1"></span>
+            </div>
+
+            <div class="mt-3 flex items-center justify-between w-full text-[10px] text-slate-400 pt-1 border-t border-slate-800">
+              <span id="simAreaM2Text">Luas Area: 12.0 m²</span>
+              <span class="text-trust-sage" id="simOptimalDistance">Jarak Pandang: ≥ 3.9 m</span>
+            </div>
+          </div>
+
+          <!-- Technical Breakdown Data Sheet -->
+          <div class="space-y-2 text-xs border-t border-trust-border pt-3">
+            <div class="flex justify-between text-slate-300">
+              <span>Tipe Pitch & Panel:</span>
+              <span class="font-bold text-trust-sage" id="calcPitchName">Outdoor P3.9 (Nationstar)</span>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <span>Konsumsi Daya Rata-rata:</span>
+              <span class="font-bold text-white font-mono" id="calcPowerKva">~4.8 kVA (3-Phase)</span>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <span>Estimasi Berat Panel:</span>
+              <span class="font-bold text-white font-mono" id="calcWeightKg">~360 Kg (7.5kg/kabinet)</span>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <span>Video Processor Termasuk:</span>
+              <span class="font-bold text-trust-sage">Novastar VX400 / 4K Scaler</span>
+            </div>
+          </div>
+
+          <!-- Price Calculation Box -->
+          <div class="p-4 bg-[#0B1A0B] rounded-xl border border-trust-border flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-trust-sage uppercase block" id="calcPriceTitle">Total Estimasi Sewa</span>
+              <span class="text-xs text-slate-400 font-sans" id="calcPriceSub">Termasuk Operator & Rigging</span>
+            </div>
+            <span class="text-xl font-extrabold text-trust-sage font-mono" id="calcTotalPriceDisplay">Rp 9.600.000</span>
+          </div>
+
+          <!-- Action Button to Step 2 -->
+          <button onclick="goToStep2()" class="w-full bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-lg shadow-lime-950/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+            <span>Ajukan Penawaran Resmi & Kunci Tanggal</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *DP 30% mengunci ketersediaan modul kabinet di gudang dan booking tim teknisi instalasi.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Project Location, Event Details & QRIS DP Payment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Event Organizer & Venue Site Location Form -->
+        <div class="lg:col-span-7 bg-trust-forest p-6 sm:p-7 rounded-2xl border border-trust-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-trust-border pb-3 font-mono">
+            <h3 class="text-base font-bold text-white flex items-center gap-2 font-display">
+              <i data-lucide="map-pin" class="w-4 h-4 text-trust-sage"></i>
+              Detail Lokasi Venue & Event
+            </h3>
+            <span class="text-xs text-slate-400" id="step2ModeLabel">Rental Event</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nama EO / Perusahaan / Klien *</label>
+                <input type="text" id="clientOrgName" value="PT Reliantradha Solusi Digital" class="w-full bg-[#0B1A0B] px-3.5 py-2.5 rounded-xl border border-trust-border focus:outline-none focus:ring-2 focus:ring-trust-sage text-white font-sans" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nama PIC Penanggung Jawab *</label>
+                <input type="text" id="clientPicName" value="Tedi Mahendra" class="w-full bg-[#0B1A0B] px-3.5 py-2.5 rounded-xl border border-trust-border focus:outline-none focus:ring-2 focus:ring-trust-sage text-white font-sans" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nomor WhatsApp Aktif *</label>
+                <input type="tel" id="clientPhone" value="081299998888" class="w-full bg-[#0B1A0B] px-3.5 py-2.5 rounded-xl border border-trust-border focus:outline-none focus:ring-2 focus:ring-trust-sage text-white font-sans" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Tanggal Mulai Pasang / Loading *</label>
+                <input type="date" id="eventDateInput" class="w-full bg-[#0B1A0B] px-3.5 py-2.5 rounded-xl border border-trust-border focus:outline-none focus:ring-2 focus:ring-trust-sage text-white font-sans" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Nama Gedung / Alamat Venue Acara *</label>
+              <textarea id="venueAddress" rows="2" class="w-full bg-[#0B1A0B] px-3.5 py-2.5 rounded-xl border border-trust-border focus:outline-none focus:ring-2 focus:ring-trust-sage text-white font-sans">Ballroom Hotel Mulia Senayan, Jl. Asia Afrika No. 1, Gelora, Jakarta Pusat</textarea>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Catatan Tambahan untuk Tim Rigging (Opsional):</label>
+              <input type="text" id="specialNotes" value="Loading in H-1 pukul 22:00 WIB setelah ballroom kosong. Butuh kabel power 3-phase 30 meter." class="w-full bg-[#0B1A0B] px-3.5 py-2.5 rounded-xl border border-trust-border focus:outline-none focus:ring-2 focus:ring-trust-sage text-white font-sans" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: DP 30% Booking QRIS Gateway -->
+        <div class="lg:col-span-5 bg-trust-forest p-6 rounded-2xl border border-trust-border shadow-xl space-y-5 font-mono">
+          <div class="flex items-center justify-between border-b border-trust-border pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Komitmen Booking (DP 30%)</span>
+            <span class="text-[10px] font-bold bg-trust-sage text-trust-forest px-2 py-0.5 rounded">LOCK JADWAL</span>
+          </div>
+
+          <!-- QRIS Gateway Box -->
+          <div class="border border-trust-border rounded-xl p-4 bg-[#0B1A0B] text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-500 font-bold text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-trust-sage" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow border border-slate-300">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-LEDVISTA-RFQ-DEPOSIT" alt="QRIS DP Videotron" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-400">
+              <p class="text-slate-200">BCA, Mandiri, BRI, BNI, GoPay, OVO</p>
+              <p class="text-[10px] text-slate-500">NMID: ID1099238844 - PT LED VISTA INDONESIA</p>
+            </div>
+
+            <!-- Total DP to Pay -->
+            <div class="mt-3 pt-3 border-t border-trust-border w-full flex items-center justify-between px-1">
+              <span class="text-xs text-slate-300">DP 30% Booking Armada:</span>
+              <span id="dpPayableAmount" class="text-base font-extrabold text-trust-sage">Rp 0</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-lime-950/20 active:scale-95 font-sans">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Simulasi Bayar DP (Terbitkan Penawaran Sah)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-[#0B1A0B] hover:bg-trust-oliveDark text-slate-300 font-semibold text-xs py-2.5 px-4 rounded-xl transition font-sans">
+              Kembali / Ubah Ukuran Layar
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Setelah DP 30% terverifikasi, nomor kontrak RFQ dan slot teknisi videotron terkunci secara permanen.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Official Quotation & Rigging DO (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-trust-forest border border-trust-sage rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-white no-print">
+        <div class="w-10 h-10 rounded-full bg-trust-sage text-trust-forest flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-display">DP Booking Diterima & Modul Kabinet Siap Dispatch!</h4>
+          <p class="text-xs text-slate-300 font-sans mt-0.5">Surat Penawaran Resmi (RFQ) dan Surat Perintah Kerja (SPK) teknisi panggung telah diterbitkan.</p>
+        </div>
+      </div>
+
+      <!-- Printable Commercial Quotation Sheet -->
+      <div id="printableQuotation" class="bg-trust-forest rounded-2xl border border-trust-border shadow-2xl p-6 sm:p-9 space-y-6 font-mono text-white">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-trust-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-trust-sage flex items-center justify-center text-trust-forest font-bold">
+                <i data-lucide="monitor" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-lg text-white font-display">LED<span class="text-trust-sage">VISTA</span> INDONESIA</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">PT LED Vista Kreasi Nusantara • Kompleks Pergudangan Bizpark Cakung, Jakarta Timur</p>
+            <p class="text-[11px] text-slate-400 font-sans">Hotline Rigging & Tender: +62 812-9999-8888 • rfq@ledvista.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-trust-sage text-trust-forest uppercase">
+              OFFICIAL COMMERCIAL QUOTATION
+            </span>
+            <p id="rfqDocNumber" class="text-xs font-bold text-white mt-1">RFQ-LV-202610-8821</p>
+            <p id="rfqDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Client & Event Venue Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#0B1A0B] p-4 rounded-xl border border-trust-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">KLIEN / PENANGGUNG JAWAB:</span>
+            <p id="invClientOrg" class="font-bold text-white text-sm font-sans">PT Reliantradha Solusi Digital</p>
+            <p id="invClientPic" class="text-slate-400 font-sans">PIC: Tedi Mahendra (081299998888)</p>
+            <p id="invVenueAddress" class="text-slate-300 mt-1 leading-relaxed font-sans">Ballroom Hotel Mulia Senayan, Jakarta</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">STATUS EVENT & RIGGING:</span>
+            <p id="invEventSchedule" class="font-bold text-trust-sage text-sm font-sans">Loading In: 28 Okt 2026</p>
+            <p id="invRiggingMethod" class="text-slate-300 font-sans">Metode: Ground Stacking Rig</p>
+            <p class="text-emerald-400 font-bold mt-1">DP 30% BOOKING LUNAS</p>
+          </div>
+        </div>
+
+        <!-- Specifications Breakdown Table -->
+        <div class="border border-trust-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-[#0B1A0B] text-slate-400 border-b border-trust-border">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Rincian Paket Layar Videotron</th>
+                <th class="py-2.5 px-3 font-bold text-center">Spesifikasi Modul</th>
+                <th class="py-2.5 px-4 font-bold text-right">Tarif / Satuan</th>
+                <th class="py-2.5 px-4 font-bold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-trust-border font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-white text-sm block" id="invPitchTitle">Outdoor P3.9 High-Brightness</span>
+                  <div class="text-[11px] text-slate-400 font-sans mt-0.5" id="invScreenDimensionText">Ukuran: 4.0 × 3.0 Meter (Luas 12.0 m²)</div>
+                  <div class="text-[10px] text-trust-sage font-sans mt-1">Termasuk Novastar 4K Processor, Kabel Daya 3-Phase & Operator Standby</div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-300" id="invCabinetQty">48 Kabinet (8×6)</td>
+                <td class="py-3 px-4 text-right text-slate-300 font-mono" id="invUnitRate">Rp 800.000/m²</td>
+                <td class="py-3 px-4 text-right font-bold text-white font-mono" id="invRawTotal">Rp 9.600.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-[#0B1A0B] border-t border-trust-border text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-400 font-bold">Total Nilai Penawaran:</td>
+                <td class="py-2 px-4 text-right font-bold text-white font-mono" id="invSubtotalAmount">Rp 9.600.000</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-400 font-bold">Uang Muka Diterima (DP 30% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-400 font-mono" id="invPaidAmount">Rp 2.880.000</td>
+              </tr>
+              <tr class="bg-trust-forest border-t border-trust-border">
+                <td colspan="3" class="py-2.5 px-4 text-trust-sage text-right font-extrabold text-xs">
+                  Sisa Pelunasan Saat Serah Terima / QC Testing:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-trust-sage font-mono" id="invDueAmount">
+                  Rp 6.720.000
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Engineering QC Barcode & Safety Pass -->
+        <div class="p-4 bg-[#0B1A0B] rounded-xl border border-trust-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">AV Rigging Safety Barcode Verification</span>
+            <p class="text-xs font-bold text-white font-sans">Scan Barcode untuk Surat Izin Loading In & Sertifikat Beban Listrik</p>
+            <p class="text-[11px] text-slate-400 font-sans">Seluruh modul kabinet menggunakan kunci fast-lock aluminium dan grounding anti-petir.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-lg inline-block shadow">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=LEDVISTA-RFQ-8821-SAFETY-PASS" alt="Rigging Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1">RFQ-8821-OK</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below SPK -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-trust-forest hover:bg-trust-oliveDark text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-trust-border font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Simulasi Ukuran Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-trust-sage hover:bg-trust-sageHover text-trust-forest text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-lime-950/20 font-sans">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Penawaran RFQ (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Technical Standards Strip -->
+  <section id="tech-specs" class="border-t border-trust-border bg-trust-forest py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-trust-sage uppercase tracking-wider font-mono">Hardware Certification</span>
+        <h3 class="text-xl font-bold text-white font-display mt-1">Standar Keandalan Panel LED Vista</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-[#0B1A0B] border border-trust-border">
+          <div class="w-9 h-9 rounded-lg bg-trust-oliveDark text-trust-sage flex items-center justify-center mb-3">
+            <i data-lucide="zap" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">Lampu LED Nationstar Gold Wire</h4>
+          <p class="text-slate-400 leading-relaxed">Menggunakan mata lampu LED kawat emas berkualitas tinggi dengan degradasi warna sangat rendah dan sudut pandang lebar 160° horizontal.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-[#0B1A0B] border border-trust-border">
+          <div class="w-9 h-9 rounded-lg bg-trust-oliveDark text-trust-sage flex items-center justify-center mb-3">
+            <i data-lucide="cloud-rain" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">Proteksi Outdoor IP65 Tahan Cuaca</h4>
+          <p class="text-slate-400 leading-relaxed">Lapisan lem silikon konformal dan seal kabinet kedap air memastikan tampilan tetap menyala sempurna di tengah hujan deras panggung festival.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-[#0B1A0B] border border-trust-border">
+          <div class="w-9 h-9 rounded-lg bg-trust-oliveDark text-trust-sage flex items-center justify-center mb-3">
+            <i data-lucide="video" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">Refresh Rate 3840 Hz Anti-Garis</h4>
+          <p class="text-slate-400 leading-relaxed">IC driver refresh tinggi menjamin rekaman video kamera broadcast, live streaming, dan bidikan ponsel bebas dari garis moiré atau kedipan layar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Forest Green Minimal) -->
+  <footer class="bg-[#081408] text-slate-500 py-8 border-t border-trust-border text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-trust-oliveDark border border-trust-sage flex items-center justify-center text-trust-sage font-bold text-[10px]">L</div>
+        <span class="font-bold text-slate-300">LED Vista Indonesia</span>
+        <span class="text-slate-600">| ID: led-vista-indonesia</span>
+      </div>
+      <p class="text-slate-500 text-center md:text-right font-sans">&copy; 2026 PT LED Vista Kreasi Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Pixel Pitch LED Screen
+    const pitchCatalog = [
+      {
+        id: "PITCH-OUT-39",
+        name: "Outdoor P3.9 (IP65 Weatherproof)",
+        category: "outdoor",
+        rentalRatePerM2: 800000,
+        buyRatePerM2: 12500000,
+        brightness: "5.500 Nits",
+        minDistanceM: 3.9,
+        tag: "Terlaris Event Outdoor",
+        desc: "Kecerahan tinggi tembus sinar matahari siang hari"
+      },
+      {
+        id: "PITCH-IN-25",
+        name: "Indoor P2.5 (High Definition)",
+        category: "indoor",
+        rentalRatePerM2: 750000,
+        buyRatePerM2: 14000000,
+        brightness: "1.200 Nits",
+        minDistanceM: 2.5,
+        tag: "Paling Populer Ballroom",
+        desc: "Resolusi tajam untuk seminar & visual video panggung"
+      },
+      {
+        id: "PITCH-IN-18",
+        name: "Indoor P1.8 (Ultra Fine Pitch)",
+        category: "indoor",
+        rentalRatePerM2: 1100000,
+        buyRatePerM2: 21000000,
+        brightness: "1.000 Nits",
+        minDistanceM: 1.8,
+        tag: "Command Center & Studio",
+        desc: "Kerapatan piksel sangat rapat untuk jarak dekat 2 meter"
+      }
+    ];
+
+    // 2. Data Opsi Rigging Konstruksi
+    const riggingOptions = [
+      { id: "RIG-STACK", name: "Ground Stacking Base (Dudukan Lantai Panggung)", feePerDay: 500000 },
+      { id: "RIG-TRUSS", name: "Hanging Rigging Truss Aluminium (Gantung Stage)", feePerDay: 1200000 }
+    ];
+
+    // State Management
+    let serviceMode = 'RENTAL'; // 'RENTAL' or 'BUY'
+    let selectedPitch = pitchCatalog[0];
+    let selectedRigging = riggingOptions[0];
+
+    let currentWidthM = 4.0;
+    let currentHeightM = 3.0;
+    let currentRentalDays = 1;
+
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set default event date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('eventDateInput').value = tomorrow.toISOString().split('T')[0];
+
+      renderPitchOptions();
+      renderRiggingOptions();
+      updateCalculator();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-trust-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-trust-forest text-slate-400 flex items-center justify-center text-[11px] border border-trust-border font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-trust-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-trust-forest text-slate-400 flex items-center justify-center text-[11px] border border-trust-border font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToSimulator() {
+      document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Switch Service Mode (Sewa Event vs Jual Beli)
+    function selectServiceMode(mode) {
+      serviceMode = mode;
+      const btnRental = document.getElementById('modeRentalBtn');
+      const btnBuy = document.getElementById('modeBuyBtn');
+      const daysWrapper = document.getElementById('rentalDaysWrapper');
+      const noticeText = document.getElementById('serviceModeNoticeText');
+
+      if (mode === 'RENTAL') {
+        btnRental.className = "px-4 py-2 rounded-lg font-bold bg-trust-sage text-trust-forest shadow-sm transition";
+        btnBuy.className = "px-4 py-2 rounded-lg font-bold text-slate-400 hover:text-white transition";
+        daysWrapper.classList.remove('hidden');
+        noticeText.innerText = "Sewa Lengkap Operator & Rigging";
+        document.getElementById('calcPriceTitle').innerText = "Total Estimasi Sewa";
+        document.getElementById('calcPriceSub').innerText = "Termasuk Operator & Rigging Panggung";
+      } else {
+        btnBuy.className = "px-4 py-2 rounded-lg font-bold bg-trust-sage text-trust-forest shadow-sm transition";
+        btnRental.className = "px-4 py-2 rounded-lg font-bold text-slate-400 hover:text-white transition";
+        daysWrapper.classList.add('hidden');
+        noticeText.innerText = "Beli Unit Baru + Garansi Panel 2 Tahun";
+        document.getElementById('calcPriceTitle').innerText = "Total Pembelian Unit";
+        document.getElementById('calcPriceSub').innerText = "Termasuk Video Processor & Sparepart";
+      }
+
+      renderPitchOptions();
+      updateCalculator();
+    }
+
+    // Render Pitch Options
+    function renderPitchOptions() {
+      const container = document.getElementById('pitchOptionsContainer');
+      container.innerHTML = pitchCatalog.map(p => {
+        const isSelected = selectedPitch.id === p.id;
+        const rateDisplay = serviceMode === 'RENTAL' ? formatRupiah(p.rentalRatePerM2) + "/m²" : formatRupiah(p.buyRatePerM2) + "/m²";
+
+        return `
+          <div onclick="selectPitch('${p.id}')" class="p-3.5 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between font-mono ${
+            isSelected 
+              ? 'border-trust-sage bg-trust-oliveDark' 
+              : 'border-trust-border bg-[#0B1A0B] hover:border-slate-500'
+          }">
+            <div>
+              <span class="font-bold text-xs text-white block">${p.name}</span>
+              <span class="text-[9px] text-trust-sage mt-0.5 block">${p.tag}</span>
+              <p class="text-[10px] text-slate-400 mt-1 font-sans">${p.desc}</p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between">
+              <span class="text-[10px] text-slate-400">Tarif:</span>
+              <span class="text-xs font-bold text-trust-sage">${rateDisplay}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectPitch(id) {
+      selectedPitch = pitchCatalog.find(p => p.id === id);
+      renderPitchOptions();
+      updateCalculator();
+    }
+
+    // Render Rigging Options
+    function renderRiggingOptions() {
+      const container = document.getElementById('riggingOptionsContainer');
+      container.innerHTML = riggingOptions.map(r => {
+        const isSelected = selectedRigging.id === r.id;
+        return `
+          <div onclick="selectRigging('${r.id}')" class="p-3 rounded-xl border-2 transition cursor-pointer flex items-center justify-between font-mono ${
+            isSelected 
+              ? 'border-trust-sage bg-trust-oliveDark' 
+              : 'border-trust-border bg-[#0B1A0B] hover:border-slate-500'
+          }">
+            <span class="font-bold text-xs text-white">${r.name}</span>
+            <span class="w-3.5 h-3.5 rounded-full border-2 ${isSelected ? 'border-trust-sage bg-trust-sage' : 'border-slate-600'}"></span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectRigging(id) {
+      selectedRigging = riggingOptions.find(r => r.id === id);
+      renderRiggingOptions();
+      updateCalculator();
+    }
+
+    // Live Calculator Engine
+    function updateCalculator() {
+      currentWidthM = parseFloat(document.getElementById('widthSlider').value);
+      currentHeightM = parseFloat(document.getElementById('heightSlider').value);
+      currentRentalDays = parseInt(document.getElementById('daysSlider').value) || 1;
+
+      // Setiap kabinet standar rental berukuran 0.5m x 0.5m (500mm x 500mm)
+      const cabinetCols = Math.round(currentWidthM / 0.5);
+      const cabinetRows = Math.round(currentHeightM / 0.5);
+      const totalCabinets = cabinetCols * cabinetRows;
+      const totalAreaM2 = currentWidthM * currentHeightM;
+
+      // Update Slider Display Text
+      document.getElementById('widthDisplay').innerText = `${currentWidthM.toFixed(1)} Meter (${cabinetCols} Modul)`;
+      document.getElementById('heightDisplay').innerText = `${currentHeightM.toFixed(1)} Meter (${cabinetRows} Modul)`;
+      document.getElementById('daysDisplay').innerText = `${currentRentalDays} Hari ${currentRentalDays >= 7 ? '(Diskon 20%)' : (currentRentalDays >= 3 ? '(Diskon 10%)' : '')}`;
+
+      // Aspect Ratio Calculator
+      const ratio = (currentWidthM / currentHeightM);
+      let ratioLabel = "Rasio Kustom";
+      if (Math.abs(ratio - (16/9)) < 0.15) ratioLabel = "Rasio 16:9 (Standar HD/4K)";
+      else if (Math.abs(ratio - (4/3)) < 0.15) ratioLabel = "Rasio 4:3 (Klasik)";
+      else if (ratio >= 2.5) ratioLabel = "Rasio Ultrawide Stage Banner";
+
+      document.getElementById('aspectRatioBadge').innerText = ratioLabel;
+
+      // Visual Wall Stage Resizing
+      const wallElement = document.getElementById('simulatedLedWall');
+      const maxW = 280;
+      const maxH = 170;
+      
+      const scaledWidth = Math.min(maxW, Math.max(160, Math.round((currentWidthM / 14) * maxW * 1.8)));
+      const scaledHeight = Math.min(maxH, Math.max(100, Math.round((currentHeightM / 6) * maxH * 1.5)));
+
+      wallElement.style.width = `${scaledWidth}px`;
+      wallElement.style.height = `${scaledHeight}px`;
+
+      // Hitung Resolusi Piksel Layar
+      let pitchMm = 3.9;
+      if (selectedPitch.id === 'PITCH-IN-25') pitchMm = 2.5;
+      if (selectedPitch.id === 'PITCH-IN-18') pitchMm = 1.8;
+
+      const resX = Math.round((currentWidthM * 1000) / pitchMm);
+      const resY = Math.round((currentHeightM * 1000) / pitchMm);
+
+      document.getElementById('simResolutionLabel').innerText = `${resX} × ${resY} px`;
+      document.getElementById('simCabinetCountLabel').innerText = `${totalCabinets} Kabinet (${cabinetCols} × ${cabinetRows})`;
+      document.getElementById('simAreaM2Text').innerText = `Luas Area: ${totalAreaM2.toFixed(1)} m²`;
+      document.getElementById('simOptimalDistance').innerText = `Jarak Pandang: ≥ ${selectedPitch.minDistanceM} m`;
+
+      // Technical Specs (Daya kVA & Berat)
+      const avgPowerKw = (totalAreaM2 * 0.35); // rata-rata 350W/m2
+      const powerKva = (avgPowerKw * 1.25).toFixed(1);
+      const weightTotalKg = totalCabinets * 7.5; // ~7.5 kg per die-cast kabinet
+
+      document.getElementById('calcPitchName').innerText = selectedPitch.name;
+      document.getElementById('calcPowerKva').innerText = `~${powerKva} kVA (3-Phase)`;
+      document.getElementById('calcWeightKg').innerText = `~${Math.round(weightTotalKg)} Kg (${totalCabinets} Kabinet)`;
+
+      // Pricing Calculation
+      let grandTotal = 0;
+      if (serviceMode === 'RENTAL') {
+        let discountMultiplier = 1;
+        if (currentRentalDays >= 7) discountMultiplier = 0.8; // 20% off
+        else if (currentRentalDays >= 3) discountMultiplier = 0.9; // 10% off
+
+        const screenRentalRate = selectedPitch.rentalRatePerM2 * totalAreaM2 * currentRentalDays * discountMultiplier;
+        const riggingCost = selectedRigging.feePerDay * currentRentalDays;
+        grandTotal = Math.round(screenRentalRate + riggingCost);
+      } else {
+        const hardwareBuyRate = selectedPitch.buyRatePerM2 * totalAreaM2;
+        const processorAndInstallFee = 18000000; // Processor Novastar + bracket + instalasi
+        grandTotal = Math.round(hardwareBuyRate + processorAndInstallFee);
+      }
+
+      document.getElementById('calcTotalPriceDisplay').innerText = formatRupiah(grandTotal);
+
+      return { totalCabinets, totalAreaM2, cabinetCols, cabinetRows, resX, resY, powerKva, weightTotalKg, grandTotal };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      const calc = updateCalculator();
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-trust-sage text-trust-sage pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-trust-sage text-trust-forest flex items-center justify-center text-[11px] font-bold";
+
+      document.getElementById('step2ModeLabel').innerText = serviceMode === 'RENTAL' ? "Rental Event Harian" : "Beli Fixed Install";
+
+      const dp30 = Math.round(calc.grandTotal * 0.3);
+      document.getElementById('dpPayableAmount').innerText = formatRupiah(dp30);
+
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-trust-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-trust-forest text-slate-400 flex items-center justify-center text-[11px] border border-trust-border font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi DP alokasi videotron berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const org = document.getElementById('clientOrgName').value.trim() || 'PT Reliantradha Solusi Digital';
+      const pic = document.getElementById('clientPicName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('clientPhone').value.trim() || '081299998888';
+      const venue = document.getElementById('venueAddress').value.trim() || 'Ballroom Hotel Mulia, Jakarta';
+      const eventDate = document.getElementById('eventDateInput').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-trust-sage text-trust-sage pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-trust-sage text-trust-forest flex items-center justify-center text-[11px] font-bold";
+
+      const calc = updateCalculator();
+      const dp30 = Math.round(calc.grandTotal * 0.3);
+      const due = calc.grandTotal - dp30;
+
+      const randomRfq = "RFQ-LV-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('rfqDocNumber').innerText = randomRfq;
+      document.getElementById('rfqDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invClientOrg').innerText = org;
+      document.getElementById('invClientPic').innerText = `PIC: ${pic} (${phone})`;
+      document.getElementById('invVenueAddress').innerText = venue;
+
+      document.getElementById('invEventSchedule').innerText = `Loading In: ${eventDate}`;
+      document.getElementById('invRiggingMethod').innerText = `Konstruksi: ${selectedRigging.name}`;
+
+      document.getElementById('invPitchTitle').innerText = `${selectedPitch.name} (${serviceMode === 'RENTAL' ? `Sewa ${currentRentalDays} Hari` : 'Pembelian Unit Permanen'})`;
+      document.getElementById('invScreenDimensionText').innerText = `Ukuran: ${currentWidthM.toFixed(1)} × ${currentHeightM.toFixed(1)} Meter (Luas ${calc.totalAreaM2.toFixed(1)} m² • ${calc.resX}×${calc.resY} px)`;
+      document.getElementById('invCabinetQty').innerText = `${calc.totalCabinets} Kabinet (${calc.cabinetCols}×${calc.cabinetRows})`;
+      document.getElementById('invUnitRate').innerText = serviceMode === 'RENTAL' ? `${formatRupiah(selectedPitch.rentalRatePerM2)}/m²` : `${formatRupiah(selectedPitch.buyRatePerM2)}/m²`;
+      document.getElementById('invRawTotal').innerText = formatRupiah(calc.grandTotal);
+
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(calc.grandTotal);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(dp30);
+      document.getElementById('invDueAmount').innerText = formatRupiah(due);
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      serviceMode = 'RENTAL';
+      selectedPitch = pitchCatalog[0];
+      selectedRigging = riggingOptions[0];
+      currentWidthM = 4.0;
+      currentHeightM = 3.0;
+      currentRentalDays = 1;
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-trust-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-trust-forest text-slate-400 flex items-center justify-center text-[11px] border border-trust-border font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-trust-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-trust-forest text-slate-400 flex items-center justify-center text-[11px] border border-trust-border font-bold";
+
+      document.getElementById('widthSlider').value = "4.0";
+      document.getElementById('heightSlider').value = "3.0";
+      document.getElementById('daysSlider').value = "1";
+
+      selectServiceMode('RENTAL');
+      updateCalculator();
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

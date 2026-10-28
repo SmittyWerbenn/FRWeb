@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DirectBumbu & FrozenDirect - Toko D2C Tanpa Fee Ojol & Checkout WA</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cabinet+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Cabinet Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            d2c: {
+              purple: '#6d28d9',
+              lightPurple: '#7c3aed',
+              softPurple: '#8b5cf6',
+              purpleBg: '#f5f3ff',
+              gold: '#d4af37',
+              goldLight: '#fef9c3',
+              goldDark: '#b48c28',
+              dark: '#1e1b4b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .gold-badge {
+      background: linear-gradient(135deg, #d4af37 0%, #b48c28 100%);
+      color: #1e1b4b;
+    }
+    .purple-gold-card {
+      background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableInvoice, #printableInvoice * {
+        visibility: visible;
+      }
+      #printableInvoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#FAF8FC] text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-d2c-purpleBg selection:text-d2c-purple">
+
+  <!-- Top Announcement Bar (Ungu Tua & Aksen Emas) -->
+  <div class="bg-d2c-dark text-slate-200 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-2.5 shadow-sm border-b border-purple-900/40">
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black gold-badge">100% BEBAS FEE OJOL</span>
+    <span class="font-medium">Harga Asli Dapur Langsung ke Konsumen • Hemat hingga 25% dibanding order di aplikasi ojek online</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-nav sticky top-0 z-40 border-b border-purple-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3.5 select-none focus:outline-none transition transform active:scale-95" title="Kembali ke Beranda">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-d2c-purple to-d2c-softPurple flex items-center justify-center text-white shadow-md shadow-purple-500/25 flex-shrink-0 transition border border-gold-300">
+          <i data-lucide="sparkles" class="w-6 h-6 text-gold-300"></i>
+        </div>
+        <div>
+          <span class="font-black text-xl sm:text-2xl tracking-tight text-slate-900 block leading-tight font-display">
+            DIRECT<span class="text-d2c-purple">BUMBU</span>
+            <span class="text-xs bg-gold-400/20 text-d2c-goldDark border border-d2c-gold px-1.5 py-0.5 rounded font-sans uppercase font-bold ml-1">FROZEN</span>
+          </span>
+          <span class="text-[10px] font-bold text-stone-400 tracking-wider block uppercase">D2C KITCHEN & DIRECT COLD CHAIN</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+        <a href="#catalog" class="text-d2c-purple hover:text-d2c-lightPurple transition">Katalog Produk</a>
+        <a href="#d2c-benefit" class="hover:text-d2c-goldDark transition">Keuntungan D2C</a>
+        <a href="#shipping-zone" class="hover:text-d2c-purple transition">Cakupan Pengiriman</a>
+      </nav>
+
+      <!-- Cart Button & Quick Summary -->
+      <div class="flex items-center gap-3.5">
+        <button onclick="toggleCartDrawer()" class="relative p-2.5 rounded-xl bg-d2c-purpleBg border border-purple-200 text-d2c-purple hover:bg-purple-100 transition flex items-center gap-2">
+          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          <span class="text-xs font-bold hidden sm:inline">Keranjang</span>
+          <span id="headerCartCount" class="w-5 h-5 rounded-full bg-d2c-purple text-white text-[11px] font-bold flex items-center justify-center">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-b from-white via-d2c-purpleBg/40 to-[#FAF8FC] pt-12 sm:pt-16 pb-16 sm:pb-20 border-b border-purple-100 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-purple-200 text-d2c-purple text-xs font-semibold shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-d2c-gold animate-pulse"></span>
+            Direct-to-Consumer Food Network
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.18] font-display">
+            Bumbu Masak Autentik & Frozen Food Tanpa Biaya Markup Aplikasi.
+          </h1>
+          <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+            Dapatkan pasta bumbu segar siap tumis, rendang beku, dan dimsum premium langsung dari dapur produksi kami. Ongkos kirim dihitung otomatis sesuai jarak, lalu <strong class="text-d2c-purple">checkout langsung via WhatsApp</strong> atau bayar instan via QRIS.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button onclick="scrollToCatalog()" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-purple-600/25 transition flex items-center gap-2.5 border border-purple-400">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+              Belanja Produk D2C
+            </button>
+            <div class="flex items-center gap-2 text-xs text-slate-500 px-2 py-1">
+              <i data-lucide="check-check" class="w-4 h-4 text-d2c-gold"></i>
+              <span>Kemasan Vakum Kedap Udara • Bertahan 6 Bulan di Freezer</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-purple-200/80 text-left">
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-d2c-purple font-display">0 Rupiah</p>
+              <p class="text-xs text-stone-500 mt-0.5">Biaya Layanan Aplikasi</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-d2c-goldDark font-display">Cold-Chain</p>
+              <p class="text-xs text-stone-500 mt-0.5">Pengiriman Ice Gel Pack</p>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">1 Klik</p>
+              <p class="text-xs text-stone-500 mt-0.5">Checkout WhatsApp Instan</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Snapshot: Interactive Price Comparison Banner -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-purple-200/50 border border-purple-200 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-purple-100">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Perbandingan Harga Nyata</span>
+              <span class="text-[10px] font-bold text-d2c-purple bg-purple-50 px-2 py-0.5 rounded border border-purple-200">HEMAT 25%</span>
+            </div>
+
+            <div class="mt-4 space-y-3">
+              <!-- Ojol Comparison Row -->
+              <div class="p-3.5 bg-stone-100/80 rounded-2xl border border-stone-200 flex items-center justify-between opacity-70">
+                <div>
+                  <span class="text-xs font-bold text-stone-500">Harga di Aplikasi Ojek Online</span>
+                  <p class="text-[10px] text-stone-400">Termasuk komisi merchant 20% + fee aplikasi</p>
+                </div>
+                <span class="text-sm font-bold text-stone-500 line-through">Rp 85.000</span>
+              </div>
+
+              <!-- DirectBumbu D2C Price Row -->
+              <div class="p-4 bg-d2c-purpleBg rounded-2xl border-2 border-d2c-purple flex items-center justify-between shadow-sm">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-black text-d2c-purple">Harga Toko DirectBumbu</span>
+                    <span class="text-[9px] font-bold bg-d2c-gold text-slate-900 px-1.5 py-0.5 rounded">DIRECT</span>
+                  </div>
+                  <p class="text-[10px] text-slate-600 mt-0.5">Harga bersih langsung dari dapur kami</p>
+                </div>
+                <span class="text-lg font-black text-d2c-purple font-mono">Rp 65.000</span>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-gold-50/70 rounded-xl border border-gold-200 flex items-center gap-2.5 text-xs text-amber-900">
+              <i data-lucide="badge-percent" class="w-4 h-4 text-d2c-goldDark flex-shrink-0"></i>
+              <span>Kamu menghemat <strong>Rp 20.000 / item</strong> untuk kualitas bumbu & frozen pack yang sama persis!</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main D2C Store Container -->
+  <main id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex-1 w-full">
+    
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-display">Katalog Bumbu Masak & Frozen Food</h2>
+      <p class="text-sm text-stone-500 mt-2">Dibuat dari rempah segar pilihan tanpa pengawet buatan. Siap masak dalam 10 menit.</p>
+    </div>
+
+    <!-- Step Progress Indicator -->
+    <div class="max-w-3xl mx-auto mb-10">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-d2c-purple text-d2c-purple pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-d2c-purple text-white flex items-center justify-center text-[11px]">1</span>
+          Pilih Bumbu & Frozen
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]">2</span>
+          Ongkir & Checkout WA/QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]">3</span>
+          Invoice & Resi Kirim
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Product Catalog & Quick Filter -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Filter Bar -->
+      <div class="bg-white p-4 sm:p-5 rounded-3xl border border-purple-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Category Tabs -->
+        <div class="flex items-center p-1 bg-stone-100 rounded-2xl w-full md:w-auto border border-stone-200">
+          <button id="catAll" onclick="filterCatalog('all')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition">Semua Produk</button>
+          <button id="catBumbu" onclick="filterCatalog('bumbu')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition">Pasta Bumbu Siap Masak</button>
+          <button id="catFrozen" onclick="filterCatalog('frozen')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition">Lauk Frozen Siap Saji</button>
+          <button id="catSambal" onclick="filterCatalog('sambal')" class="flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition">Sambal Botolan</button>
+        </div>
+
+        <!-- Cold Storage Info -->
+        <div class="flex items-center gap-2 text-xs text-stone-500">
+          <i data-lucide="snowflake" class="w-4 h-4 text-d2c-purple"></i>
+          <span>Pengiriman wajib kurir Instant / Same Day dengan ice gel</span>
+        </div>
+
+      </div>
+
+      <!-- Products Grid -->
+      <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Bottom Floating Checkout Summary Bar (Visible when items > 0) -->
+      <div id="floatingCartBar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-3xl bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-30 border border-purple-900/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-d2c-purple text-white flex items-center justify-center font-bold">
+            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h5 id="floatingCartItemCount" class="text-sm font-bold leading-tight">0 Item Terpilih</h5>
+            <p class="text-xs text-stone-400">Harga langsung tanpa markup</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          <div class="text-right">
+            <span class="text-[10px] text-stone-400 block uppercase font-medium">Subtotal Produk</span>
+            <span id="floatingCartTotal" class="text-base font-extrabold text-gold-300 font-mono">Rp 0</span>
+          </div>
+          <button onclick="goToStep2()" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-purple-600/40 border border-purple-400 active:scale-95">
+            <span>Hitung Ongkir & Checkout</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Delivery Destination, Automatic Shipping Calculator & WA/QRIS Checkout -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Customer Information & Delivery Destination -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Recipient Data -->
+          <div class="bg-white p-6 sm:p-7 rounded-3xl border border-purple-100 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-purple-50 pb-3">
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="user" class="w-4 h-4 text-d2c-purple"></i>
+                Data Penerima & Lokasi Antar
+              </h3>
+              <span class="text-xs text-stone-400">Untuk kalkulasi jarak kurir</span>
+            </div>
+
+            <div class="space-y-4 text-xs">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Nama Lengkap Pembeli *</label>
+                  <input type="text" id="custName" value="Tedi Mahendra" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-d2c-purple font-medium" />
+                </div>
+                <div>
+                  <label class="block font-bold text-stone-700 mb-1">Nomor WhatsApp Aktif *</label>
+                  <input type="tel" id="custPhone" value="081299998888" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-d2c-purple font-medium" />
+                </div>
+              </div>
+
+              <!-- City / Area Picker for Automatic Shipping Calculation -->
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Wilayah / Kota Pengantaran *</label>
+                <select id="shippingZoneSelect" onchange="calculateShipping()" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-d2c-purple font-medium">
+                  <option value="JAKSEL" selected>Jakarta Selatan (Zona Dapur - Estimasi 15-30 Menit)</option>
+                  <option value="JAKPUS">Jakarta Pusat & Jakarta Barat</option>
+                  <option value="JAKTIM">Jakarta Timur & Jakarta Utara</option>
+                  <option value="TANGSEL">Tangerang Selatan & BSD</option>
+                  <option value="DEPOK">Depok & Bekasi</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Alamat Lengkap Pengiriman *</label>
+                <textarea id="custAddress" rows="2" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-d2c-purple font-medium">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Setiabudi, Jakarta Selatan</textarea>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1">Catatan Tambahan untuk Kurir (Opsional)</label>
+                <input type="text" id="custNotes" placeholder="Contoh: Titipkan di pos security / Jangan dibanting (Frozen)" class="w-full bg-stone-50 px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-d2c-purple font-medium" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Courier Service Selection -->
+          <div class="bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4">
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="truck" class="w-4 h-4 text-d2c-purple"></i>
+              Opsi Ekspedisi Cold-Chain
+            </h3>
+
+            <div class="space-y-3 text-xs" id="courierOptions">
+              <!-- Option A: Instant Cold-Pack -->
+              <label onclick="selectCourier('INSTANT')" class="flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition select-none bg-purple-50/50 border-d2c-purple" id="labelCourierInstant">
+                <div class="flex items-center gap-3">
+                  <input type="radio" name="courierOption" value="INSTANT" checked class="text-d2c-purple focus:ring-d2c-purple" />
+                  <div>
+                    <span class="font-bold text-slate-900 block">Instant Thermal Bike (1-2 Jam Tiba)</span>
+                    <span class="text-[11px] text-stone-500">Dilengkapi tas termal pendingin & ice gel tebal</span>
+                  </div>
+                </div>
+                <span class="font-extrabold text-d2c-purple font-mono" id="rateCourierInstant">Rp 20.000</span>
+              </label>
+
+              <!-- Option B: Same-Day Frozen -->
+              <label onclick="selectCourier('SAMEDAY')" class="flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition select-none bg-stone-50 border-stone-200 hover:border-purple-200" id="labelCourierSameday">
+                <div class="flex items-center gap-3">
+                  <input type="radio" name="courierOption" value="SAMEDAY" class="text-d2c-purple focus:ring-d2c-purple" />
+                  <div>
+                    <span class="font-bold text-slate-900 block">Same Day Frozen Express (6-8 Jam)</span>
+                    <span class="text-[11px] text-stone-500">Hemat untuk stok masak sore atau besok hari</span>
+                  </div>
+                </div>
+                <span class="font-extrabold text-slate-700 font-mono" id="rateCourierSameday">Rp 14.000</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Order Summary & Dual Checkout (WhatsApp or QRIS) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white p-6 rounded-3xl border border-purple-100 shadow-xl space-y-5">
+            <div class="flex items-center justify-between border-b border-purple-50 pb-3">
+              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Ringkasan Pembelian</span>
+              <span class="text-[10px] font-bold bg-d2c-purpleBg text-d2c-purple px-2 py-0.5 rounded border border-purple-200">D2C Direct</span>
+            </div>
+
+            <!-- Items Review in Cart -->
+            <div id="checkoutItemsList" class="space-y-3 max-h-48 overflow-y-auto text-xs divide-y divide-stone-100">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Cost Calculations -->
+            <div class="space-y-2 text-xs border-t border-purple-50 pt-3">
+              <div class="flex justify-between text-stone-600">
+                <span>Total Produk:</span>
+                <span class="font-bold text-slate-800" id="checkoutSubtotal">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-stone-600">
+                <span>Ongkir Otomatis (<span id="checkoutZoneName">Jakarta Selatan</span>):</span>
+                <span class="font-bold text-slate-800" id="checkoutShipping">Rp 20.000</span>
+              </div>
+              <div class="flex justify-between text-emerald-700 font-bold bg-emerald-50/70 p-2 rounded-xl">
+                <span>Total Penghematan Fee Ojol:</span>
+                <span id="checkoutSavings">Hemat ~Rp 35.000</span>
+              </div>
+            </div>
+
+            <!-- Grand Total -->
+            <div class="p-3.5 bg-d2c-purpleBg rounded-2xl border border-purple-200 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-d2c-purple uppercase block">Total Bayar Bersih</span>
+                <span class="text-xs text-stone-500">Harga langsung dapur</span>
+              </div>
+              <span class="text-xl font-black text-d2c-purple font-mono" id="checkoutGrandTotal">Rp 0</span>
+            </div>
+
+            <!-- Checkout Action Buttons (Dual Options) -->
+            <div class="space-y-2.5 pt-2">
+              <!-- Action 1: Checkout WhatsApp -->
+              <button onclick="checkoutViaWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25">
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <span>Checkout Langsung via WhatsApp</span>
+              </button>
+
+              <!-- Action 2: Bayar Instan via QRIS -->
+              <button onclick="openQrisModal()" class="w-full bg-d2c-purple hover:bg-d2c-lightPurple active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-purple-600/25 border border-purple-400">
+                <i data-lucide="qr-code" class="w-4 h-4 text-gold-300"></i>
+                <span>Bayar Instan via QRIS Dinamis</span>
+              </button>
+
+              <button onclick="backToStep1()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs py-2 px-4 rounded-xl transition text-center block">
+                Kembali / Tambah Produk Lain
+              </button>
+            </div>
+
+            <p class="text-[10px] text-stone-400 text-center leading-normal">
+              *Pesanan WhatsApp akan diformat otomatis dan dikirim langsung ke tim dispatch gudang kami.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 3: Automated Invoice & Delivery Order Document (Printable) -->
+    <div id="step3View" class="hidden max-w-2xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-d2c-purpleBg border border-purple-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-d2c-purple no-print">
+        <div class="w-10 h-10 rounded-full bg-d2c-purple text-white flex items-center justify-center flex-shrink-0">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-slate-900">Pesanan D2C Terkonfirmasi & Masuk Dispatching!</h4>
+          <p class="text-xs text-purple-900">Faktur pemesanan dan bukti pembayaran QRIS telah digenerate. Tim kami segera mengemas paket dengan ice gel pack.</p>
+        </div>
+      </div>
+
+      <!-- Printable Invoice Document -->
+      <div id="printableInvoice" class="bg-white rounded-3xl border border-purple-100 shadow-xl p-6 sm:p-9 space-y-6 relative overflow-hidden">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-stone-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-d2c-purple flex items-center justify-center text-white">
+                <i data-lucide="sparkles" class="w-4 h-4 text-gold-300"></i>
+              </div>
+              <span class="font-black text-lg tracking-tight text-slate-900 font-display">DIRECT<span class="text-d2c-purple">BUMBU</span> <span class="text-xs font-bold bg-d2c-gold text-slate-900 px-1.5 py-0.5 rounded font-sans uppercase">D2C</span></span>
+            </div>
+            <p class="text-[11px] text-stone-500">PT DirectBumbu Kuliner Nusantara • Central Cold Hub Kebayoran, Jakarta Selatan</p>
+            <p class="text-[11px] text-stone-500">WhatsApp Dispatcher: +62 812-9999-8888 • cs@directbumbu.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-d2c-purpleBg text-d2c-purple uppercase tracking-wider mb-1 border border-purple-200">
+              OFFICIAL D2C INVOICE
+            </span>
+            <p id="invNumber" class="text-xs font-mono font-bold text-slate-800">INV-D2C-202610-881</p>
+            <p id="invDate" class="text-[10px] text-stone-400">Diterbitkan: 28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Recipient & Delivery Info -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-stone-50 p-4 rounded-2xl border border-stone-200">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5">Penerima Paket:</span>
+            <p id="invRecipientName" class="font-bold text-slate-900 text-sm">Tedi Mahendra</p>
+            <p id="invRecipientPhone" class="text-stone-500">081299998888</p>
+            <p id="invDeliveryAddress" class="text-stone-600 mt-1 leading-relaxed">Gedung Wirausaha Lt. 5, Jaksel</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5">Ekspedisi & Status:</span>
+            <p id="invCourierMode" class="font-bold text-d2c-purple text-sm">Instant Cold-Pack</p>
+            <p id="invPaymentStatus" class="text-emerald-700 font-bold">LUNAS (QRIS Settlement)</p>
+            <p class="text-stone-400 mt-1">Ice Gel Vacuum Pack Included</p>
+          </div>
+        </div>
+
+        <!-- Purchased Items Table -->
+        <div class="border border-stone-200 rounded-2xl overflow-hidden">
+          <table class="w-full text-xs">
+            <thead class="bg-stone-50 text-stone-600 border-b border-stone-200">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-bold">Item Bumbu / Frozen Pack</th>
+                <th class="py-2.5 px-4 text-center font-bold">Qty</th>
+                <th class="py-2.5 px-4 text-right font-bold">Harga Satuan</th>
+                <th class="py-2.5 px-4 text-right font-bold">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="invTableBody" class="divide-y divide-stone-100 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+            <tfoot class="bg-stone-50/60 font-bold border-t border-stone-200">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-stone-600">Subtotal Belanja:</td>
+                <td class="py-2 px-4 text-right text-slate-800 font-mono" id="invSubtotalAmount">Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-stone-600">Ongkos Kirim Cold-Chain:</td>
+                <td class="py-2 px-4 text-right text-slate-800 font-mono" id="invShippingAmount">Rp 0</td>
+              </tr>
+              <tr class="bg-d2c-purpleBg border-t-2 border-purple-200">
+                <td colspan="3" class="py-2.5 px-4 text-right text-d2c-purple font-extrabold text-sm">Total Pembayaran Bersih:</td>
+                <td class="py-2.5 px-4 text-right text-d2c-purple font-black text-sm font-mono" id="invGrandTotal">Rp 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Dispatching Barcode & Guarantee Box -->
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Garansi Segar Tiba di Lokasi</span>
+            <p class="text-xs font-bold text-slate-800">Simpan langsung di freezer (-18°C) saat paket tiba</p>
+            <p class="text-[11px] text-stone-500">Jika bumbu rusak/basi saat dibuka, kami kirimkan pengganti 100% gratis.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-stone-200 inline-block shadow-sm">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=DIRECTBUMBU-D2C-AUTH-VALID-202610" alt="Dispatch QR" class="w-18 h-18 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-stone-400 mt-1">TOKEN: D2C-OK-8812</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print">
+        <button onclick="resetApp()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Belanja Lagi
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-purple-600/20 border border-purple-400">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            Cetak Faktur PDF
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- QRIS Payment Modal Simulator -->
+  <div id="qrisModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-purple-100 space-y-4 text-center">
+      <div class="flex items-center justify-between border-b border-purple-50 pb-3">
+        <span class="text-xs font-bold text-d2c-purple uppercase tracking-wider">QRIS Dinamis D2C</span>
+        <button onclick="closeQrisModal()" class="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 hover:text-slate-800">✕</button>
+      </div>
+
+      <div class="border border-stone-200 rounded-2xl p-4 bg-stone-50">
+        <div class="flex items-center justify-between w-full px-1 mb-2">
+          <span class="text-red-600 font-black text-xs">QRIS</span>
+          <span class="text-[11px] font-mono font-bold text-d2c-purple bg-purple-100 px-2 py-0.5 rounded" id="qrisModalTimer">09:59</span>
+        </div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PROTOTYPE-DIRECTBUMBU-D2C-SETTLEMENT" alt="QRIS Prototype" class="w-40 h-40 object-contain mx-auto bg-white p-2 rounded-xl border border-stone-200" />
+        <p class="text-[10px] text-stone-400 mt-2">NMID: ID1088334411 - PT DIRECTBUMBU D2C</p>
+        <div class="mt-3 pt-2 border-t border-stone-200 flex items-center justify-between px-1">
+          <span class="text-xs font-semibold text-stone-600">Total Ditagihkan:</span>
+          <span id="modalPayableText" class="text-base font-black text-d2c-purple font-mono">Rp 0</span>
+        </div>
+      </div>
+
+      <button onclick="confirmQrisSuccess()" class="w-full bg-d2c-purple hover:bg-d2c-lightPurple active:scale-95 text-white font-bold text-xs py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-purple-600/20">
+        <i data-lucide="check-circle" class="w-4 h-4 text-gold-300"></i>
+        <span>Simulasi Bayar Berhasil (Instant Callback)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- D2C Benefits Strip -->
+  <section id="d2c-benefit" class="border-t border-purple-100 bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-display">Mengapa Memilih Belanja D2C (Direct-to-Consumer)?</h3>
+        <p class="text-xs sm:text-sm text-stone-500 mt-2">Mendukung produsen lokal secara langsung tanpa potongan komisi pihak ketiga.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-stone-50 border border-purple-100">
+          <div class="w-10 h-10 rounded-xl bg-d2c-purpleBg text-d2c-purple flex items-center justify-center mb-4 border border-purple-200">
+            <i data-lucide="percent" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Bebas Markup Harga 20-30%</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Aplikasi kurir ojol memotong hingga 20% biaya merchant. Di toko D2C kami, penghematan tersebut langsung dinikmati oleh pembeli.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-purple-100">
+          <div class="w-10 h-10 rounded-xl bg-gold-100 text-d2c-goldDark flex items-center justify-center mb-4 border border-gold-300">
+            <i data-lucide="snowflake" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Cold-Chain Terjamin Segar</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Produk disimpan dalam freezer suhu -18°C dan diantar dengan insulated pouch serta ice gel pack agar kualitas bumbu tidak rusak.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-stone-50 border border-purple-100">
+          <div class="w-10 h-10 rounded-xl bg-d2c-purpleBg text-d2c-purple flex items-center justify-center mb-4 border border-purple-200">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 mb-1">Checkout WhatsApp Cepat</h4>
+          <p class="text-xs text-stone-600 leading-relaxed">Format pesanan rapi dikirimkan langsung ke admin WhatsApp tanpa perlu repot mengetik ulang nama item dan alamat pengiriman.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="shipping-zone" class="bg-d2c-dark text-slate-400 py-10 border-t border-purple-900/60 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-d2c-purple flex items-center justify-center text-gold-300 font-bold text-xs border border-gold-400">D</div>
+        <span class="font-bold text-white font-display">DirectBumbu / FrozenDirect Platform</span>
+        <span class="text-slate-500">| ID: directbumbu-frozendirect</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right">&copy; 2026 DirectBumbu Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Katalog Produk D2C
+    const productsData = [
+      {
+        id: "prod-1",
+        name: "Pasta Bumbu Rendang Minang (250g)",
+        category: "bumbu",
+        d2cPrice: 38000,
+        ojolPrice: 48000,
+        image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+        specs: ["Untuk 1 Kg Daging Sapi", "Rempah Segar Alami", "Tahan 6 Bulan Freezer"]
+      },
+      {
+        id: "prod-2",
+        name: "Rendang Daging Sapi Meltique (Frozen 400g)",
+        category: "frozen",
+        d2cPrice: 85000,
+        ojolPrice: 110000,
+        image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80",
+        specs: ["Siap Santap (Hangatkan 5 Mnt)", "Daging Empuk Juara", "Isi 5 Potong Tebal"]
+      },
+      {
+        id: "prod-3",
+        name: "Pasta Bumbu Ayam Bakar Madu (250g)",
+        category: "bumbu",
+        d2cPrice: 32000,
+        ojolPrice: 42000,
+        image: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80",
+        specs: ["Untuk 2 Ekor Ayam", "Manis Gurih Legit", "Sudah Termasuk Madu Murni"]
+      },
+      {
+        id: "prod-4",
+        name: "Dimsum Mentai Mozzarella (Isi 10 Pcs)",
+        category: "frozen",
+        d2cPrice: 55000,
+        ojolPrice: 72000,
+        image: "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=600&q=80",
+        specs: ["Saus Mentai Bakar Flambé", "Full Daging Ayam Udang", "Termasuk Chili Oil"]
+      },
+      {
+        id: "prod-5",
+        name: "Sambal Cumi Asin Cabe Ijo Botol (180g)",
+        category: "sambal",
+        d2cPrice: 35000,
+        ojolPrice: 45000,
+        image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?auto=format&fit=crop&w=600&q=80",
+        specs: ["Cumi Baby Utuh Melimpah", "Pedas Segar Mantap", "Kemasan Seal Higienis"]
+      },
+      {
+        id: "prod-6",
+        name: "Pasta Bumbu Opor Kuning Rempah (250g)",
+        category: "bumbu",
+        d2cPrice: 30000,
+        ojolPrice: 39000,
+        image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80",
+        specs: ["Kunyit Bakar Asli", "Wangi Santan Gurih", "Praktis Tanpa Blender"]
+      }
+    ];
+
+    // State Management
+    let currentCategory = 'all';
+    let cart = {}; // { prodId: quantity }
+    let selectedCourierType = 'INSTANT'; // 'INSTANT' or 'SAMEDAY'
+    let qrisTimerInterval = null;
+
+    // Delivery Rates Matrix
+    const shippingMatrix = {
+      JAKSEL: { INSTANT: 20000, SAMEDAY: 14000, label: "Jakarta Selatan" },
+      JAKPUS: { INSTANT: 26000, SAMEDAY: 16000, label: "Jakarta Pusat & Jakbar" },
+      JAKTIM: { INSTANT: 28000, SAMEDAY: 18000, label: "Jakarta Timur & Jakut" },
+      TANGSEL: { INSTANT: 25000, SAMEDAY: 15000, label: "Tangerang Selatan & BSD" },
+      DEPOK: { INSTANT: 32000, SAMEDAY: 20000, label: "Depok & Sekitarnya" }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCatalog();
+      updateCartUI();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToCatalog() {
+      document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Category Filter
+    function filterCatalog(cat) {
+      currentCategory = cat;
+      ['catAll', 'catBumbu', 'catFrozen', 'catSambal'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:text-slate-900 transition";
+      });
+
+      if (cat === 'all') document.getElementById('catAll').className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition";
+      if (cat === 'bumbu') document.getElementById('catBumbu').className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition";
+      if (cat === 'frozen') document.getElementById('catFrozen').className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition";
+      if (cat === 'sambal') document.getElementById('catSambal').className = "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition";
+
+      renderCatalog();
+    }
+
+    // Render Product Cards
+    function renderCatalog() {
+      const container = document.getElementById('productsGrid');
+      container.innerHTML = '';
+
+      const filtered = productsData.filter(p => currentCategory === 'all' || p.category === currentCategory);
+
+      filtered.forEach(prod => {
+        const qty = cart[prod.id] || 0;
+        const savings = prod.ojolPrice - prod.d2cPrice;
+
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-3xl border border-purple-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between";
+
+        card.innerHTML = `
+          <div>
+            <div class="relative h-44 w-full bg-stone-100 overflow-hidden">
+              <img src="${prod.image}" alt="${prod.name}" class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+              <div class="absolute top-3 left-3 bg-white/95 backdrop-blur text-d2c-purple text-[10px] font-black px-2.5 py-1 rounded-md tracking-wider border border-purple-200 uppercase">
+                D2C FRESH
+              </div>
+              <div class="absolute top-3 right-3 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                Hemat ${formatRupiah(savings)}
+              </div>
+            </div>
+
+            <div class="p-5 space-y-3">
+              <div>
+                <h3 class="font-extrabold text-sm text-slate-900 leading-snug">${prod.name}</h3>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-base font-black text-d2c-purple font-mono">${formatRupiah(prod.d2cPrice)}</span>
+                  <span class="text-xs text-stone-400 line-through">${formatRupiah(prod.ojolPrice)}</span>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap gap-1.5">
+                ${prod.specs.map(s => `
+                  <span class="text-[9px] font-medium bg-purple-50 text-d2c-purple px-2 py-0.5 rounded border border-purple-100">${s}</span>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 pt-0 border-t border-purple-50/60 mt-3">
+            <div class="flex items-center justify-between pt-3">
+              <span class="text-[11px] font-semibold text-stone-500">Jumlah Beli:</span>
+              
+              ${qty === 0 ? `
+                <button onclick="addToCart('${prod.id}')" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span>Tambah</span>
+                </button>
+              ` : `
+                <div class="flex items-center gap-2">
+                  <button onclick="changeQty('${prod.id}', -1)" class="w-7 h-7 rounded-lg bg-stone-100 border border-stone-200 text-slate-700 font-black text-xs hover:bg-stone-200 active:scale-95 transition">-</button>
+                  <span class="w-7 text-center font-black text-xs text-d2c-purple font-mono">${qty}</span>
+                  <button onclick="changeQty('${prod.id}', 1)" class="w-7 h-7 rounded-lg bg-d2c-purple text-white font-black text-xs hover:bg-d2c-lightPurple active:scale-95 transition">+</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Cart Management
+    function addToCart(prodId) {
+      cart[prodId] = 1;
+      renderCatalog();
+      updateCartUI();
+    }
+
+    function changeQty(prodId, delta) {
+      if (!cart[prodId]) return;
+      cart[prodId] += delta;
+      if (cart[prodId] <= 0) {
+        delete cart[prodId];
+      }
+      renderCatalog();
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      let totalQty = 0;
+      let totalSubtotal = 0;
+
+      for (let id in cart) {
+        const prod = productsData.find(p => p.id === id);
+        if (prod) {
+          totalQty += cart[id];
+          totalSubtotal += prod.d2cPrice * cart[id];
+        }
+      }
+
+      document.getElementById('headerCartCount').innerText = totalQty;
+
+      const floatBar = document.getElementById('floatingCartBar');
+      if (totalQty > 0) {
+        floatBar.classList.remove('hidden');
+        document.getElementById('floatingCartItemCount').innerText = `${totalQty} Item Terpilih di Keranjang`;
+        document.getElementById('floatingCartTotal').innerText = formatRupiah(totalSubtotal);
+      } else {
+        floatBar.classList.add('hidden');
+      }
+
+      return { totalQty, totalSubtotal };
+    }
+
+    function toggleCartDrawer() {
+      const summary = updateCartUI();
+      if (summary.totalQty === 0) {
+        alert("Keranjang masih kosong. Silakan pilih produk bumbu / frozen terlebih dahulu.");
+        return;
+      }
+      goToStep2();
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      const summary = updateCartUI();
+      if (summary.totalQty === 0) {
+        alert("Keranjang Anda kosong.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+      document.getElementById('floatingCartBar').classList.add('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-d2c-purple text-d2c-purple pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-d2c-purple text-white flex items-center justify-center text-[11px]";
+
+      calculateShipping();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+      updateCartUI();
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+    }
+
+    // Automatic Shipping Calculator
+    function calculateShipping() {
+      const zone = document.getElementById('shippingZoneSelect').value;
+      const zoneInfo = shippingMatrix[zone] || shippingMatrix.JAKSEL;
+
+      const rateInstant = zoneInfo.INSTANT;
+      const rateSameday = zoneInfo.SAMEDAY;
+
+      document.getElementById('rateCourierInstant').innerText = formatRupiah(rateInstant);
+      document.getElementById('rateCourierSameday').innerText = formatRupiah(rateSameday);
+
+      const activeShippingFee = selectedCourierType === 'INSTANT' ? rateInstant : rateSameday;
+
+      // Populate Items List in Checkout
+      const itemsList = document.getElementById('checkoutItemsList');
+      itemsList.innerHTML = '';
+      let subtotal = 0;
+      let totalOjolEquivalent = 0;
+
+      for (let id in cart) {
+        const prod = productsData.find(p => p.id === id);
+        if (prod) {
+          const itemTotal = prod.d2cPrice * cart[id];
+          subtotal += itemTotal;
+          totalOjolEquivalent += prod.ojolPrice * cart[id];
+
+          const itemRow = document.createElement('div');
+          itemRow.className = "flex justify-between items-center py-1.5";
+          itemRow.innerHTML = `
+            <div>
+              <span class="font-bold text-slate-800">${prod.name}</span>
+              <p class="text-[10px] text-stone-400 font-mono">${cart[id]}x @ ${formatRupiah(prod.d2cPrice)}</p>
+            </div>
+            <span class="font-bold text-slate-900 font-mono">${formatRupiah(itemTotal)}</span>
+          `;
+          itemsList.appendChild(itemRow);
+        }
+      }
+
+      const totalSavings = totalOjolEquivalent - subtotal;
+      const grandTotal = subtotal + activeShippingFee;
+
+      document.getElementById('checkoutSubtotal').innerText = formatRupiah(subtotal);
+      document.getElementById('checkoutZoneName').innerText = zoneInfo.label;
+      document.getElementById('checkoutShipping').innerText = formatRupiah(activeShippingFee);
+      document.getElementById('checkoutSavings').innerText = `Hemat ${formatRupiah(totalSavings)} vs Ojol`;
+      document.getElementById('checkoutGrandTotal').innerText = formatRupiah(grandTotal);
+
+      return { subtotal, activeShippingFee, grandTotal, totalSavings, zoneInfo };
+    }
+
+    function selectCourier(type) {
+      selectedCourierType = type;
+      const labelInstant = document.getElementById('labelCourierInstant');
+      const labelSameday = document.getElementById('labelCourierSameday');
+
+      if (type === 'INSTANT') {
+        labelInstant.className = "flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition select-none bg-purple-50/50 border-d2c-purple";
+        labelSameday.className = "flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition select-none bg-stone-50 border-stone-200 hover:border-purple-200";
+      } else {
+        labelSameday.className = "flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition select-none bg-purple-50/50 border-d2c-purple";
+        labelInstant.className = "flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition select-none bg-stone-50 border-stone-200 hover:border-purple-200";
+      }
+
+      calculateShipping();
+    }
+
+    // Direct Checkout WhatsApp Generator
+    function checkoutViaWhatsApp() {
+      const name = document.getElementById('custName').value.trim() || 'Pembeli D2C';
+      const phone = document.getElementById('custPhone').value.trim() || '-';
+      const address = document.getElementById('custAddress').value.trim() || '-';
+      const notes = document.getElementById('custNotes').value.trim() || 'Tidak ada catatan';
+      
+      const calc = calculateShipping();
+
+      let itemsText = "";
+      let index = 1;
+      for (let id in cart) {
+        const prod = productsData.find(p => p.id === id);
+        if (prod) {
+          itemsText += `${index}. ${prod.name} (${cart[id]}x) = ${formatRupiah(prod.d2cPrice * cart[id])}%0A`;
+          index++;
+        }
+      }
+
+      const courierName = selectedCourierType === 'INSTANT' ? 'Instant Thermal Bike' : 'Same Day Frozen Express';
+
+      const waMessage = 
+        `*ORDER DIRECTBUMBU / FROZENDIRECT (D2C)*%0A` +
+        `----------------------------------------%0A` +
+        `*Nama Pembeli:* ${name}%0A` +
+        `*WhatsApp:* ${phone}%0A` +
+        `*Alamat:* ${address}%0A` +
+        `*Catatan:* ${notes}%0A%0A` +
+        `*RINCIAN PRODUK:*%0A` +
+        itemsText +
+        `----------------------------------------%0A` +
+        `*Subtotal:* ${formatRupiah(calc.subtotal)}%0A` +
+        `*Ekspedisi:* ${courierName} (${calc.zoneInfo.label}) = ${formatRupiah(calc.activeShippingFee)}%0A` +
+        `*TOTAL BAYAR BERSIH:* ${formatRupiah(calc.grandTotal)}%0A` +
+        `*(Hemat ${formatRupiah(calc.totalSavings)} bebas fee ojol)*%0A%0A` +
+        `Mohon konfirmasi ketersediaan stok & nomor rekening/QRIS untuk transfer pesanan. Terima kasih!`;
+
+      // Nomor hotline D2C resmi
+      const waUrl = `https://wa.me/6281299998888?text=${waMessage}`;
+      window.open(waUrl, '_blank');
+    }
+
+    // QRIS Flow
+    function openQrisModal() {
+      const calc = calculateShipping();
+      document.getElementById('modalPayableText').innerText = formatRupiah(calc.grandTotal);
+      document.getElementById('qrisModal').classList.remove('hidden');
+
+      startQrisTimer(10 * 60);
+    }
+
+    function closeQrisModal() {
+      document.getElementById('qrisModal').classList.add('hidden');
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisModalTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Sesi QRIS berakhir.");
+          closeQrisModal();
+        }
+        rem--;
+      }, 1000);
+    }
+
+    function confirmQrisSuccess() {
+      closeQrisModal();
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-d2c-purple text-d2c-purple pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-d2c-purple text-white flex items-center justify-center text-[11px]";
+
+      const name = document.getElementById('custName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('custPhone').value.trim() || '081299998888';
+      const address = document.getElementById('custAddress').value.trim() || 'Gedung Wirausaha, Jakarta Selatan';
+      
+      const calc = calculateShipping();
+
+      const randomInv = "INV-D2C-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invNumber').innerText = randomInv;
+      document.getElementById('invDate').innerText = "Diterbitkan: " + new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invRecipientName').innerText = name;
+      document.getElementById('invRecipientPhone').innerText = phone;
+      document.getElementById('invDeliveryAddress').innerText = address;
+
+      const courierTitle = selectedCourierType === 'INSTANT' ? 'Instant Thermal Bike (1-2 Jam)' : 'Same Day Frozen Express (6-8 Jam)';
+      document.getElementById('invCourierMode').innerText = courierTitle;
+
+      // Populate Table
+      const invTbody = document.getElementById('invTableBody');
+      invTbody.innerHTML = '';
+
+      for (let id in cart) {
+        const prod = productsData.find(p => p.id === id);
+        if (prod) {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="py-2.5 px-4">
+              <span class="font-bold text-slate-800">${prod.name}</span>
+              <div class="text-[10px] text-stone-400">Kemasan Vacuum Food-grade</div>
+            </td>
+            <td class="py-2.5 px-4 text-center font-bold text-slate-700">${cart[id]}</td>
+            <td class="py-2.5 px-4 text-right font-mono text-stone-600">${formatRupiah(prod.d2cPrice)}</td>
+            <td class="py-2.5 px-4 text-right font-bold text-slate-800 font-mono">${formatRupiah(prod.d2cPrice * cart[id])}</td>
+          `;
+          invTbody.appendChild(row);
+        }
+      }
+
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(calc.subtotal);
+      document.getElementById('invShippingAmount').innerText = formatRupiah(calc.activeShippingFee);
+      document.getElementById('invGrandTotal').innerText = formatRupiah(calc.grandTotal);
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      cart = {};
+      selectedCourierType = 'INSTANT';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-stone-200 text-stone-400 pb-2.5 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-[11px]";
+
+      renderCatalog();
+      updateCartUI();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

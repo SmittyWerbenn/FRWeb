@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoCare Detailing & Wash - Booking Servis Berkala & Nano Coating Transparan</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            bronzeTheme: {
+              black: '#1C1917',       // Stone Black Utama
+              stoneSurface: '#292524',// Stone Surface Dark
+              stoneMuted: '#44403C',  // Border Stone
+              warmGray: '#E7E5E4',    // Warm Gray
+              bronze: '#D97706',      // Warm Bronze Accent
+              bronzeDark: '#B45309',  // Darker Bronze
+              bronzeGlow: '#FEF3C7',  // Light Bronze Tint
+              canvas: '#141210'       // Deep Canvas
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(28, 25, 23, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .bronze-glow {
+      box-shadow: 0 0 25px rgba(217, 119, 6, 0.22);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printablePass, #printablePass * {
+        visibility: visible;
+      }
+      #printablePass {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #1C1917 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-bronzeTheme-canvas text-slate-100 antialiased font-sans min-h-screen flex flex-col selection:bg-bronzeTheme-bronze selection:text-white">
+
+  <!-- Top Announcement Bar (Stone Black & Warm Bronze) -->
+  <div class="bg-[#12100E] text-slate-300 text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-bronzeTheme-stoneMuted font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-bronzeTheme-bronze text-white">CERTIFIED STUDIO</span>
+    <span>Ruang Pengerjaan Bebas Debu (Dust-Free Bay) • Paint Correction 3-Step • Garansi Nano Coating 9H hingga 3 Tahun</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-bronzeTheme-stoneMuted shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-bronzeTheme-stoneSurface border border-bronzeTheme-bronze flex items-center justify-center text-bronzeTheme-bronze shadow-md shadow-amber-950/20 flex-shrink-0 transition group-hover:bg-bronzeTheme-bronze group-hover:text-white">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-white block leading-tight font-display">
+            AUTOCARE<span class="text-bronzeTheme-bronze ml-0.5">DETAIL</span>
+            <span class="text-[10px] font-mono bg-bronzeTheme-stoneSurface text-slate-300 border border-bronzeTheme-stoneMuted px-1.5 py-0.5 rounded ml-1 font-bold uppercase">PRO</span>
+          </span>
+          <span class="text-[10px] text-slate-400 tracking-wider block font-mono font-medium">EXECUTIVE DETAILING & CERAMIC COATING</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
+        <a href="#service-station" class="text-bronzeTheme-bronze hover:text-white transition">Booking Antrean Bay</a>
+        <a href="#packages-matrix" class="hover:text-bronzeTheme-bronze transition">Paket Coating Transparan</a>
+        <a href="#facilities" class="hover:text-bronzeTheme-bronze transition">Standar Pengerjaan</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-bronzeTheme-stoneSurface text-slate-200 font-mono px-3.5 py-1.5 rounded-lg border border-bronzeTheme-stoneMuted">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Studio Bay 01 & 02: Pengerjaan Aktif
+        </div>
+        <button onclick="scrollToStation()" class="bg-bronzeTheme-bronze hover:bg-bronzeTheme-bronzeDark text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-amber-950/20 flex items-center gap-2 active:scale-95 font-display">
+          <i data-lucide="calendar" class="w-4 h-4 text-white"></i>
+          <span>Pilih Jam Servis</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Executive Bronze Palette) -->
+  <section class="border-b border-bronzeTheme-stoneMuted bg-gradient-to-b from-bronzeTheme-black via-bronzeTheme-canvas to-bronzeTheme-canvas py-12 sm:py-16 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bronzeTheme-stoneSurface border border-bronzeTheme-stoneMuted text-bronzeTheme-bronze text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-bronzeTheme-bronze animate-ping"></span>
+          Certified Ceramic Pro & Gyeon Detailers
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.18] font-display">
+          Kilau Proteksi Sempurna Tanpa Antre Menunggu Giliran.
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
+          Jadwalkan servis berkala mobil Anda dengan kepastian jam masuk bay. Pilih paket pelapisan <strong class="text-bronzeTheme-bronze">Nano Ceramic Coating 9H transparan</strong> tanpa biaya tersembunyi, amankan tanggal kedatangan via DP QRIS, dan nikmati lounge eksekutif berfasilitas lengkap.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-bronzeTheme-stoneMuted text-left font-mono">
+        <div class="p-4 rounded-xl bg-bronzeTheme-black/80 border border-bronzeTheme-stoneMuted">
+          <span class="text-xs text-slate-400 block">Kekerasan Lapisan</span>
+          <span class="text-2xl font-extrabold text-bronzeTheme-bronze font-display mt-0.5 block">9H Hardness</span>
+        </div>
+        <div class="p-4 rounded-xl bg-bronzeTheme-black/80 border border-bronzeTheme-stoneMuted">
+          <span class="text-xs text-slate-400 block">Inspeksi Bodi</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">21 Titik Cat</span>
+        </div>
+        <div class="p-4 rounded-xl bg-bronzeTheme-black/80 border border-bronzeTheme-stoneMuted">
+          <span class="text-xs text-slate-400 block">Garansi Tertulis</span>
+          <span class="text-2xl font-extrabold text-bronzeTheme-bronze font-display mt-0.5 block">s/d 3 Tahun</span>
+        </div>
+        <div class="p-4 rounded-xl bg-bronzeTheme-black/80 border border-bronzeTheme-stoneMuted">
+          <span class="text-xs text-slate-400 block">Kepastian Antrean</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">Bay Terkunci</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-bronzeTheme-bronze text-bronzeTheme-bronze pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-bronzeTheme-bronze text-white flex items-center justify-center text-[11px]">1</span>
+          Ukuran Mobil & Paket Servis
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-bronzeTheme-stoneMuted text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-bronzeTheme-stoneSurface text-slate-400 flex items-center justify-center text-[11px] border border-bronzeTheme-stoneMuted">2</span>
+          Data Pelat Nomor & DP QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-bronzeTheme-stoneMuted text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-bronzeTheme-stoneSurface text-slate-400 flex items-center justify-center text-[11px] border border-bronzeTheme-stoneMuted">3</span>
+          Service Pass & Invoice
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Booking Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="service-station">
+    
+    <!-- STEP 1: Vehicle Class, Package Comparison & Bay Time Slots -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Vehicle Category Selector -->
+      <div class="bg-bronzeTheme-black p-4 sm:p-5 rounded-2xl border border-bronzeTheme-stoneMuted flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-slate-300 font-bold whitespace-nowrap">Kelas Ukuran Kendaraan:</span>
+          <div class="flex items-center p-1 bg-[#12100E] rounded-xl border border-bronzeTheme-stoneMuted w-full sm:w-auto">
+            <button id="sizeSmallBtn" onclick="selectVehicleSize('SMALL')" class="px-3.5 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition">Small / Sedan</button>
+            <button id="sizeMediumBtn" onclick="selectVehicleSize('MEDIUM')" class="px-3.5 py-1.5 rounded-lg font-bold bg-bronzeTheme-bronze text-white shadow-sm transition">Medium SUV / Crossover</button>
+            <button id="sizeLargeBtn" onclick="selectVehicleSize('LARGE')" class="px-3.5 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition">Large MPV / 4x4 Van</button>
+          </div>
+        </div>
+
+        <!-- Date & Bay Picker -->
+        <div class="flex items-center gap-2">
+          <span class="text-slate-400 font-bold">Tanggal Servis:</span>
+          <input type="date" id="bookingDateInput" onchange="renderPackages()" class="text-xs font-semibold bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-bronzeTheme-bronze font-mono" />
+        </div>
+      </div>
+
+      <!-- Split Layout: Packages Matrix Cards (7 Cols) vs Live Bay Dispatch Slip (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Transparent Service & Coating Packages (7 Cols) -->
+        <div class="lg:col-span-7 space-y-5" id="packagesContainer">
+          <!-- Rendered via JavaScript -->
+        </div>
+
+        <!-- Right: Live Bay Booking Slip & Price Summary (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-bronzeTheme-black p-6 rounded-2xl border border-bronzeTheme-stoneMuted shadow-xl space-y-5 sticky top-24 font-mono text-xs" id="booking-slip">
+          <div class="flex items-center justify-between border-b border-bronzeTheme-stoneMuted pb-3">
+            <div>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Service Bay Allocation</span>
+              <h4 class="text-sm font-bold text-white font-display mt-0.5">Slip Antrean Servis Detailing</h4>
+            </div>
+            <span class="text-[11px] font-bold bg-bronzeTheme-bronze text-white px-2 py-0.5 rounded" id="slipVehicleBadge">Medium SUV</span>
+          </div>
+
+          <!-- Empty State Notice -->
+          <div id="emptySlipNotice" class="py-10 text-center text-slate-400 space-y-2">
+            <i data-lucide="car" class="w-10 h-10 mx-auto text-bronzeTheme-stoneMuted"></i>
+            <p class="text-xs font-sans">Belum ada paket yang dipilih.<br>Silakan pilih paket servis atau coating pada kartu di samping.</p>
+          </div>
+
+          <!-- Selected Service Details -->
+          <div id="selectedServiceSlipBox" class="hidden space-y-4">
+            <div class="p-4 bg-bronzeTheme-stoneSurface rounded-xl border border-bronzeTheme-stoneMuted space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-white text-sm font-display" id="slipPackageTitle">Full Interior & Engine Detail</span>
+                <span class="text-xs font-bold text-bronzeTheme-bronze font-mono" id="slipPackagePrice">Rp 1.250.000</span>
+              </div>
+              <p class="text-[11px] text-slate-400 font-sans leading-relaxed" id="slipPackageDesc">Deep cleaning jok, plafon, karpet, ozonisasi kabin & pembersihan ruang mesin.</p>
+            </div>
+
+            <!-- Jam Servis Slot Selection -->
+            <div class="space-y-2 border-t border-b border-bronzeTheme-stoneMuted py-3">
+              <span class="text-slate-300 font-bold block">Pilih Jam Kedatangan Bay (Estimasi 2-4 Jam):</span>
+              <div class="grid grid-cols-3 gap-2" id="bayTimeSlotsGrid">
+                <button onclick="pickBayTime('08:30 WIB (Pagi)')" class="p-2 rounded-lg border-2 border-bronzeTheme-bronze bg-bronzeTheme-bronze/10 text-white font-bold text-center slot-btn">08:30 WIB</button>
+                <button onclick="pickBayTime('11:00 WIB (Siang)')" class="p-2 rounded-lg border border-bronzeTheme-stoneMuted bg-[#12100E] text-slate-300 hover:border-bronzeTheme-bronze text-center slot-btn">11:00 WIB</button>
+                <button onclick="pickBayTime('14:30 WIB (Sore)')" class="p-2 rounded-lg border border-bronzeTheme-stoneMuted bg-[#12100E] text-slate-300 hover:border-bronzeTheme-bronze text-center slot-btn">14:30 WIB</button>
+              </div>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between text-slate-400">
+                <span>Tanggal Booking:</span>
+                <span class="font-bold text-white" id="slipDateDisplay">28 Okt 2026</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>Alokasi Bay:</span>
+                <span class="font-bold text-bronzeTheme-bronze" id="slipBayNumber">Bay 02 (Detailing Lab)</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>Garansi Proteksi:</span>
+                <span class="font-bold text-white" id="slipWarrantyText">6 Bulan Maintenance</span>
+              </div>
+            </div>
+
+            <!-- Grand Total Price Box -->
+            <div class="p-3.5 bg-[#12100E] rounded-xl border border-bronzeTheme-stoneMuted text-white flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-bronzeTheme-bronze uppercase block">Total Nilai Servis</span>
+                <span class="text-xs text-slate-400 font-sans">Garansi Kepuasan 100%</span>
+              </div>
+              <span class="text-xl font-extrabold text-bronzeTheme-bronze font-mono" id="slipGrandTotal">Rp 1.250.000</span>
+            </div>
+
+            <!-- Next Button -->
+            <button onclick="goToStep2()" class="w-full bg-bronzeTheme-bronze hover:bg-bronzeTheme-bronzeDark text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-lg shadow-amber-950/25 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <span>Lanjut ke Input Pelat Mobil & Bayar DP</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *DP 30% memastikan mobil Anda langsung dikerjakan oleh teknisi begitu tiba di bengkel tanpa waktu tunggu.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Plate Number, Vehicle Detail & QRIS DP Payment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Car Details & Inspection Form -->
+        <div class="lg:col-span-7 bg-bronzeTheme-black p-6 sm:p-7 rounded-2xl border border-bronzeTheme-stoneMuted shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-bronzeTheme-stoneMuted pb-3 font-mono">
+            <h3 class="text-base font-bold text-white flex items-center gap-2 font-display">
+              <i data-lucide="car" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+              Identitas Pemilik & Pelat Nomor Mobil
+            </h3>
+            <span class="text-xs text-slate-400">Data SPK Servis</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nomor Pelat Kendaraan *</label>
+                <input type="text" id="carPlateNumber" value="B 1928 RYD" class="w-full bg-[#12100E] px-3.5 py-2.5 rounded-xl border border-bronzeTheme-stoneMuted focus:outline-none focus:ring-2 focus:ring-bronzeTheme-bronze text-white font-mono uppercase font-bold text-sm tracking-wider" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Merk & Model Mobil *</label>
+                <input type="text" id="carModelName" value="Honda CR-V Turbo (Hitam Metalik)" class="w-full bg-[#12100E] px-3.5 py-2.5 rounded-xl border border-bronzeTheme-stoneMuted focus:outline-none focus:ring-2 focus:ring-bronzeTheme-bronze text-white font-sans font-medium" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nama Pemilik Kendaraan *</label>
+                <input type="text" id="ownerName" value="Tedi Mahendra" class="w-full bg-[#12100E] px-3.5 py-2.5 rounded-xl border border-bronzeTheme-stoneMuted focus:outline-none focus:ring-2 focus:ring-bronzeTheme-bronze text-white font-sans font-medium" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nomor WhatsApp Aktif *</label>
+                <input type="tel" id="ownerPhone" value="081299998888" class="w-full bg-[#12100E] px-3.5 py-2.5 rounded-xl border border-bronzeTheme-stoneMuted focus:outline-none focus:ring-2 focus:ring-bronzeTheme-bronze text-white font-sans font-medium" />
+              </div>
+            </div>
+
+            <!-- Payment Type Selection (DP 30% vs Lunas) -->
+            <div class="space-y-3 pt-2">
+              <label class="block font-bold text-slate-300">Pilihan Skema Pembayaran:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- DP 30% Card -->
+                <label onclick="selectPaymentScheme('DP')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-bronzeTheme-stoneSurface border-bronzeTheme-bronze" id="labelSchemeDp">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-white">DP Booking (30%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-bronzeTheme-bronze flex items-center justify-center">
+                      <span id="radioDotDp" class="w-2 h-2 rounded-full bg-bronzeTheme-bronze"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 font-sans leading-normal">Kunci slot pengerjaan bay, sisa 70% dilunasi setelah QC inspeksi akhir selesai di bengkel.</p>
+                  <span class="text-xs font-black text-bronzeTheme-bronze mt-2 block font-mono" id="schemeDpPriceText">Rp 375.000</span>
+                </label>
+
+                <!-- Full 100% Card -->
+                <label onclick="selectPaymentScheme('FULL')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-[#12100E] border-bronzeTheme-stoneMuted hover:border-slate-500" id="labelSchemeFull">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-white">Pelunasan Penuh (100%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-slate-500 flex items-center justify-center">
+                      <span id="radioDotFull" class="w-2 h-2 rounded-full bg-transparent"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 font-sans leading-normal">Selesai pengerjaan mobil bisa langsung diserahterimakan tanpa jeda transaksi kasir.</p>
+                  <span class="text-xs font-black text-white mt-2 block font-mono" id="schemeFullPriceText">Rp 1.250.000</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Fokus Khusus (Baret Halus / Noda Interior / Jamur Kaca):</label>
+              <input type="text" id="ownerNotes" value="Fokus hilangkan baret swirl di kap mesin & jamur di kaca depan samping." class="w-full bg-[#12100E] px-3.5 py-2.5 rounded-xl border border-bronzeTheme-stoneMuted focus:outline-none focus:ring-2 focus:ring-bronzeTheme-bronze text-white font-sans" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Gateway Box -->
+        <div class="lg:col-span-5 bg-bronzeTheme-black p-6 rounded-2xl border border-bronzeTheme-stoneMuted shadow-xl space-y-5 font-mono">
+          <div class="flex items-center justify-between border-b border-bronzeTheme-stoneMuted pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gateway QRIS Dinamis</span>
+            <span class="text-[10px] font-bold bg-bronzeTheme-bronze text-white px-2 py-0.5 rounded">SLOT RESERVED</span>
+          </div>
+
+          <!-- QR Box -->
+          <div class="border border-bronzeTheme-stoneMuted rounded-xl p-4 bg-[#12100E] text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-500 font-black text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-white bg-bronzeTheme-bronze px-2 py-0.5 rounded" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-300">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-AUTOCARE-DETAILING-DEPOSIT" alt="QRIS AutoCare" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-400">
+              <p class="text-slate-200">Scan via BCA, Mandiri, BRI, GoPay, OVO, ShopeePay</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">NMID: ID1099238822 - AUTOCARE DETAILING WORKSHOP</p>
+            </div>
+
+            <!-- Total Amount to Pay Highlight -->
+            <div class="mt-3 pt-3 border-t border-bronzeTheme-stoneMuted w-full flex items-center justify-between px-1">
+              <span class="text-xs text-slate-400" id="qrisPayableLabel">Nominal Ditagihkan (DP 30%):</span>
+              <span id="qrisPayableAmount" class="text-base font-extrabold text-bronzeTheme-bronze font-mono">Rp 375.000</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-bronzeTheme-bronze hover:bg-bronzeTheme-bronzeDark active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-amber-950/20 font-sans">
+              <i data-lucide="check-circle" class="w-4 h-4 text-white"></i>
+              <span>Simulasi Bayar Berhasil (Callback Webhook)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-[#12100E] hover:bg-bronzeTheme-stoneSurface text-slate-300 font-semibold text-xs py-2.5 px-4 rounded-xl transition font-sans">
+              Kembali / Ubah Paket
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Setelah verifikasi QRIS, e-tiket boarding pass bay dan kartu garansi digital diterbitkan seketika.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Digital Service Pass & Warranty Certificate (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-bronzeTheme-stoneSurface border border-bronzeTheme-bronze rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-white no-print">
+        <div class="w-10 h-10 rounded-full bg-bronzeTheme-bronze text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-display">Booking Slot Bay Berhasil & Antrean Resmi Terkunci!</h4>
+          <p class="text-xs text-slate-300 font-sans mt-0.5">Surat Perintah Kerja (SPK) bengkel dan pass masuk valet bay telah digenerate secara otomatis.</p>
+        </div>
+      </div>
+
+      <!-- Printable Document Card -->
+      <div id="printablePass" class="bg-bronzeTheme-black rounded-2xl border border-bronzeTheme-stoneMuted shadow-2xl p-6 sm:p-9 space-y-6 font-mono text-slate-100">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-bronzeTheme-stoneMuted pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-bronzeTheme-stoneSurface border border-bronzeTheme-bronze flex items-center justify-center text-bronzeTheme-bronze font-bold">
+                <i data-lucide="sparkles" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+              </div>
+              <span class="font-bold text-lg text-white font-display">AUTOCARE<span class="text-bronzeTheme-bronze">DETAIL</span></span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">Workshop Detailing & Coating • Jl. TB Simatupang No. 88, Cilandak, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-400 font-sans">Hotline Concierge: +62 812-9999-8888 • service@autocare.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-bronzeTheme-bronze text-white uppercase" id="invStatusBadge">
+              SLOT BAY CONFIRMED
+            </span>
+            <p id="invReceiptNumber" class="text-xs font-bold text-white mt-1">SPK-ACD-202610-8812</p>
+            <p id="invDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Vehicle & Owner Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#12100E] p-4 rounded-xl border border-bronzeTheme-stoneMuted">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">KENDARAAN & PELAT NOMOR:</span>
+            <p id="invPlateNumber" class="font-bold text-bronzeTheme-bronze text-base tracking-wider">B 1928 RYD</p>
+            <p id="invModelName" class="text-white font-semibold">Honda CR-V Turbo</p>
+            <p id="invOwnerContact" class="text-slate-400 mt-1">Pemilik: Tedi Mahendra (081299998888)</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">JADWAL KEDATANGAN BAY:</span>
+            <p id="invScheduleDate" class="font-bold text-white text-sm">Rabu, 28 Okt 2026</p>
+            <p id="invScheduleTime" class="text-bronzeTheme-bronze font-bold">08:30 WIB (Pagi)</p>
+            <p class="text-slate-400 mt-1" id="invBayAllocated">Alokasi: Bay 02 (Detailing Lab)</p>
+          </div>
+        </div>
+
+        <!-- Service Package Table -->
+        <div class="border border-bronzeTheme-stoneMuted rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-[#12100E] text-slate-400 border-b border-bronzeTheme-stoneMuted">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Paket Pengerjaan & Proteksi Bodi</th>
+                <th class="py-2.5 px-3 font-bold text-center">Ukuran</th>
+                <th class="py-2.5 px-4 font-bold text-right">Harga</th>
+                <th class="py-2.5 px-4 font-bold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-bronzeTheme-stoneMuted font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-white block text-sm" id="invPackageName">Nano Ceramic Coating 9H (Double Layer)</span>
+                  <div class="text-[11px] text-slate-400 font-sans mt-0.5" id="invPackageSpecs">Paint correction 3-step, nano coating 2 layer, velg & glass treatment</div>
+                  <div class="text-[10px] text-bronzeTheme-bronze mt-1" id="invWarrantyDetail">Masa Garansi: 3 Tahun Kartu Garansi Fisik</div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-300 font-mono" id="invVehicleSize">Medium SUV</td>
+                <td class="py-3 px-4 text-right text-slate-300 font-mono" id="invUnitRate">Rp 3.500.000</td>
+                <td class="py-3 px-4 text-right font-bold text-white font-mono" id="invRawTotal">Rp 3.500.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-[#12100E] border-t border-bronzeTheme-stoneMuted text-xs font-mono">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-400 font-bold">Total Nilai Pengerjaan:</td>
+                <td class="py-2 px-4 text-right font-bold text-white" id="invSubtotalAmount">Rp 3.500.000</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-400 font-bold" id="invPaidLabel">Sudah Dibayar (DP 30% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-400" id="invPaidAmount">Rp 1.050.000</td>
+              </tr>
+              <tr class="bg-bronzeTheme-stoneSurface border-t border-bronzeTheme-stoneMuted">
+                <td colspan="3" class="py-2.5 px-4 text-bronzeTheme-bronze text-right font-extrabold text-xs" id="invDueLabel">
+                  Sisa Pelunasan Saat Mobil Selesai di Bengkel:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-bronzeTheme-bronze font-mono" id="invDueAmount">
+                  Rp 2.450.000
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Gate Valet Check-in Barcode -->
+        <div class="p-4 bg-[#12100E] rounded-xl border border-bronzeTheme-stoneMuted flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Valet Gate Pass & Checklist 21 Titik</span>
+            <p class="text-xs font-bold text-white">Tunjukkan Barcode ke Petugas Gate Valet Saat Mobil Memasuki Bengkel</p>
+            <p class="text-[11px] text-slate-400">Petugas inspeksi kami akan mencatat ketebalan cat & foto kondisi bodi sebelum mulai dicuci.</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-lg inline-block shadow-sm">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=AUTOCARE-GATE-PASS-8812-OK" alt="Gate Pass Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] text-slate-400 mt-1">PASS-8812-VALET</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-bronzeTheme-stoneSurface hover:bg-[#201d1b] text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-bronzeTheme-stoneMuted font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Booking Mobil Lain
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-bronzeTheme-bronze hover:bg-bronzeTheme-bronzeDark text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-amber-950/20 font-sans">
+            <i data-lucide="printer" class="w-4 h-4 text-white"></i>
+            Cetak Service Pass & Garansi (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Facilities & Certified Clean Studio Strip -->
+  <section id="facilities" class="border-t border-bronzeTheme-stoneMuted bg-bronzeTheme-black py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-bronzeTheme-bronze uppercase tracking-wider font-mono">Quality Standards</span>
+        <h3 class="text-xl font-bold text-white font-display mt-1">Standar Bengkel Detailing AutoCare Pro</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-[#12100E] border border-bronzeTheme-stoneMuted">
+          <div class="w-9 h-9 rounded-lg bg-bronzeTheme-stoneSurface text-bronzeTheme-bronze flex items-center justify-center mb-3">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">Ruangan Bebas Debu & Lampu Inspeksi</h4>
+          <p class="text-slate-400 leading-relaxed">Ruang aplikasi nano ceramic ber-AC dengan lampu pencahayaan LED khusus untuk mendeteksi baret laba-laba mikro (swirl mark) pada cat mobil.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-[#12100E] border border-bronzeTheme-stoneMuted">
+          <div class="w-9 h-9 rounded-lg bg-bronzeTheme-stoneSurface text-bronzeTheme-bronze flex items-center justify-center mb-3">
+            <i data-lucide="droplet" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">Air Deionisasi Filter TDS 0</h4>
+          <p class="text-slate-400 leading-relaxed">Pencucian menggunakan air murni tanpa kandungan kapur dan mineral keras, menjamin cat mobil Anda bebas dari timbulnya kerak bercak air (water spot).</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-[#12100E] border border-bronzeTheme-stoneMuted">
+          <div class="w-9 h-9 rounded-lg bg-bronzeTheme-stoneSurface text-bronzeTheme-bronze flex items-center justify-center mb-3">
+            <i data-lucide="coffee" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">Executive Waiting Lounge</h4>
+          <p class="text-slate-400 leading-relaxed">Ruang tunggu ber-AC dilengkapi sofa kulit nyaman, koneksi internet berkecepatan tinggi, serta sajian kopi artisan gratis selama pengerjaan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Stone Black & Warm Bronze) -->
+  <footer class="bg-[#0E0C0B] text-slate-500 py-8 border-t border-bronzeTheme-stoneMuted text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-bronzeTheme-stoneSurface border border-bronzeTheme-bronze flex items-center justify-center text-bronzeTheme-bronze font-bold text-[10px]">A</div>
+        <span class="font-bold text-slate-300">AutoCare Detailing & Wash</span>
+        <span class="text-slate-600">| ID: autocare-detailing</span>
+      </div>
+      <p class="text-slate-500 text-center md:text-right font-sans">&copy; 2026 PT AutoCare Detailing Studio. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Paket Perawatan & Coating Transparan Berdasarkan Ukuran Mobil
+    const servicePackagesData = [
+      {
+        id: "PKG-COAT-3Y",
+        name: "Nano Ceramic Coating 9H (Double Layer)",
+        badge: "Paling Diminati • Garansi 3 Tahun",
+        pricing: {
+          SMALL: 2800000,
+          MEDIUM: 3500000,
+          LARGE: 4200000
+        },
+        durationEst: "6 - 8 Jam (Termasuk Curing Oven)",
+        warranty: "3 Tahun (Kartu Garansi Fisik)",
+        specs: [
+          "Paint Correction 3-Step (Hilangkan Swirl 95%)",
+          "Double Layer 9H Nano Ceramic Coating",
+          "Glass Coating Anti-Jamur Kaca Depan & Samping",
+          "Velg & Trim Dressing Protection",
+          "Free 1x Maintenance Cuci Pertama"
+        ]
+      },
+      {
+        id: "PKG-DETAIL-INT",
+        name: "Full Interior & Engine Bay Detailing",
+        badge: "Segar Bebas Bakteri & Bau",
+        pricing: {
+          SMALL: 950000,
+          MEDIUM: 1250000,
+          LARGE: 1550000
+        },
+        durationEst: "3 - 4 Jam",
+        warranty: "6 Bulan Maintenance",
+        specs: [
+          "Deep Cleaning Jok Kulit / Fabric Ekstraktor",
+          "Pembersihan Plafon, Doortrim & Kolong Karpet",
+          "Fogging Ozon Disinfektan Anti-Bakteri",
+          "Engine Bay Steam & Dressing Kabel Aman",
+          "Pembersihan AC Vent Odor Elimination"
+        ]
+      },
+      {
+        id: "PKG-SIGNATURE-WASH",
+        name: "Signature Hydrophobic Wash & Wax",
+        badge: "Servis Berkala Cepat",
+        pricing: {
+          SMALL: 180000,
+          MEDIUM: 220000,
+          LARGE: 260000
+        },
+        durationEst: "60 Menit",
+        warranty: "Garansi Bersih 24 Jam",
+        specs: [
+          "Cuci Salju pH Netral Air Deionisasi TDS 0",
+          "Underbody Kolong Mobil High-Pressure Spray",
+          "Aplikasi Carnauba Liquid Wax Kilau Basah",
+          "Vacuum Interior Kabin & Pembersihan Kaca",
+          "Semir Ban Silikon Tahan Air"
+        ]
+      }
+    ];
+
+    // State Management
+    let selectedVehicleSize = 'MEDIUM'; // 'SMALL', 'MEDIUM', 'LARGE'
+    let selectedPackage = servicePackagesData[0];
+    let selectedBayTime = '08:30 WIB (Pagi)';
+    let selectedPaymentScheme = 'DP'; // 'DP' (30%) or 'FULL' (100%)
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set Default Booking Date to Today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('bookingDateInput').value = today;
+
+      renderPackages();
+      updateBookingSlip();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-bronzeTheme-stoneMuted text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-bronzeTheme-stoneSurface text-slate-400 flex items-center justify-center text-[11px] border border-bronzeTheme-stoneMuted";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-bronzeTheme-stoneMuted text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-bronzeTheme-stoneSurface text-slate-400 flex items-center justify-center text-[11px] border border-bronzeTheme-stoneMuted";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToStation() {
+      document.getElementById('service-station').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Vehicle Size Selector
+    function selectVehicleSize(size) {
+      selectedVehicleSize = size;
+
+      const btnSmall = document.getElementById('sizeSmallBtn');
+      const btnMed = document.getElementById('sizeMediumBtn');
+      const btnLarge = document.getElementById('sizeLargeBtn');
+
+      [btnSmall, btnMed, btnLarge].forEach(b => {
+        b.className = "px-3.5 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition";
+      });
+
+      if (size === 'SMALL') btnSmall.className = "px-3.5 py-1.5 rounded-lg font-bold bg-bronzeTheme-bronze text-white shadow-sm transition";
+      if (size === 'MEDIUM') btnMed.className = "px-3.5 py-1.5 rounded-lg font-bold bg-bronzeTheme-bronze text-white shadow-sm transition";
+      if (size === 'LARGE') btnLarge.className = "px-3.5 py-1.5 rounded-lg font-bold bg-bronzeTheme-bronze text-white shadow-sm transition";
+
+      renderPackages();
+      updateBookingSlip();
+    }
+
+    // Render Service Packages
+    function renderPackages() {
+      const container = document.getElementById('packagesContainer');
+      container.innerHTML = '';
+
+      servicePackagesData.forEach(pkg => {
+        const isSelected = selectedPackage && selectedPackage.id === pkg.id;
+        const price = pkg.pricing[selectedVehicleSize];
+
+        const card = document.createElement('div');
+        card.className = `p-5 sm:p-6 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          isSelected 
+            ? 'bg-bronzeTheme-black border-bronzeTheme-bronze ring-2 ring-amber-500/20' 
+            : 'bg-bronzeTheme-stoneSurface/90 border-bronzeTheme-stoneMuted hover:border-slate-500'
+        }`;
+        card.onclick = () => pickPackage(pkg);
+
+        let specsHtml = pkg.specs.map(s => `
+          <li class="flex items-center gap-2 text-xs text-slate-300">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-bronzeTheme-bronze flex-shrink-0"></i>
+            <span>${s}</span>
+          </li>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-bronzeTheme-stoneMuted pb-3">
+              <div>
+                <span class="text-[10px] font-mono font-bold bg-[#12100E] text-bronzeTheme-bronze px-2.5 py-0.5 rounded border border-bronzeTheme-stoneMuted uppercase">
+                  ${pkg.badge}
+                </span>
+                <h3 class="font-extrabold text-base text-white font-display mt-1">${pkg.name}</h3>
+              </div>
+              <div class="text-left sm:text-right font-mono mt-1 sm:mt-0">
+                <span class="text-base font-black text-bronzeTheme-bronze">${formatRupiah(price)}</span>
+                <span class="text-[10px] text-slate-400 block font-sans">${pkg.durationEst}</span>
+              </div>
+            </div>
+
+            <ul class="space-y-2 py-1">
+              ${specsHtml}
+            </ul>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-bronzeTheme-stoneMuted flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-400">Garansi: <strong class="text-white">${pkg.warranty}</strong></span>
+            <span class="text-xs font-bold ${isSelected ? 'text-bronzeTheme-bronze' : 'text-slate-400'}">
+              ${isSelected ? '✓ Terpilih di Slip' : 'Klik untuk Pilih'}
+            </span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function pickPackage(pkg) {
+      selectedPackage = pkg;
+      renderPackages();
+      updateBookingSlip();
+    }
+
+    function pickBayTime(timeStr) {
+      selectedBayTime = timeStr;
+      const btns = document.querySelectorAll('.slot-btn');
+      btns.forEach(b => {
+        if (b.innerText.includes(timeStr.split(' ')[0])) {
+          b.className = "p-2 rounded-lg border-2 border-bronzeTheme-bronze bg-bronzeTheme-bronze/10 text-white font-bold text-center slot-btn";
+        } else {
+          b.className = "p-2 rounded-lg border border-bronzeTheme-stoneMuted bg-[#12100E] text-slate-300 hover:border-bronzeTheme-bronze text-center slot-btn";
+        }
+      });
+      updateBookingSlip();
+    }
+
+    // Update Live Slip
+    function updateBookingSlip() {
+      const emptyNotice = document.getElementById('emptySlipNotice');
+      const slipBox = document.getElementById('selectedServiceSlipBox');
+      const vehicleBadge = document.getElementById('slipVehicleBadge');
+
+      if (!selectedPackage) {
+        emptyNotice.classList.remove('hidden');
+        slipBox.classList.add('hidden');
+        return;
+      }
+
+      emptyNotice.classList.add('hidden');
+      slipBox.classList.remove('hidden');
+
+      const sizeLabelMap = { SMALL: "Small / Sedan", MEDIUM: "Medium SUV", LARGE: "Large MPV" };
+      vehicleBadge.innerText = sizeLabelMap[selectedVehicleSize];
+
+      const price = selectedPackage.pricing[selectedVehicleSize];
+      const dpAmount = Math.round(price * 0.3); // DP 30%
+      const dueAmount = price - dpAmount;
+
+      const dateVal = document.getElementById('bookingDateInput').value;
+
+      document.getElementById('slipPackageTitle').innerText = selectedPackage.name;
+      document.getElementById('slipPackagePrice').innerText = formatRupiah(price);
+      document.getElementById('slipPackageDesc').innerText = `${selectedPackage.specs[0]} • ${selectedPackage.specs[1]}`;
+
+      document.getElementById('slipDateDisplay').innerText = dateVal;
+      document.getElementById('slipWarrantyText').innerText = selectedPackage.warranty;
+      document.getElementById('slipGrandTotal').innerText = formatRupiah(price);
+
+      // Set Prices in Step 2 Scheme Cards
+      document.getElementById('schemeDpPriceText').innerText = formatRupiah(dpAmount);
+      document.getElementById('schemeFullPriceText').innerText = formatRupiah(price);
+
+      return { price, dpAmount, dueAmount };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      if (!selectedPackage) {
+        alert("Silakan pilih paket servis terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-bronzeTheme-bronze text-bronzeTheme-bronze pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-bronzeTheme-bronze text-white flex items-center justify-center text-[11px] font-bold";
+
+      selectPaymentScheme(selectedPaymentScheme);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-bronzeTheme-stoneMuted text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-bronzeTheme-stoneSurface text-slate-400 flex items-center justify-center text-[11px] border border-bronzeTheme-stoneMuted font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function selectPaymentScheme(scheme) {
+      selectedPaymentScheme = scheme;
+
+      const labelDp = document.getElementById('labelSchemeDp');
+      const labelFull = document.getElementById('labelSchemeFull');
+      const dotDp = document.getElementById('radioDotDp');
+      const dotFull = document.getElementById('radioDotFull');
+      const qrisLabel = document.getElementById('qrisPayableLabel');
+      const qrisAmount = document.getElementById('qrisPayableAmount');
+
+      const slipData = updateBookingSlip();
+
+      if (scheme === 'DP') {
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-bronzeTheme-stoneSurface border-bronzeTheme-bronze";
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-[#12100E] border-bronzeTheme-stoneMuted hover:border-slate-500";
+        dotDp.className = "w-2 h-2 rounded-full bg-bronzeTheme-bronze";
+        dotFull.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Ditagihkan (DP 30%):";
+        qrisAmount.innerText = formatRupiah(slipData.dpAmount);
+      } else {
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-bronzeTheme-stoneSurface border-bronzeTheme-bronze";
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-[#12100E] border-bronzeTheme-stoneMuted hover:border-slate-500";
+        dotFull.className = "w-2 h-2 rounded-full bg-bronzeTheme-bronze";
+        dotDp.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Ditagihkan (Lunas 100%):";
+        qrisAmount.innerText = formatRupiah(slipData.price);
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi DP alokasi bay telah berakhir.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const plate = document.getElementById('carPlateNumber').value.trim() || 'B 1928 RYD';
+      const model = document.getElementById('carModelName').value.trim() || 'Honda CR-V Turbo';
+      const owner = document.getElementById('ownerName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('ownerPhone').value.trim() || '081299998888';
+      const dateVal = document.getElementById('bookingDateInput').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-bronzeTheme-bronze text-bronzeTheme-bronze pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-bronzeTheme-bronze text-white flex items-center justify-center text-[11px] font-bold";
+
+      const slipData = updateBookingSlip();
+      const paid = selectedPaymentScheme === 'DP' ? slipData.dpAmount : slipData.price;
+      const due = slipData.price - paid;
+
+      const randomSpk = "SPK-ACD-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invReceiptNumber').innerText = randomSpk;
+      document.getElementById('invDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invPlateNumber').innerText = plate;
+      document.getElementById('invModelName').innerText = model;
+      document.getElementById('invOwnerContact').innerText = `Pemilik: ${owner} (${phone})`;
+
+      document.getElementById('invScheduleDate').innerText = dateVal;
+      document.getElementById('invScheduleTime').innerText = selectedBayTime;
+
+      document.getElementById('invPackageName').innerText = selectedPackage.name;
+      document.getElementById('invPackageSpecs').innerText = `${selectedPackage.specs[0]} • ${selectedPackage.specs[1]}`;
+      document.getElementById('invWarrantyDetail').innerText = `Masa Garansi: ${selectedPackage.warranty}`;
+      
+      const sizeLabelMap = { SMALL: "Small / Sedan", MEDIUM: "Medium SUV", LARGE: "Large MPV" };
+      document.getElementById('invVehicleSize').innerText = sizeLabelMap[selectedVehicleSize];
+
+      document.getElementById('invUnitRate').innerText = formatRupiah(slipData.price);
+      document.getElementById('invRawTotal').innerText = formatRupiah(slipData.price);
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(slipData.price);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+      document.getElementById('invDueAmount').innerText = formatRupiah(due);
+
+      if (selectedPaymentScheme === 'DP') {
+        document.getElementById('invStatusBadge').innerText = "SLOT BAY BOOKED (DP 30%)";
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (DP 30% QRIS):";
+        document.getElementById('invDueLabel').innerText = "Sisa Pelunasan di Meja Kasir Bengkel:";
+      } else {
+        document.getElementById('invStatusBadge').innerText = "SLOT LUNAS 100% (EXPRESS)";
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (Lunas 100%):";
+        document.getElementById('invDueLabel').innerText = "Status Tagihan:";
+        document.getElementById('invDueAmount').innerText = "LUNAS (Rp 0)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedVehicleSize = 'MEDIUM';
+      selectedPackage = servicePackagesData[0];
+      selectedPaymentScheme = 'DP';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-bronzeTheme-stoneMuted text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-bronzeTheme-stoneSurface text-slate-400 flex items-center justify-center text-[11px] border border-bronzeTheme-stoneMuted font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-bronzeTheme-stoneMuted text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-bronzeTheme-stoneSurface text-slate-400 flex items-center justify-center text-[11px] border border-bronzeTheme-stoneMuted font-bold";
+
+      selectVehicleSize('MEDIUM');
+      renderPackages();
+      updateBookingSlip();
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RentalArmada Express - Sewa Mobil Lepas Kunci, Supir & Luar Kota</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            earth: {
+              matcha: '#2D3B2D',       // Matcha Dark Utama
+              matchaDeep: '#1E281E',   // Darker Matcha
+              matchaSurface: '#3A4B3A',// Surface Green
+              cream: '#F3EFE0',        // Warm Cream
+              creamLight: '#FAF8F2',   // Off-white Cream
+              terracotta: '#C89666',   // Terracotta Muda Aksen
+              terracottaHover: '#A67343', // Darker Terracotta
+              border: '#E2DDCB',       // Border Soft
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(45, 59, 45, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .cream-pattern {
+      background-color: #F3EFE0;
+      background-image: radial-gradient(#2D3B2D12 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableRentalVoucher, #printableRentalVoucher * {
+        visibility: visible;
+      }
+      #printableRentalVoucher {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #2D3B2D !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="cream-pattern text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-earth-terracotta selection:text-white">
+
+  <!-- Top Announcement Bar (Matcha Dark & Terracotta) -->
+  <div class="bg-earth-matchaDeep text-slate-300 text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-earth-matchaSurface font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-earth-terracotta text-white">LIVE FLEET DISPATCH</span>
+    <span>Armada Bersih Berasuransi All-Risk • Unit Pengganti 24 Jam Jika Kendala • Siap Luar Kota Antar Provinsi</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-earth-matchaSurface shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-earth-matchaSurface border border-earth-terracotta flex items-center justify-center text-earth-terracotta shadow-md shadow-emerald-950/20 flex-shrink-0 transition group-hover:bg-earth-terracotta group-hover:text-white">
+          <i data-lucide="car" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-white block leading-tight font-display">
+            RENTAL<span class="text-earth-terracotta">ARMADA</span>
+            <span class="text-[10px] font-mono bg-earth-matchaSurface text-earth-cream border border-earth-terracotta/40 px-1.5 py-0.5 rounded ml-1 font-bold uppercase">EXPRESS</span>
+          </span>
+          <span class="text-[10px] text-slate-300 tracking-wider block font-mono font-medium">SEWA MOBIL & LOGISTIK KOTA</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-200">
+        <a href="#trip-planner" class="text-earth-terracotta hover:text-white transition">Kalkulator Rute</a>
+        <a href="#fleet-matrix" class="hover:text-earth-terracotta transition">Katalog Armada</a>
+        <a href="#verification-flow" class="hover:text-earth-terracotta transition">Syarat KTP & SIM</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-earth-matchaSurface text-slate-200 font-mono px-3.5 py-1.5 rounded-lg border border-earth-matcha">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Pool Dispatch: 24 Unit Siap Jalan
+        </div>
+        <button onclick="scrollToPlanner()" class="bg-earth-terracotta hover:bg-earth-terracottaHover text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-amber-950/20 flex items-center gap-2 active:scale-95 font-display">
+          <i data-lucide="compass" class="w-4 h-4 text-white"></i>
+          <span>Cek Tarif Sewa</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Earthy Matcha Palette) -->
+  <section class="border-b border-earth-border bg-earth-matcha text-white py-12 sm:py-16 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-earth-matchaSurface border border-earth-border/40 text-earth-cream text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-earth-terracotta animate-ping"></span>
+          Real-Time GPS Tracked Fleet Management
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.18] font-display">
+          Sewa Mobil Nyaman, Tarif Terbuka, Tanpa Drama Antre.
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
+          Pilih unit mobil siap pakai dengan kondisi prima. Hitung estimasi biaya perjalanan luar kota secara transparan, upload verifikasi KTP/SIM A langsung dari ponsel, dan kunci mobil Anda dengan DP QRIS 30% tanpa deposit ratusan ribu yang tertahan lama.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-earth-matchaSurface text-left font-mono">
+        <div class="p-4 rounded-xl bg-earth-matchaDeep/80 border border-earth-matchaSurface">
+          <span class="text-xs text-slate-400 block font-sans">Armada Terawat</span>
+          <span class="text-2xl font-extrabold text-earth-terracotta font-display mt-0.5 block">Tahun 2023 - 2025</span>
+        </div>
+        <div class="p-4 rounded-xl bg-earth-matchaDeep/80 border border-earth-matchaSurface">
+          <span class="text-xs text-slate-400 block font-sans">Verifikasi Berkas</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">< 15 Menit</span>
+        </div>
+        <div class="p-4 rounded-xl bg-earth-matchaDeep/80 border border-earth-matchaSurface">
+          <span class="text-xs text-slate-400 block font-sans">Proteksi Asuransi</span>
+          <span class="text-2xl font-extrabold text-earth-terracotta font-display mt-0.5 block">All-Risk Claim</span>
+        </div>
+        <div class="p-4 rounded-xl bg-earth-matchaDeep/80 border border-earth-matchaSurface">
+          <span class="text-xs text-slate-400 block font-sans">Pilihan Layanan</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">Lepas Kunci / Supir</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-earth-matcha text-earth-matcha pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-earth-matcha text-white flex items-center justify-center text-[11px]">1</span>
+          Armada & Rute Luar Kota
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold">2</span>
+          KTP/SIM & DP 30% QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold">3</span>
+          Surat Jalan & Voucher Sewa
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Booking Hub Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="trip-planner">
+    
+    <!-- STEP 1: Live Fleet Grid & Distance City Calculator -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Interactive Trip Parameter Strip (Kalkulator Luar Kota) -->
+      <div class="bg-white p-5 rounded-2xl border border-earth-border shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3 font-mono text-xs">
+          <span class="font-bold text-earth-matcha flex items-center gap-2">
+            <i data-lucide="map" class="w-4 h-4 text-earth-terracotta"></i>
+            Kalkulator Destinasi & Layanan Supir
+          </span>
+          <span class="text-slate-400">Tarif Real-Time Otomatis</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-mono">
+          <!-- Opsi Layanan (Lepas Kunci vs Supir) -->
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold font-sans">Layanan Pengemudi:</label>
+            <select id="driverServiceSelect" onchange="calculateRentalTotal()" class="w-full bg-earth-creamLight px-3 py-2.5 rounded-xl border border-earth-border text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-earth-matcha">
+              <option value="SELF_DRIVE" selected>Lepas Kunci (Self-Drive)</option>
+              <option value="WITH_DRIVER">Termasuk Supir Ramah (+ Rp 175.000/hari)</option>
+            </select>
+          </div>
+
+          <!-- Zona Tujuan Perjalanan -->
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold font-sans">Zona Wilayah Pemakaian:</label>
+            <select id="destinationZoneSelect" onchange="calculateRentalTotal()" class="w-full bg-earth-creamLight px-3 py-2.5 rounded-xl border border-earth-border text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-earth-matcha">
+              <option value="DALAM_KOTA" selected>Dalam Kota (Jabodetabek)</option>
+              <option value="JABAR">Luar Kota 1: Jawa Barat (Bandung/Cirebon)</option>
+              <option value="JATENG">Luar Kota 2: Jawa Tengah / DIY (Jogja/Solo)</option>
+              <option value="JATIM_BALI">Luar Kota 3: Jawa Timur & Bali</option>
+            </select>
+          </div>
+
+          <!-- Tanggal Mulai Sewa -->
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold font-sans">Tanggal Mulai:</label>
+            <input type="date" id="rentalStartDateInput" onchange="calculateRentalTotal()" class="w-full bg-earth-creamLight px-3 py-2 rounded-xl border border-earth-border text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-earth-matcha" />
+          </div>
+
+          <!-- Durasi Hari Sewa -->
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold font-sans">Durasi Pemakaian (Hari):</label>
+            <select id="rentalDurationDays" onchange="calculateRentalTotal()" class="w-full bg-earth-creamLight px-3 py-2.5 rounded-xl border border-earth-border text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-earth-matcha">
+              <option value="1" selected>1 Hari (24 Jam)</option>
+              <option value="2">2 Hari</option>
+              <option value="3">3 Hari (Hemat 5%)</option>
+              <option value="5">5 Hari (Hemat 10%)</option>
+              <option value="7">7 Hari (Mingguan Hemat 15%)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split Layout: Available Fleet Cards (7 Cols) vs Live Rental Trip Slip (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" id="fleet-matrix">
+        
+        <!-- Left: Available Vehicles Grid (7 Cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between border-b border-earth-border pb-3">
+            <div>
+              <h3 class="text-base font-bold text-earth-matcha font-display">Katalog Armada Ready di Pool</h3>
+              <p class="text-xs text-slate-500 font-sans mt-0.5">Pilih mobil yang sesuai dengan jumlah anggota keluarga atau tim Anda.</p>
+            </div>
+            <span class="text-xs font-mono bg-white text-earth-matcha px-2.5 py-1 rounded-lg border border-earth-border">DISPATCH ACTIVE</span>
+          </div>
+
+          <div class="space-y-4" id="fleetCardsContainer">
+            <!-- Rendered via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Right: Live Trip Calculation Slip & Security Summary (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-earth-border shadow-xl space-y-5 sticky top-24 font-mono text-xs">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Live Booking Slip</span>
+              <h4 class="text-sm font-bold text-earth-matcha font-display mt-0.5">Rincian Sewa Armada</h4>
+            </div>
+            <span class="text-[11px] font-bold bg-earth-cream text-earth-matcha px-2 py-0.5 rounded border border-earth-border" id="slipCategoryBadge">MPV</span>
+          </div>
+
+          <!-- Empty Notice -->
+          <div id="emptyFleetNotice" class="py-10 text-center text-slate-400 space-y-2">
+            <i data-lucide="key-round" class="w-10 h-10 mx-auto text-slate-300"></i>
+            <p class="text-xs font-sans">Belum ada mobil yang dipilih.<br>Silakan klik tombol "Pilih Mobil Ini" pada daftar armada di samping.</p>
+          </div>
+
+          <!-- Selected Vehicle Box -->
+          <div id="selectedCarSlipBox" class="hidden space-y-4">
+            <div class="p-4 bg-earth-creamLight rounded-xl border border-earth-border space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-earth-matcha text-sm font-display" id="slipCarTitle">Toyota All New Avanza 2024</span>
+                <span class="text-xs font-bold text-earth-terracotta font-mono" id="slipCarBaseRate">Rp 450.000 / Hari</span>
+              </div>
+              <p class="text-[11px] text-slate-500 font-sans leading-relaxed" id="slipCarSpecs">Matic AT • 7 Seater • Dual Airbags & Kamera Mundur</p>
+            </div>
+
+            <!-- Trip Specs -->
+            <div class="space-y-2 text-xs border-t border-b border-slate-100 py-3">
+              <div class="flex justify-between text-slate-600">
+                <span>Skema Driver:</span>
+                <strong class="text-earth-matcha font-sans" id="slipDriverMode">Lepas Kunci (Self-Drive)</strong>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Zona Wilayah:</span>
+                <strong class="text-earth-matcha font-sans" id="slipZoneName">Dalam Kota (Jabodetabek)</strong>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Mulai Sewa:</span>
+                <strong class="text-slate-900 font-mono" id="slipStartDateText">28 Okt 2026</strong>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Durasi:</span>
+                <strong class="text-earth-terracotta font-mono" id="slipDaysText">1 Hari</strong>
+              </div>
+            </div>
+
+            <!-- Cost Calculations Breakdown -->
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between text-slate-600">
+                <span>Sewa Pokok Armada:</span>
+                <span class="font-bold text-slate-900 font-mono" id="calcBaseRentalCost">Rp 450.000</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Biaya Layanan Supir:</span>
+                <span class="font-bold text-slate-900 font-mono" id="calcDriverCost">Rp 0 (Self-Drive)</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Surcharge Luar Kota:</span>
+                <span class="font-bold text-slate-900 font-mono" id="calcOutTownSurcharge">Rp 0 (Jabodetabek)</span>
+              </div>
+              <div class="flex justify-between text-emerald-700 font-semibold" id="calcDiscountRow">
+                <span>Diskon Durasi:</span>
+                <span class="font-bold font-mono" id="calcDiscountAmount">- Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Grand Total Price Box -->
+            <div class="p-3.5 bg-earth-matcha rounded-xl text-white flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-earth-terracotta uppercase block">Total Nilai Sewa</span>
+                <span class="text-xs text-slate-300 font-sans">Garansi Asuransi All-Risk</span>
+              </div>
+              <span class="text-xl font-black text-white font-mono" id="slipGrandTotalText">Rp 450.000</span>
+            </div>
+
+            <!-- Next Button to Step 2 -->
+            <button onclick="goToStep2()" class="w-full bg-earth-terracotta hover:bg-earth-terracottaHover text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-amber-950/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <span>Lanjut Upload KTP/SIM & Booking (DP 30%)</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *DP 30% langsung mengunci unit di pool sehingga mobil tidak akan dialihkan ke penyewa lain.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: KTP & SIM A Verification + QRIS Down Payment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Customer Data & Document Verification Upload Form -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-earth-border shadow-sm space-y-5" id="verification-flow">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3 font-mono">
+            <h3 class="text-base font-bold text-earth-matcha flex items-center gap-2 font-display">
+              <i data-lucide="shield-check" class="w-4 h-4 text-earth-terracotta"></i>
+              Verifikasi Identitas Penyewa (KTP & SIM A)
+            </h3>
+            <span class="text-xs text-slate-400">Keamanan & Asuransi</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Sesuai KTP *</label>
+                <input type="text" id="renterNameInput" value="Tedi Mahendra" class="w-full bg-earth-creamLight px-3.5 py-2.5 rounded-xl border border-earth-border focus:outline-none focus:ring-2 focus:ring-earth-matcha text-slate-900 font-sans font-medium" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp Aktif *</label>
+                <input type="tel" id="renterPhoneInput" value="081299998888" class="w-full bg-earth-creamLight px-3.5 py-2.5 rounded-xl border border-earth-border focus:outline-none focus:ring-2 focus:ring-earth-matcha text-slate-900 font-sans font-medium" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nomor NIK KTP *</label>
+                <input type="text" id="renterNikInput" value="3216091809920003" class="w-full bg-earth-creamLight px-3.5 py-2.5 rounded-xl border border-earth-border focus:outline-none focus:ring-2 focus:ring-earth-matcha text-slate-900 font-mono" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nomor SIM A (Wajib Lepas Kunci) *</label>
+                <input type="text" id="renterSimInput" value="920812345678" class="w-full bg-earth-creamLight px-3.5 py-2.5 rounded-xl border border-earth-border focus:outline-none focus:ring-2 focus:ring-earth-matcha text-slate-900 font-mono" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Alamat Domisili Pengantaran / Ambil Mobil *</label>
+              <textarea id="renterAddressInput" rows="2" class="w-full bg-earth-creamLight px-3.5 py-2.5 rounded-xl border border-earth-border focus:outline-none focus:ring-2 focus:ring-earth-matcha text-slate-900 font-sans font-medium">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Jakarta Selatan (Antar ke Lobi Depan)</textarea>
+            </div>
+
+            <!-- Upload Box Simulator KTP & SIM -->
+            <div class="p-4 bg-earth-cream/60 rounded-xl border border-earth-border space-y-3 font-sans">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-earth-matcha flex items-center gap-1.5">
+                  <i data-lucide="file-check" class="w-4 h-4 text-earth-terracotta"></i>
+                  Upload Dokumen Verifikasi (Foto Jelas):
+                </span>
+                <span class="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">2/2 Terverifikasi</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="p-3 bg-white rounded-xl border border-earth-border flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="credit-card" class="w-4 h-4 text-earth-matcha"></i>
+                    <div>
+                      <span class="font-bold text-slate-900 block text-[11px]">Foto KTP Asli</span>
+                      <span class="text-[10px] text-slate-400">ktp_tedi_verified.jpg</span>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-emerald-600 font-bold">✓ Valid</span>
+                </div>
+
+                <div class="p-3 bg-white rounded-xl border border-earth-border flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="id-card" class="w-4 h-4 text-earth-matcha"></i>
+                    <div>
+                      <span class="font-bold text-slate-900 block text-[11px]">Foto SIM A Pengemudi</span>
+                      <span class="text-[10px] text-slate-400">sim_tedi_active.jpg</span>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-emerald-600 font-bold">✓ Valid</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Scheme Selection (DP 30% vs Lunas) -->
+            <div class="space-y-3 pt-1">
+              <label class="block font-bold text-slate-700 font-sans">Pilihan Skema Pembayaran:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label onclick="selectPaymentScheme('DP')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-earth-creamLight border-earth-matcha" id="labelSchemeDp">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-earth-matcha">DP Kunci Unit (30%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-earth-matcha flex items-center justify-center">
+                      <span id="radioDotDp" class="w-2 h-2 rounded-full bg-earth-matcha"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-sans leading-normal">Mobil langsung dialokasikan ke Anda. Sisa 70% dilunasi saat serah terima kunci.</p>
+                  <span class="text-xs font-black text-earth-terracotta mt-2 block font-mono" id="schemeDpPriceText">Rp 135.000</span>
+                </label>
+
+                <label onclick="selectPaymentScheme('FULL')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-earth-border hover:border-slate-400" id="labelSchemeFull">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-earth-matcha">Pelunasan Penuh (100%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                      <span id="radioDotFull" class="w-2 h-2 rounded-full bg-transparent"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-sans leading-normal">Bebas repot transaksi saat mobil diantar ke rumah atau kantor Anda.</p>
+                  <span class="text-xs font-black text-slate-800 mt-2 block font-mono" id="schemeFullPriceText">Rp 450.000</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Settlement Gateway Box -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-earth-border shadow-xl space-y-5 font-mono text-xs">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gateway QRIS Dinamis</span>
+            <span class="text-[10px] font-bold bg-earth-cream text-earth-matcha px-2 py-0.5 rounded border border-earth-border">FLEET GUARANTEED</span>
+          </div>
+
+          <!-- QR Box -->
+          <div class="border border-earth-border rounded-xl p-4 bg-earth-creamLight text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-600 font-black text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-white bg-earth-matcha px-2 py-0.5 rounded" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-earth-border">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-RENTALARMADA-EXPRESS-DEPOSIT" alt="QRIS Rental" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-500 font-sans">
+              <p class="font-medium text-slate-700">Scan via BCA, Mandiri, BRI, BNI, GoPay, OVO</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 font-mono">NMID: ID1099238819 - PT RENTALARMADA NUSANTARA</p>
+            </div>
+
+            <!-- Total Amount to Pay Highlight -->
+            <div class="mt-3 pt-3 border-t border-earth-border w-full flex items-center justify-between px-1">
+              <span class="text-xs text-slate-600" id="qrisPayableLabel">Nominal DP 30% Booking:</span>
+              <span id="qrisPayableAmount" class="text-base font-extrabold text-earth-matcha font-mono">Rp 135.000</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2 font-sans">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-earth-matcha hover:bg-earth-matchaDeep active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-950/20">
+              <i data-lucide="check-circle" class="w-4 h-4 text-earth-terracotta"></i>
+              <span>Simulasi Bayar Berhasil (Terbitkan Voucher)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-earth-cream hover:bg-stone-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+              Kembali / Ganti Mobil
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Setelah verifikasi QRIS sukses, Surat Perintah Jalan (SPK) dan nomor kontak kurir antar mobil diterbitkan seketika.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Rental Voucher & Driver Delivery Order (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-900 no-print font-sans">
+        <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold">Armada Berhasil Dikunci & Terjadwal Antar!</h4>
+          <p class="text-xs text-emerald-800 mt-0.5">Voucher sewa resmi dan surat perintah jalan telah diterbitkan. Petugas kami akan menghubungi Anda sebelum pengantaran unit.</p>
+        </div>
+      </div>
+
+      <!-- Printable Voucher Document Card -->
+      <div id="printableRentalVoucher" class="bg-white rounded-2xl border border-earth-border shadow-xl p-6 sm:p-9 space-y-6 font-mono text-slate-900">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-earth-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-earth-matcha flex items-center justify-center text-white font-bold">
+                <i data-lucide="car" class="w-4 h-4 text-earth-terracotta"></i>
+              </div>
+              <span class="font-extrabold text-lg text-earth-matcha font-display">RENTAL<span class="text-earth-terracotta">ARMADA</span></span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-sans">PT RentalArmada Express Nusantara • Pool Sentral Cilandak, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-500 font-sans">Hotline Dispatcher 24 Jam: +62 812-9999-8888 • order@rentalarmada.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-earth-cream text-earth-matcha uppercase border border-earth-border" id="invStatusBadge">
+              VOUCHER CONFIRMED (DP 30%)
+            </span>
+            <p id="invVoucherNumber" class="text-xs font-bold text-slate-900 mt-1">SPK-ARM-202610-8812</p>
+            <p id="invDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Renter & Trip Destination Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-earth-creamLight p-4 rounded-xl border border-earth-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">PENYEWA / PENGEMUDI:</span>
+            <p id="invRenterName" class="font-bold text-earth-matcha text-sm font-sans">Tedi Mahendra</p>
+            <p id="invRenterContact" class="text-slate-600">WhatsApp: 081299998888</p>
+            <p id="invRenterDocs" class="text-emerald-700 font-semibold mt-0.5">KTP & SIM A: Terverifikasi Valid</p>
+            <p id="invDeliveryLocation" class="text-slate-500 mt-1 leading-relaxed font-sans">Gedung Wirausaha, Jakarta Selatan</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">JADWAL SEWA & RUTE:</span>
+            <p id="invStartDateDisplay" class="font-bold text-slate-900 text-sm">Rabu, 28 Okt 2026</p>
+            <p id="invTripDuration" class="text-earth-terracotta font-bold">Durasi: 1 Hari</p>
+            <p id="invDestinationZone" class="text-slate-600 mt-0.5">Rute: Dalam Kota (Jabodetabek)</p>
+            <p id="invDriverStatus" class="text-earth-matcha font-bold mt-1">Layanan: Lepas Kunci (Self-Drive)</p>
+          </div>
+        </div>
+
+        <!-- Vehicle & Fee Breakdown Table -->
+        <div class="border border-earth-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-earth-cream text-slate-700 border-b border-earth-border">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Rincian Armada & Layanan Sewa</th>
+                <th class="py-2.5 px-3 font-bold text-center">Durasi</th>
+                <th class="py-2.5 px-4 font-bold text-right">Tarif Dasar / Hari</th>
+                <th class="py-2.5 px-4 font-bold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-slate-900 block text-sm" id="invCarModelName">Toyota All New Avanza 2024</span>
+                  <div class="text-[11px] text-slate-500 font-sans mt-0.5" id="invCarSpecs">Transmisi: Matic AT • Kapasitas: 7 Kursi • Asuransi All-Risk</div>
+                  <div class="text-[10px] text-emerald-700 font-sans mt-1">Gratis Layanan Derek Darurat 24 Jam di Seluruh Jalur Tol</div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-700" id="invTableDays">1 Hari</td>
+                <td class="py-3 px-4 text-right text-slate-600 font-mono" id="invUnitDailyRate">Rp 450.000</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono" id="invTableSubtotal">Rp 450.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-earth-creamLight border-t border-earth-border text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-bold">Total Nilai Sewa:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900 font-mono" id="invTotalAmount">Rp 450.000</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-emerald-700 font-bold" id="invPaidLabel">Sudah Dibayar (DP 30% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700 font-mono" id="invPaidAmount">Rp 135.000</td>
+              </tr>
+              <tr class="bg-amber-50 border-t border-amber-200">
+                <td colspan="3" class="py-2.5 px-4 text-earth-matcha text-right font-extrabold text-xs" id="invDueLabel">
+                  Sisa Pelunasan Saat Serah Terima Kunci Unit:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-earth-terracotta font-mono" id="invDueAmount">
+                  Rp 315.000
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Vehicle Inspection Checklist Barcode -->
+        <div class="p-4 bg-earth-creamLight rounded-xl border border-earth-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Form Checklist Kondisi Fisik & Odometer Digital</span>
+            <p class="text-xs font-bold text-slate-900">Scan Barcode untuk Foto Kilometer Awal & Bodi Mobil Saat Serah Terima</p>
+            <p class="text-[11px] text-slate-500">Kondisi bensin serah terima sama dengan pengembalian (Bar-to-Bar).</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-lg inline-block shadow-sm border border-earth-border">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=RENTALARMADA-SPK-VALID-8812" alt="SPK Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] text-slate-400 mt-1">SPK-8812-PASS</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-white hover:bg-stone-100 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-earth-border font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Sewa Mobil Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-earth-matcha hover:bg-earth-matchaDeep text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-950/20 font-sans">
+            <i data-lucide="printer" class="w-4 h-4 text-earth-terracotta"></i>
+            Cetak Voucher & Surat Jalan (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Standards & Rental Guarantees Strip -->
+  <section class="border-t border-earth-border bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-earth-terracotta uppercase tracking-wider font-mono">Fleet Standard</span>
+        <h3 class="text-xl font-bold text-earth-matcha font-display mt-1">Keamanan & Keunggulan RentalArmada Express</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-earth-creamLight border border-earth-border">
+          <div class="w-9 h-9 rounded-lg bg-earth-cream text-earth-matcha flex items-center justify-center mb-3">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Asuransi All-Risk Terproteksi</h4>
+          <p class="text-slate-600 leading-relaxed">Penyewa dilindungi asuransi komprehensif sehingga Anda terbebas dari kekhawatiran biaya perbaikan besar bila terjadi insiden di jalan raya.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-earth-creamLight border border-earth-border">
+          <div class="w-9 h-9 rounded-lg bg-earth-cream text-earth-matcha flex items-center justify-center mb-3">
+            <i data-lucide="wrench" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Servis Rutin Bengkel Resmi</h4>
+          <p class="text-slate-600 leading-relaxed">Seluruh armada menjalani penggantian oli teratur, inspeksi rem, ban prima, serta sterilisasi AC kabin sebelum diserahkan kepada konsumen.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-earth-creamLight border border-earth-border">
+          <div class="w-9 h-9 rounded-lg bg-earth-cream text-earth-matcha flex items-center justify-center mb-3">
+            <i data-lucide="user-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Supir Berpengalaman & Sopan</h4>
+          <p class="text-slate-600 leading-relaxed">Tersedia driver profesional yang hafal rute jalan tikus, tol lintas provinsi, serta menerapkan etiket mengemudi aman dan ramah keluarga.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Matcha Dark Theme) -->
+  <footer class="bg-earth-matchaDeep text-slate-400 py-8 border-t border-earth-matchaSurface text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-earth-matchaSurface border border-earth-terracotta flex items-center justify-center text-earth-terracotta font-bold text-[10px]">R</div>
+        <span class="font-bold text-white font-sans">RentalArmada Express Logistics</span>
+        <span class="text-slate-500">| ID: rentalarmada-express</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right font-sans">&copy; 2026 PT RentalArmada Express Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Armada Rental Mobil
+    const fleetCatalog = [
+      {
+        id: "CAR-AVANZA",
+        name: "Toyota All New Avanza 2024",
+        category: "mpv",
+        dailyRate: 450000,
+        transmisi: "Matic AT",
+        seats: "7 Penumpang",
+        baggage: "3 Koper Besar",
+        engine: "1.500 cc Dual VVT-i (Irit BBM)",
+        image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=700&q=80",
+        features: ["Kamera Parkir & Sensor", "Bluetooth Audio Screen", "Double Blower AC"]
+      },
+      {
+        id: "CAR-INNOVA",
+        name: "Toyota Innova Zenix Hybrid 2024",
+        category: "premium",
+        dailyRate: 750000,
+        transmisi: "Matic CVT Hybrid",
+        seats: "7 Penumpang (Captain Seat)",
+        baggage: "4 Koper Besar",
+        engine: "2.000 cc Generasi Ke-5 Hybrid",
+        image: "https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&w=700&q=80",
+        features: ["Panoramic Sunroof", "Toyota Safety Sense (TSS)", "Suspensi Lembut Nyaman"]
+      },
+      {
+        id: "CAR-HIACE",
+        name: "Toyota HiAce Commuter / Premio",
+        category: "van",
+        dailyRate: 1100000,
+        transmisi: "Manual / Matic",
+        seats: "14 Penumpang",
+        baggage: "8 Koper Rombongan",
+        engine: "2.800 cc Diesel Turbo Kuat Nanjak",
+        image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=700&q=80",
+        features: ["Reclining Passenger Seats", "Audio Karaoke TV Layar", "Kabin Luas Berdiri"]
+      }
+    ];
+
+    // Out of Town Surcharge Matrix
+    const outTownSurchargeMatrix = {
+      DALAM_KOTA: { feePerDay: 0, label: "Dalam Kota (Jabodetabek)" },
+      JABAR: { feePerDay: 75000, label: "Jawa Barat (Bandung/Cirebon)" },
+      JATENG: { feePerDay: 150000, label: "Jawa Tengah / DIY (Jogja/Solo)" },
+      JATIM_BALI: { feePerDay: 250000, label: "Jawa Timur & Bali" }
+    };
+
+    // State Management
+    let selectedCar = fleetCatalog[0];
+    let selectedDriverMode = 'SELF_DRIVE';
+    let selectedZone = 'DALAM_KOTA';
+    let selectedDurationDays = 1;
+    let selectedPaymentScheme = 'DP'; // 'DP' (30%) or 'FULL'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Default Date: Today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('rentalStartDateInput').value = today;
+
+      renderFleetCards();
+      calculateRentalTotal();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToPlanner() {
+      document.getElementById('trip-planner').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Render Fleet Cards
+    function renderFleetCards() {
+      const container = document.getElementById('fleetCardsContainer');
+      container.innerHTML = '';
+
+      fleetCatalog.forEach(car => {
+        const isSelected = selectedCar && selectedCar.id === car.id;
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-2xl border-2 transition overflow-hidden shadow-sm hover:shadow-md cursor-pointer ${
+          isSelected ? 'border-earth-matcha ring-2 ring-earth-matcha/20' : 'border-earth-border'
+        }`;
+        card.onclick = () => pickCar(car);
+
+        let featuresHtml = car.features.map(f => `
+          <span class="inline-flex items-center gap-1 text-[11px] bg-earth-creamLight text-earth-matcha px-2 py-0.5 rounded border border-earth-border">
+            <i data-lucide="check" class="w-3 h-3 text-earth-terracotta"></i>
+            ${f}
+          </span>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-0">
+            <!-- Car Image (4 Cols) -->
+            <div class="sm:col-span-4 relative h-44 sm:h-auto bg-stone-100 overflow-hidden">
+              <img src="${car.image}" alt="${car.name}" class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+              <div class="absolute top-2.5 left-2.5 bg-earth-matcha/90 backdrop-blur text-earth-cream text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-earth-matchaSurface uppercase">
+                ${car.transmisi}
+              </div>
+            </div>
+
+            <!-- Car Specs (8 Cols) -->
+            <div class="sm:col-span-8 p-5 space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <div>
+                  <h4 class="font-extrabold text-base text-slate-900 font-display leading-tight">${car.name}</h4>
+                  <p class="text-xs text-slate-500 font-mono mt-0.5">${car.engine} • ${car.seats}</p>
+                </div>
+                <div class="text-left sm:text-right font-mono">
+                  <span class="text-base font-black text-earth-matcha font-mono">${formatRupiah(car.dailyRate)}</span>
+                  <span class="text-[10px] text-slate-400 block font-sans">/ 24 Jam</span>
+                </div>
+              </div>
+
+              <!-- Feature Pills -->
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                ${featuresHtml}
+              </div>
+
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-500 font-sans">Kapasitas: <strong>${car.baggage}</strong></span>
+                <span class="font-bold ${isSelected ? 'text-earth-terracotta' : 'text-slate-400'}">
+                  ${isSelected ? '✓ Armada Terpilih' : 'Klik Pilih Unit →'}
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function pickCar(car) {
+      selectedCar = car;
+      renderFleetCards();
+      calculateRentalTotal();
+    }
+
+    // Dynamic Rental Cost & Trip Distance Calculator
+    function calculateRentalTotal() {
+      selectedDriverMode = document.getElementById('driverServiceSelect').value;
+      selectedZone = document.getElementById('destinationZoneSelect').value;
+      selectedDurationDays = parseInt(document.getElementById('rentalDurationDays').value) || 1;
+      const startDateVal = document.getElementById('rentalStartDateInput').value;
+
+      const emptyNotice = document.getElementById('emptyFleetNotice');
+      const slipBox = document.getElementById('selectedCarSlipBox');
+      const categoryBadge = document.getElementById('slipCategoryBadge');
+
+      if (!selectedCar) {
+        emptyNotice.classList.remove('hidden');
+        slipBox.classList.add('hidden');
+        return;
+      }
+
+      emptyNotice.classList.add('hidden');
+      slipBox.classList.remove('hidden');
+
+      const catMap = { mpv: "COMPACT MPV", premium: "PREMIUM HYBRID", van: "TOURIST HIACE VAN" };
+      categoryBadge.innerText = catMap[selectedCar.category] || "ARMADA";
+
+      // 1. Sewa Dasar
+      const baseDailyRate = selectedCar.dailyRate;
+      let rawBaseTotal = baseDailyRate * selectedDurationDays;
+
+      // Diskon Durasi
+      let discountRate = 0;
+      if (selectedDurationDays >= 7) discountRate = 0.15; // 15% off
+      else if (selectedDurationDays >= 5) discountRate = 0.10; // 10% off
+      else if (selectedDurationDays >= 3) discountRate = 0.05; // 5% off
+
+      const discountVal = Math.round(rawBaseTotal * discountRate);
+      const discountedBaseTotal = rawBaseTotal - discountVal;
+
+      // 2. Biaya Supir
+      const driverDailyRate = selectedDriverMode === 'WITH_DRIVER' ? 175000 : 0;
+      const totalDriverCost = driverDailyRate * selectedDurationDays;
+
+      // 3. Surcharge Luar Kota
+      const zoneInfo = outTownSurchargeMatrix[selectedZone];
+      const totalOutTownCost = zoneInfo.feePerDay * selectedDurationDays;
+
+      // 4. Grand Total
+      const grandTotal = discountedBaseTotal + totalDriverCost + totalOutTownCost;
+      const dpAmount = Math.round(grandTotal * 0.3); // DP 30%
+      const dueAmount = grandTotal - dpAmount;
+
+      // Update Live Slip UI
+      document.getElementById('slipCarTitle').innerText = selectedCar.name;
+      document.getElementById('slipCarBaseRate').innerText = `${formatRupiah(baseDailyRate)} / Hari`;
+      document.getElementById('slipCarSpecs').innerText = `${selectedCar.transmisi} • ${selectedCar.seats} • ${selectedCar.baggage}`;
+
+      document.getElementById('slipDriverMode').innerText = selectedDriverMode === 'WITH_DRIVER' ? 'Termasuk Supir Ramah' : 'Lepas Kunci (Self-Drive)';
+      document.getElementById('slipZoneName').innerText = zoneInfo.label;
+      document.getElementById('slipStartDateText').innerText = startDateVal;
+      document.getElementById('slipDaysText').innerText = `${selectedDurationDays} Hari ${discountRate > 0 ? `(Hemat ${discountRate * 100}%)` : ''}`;
+
+      document.getElementById('calcBaseRentalCost').innerText = formatRupiah(rawBaseTotal);
+      document.getElementById('calcDriverCost').innerText = totalDriverCost > 0 ? formatRupiah(totalDriverCost) : "Rp 0 (Self-Drive)";
+      document.getElementById('calcOutTownSurcharge').innerText = totalOutTownCost > 0 ? formatRupiah(totalOutTownCost) : "Rp 0 (Jabodetabek)";
+
+      const discountRow = document.getElementById('calcDiscountRow');
+      if (discountRate > 0) {
+        discountRow.classList.remove('hidden');
+        document.getElementById('calcDiscountAmount').innerText = `- ${formatRupiah(discountVal)}`;
+      } else {
+        discountRow.classList.add('hidden');
+      }
+
+      document.getElementById('slipGrandTotalText').innerText = formatRupiah(grandTotal);
+
+      // Set Prices in Step 2 Scheme Cards
+      document.getElementById('schemeDpPriceText').innerText = formatRupiah(dpAmount);
+      document.getElementById('schemeFullPriceText').innerText = formatRupiah(grandTotal);
+
+      return { baseDailyRate, rawBaseTotal, discountVal, grandTotal, dpAmount, dueAmount, zoneInfo };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      const calc = calculateRentalTotal();
+      if (!calc) {
+        alert("Silakan pilih unit armada terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-earth-matcha text-earth-matcha pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-earth-matcha text-white flex items-center justify-center text-[11px] font-bold";
+
+      selectPaymentScheme(selectedPaymentScheme);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function selectPaymentScheme(scheme) {
+      selectedPaymentScheme = scheme;
+
+      const labelDp = document.getElementById('labelSchemeDp');
+      const labelFull = document.getElementById('labelSchemeFull');
+      const dotDp = document.getElementById('radioDotDp');
+      const dotFull = document.getElementById('radioDotFull');
+      const qrisLabel = document.getElementById('qrisPayableLabel');
+      const qrisAmount = document.getElementById('qrisPayableAmount');
+
+      const calc = calculateRentalTotal();
+
+      if (scheme === 'DP') {
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-earth-creamLight border-earth-matcha";
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-earth-border hover:border-slate-400";
+        dotDp.className = "w-2 h-2 rounded-full bg-earth-matcha";
+        dotFull.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal DP 30% Booking:";
+        qrisAmount.innerText = formatRupiah(calc.dpAmount);
+      } else {
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-earth-creamLight border-earth-matcha";
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-earth-border hover:border-slate-400";
+        dotFull.className = "w-2 h-2 rounded-full bg-earth-matcha";
+        dotDp.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Pelunasan Penuh (100%):";
+        qrisAmount.innerText = formatRupiah(calc.grandTotal);
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi pembayaran QRIS berakhir. Alokasi armada dibatalkan.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const name = document.getElementById('renterNameInput').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('renterPhoneInput').value.trim() || '081299998888';
+      const address = document.getElementById('renterAddressInput').value.trim() || 'Gedung Wirausaha, Jakarta Selatan';
+      const startDate = document.getElementById('rentalStartDateInput').value;
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-earth-matcha text-earth-matcha pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-earth-matcha text-white flex items-center justify-center text-[11px] font-bold";
+
+      const calc = calculateRentalTotal();
+      const paid = selectedPaymentScheme === 'DP' ? calc.dpAmount : calc.grandTotal;
+      const due = calc.grandTotal - paid;
+
+      const randomVoucher = "SPK-ARM-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invVoucherNumber').innerText = randomVoucher;
+      document.getElementById('invDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invRenterName').innerText = name;
+      document.getElementById('invRenterContact').innerText = `WhatsApp: ${phone}`;
+      document.getElementById('invDeliveryLocation').innerText = address;
+
+      document.getElementById('invStartDateDisplay').innerText = startDate;
+      document.getElementById('invTripDuration').innerText = `Durasi: ${selectedDurationDays} Hari`;
+      document.getElementById('invDestinationZone').innerText = `Rute: ${calc.zoneInfo.label}`;
+      document.getElementById('invDriverStatus').innerText = selectedDriverMode === 'WITH_DRIVER' ? 'Layanan: Termasuk Supir Ramah' : 'Layanan: Lepas Kunci (Self-Drive)';
+
+      document.getElementById('invCarModelName').innerText = selectedCar.name;
+      document.getElementById('invCarSpecs').innerText = `Transmisi: ${selectedCar.transmisi} • Kapasitas: ${selectedCar.seats} • ${selectedCar.engine}`;
+      document.getElementById('invTableDays').innerText = `${selectedDurationDays} Hari`;
+      document.getElementById('invUnitDailyRate').innerText = formatRupiah(calc.baseDailyRate);
+      document.getElementById('invTableSubtotal').innerText = formatRupiah(calc.grandTotal);
+
+      document.getElementById('invTotalAmount').innerText = formatRupiah(calc.grandTotal);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+      document.getElementById('invDueAmount').innerText = formatRupiah(due);
+
+      if (selectedPaymentScheme === 'DP') {
+        document.getElementById('invStatusBadge').innerText = "VOUCHER CONFIRMED (DP 30%)";
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (DP 30% QRIS):";
+        document.getElementById('invDueLabel').innerText = "Sisa Pelunasan Saat Serah Terima Kunci Unit:";
+      } else {
+        document.getElementById('invStatusBadge').innerText = "VOUCHER LUNAS 100% (EXPRESS)";
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (Lunas 100%):";
+        document.getElementById('invDueLabel').innerText = "Status Tagihan:";
+        document.getElementById('invDueAmount').innerText = "LUNAS (Rp 0)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedCar = fleetCatalog[0];
+      selectedDriverMode = 'SELF_DRIVE';
+      selectedZone = 'DALAM_KOTA';
+      selectedDurationDays = 1;
+      selectedPaymentScheme = 'DP';
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      document.getElementById('driverServiceSelect').value = 'SELF_DRIVE';
+      document.getElementById('destinationZoneSelect').value = 'DALAM_KOTA';
+      document.getElementById('rentalDurationDays').value = '1';
+
+      renderFleetCards();
+      calculateRentalTotal();
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

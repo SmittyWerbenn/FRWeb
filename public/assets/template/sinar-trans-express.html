@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sinar Trans Express - Ekspedisi Kargo, Cek Ongkir & Live Tracking Resi</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            coffee: {
+              espresso: '#2C1A1D',      // Espresso Pekat
+              espressoDark: '#1E1113',  // Darker Espresso
+              espressoCard: '#3E252A',  // Surface Dark
+              oatmeal: '#EFE9E1',       // Oatmeal Cream
+              oatmealLight: '#FBF9F6',  // Off-white Cream
+              caramel: '#C47335',       // Warm Caramel Accent
+              caramelHover: '#A85B24',  // Darker Caramel
+              border: '#E0D6C8'         // Soft Cream Border
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(44, 26, 29, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .oatmeal-pattern {
+      background-color: #EFE9E1;
+      background-image: radial-gradient(#2C1A1D15 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .caramel-glow {
+      box-shadow: 0 0 25px rgba(196, 115, 53, 0.25);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableWaybill, #printableWaybill * {
+        visibility: visible;
+      }
+      #printableWaybill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #2C1A1D !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="oatmeal-pattern text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-coffee-caramel selection:text-white">
+
+  <!-- Top Announcement Bar (Espresso & Caramel Accent) -->
+  <div class="bg-coffee-espressoDark text-slate-300 text-xs py-2 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-coffee-espressoCard font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-coffee-caramel text-white">CARGO DISPATCH NETWORK</span>
+    <span>Ekspedisi Darat, Laut & Udara • Pengiriman Antar-Pulau Terpercaya • Gratis Jemput Muatan ke Lokasi Gudang</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-coffee-espressoCard shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-coffee-espressoCard border border-coffee-caramel flex items-center justify-center text-coffee-caramel shadow-md shadow-amber-950/20 flex-shrink-0 transition group-hover:bg-coffee-caramel group-hover:text-white">
+          <i data-lucide="truck" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-white block leading-tight font-display">
+            SINAR<span class="text-coffee-caramel">TRANS</span>
+            <span class="text-[10px] font-mono bg-coffee-espressoCard text-coffee-oatmeal border border-coffee-caramel/40 px-1.5 py-0.5 rounded ml-1 font-bold uppercase">EXPRESS</span>
+          </span>
+          <span class="text-[10px] text-slate-300 tracking-wider block font-mono font-medium">EKSPEDISI & LOGISTIK CARGO</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-200">
+        <a href="#dispatch-hub" onclick="switchUtilityTab('RATE')" class="text-coffee-caramel hover:text-white transition">Cek Tarif Ongkir</a>
+        <a href="#dispatch-hub" onclick="switchUtilityTab('TRACKING')" class="hover:text-coffee-caramel transition">Tracking Resi</a>
+        <a href="#dispatch-hub" onclick="switchUtilityTab('PICKUP')" class="hover:text-coffee-caramel transition">Request Pickup</a>
+      </nav>
+
+      <!-- Action Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-coffee-espressoCard text-slate-200 font-mono px-3.5 py-1.5 rounded-lg border border-coffee-espresso">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Hub Sentral: Dispatching Normal 24 Jam
+        </div>
+        <button onclick="scrollToHub()" class="bg-coffee-caramel hover:bg-coffee-caramelHover text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-amber-950/20 flex items-center gap-2 active:scale-95 font-display">
+          <i data-lucide="calculator" class="w-4 h-4 text-white"></i>
+          <span>Hitung Biaya Kargo</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Coffee House Theme) -->
+  <section class="border-b border-coffee-border bg-coffee-espresso text-white py-12 sm:py-16 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-coffee-espressoCard border border-coffee-border/40 text-coffee-oatmeal text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-coffee-caramel animate-ping"></span>
+          Inter-Island Freight Logistics System v4.5
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.18] font-display">
+          Kirim Barang Berat & Kargo Bisnis Tanpa Beban Tarif Mahal.
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
+          Cek ongkos kirim kargo antar-kota dan antar-pulau secara instan. Pantau pergerakan truk pengirim lewat <strong class="text-coffee-caramel font-mono">Live Tracking Resi AWB</strong>, atau jadwalkan kurir armada pick-up langsung ke gudang Anda dengan estimasi berat dan volume yang transparan.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-coffee-espressoCard text-left font-mono">
+        <div class="p-4 rounded-xl bg-coffee-espressoDark/80 border border-coffee-espressoCard">
+          <span class="text-xs text-slate-400 block font-sans">Jangkauan Wilayah</span>
+          <span class="text-2xl font-extrabold text-coffee-caramel font-display mt-0.5 block">500+ Kota / Kab</span>
+        </div>
+        <div class="p-4 rounded-xl bg-coffee-espressoDark/80 border border-coffee-espressoCard">
+          <span class="text-xs text-slate-400 block font-sans">Minimal Berat Kargo</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">10 Kg (Hemat)</span>
+        </div>
+        <div class="p-4 rounded-xl bg-coffee-espressoDark/80 border border-coffee-espressoCard">
+          <span class="text-xs text-slate-400 block font-sans">Armada Penjemput</span>
+          <span class="text-2xl font-extrabold text-coffee-caramel font-display mt-0.5 block">Van s/d Tronton</span>
+        </div>
+        <div class="p-4 rounded-xl bg-coffee-espressoDark/80 border border-coffee-espressoCard">
+          <span class="text-xs text-slate-400 block font-sans">Status Pelacakan</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">Real-time GPS</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-coffee-espresso text-coffee-espresso pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-coffee-espresso text-white flex items-center justify-center text-[11px]">1</span>
+          Cek Ongkir / Resi / Pickup
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold">2</span>
+          Data Muatan & DP QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold">3</span>
+          Resi AWB & Surat Jalan
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Multi-Utility Cargo Workspace Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="dispatch-hub">
+    
+    <!-- STEP 1: Tri-Utility Desk (1. Cek Tarif, 2. Live Tracking, 3. Pickup) -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Utility Tabs Strip -->
+      <div class="bg-white p-3 rounded-2xl border border-coffee-border shadow-sm flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
+        <div class="flex items-center gap-2 p-1 bg-coffee-oatmeal rounded-xl border border-coffee-border w-full sm:w-auto">
+          <button id="tabRateBtn" onclick="switchUtilityTab('RATE')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg font-bold bg-coffee-espresso text-white shadow-sm transition flex items-center gap-1.5">
+            <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
+            <span>1. Kalkulator Ongkir Kargo</span>
+          </button>
+          <button id="tabTrackBtn" onclick="switchUtilityTab('TRACKING')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg font-bold text-slate-700 hover:text-coffee-espresso transition flex items-center gap-1.5">
+            <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+            <span>2. Live Tracking Resi AWB</span>
+          </button>
+          <button id="tabPickupBtn" onclick="switchUtilityTab('PICKUP')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg font-bold text-slate-700 hover:text-coffee-espresso transition flex items-center gap-1.5">
+            <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+            <span>3. Request Pickup Armada</span>
+          </button>
+        </div>
+
+        <div class="text-slate-500 text-[11px] font-sans px-2 hidden lg:block">
+          Standar Volumetrik: <strong>(P × L × T cm) / 4.000 = Kg Kargo Darat</strong>
+        </div>
+      </div>
+
+      <!-- Split Layout: Active Tool (7 Cols) vs Live Dispatch Summary Slip (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Interactive Form Canvas based on Active Tab (7 Cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- TAB 1: Cek Tarif Ongkir Kargo & Kubikasi -->
+          <div id="wrapperRateCalc" class="bg-white p-6 sm:p-7 rounded-2xl border border-coffee-border shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 font-mono">
+              <div>
+                <h3 class="text-base font-bold text-coffee-espresso font-display">Kalkulator Rute & Berat Kargo</h3>
+                <p class="text-xs text-slate-500 font-sans mt-0.5">Mendukung perhitungan berat aktual (Kg) dan berat kubikasi (Volume).</p>
+              </div>
+              <span class="text-xs font-mono bg-coffee-oatmeal text-coffee-espresso px-2.5 py-1 rounded-lg border border-coffee-border font-bold">RATE CHECKER</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+              <div>
+                <label class="block text-slate-700 font-bold mb-1 font-sans">Kota Asal Pengiriman:</label>
+                <select id="originCitySelect" onchange="calculateCargoRates()" class="w-full bg-coffee-oatmealLight px-3.5 py-2.5 rounded-xl border border-coffee-border text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-coffee-espresso">
+                  <option value="JKT" selected>Jakarta / Tangerang / Bekasi (Hub Barat)</option>
+                  <option value="SBY">Surabaya / Sidoarjo (Hub Timur)</option>
+                  <option value="BDG">Bandung / Jawa Barat</option>
+                  <option value="SMG">Semarang / Jawa Tengah</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-700 font-bold mb-1 font-sans">Kota Tujuan Pengantaran:</label>
+                <select id="destCitySelect" onchange="calculateCargoRates()" class="w-full bg-coffee-oatmealLight px-3.5 py-2.5 rounded-xl border border-coffee-border text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-coffee-espresso">
+                  <option value="SBY" selected>Surabaya (Jawa Timur) - 1-2 Hari</option>
+                  <option value="DPS">Denpasar (Bali) - 2-3 Hari</option>
+                  <option value="MDN">Medan (Sumatera Utara) - 3-4 Hari</option>
+                  <option value="BPN">Balikpapan (Kalimantan Timur) - 4-5 Hari</option>
+                  <option value="MKS">Makassar (Sulawesi Selatan) - 4-5 Hari</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Dimensi Paket Kargo (Panjang, Lebar, Tinggi, Berat Aktual) -->
+            <div class="p-4 bg-coffee-oatmeal/60 rounded-xl border border-coffee-border space-y-3 font-mono text-xs">
+              <span class="font-bold text-coffee-espresso block font-sans">Dimensi Fisik Muatan:</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-1">Berat Aktual (Kg):</span>
+                  <input type="number" id="actualWeightInput" value="35" min="10" oninput="calculateCargoRates()" class="w-full bg-white px-2.5 py-2 rounded-lg border border-coffee-border text-slate-900 font-bold text-center" />
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-1">Panjang (cm):</span>
+                  <input type="number" id="dimLengthInput" value="60" min="10" oninput="calculateCargoRates()" class="w-full bg-white px-2.5 py-2 rounded-lg border border-coffee-border text-slate-900 font-bold text-center" />
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-1">Lebar (cm):</span>
+                  <input type="number" id="dimWidthInput" value="50" min="10" oninput="calculateCargoRates()" class="w-full bg-white px-2.5 py-2 rounded-lg border border-coffee-border text-slate-900 font-bold text-center" />
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-1">Tinggi (cm):</span>
+                  <input type="number" id="dimHeightInput" value="50" min="10" oninput="calculateCargoRates()" class="w-full bg-white px-2.5 py-2 rounded-lg border border-coffee-border text-slate-900 font-bold text-center" />
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] pt-1 text-slate-600">
+                <span>Berat Volumetrik Hasil Hitung: <strong class="text-coffee-espresso" id="volumetricWeightText">37.5 Kg</strong></span>
+                <span class="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded" id="chargeableWeightBadge">Dikenakan: 37.5 Kg</span>
+              </div>
+            </div>
+
+            <!-- Pilihan Layanan Kargo -->
+            <div class="space-y-2.5 font-mono text-xs">
+              <label class="block text-slate-700 font-bold font-sans">Pilihan Layanan Ekspedisi:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="serviceOptionsContainer">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: Live Tracking Resi AWB -->
+          <div id="wrapperTrackingAwb" class="hidden bg-white p-6 sm:p-7 rounded-2xl border border-coffee-border shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 font-mono">
+              <div>
+                <h3 class="text-base font-bold text-coffee-espresso font-display">Live Tracking Resi AWB Kargo</h3>
+                <p class="text-xs text-slate-500 font-sans mt-0.5">Masukkan nomor resi untuk melihat status posisi truk pengangkut.</p>
+              </div>
+              <span class="text-xs font-mono bg-coffee-oatmeal text-coffee-espresso px-2.5 py-1 rounded-lg border border-coffee-border font-bold">RADAR GPS</span>
+            </div>
+
+            <!-- Resi Input Search -->
+            <div class="flex items-center gap-2 font-mono text-xs">
+              <input type="text" id="trackingAwbInput" value="STX-202610-8812" class="flex-1 bg-coffee-oatmealLight px-3.5 py-2.5 rounded-xl border border-coffee-border text-slate-800 font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-coffee-espresso" />
+              <button onclick="performTrackingSearch()" class="bg-coffee-espresso hover:bg-coffee-espressoCard text-white font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 active:scale-95 font-sans">
+                <i data-lucide="search" class="w-4 h-4 text-coffee-caramel"></i>
+                <span>Lacak</span>
+              </button>
+            </div>
+
+            <!-- Live Status Stepper Timeline Graphic -->
+            <div class="p-5 bg-coffee-oatmealLight rounded-xl border border-coffee-border space-y-4 font-mono text-xs">
+              <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span class="text-slate-500">Nomor AWB: <strong class="text-coffee-espresso" id="trackResultAwb">STX-202610-8812</strong></span>
+                <span class="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-[10px]">ON TRANSIT</span>
+              </div>
+
+              <!-- Stepper Timeline -->
+              <div class="space-y-4 pt-1 font-sans">
+                <!-- Checkpoint 1 -->
+                <div class="flex items-start gap-3">
+                  <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 text-xs">✓</div>
+                  <div>
+                    <h5 class="font-bold text-slate-900 text-xs">Paket Di-Pickup dari Gudang Pengirim</h5>
+                    <p class="text-[11px] text-slate-500">Jakarta Barat Hub • 27 Okt 2026, 14:30 WIB</p>
+                  </div>
+                </div>
+
+                <!-- Checkpoint 2 -->
+                <div class="flex items-start gap-3">
+                  <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 text-xs">✓</div>
+                  <div>
+                    <h5 class="font-bold text-slate-900 text-xs">Manifest Masuk Truk Tronton Ekspedisi</h5>
+                    <p class="text-[11px] text-slate-500">Armada Truk #B-9812-XYZ • 27 Okt 2026, 21:00 WIB</p>
+                  </div>
+                </div>
+
+                <!-- Checkpoint 3 (Active) -->
+                <div class="flex items-start gap-3">
+                  <div class="w-6 h-6 rounded-full bg-coffee-caramel text-white flex items-center justify-center flex-shrink-0 mt-0.5 text-xs animate-pulse">●</div>
+                  <div>
+                    <h5 class="font-bold text-coffee-caramel text-xs">Tiba di Sorting Hub Semarang (Jawa Tengah)</h5>
+                    <p class="text-[11px] text-slate-500">Pemberhentian transit muatan • 28 Okt 2026, 06:15 WIB (Hari Ini)</p>
+                  </div>
+                </div>
+
+                <!-- Checkpoint 4 (Pending) -->
+                <div class="flex items-start gap-3 opacity-40">
+                  <div class="w-6 h-6 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center flex-shrink-0 mt-0.5 text-xs">○</div>
+                  <div>
+                    <h5 class="font-bold text-slate-800 text-xs">Pengantaran Kurir ke Alamat Penerima Surabaya</h5>
+                    <p class="text-[11px] text-slate-500">Estimasi Tiba: 29 Okt 2026, Siang Hari</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: Request Pickup Armada Kargo -->
+          <div id="wrapperPickupRequest" class="hidden bg-white p-6 sm:p-7 rounded-2xl border border-coffee-border shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 font-mono">
+              <div>
+                <h3 class="text-base font-bold text-coffee-espresso font-display">Jadwal Jemput Muatan (Free Pickup)</h3>
+                <p class="text-xs text-slate-500 font-sans mt-0.5">Armada kargo kami akan menjemput paket langsung ke pabrik/gudang Anda.</p>
+              </div>
+              <span class="text-xs font-mono bg-coffee-oatmeal text-coffee-espresso px-2.5 py-1 rounded-lg border border-coffee-border font-bold">PICKUP TRUCK</span>
+            </div>
+
+            <div class="space-y-3 font-mono text-xs">
+              <div>
+                <label class="block text-slate-700 font-bold mb-1 font-sans">Pilih Armada Penjemput Kargo:</label>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="fleetSelectionContainer">
+                  <!-- Rendered via JS -->
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-slate-700 font-bold mb-1 font-sans">Tanggal Penjemputan:</label>
+                  <input type="date" id="pickupDateInput" class="w-full bg-coffee-oatmealLight px-3 py-2 rounded-xl border border-coffee-border text-slate-800 font-medium" />
+                </div>
+                <div>
+                  <label class="block text-slate-700 font-bold mb-1 font-sans">Waktu Siap Angkut:</label>
+                  <select id="pickupTimeSlotSelect" class="w-full bg-coffee-oatmealLight px-3 py-2 rounded-xl border border-coffee-border text-slate-800 font-medium font-sans">
+                    <option value="Pagi (09:00 - 12:00 WIB)" selected>Pagi (09:00 - 12:00 WIB)</option>
+                    <option value="Siang (13:00 - 16:00 WIB)">Siang (13:00 - 16:00 WIB)</option>
+                    <option value="Sore (16:30 - 19:00 WIB)">Sore (16:30 - 19:00 WIB)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-slate-700 font-bold mb-1 font-sans">Alamat Lokasi Gudang / Titik Pickup *</label>
+                <textarea id="pickupWarehouseAddress" rows="2" class="w-full bg-coffee-oatmealLight px-3 py-2 rounded-xl border border-coffee-border text-slate-800 font-sans">Gudang Logistik Sinar Blok C-8, Kawasan Pergudangan Kosambi, Tangerang</textarea>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Live Dispatch Calculation Slip (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-coffee-border shadow-xl space-y-5 sticky top-24 font-mono text-xs" id="dispatch-slip">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Waybill Slip</span>
+              <h4 class="text-sm font-bold text-coffee-espresso font-display mt-0.5">Surat Muatan Kargo</h4>
+            </div>
+            <span class="text-[11px] font-bold bg-coffee-oatmeal text-coffee-espresso px-2 py-0.5 rounded border border-coffee-border" id="slipServiceBadge">KARGO DARAT TRUK</span>
+          </div>
+
+          <!-- Trip & Route Detail Summary -->
+          <div class="p-4 bg-coffee-oatmealLight rounded-xl border border-coffee-border space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-coffee-espresso text-sm font-display" id="slipRouteTitle">Jakarta → Surabaya</span>
+              <span class="text-xs font-bold text-coffee-caramel font-mono" id="slipEtdText">1-2 Hari Kerja</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-sans leading-relaxed" id="slipServiceDesc">Layanan kargo cepat via Tol Trans-Jawa dengan armada Tronton Box tertutup.</p>
+          </div>
+
+          <!-- Breakdown Metrics -->
+          <div class="space-y-2 text-xs border-t border-b border-slate-100 py-3">
+            <div class="flex justify-between text-slate-600">
+              <span>Berat Dikenakan Biaya:</span>
+              <strong class="text-coffee-espresso font-mono" id="slipChargeableWeight">37.5 Kg</strong>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Tarif Dasar per Kg:</span>
+              <strong class="text-slate-900 font-mono" id="slipRatePerKg">Rp 4.500 / Kg</strong>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Biaya Penjemputan (Pickup):</span>
+              <strong class="text-emerald-700 font-sans">GRATIS (Free Pickup)</strong>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Asuransi Kargo Standar:</span>
+              <strong class="text-slate-900 font-mono" id="slipInsuranceCost">Rp 15.000</strong>
+            </div>
+          </div>
+
+          <!-- Grand Total Price Box -->
+          <div class="p-3.5 bg-coffee-espresso rounded-xl text-white flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-coffee-caramel uppercase block">Total Nilai Muatan</span>
+              <span class="text-xs text-slate-300 font-sans">Termasuk PPN & Asuransi</span>
+            </div>
+            <span class="text-xl font-black text-white font-mono" id="slipGrandTotalText">Rp 183.750</span>
+          </div>
+
+          <!-- Next Button to Step 2 -->
+          <button onclick="goToStep2()" class="w-full bg-coffee-caramel hover:bg-coffee-caramelHover text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-amber-950/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+            <span>Lanjut Isi Alamat Kirim & Bayar (DP 30%)</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *DP 30% menjamin booking armada penjemputan dan nomor resi AWB aktif di sistem.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP 2: Sender & Receiver Data + QRIS Down Payment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Shipper & Consignee Form -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-coffee-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3 font-mono">
+            <h3 class="text-base font-bold text-coffee-espresso flex items-center gap-2 font-display">
+              <i data-lucide="contact" class="w-4 h-4 text-coffee-caramel"></i>
+              Data Pengirim (Shipper) & Penerima (Consignee)
+            </h3>
+            <span class="text-xs text-slate-400">Faktur Resi AWB</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <!-- Shipper Data -->
+            <div class="p-3.5 bg-coffee-oatmealLight rounded-xl border border-coffee-border space-y-2">
+              <span class="font-bold text-coffee-espresso block font-sans">1. Data Pengirim (Shipper):</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-sans">
+                <input type="text" id="shipperNameInput" value="Tedi Mahendra (PT Reliantradha)" placeholder="Nama Pengirim" class="bg-white px-3 py-2 rounded-lg border border-coffee-border" />
+                <input type="tel" id="shipperPhoneInput" value="081299998888" placeholder="No. WA Pengirim" class="bg-white px-3 py-2 rounded-lg border border-coffee-border font-mono" />
+              </div>
+              <textarea id="shipperAddressInput" rows="2" placeholder="Alamat Gudang Pengirim" class="w-full bg-white px-3 py-2 rounded-lg border border-coffee-border font-sans">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Jakarta Selatan</textarea>
+            </div>
+
+            <!-- Consignee Data -->
+            <div class="p-3.5 bg-coffee-oatmealLight rounded-xl border border-coffee-border space-y-2">
+              <span class="font-bold text-coffee-espresso block font-sans">2. Data Penerima (Consignee):</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-sans">
+                <input type="text" id="consigneeNameInput" value="Budi Santoso (Gudang Rungkut)" placeholder="Nama Penerima" class="bg-white px-3 py-2 rounded-lg border border-coffee-border" />
+                <input type="tel" id="consigneePhoneInput" value="081377889900" placeholder="No. WA Penerima" class="bg-white px-3 py-2 rounded-lg border border-coffee-border font-mono" />
+              </div>
+              <textarea id="consigneeAddressInput" rows="2" placeholder="Alamat Lengkap Tujuan" class="w-full bg-white px-3 py-2 rounded-lg border border-coffee-border font-sans">Kawasan Industri SIER Rungkut Megah Raya Blok D-15, Surabaya, Jawa Timur</textarea>
+            </div>
+
+            <!-- Payment Scheme Selection (DP 30% vs Full 100%) -->
+            <div class="space-y-3 pt-1">
+              <label class="block font-bold text-slate-700 font-sans">Pilihan Skema Pembayaran Ongkir:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label onclick="selectPaymentScheme('DP')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-coffee-oatmealLight border-coffee-espresso" id="labelSchemeDp">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-coffee-espresso">DP Booking Armada (30%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-coffee-espresso flex items-center justify-center">
+                      <span id="radioDotDp" class="w-2 h-2 rounded-full bg-coffee-espresso"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-sans leading-normal">Kunci jadwal jemput armada, sisa 70% dilunasi saat barang berhasil ditimbang ulang di hub.</p>
+                  <span class="text-xs font-black text-coffee-caramel mt-2 block font-mono" id="schemeDpPriceText">Rp 55.125</span>
+                </label>
+
+                <label onclick="selectPaymentScheme('FULL')" class="p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-coffee-border hover:border-slate-400" id="labelSchemeFull">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-coffee-espresso">Pelunasan Penuh (100%)</span>
+                    <span class="w-4 h-4 rounded-full border-2 border-slate-300 flex items-center justify-center">
+                      <span id="radioDotFull" class="w-2 h-2 rounded-full bg-transparent"></span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-sans leading-normal">Praktis tanpa jeda administrasi timbang ulang. Langsung terima resi sah.</p>
+                  <span class="text-xs font-black text-slate-800 mt-2 block font-mono" id="schemeFullPriceText">Rp 183.750</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Prototype QRIS Settlement Gateway Box -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-coffee-border shadow-xl space-y-5 font-mono text-xs">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gateway QRIS Dinamis</span>
+            <span class="text-[10px] font-bold bg-coffee-oatmeal text-coffee-espresso px-2 py-0.5 rounded border border-coffee-border">DISPATCH LOCK</span>
+          </div>
+
+          <!-- QR Box -->
+          <div class="border border-coffee-border rounded-xl p-4 bg-coffee-oatmealLight text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-600 font-black text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-white bg-coffee-espresso px-2 py-0.5 rounded" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow-sm border border-coffee-border">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-SINAR-TRANS-CARGO-DEPOSIT" alt="QRIS Kargo" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-500 font-sans">
+              <p class="font-medium text-slate-700">Scan via BCA, Mandiri, BRI, BNI, GoPay, OVO</p>
+              <p class="text-[10px] text-slate-400 mt-0.5 font-mono">NMID: ID1099238820 - PT SINAR TRANS EXPRESS</p>
+            </div>
+
+            <!-- Total Amount to Pay Highlight -->
+            <div class="mt-3 pt-3 border-t border-coffee-border w-full flex items-center justify-between px-1">
+              <span class="text-xs text-slate-600" id="qrisPayableLabel">Nominal Ditagihkan (DP 30%):</span>
+              <span id="qrisPayableAmount" class="text-base font-extrabold text-coffee-espresso font-mono">Rp 55.125</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2 font-sans">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-coffee-espresso hover:bg-coffee-espressoDark active:scale-95 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-amber-950/20">
+              <i data-lucide="check-circle" class="w-4 h-4 text-coffee-caramel"></i>
+              <span>Simulasi Bayar Berhasil (Terbitkan Resi AWB)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-coffee-oatmeal hover:bg-stone-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition">
+              Kembali / Koreksi Rute
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Setelah verifikasi QRIS sukses, nomor resi AWB resmi dan surat jalan armada penjemput diterbitkan seketika.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Cargo Waybill (Resi AWB Sah Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-emerald-900 no-print font-sans">
+        <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold">Muatan Kargo Terkonfirmasi & Resi AWB Resmi Terbit!</h4>
+          <p class="text-xs text-emerald-800 mt-0.5">Surat Muatan Kargo (Air Waybill) sah telah diterbitkan. Tempelkan label resi ini pada kardus / peti kayu Anda.</p>
+        </div>
+      </div>
+
+      <!-- Printable Waybill Document Card -->
+      <div id="printableWaybill" class="bg-white rounded-2xl border border-coffee-border shadow-xl p-6 sm:p-9 space-y-6 font-mono text-slate-900">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-coffee-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-coffee-espresso flex items-center justify-center text-white font-bold">
+                <i data-lucide="truck" class="w-4 h-4 text-coffee-caramel"></i>
+              </div>
+              <span class="font-extrabold text-lg text-coffee-espresso font-display">SINAR<span class="text-coffee-caramel">TRANS</span> EXPRESS</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-sans">PT Sinar Trans Nusantara • Central Cargo Hub Cengkareng, Jakarta Barat</p>
+            <p class="text-[11px] text-slate-500 font-sans">CS Dispatch 24 Jam: +62 812-9999-8888 • tracking@sinartrans.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-coffee-oatmeal text-coffee-espresso uppercase border border-coffee-border" id="invStatusBadge">
+              AWB BOOKED (DP 30%)
+            </span>
+            <p id="invAwbNumber" class="text-xs font-bold text-slate-900 mt-1">AWB-STX-202610-8812</p>
+            <p id="invDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Route & Parties Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-coffee-oatmealLight p-4 rounded-xl border border-coffee-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">PENGIRIM (SHIPPER):</span>
+            <p id="invShipperName" class="font-bold text-coffee-espresso text-sm font-sans">Tedi Mahendra</p>
+            <p id="invShipperPhone" class="text-slate-600">081299998888</p>
+            <p id="invShipperAddress" class="text-slate-500 mt-1 leading-relaxed font-sans">Gedung Wirausaha, Jakarta Selatan</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">PENERIMA (CONSIGNEE):</span>
+            <p id="invConsigneeName" class="font-bold text-slate-900 text-sm font-sans">Budi Santoso</p>
+            <p id="invConsigneePhone" class="text-slate-600">081377889900</p>
+            <p id="invConsigneeAddress" class="text-slate-500 mt-1 leading-relaxed font-sans">Kawasan Industri SIER, Surabaya</p>
+          </div>
+        </div>
+
+        <!-- Cargo Dimensions & Charges Table -->
+        <div class="border border-coffee-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-coffee-oatmeal text-slate-700 border-b border-coffee-border">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Rute & Layanan Kargo</th>
+                <th class="py-2.5 px-3 font-bold text-center">Berat Dikenakan</th>
+                <th class="py-2.5 px-4 font-bold text-right">Tarif / Kg</th>
+                <th class="py-2.5 px-4 font-bold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-slate-900 block text-sm" id="invRouteName">Jakarta (JKT) → Surabaya (SBY)</span>
+                  <div class="text-[11px] text-slate-500 font-sans mt-0.5" id="invDimSpecs">Dimensi: 60 × 50 × 50 cm • Aktual: 35 Kg • Volumetrik: 37.5 Kg</div>
+                  <div class="text-[10px] text-emerald-700 font-sans mt-1">Asuransi Kehilangan Muatan Kargo Termasuk</div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-700 font-bold" id="invChargeableWeight">37.5 Kg</td>
+                <td class="py-3 px-4 text-right text-slate-600 font-mono" id="invRateKg">Rp 4.500</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono" id="invRawTotal">Rp 168.750</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-coffee-oatmealLight border-t border-coffee-border text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-bold">Biaya Asuransi Muatan:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900 font-mono">Rp 15.000</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-bold">Total Nilai Ongkir Kargo:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900 font-mono" id="invGrandTotal">Rp 183.750</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-emerald-700 font-bold" id="invPaidLabel">Sudah Dibayar (DP 30% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700 font-mono" id="invPaidAmount">Rp 55.125</td>
+              </tr>
+              <tr class="bg-amber-50 border-t border-amber-200">
+                <td colspan="3" class="py-2.5 px-4 text-coffee-espresso text-right font-extrabold text-xs" id="invDueLabel">
+                  Sisa Pelunasan Setelah Timbang Ulang di Hub:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-coffee-caramel font-mono" id="invDueAmount">
+                  Rp 128.625
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- AWB Barcode & Package Shipping Label -->
+        <div class="p-4 bg-coffee-oatmealLight rounded-xl border border-coffee-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Official AWB Barcode & Cargo Sorting Tag</span>
+            <p class="text-xs font-bold text-slate-900">Scan Barcode untuk Serah Terima Paket di Pintu Gudang / Supir Truk</p>
+            <p class="text-[11px] text-slate-500">Resi ini berlaku sah sebagai bukti kepemilikan kargo barang kiriman.</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-lg inline-block shadow-sm border border-coffee-border">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=SINARTRANS-AWB-VALID-8812" alt="AWB Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] text-slate-400 mt-1">AWB-8812-CARGO</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Waybill -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-white hover:bg-stone-100 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-coffee-border font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Hitung Ongkir Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-coffee-espresso hover:bg-coffee-espressoDark text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-amber-950/20 font-sans">
+            <i data-lucide="printer" class="w-4 h-4 text-coffee-caramel"></i>
+            Cetak Surat Jalan AWB (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Standards & Freight Guarantees Strip -->
+  <section class="border-t border-coffee-border bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-coffee-caramel uppercase tracking-wider font-mono">Logistics Integrity</span>
+        <h3 class="text-xl font-bold text-coffee-espresso font-display mt-1">Standar Layanan Kargo Sinar Trans Express</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-coffee-oatmealLight border border-coffee-border">
+          <div class="w-9 h-9 rounded-lg bg-coffee-oatmeal text-coffee-espresso flex items-center justify-center mb-3">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Asuransi Nilai Muatan Penuh</h4>
+          <p class="text-slate-600 leading-relaxed">Barang industri, mesin, tekstil, dan elektronik terlindungi asuransi ekspedisi untuk menjamin kompensasi penuh jika terjadi kecelakaan.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-coffee-oatmealLight border border-coffee-border">
+          <div class="w-9 h-9 rounded-lg bg-coffee-oatmeal text-coffee-espresso flex items-center justify-center mb-3">
+            <i data-lucide="scale" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Timbangan Kalibrasi Tera Legal</h4>
+          <p class="text-slate-600 leading-relaxed">Timbangan digital bersertifikasi Metrologi Legal di setiap hub sortir menjamin akurasi berat tanpa markup timbangan yang merugikan konsumen.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-coffee-oatmealLight border border-coffee-border">
+          <div class="w-9 h-9 rounded-lg bg-coffee-oatmeal text-coffee-espresso flex items-center justify-center mb-3">
+            <i data-lucide="box" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-slate-900 text-sm mb-1 font-display">Layanan Packing Kayu Presisi</h4>
+          <p class="text-slate-600 leading-relaxed">Tersedia opsi tambahan pengemasan peti kayu kokoh dan bubble wrap tebal untuk barang pecah belah atau cairan drum aman sampai tujuan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Espresso Pekat Theme) -->
+  <footer class="bg-coffee-espressoDark text-slate-400 py-8 border-t border-coffee-espressoCard text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-coffee-espressoCard border border-coffee-caramel flex items-center justify-center text-coffee-caramel font-bold text-[10px]">S</div>
+        <span class="font-bold text-white font-sans">Sinar Trans Express Cargo</span>
+        <span class="text-slate-500">| ID: sinar-trans-express</span>
+      </div>
+      <p class="text-slate-400 text-center md:text-right font-sans">&copy; 2026 PT Sinar Trans Express Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Matriks Rute Kargo & Tarif per Kg
+    const cargoRouteRates = {
+      JKT_SBY: { ratePerKg: 4500, etd: "1-2 Hari Kerja", label: "Jakarta → Surabaya (Tol Trans-Jawa)" },
+      JKT_DPS: { ratePerKg: 6500, etd: "2-3 Hari Kerja", label: "Jakarta → Denpasar (Kargo Darat-Ferry)" },
+      JKT_MDN: { ratePerKg: 8500, etd: "3-4 Hari Kerja", label: "Jakarta → Medan (Kargo Darat Lintas Sumatera)" },
+      JKT_BPN: { ratePerKg: 9500, etd: "4-5 Hari Kerja", label: "Jakarta → Balikpapan (Kargo Kapal Roro)" },
+      JKT_MKS: { ratePerKg: 9000, etd: "4-5 Hari Kerja", label: "Jakarta → Makassar (Kargo Kapal Pelni/Roro)" },
+      
+      // Default Fallback
+      OTHER: { ratePerKg: 6000, etd: "2-3 Hari", label: "Rute Standar Antar-Kota" }
+    };
+
+    // 2. Opsi Armada Pickup
+    const pickupFleets = [
+      { id: "FLEET-VAN", name: "Blind Van", capacity: "Maks. 750 Kg", icon: "truck" },
+      { id: "FLEET-CDE", name: "Truk Engkel CDE", capacity: "Maks. 2.5 Ton", icon: "boxes" },
+      { id: "FLEET-CDD", name: "Truk Double CDD", capacity: "Maks. 5.0 Ton", icon: "container" }
+    ];
+
+    // State Management
+    let currentUtilityTab = 'RATE'; // 'RATE', 'TRACKING', 'PICKUP'
+    let selectedFleet = pickupFleets[0];
+    let selectedPaymentScheme = 'DP'; // 'DP' (30%) or 'FULL'
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Default Pickup Date: Tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('pickupDateInput').value = tomorrow.toISOString().split('T')[0];
+
+      renderPickupFleets();
+      calculateCargoRates();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToHub() {
+      document.getElementById('dispatch-hub').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Tab Switcher Logic
+    function switchUtilityTab(tab) {
+      currentUtilityTab = tab;
+
+      const btnRate = document.getElementById('tabRateBtn');
+      const btnTrack = document.getElementById('tabTrackBtn');
+      const btnPickup = document.getElementById('tabPickupBtn');
+
+      const wrapRate = document.getElementById('wrapperRateCalc');
+      const wrapTrack = document.getElementById('wrapperTrackingAwb');
+      const wrapPickup = document.getElementById('wrapperPickupRequest');
+
+      [btnRate, btnTrack, btnPickup].forEach(b => {
+        b.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg font-bold text-slate-700 hover:text-coffee-espresso transition flex items-center gap-1.5";
+      });
+
+      wrapRate.classList.add('hidden');
+      wrapTrack.classList.add('hidden');
+      wrapPickup.classList.add('hidden');
+
+      if (tab === 'RATE') {
+        btnRate.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg font-bold bg-coffee-espresso text-white shadow-sm transition flex items-center gap-1.5";
+        wrapRate.classList.remove('hidden');
+        document.getElementById('slipServiceBadge').innerText = "KARGO DARAT TRUK";
+      } else if (tab === 'TRACKING') {
+        btnTrack.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg font-bold bg-coffee-espresso text-white shadow-sm transition flex items-center gap-1.5";
+        wrapTrack.classList.remove('hidden');
+        document.getElementById('slipServiceBadge').innerText = "STATUS RESI AKTIF";
+      } else if (tab === 'PICKUP') {
+        btnPickup.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg font-bold bg-coffee-espresso text-white shadow-sm transition flex items-center gap-1.5";
+        wrapPickup.classList.remove('hidden');
+        document.getElementById('slipServiceBadge').innerText = "FREE PICKUP GUDANG";
+      }
+
+      calculateCargoRates();
+    }
+
+    // Render Pickup Fleets
+    function renderPickupFleets() {
+      const container = document.getElementById('fleetSelectionContainer');
+      container.innerHTML = pickupFleets.map(f => {
+        const isSelected = selectedFleet.id === f.id;
+        return `
+          <div onclick="selectFleet('${f.id}')" class="p-3 rounded-xl border-2 transition cursor-pointer flex flex-col justify-between select-none ${
+            isSelected 
+              ? 'bg-coffee-oatmeal border-coffee-espresso' 
+              : 'bg-white border-coffee-border hover:border-slate-400'
+          }">
+            <span class="font-bold text-xs text-coffee-espresso block font-sans">${f.name}</span>
+            <span class="text-[10px] text-slate-500 font-mono mt-1">${f.capacity}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectFleet(id) {
+      selectedFleet = pickupFleets.find(f => f.id === id);
+      renderPickupFleets();
+    }
+
+    // Tracking Simulator
+    function performTrackingSearch() {
+      const inputVal = document.getElementById('trackingAwbInput').value.trim() || 'STX-202610-8812';
+      document.getElementById('trackResultAwb').innerText = inputVal;
+      alert(`Pencarian Resi: ${inputVal} berhasil dimuat. Posisi truk kargo saat ini berada di Hub Transit Semarang.`);
+    }
+
+    // Calculation Engine
+    function calculateCargoRates() {
+      const origin = document.getElementById('originCitySelect').value;
+      const dest = document.getElementById('destCitySelect').value;
+      const routeKey = `${origin}_${dest}`;
+      const routeInfo = cargoRouteRates[routeKey] || cargoRouteRates.OTHER;
+
+      const actualKg = parseFloat(document.getElementById('actualWeightInput').value) || 10;
+      const lenCm = parseFloat(document.getElementById('dimLengthInput').value) || 10;
+      const widCm = parseFloat(document.getElementById('dimWidthInput').value) || 10;
+      const hgtCm = parseFloat(document.getElementById('dimHeightInput').value) || 10;
+
+      // Standar Volumetrik Kargo Darat: (P x L x T) / 4.000
+      const volKg = (lenCm * widCm * hgtCm) / 4000;
+      document.getElementById('volumetricWeightText').innerText = `${volKg.toFixed(1)} Kg`;
+
+      // Chargeable Weight = Nilai Terbesar antara Aktual vs Volumetrik
+      const chargeableKg = Math.max(actualKg, volKg);
+      document.getElementById('chargeableWeightBadge').innerText = `Dikenakan: ${chargeableKg.toFixed(1)} Kg`;
+
+      // Freight Rate Calculation
+      const freightCost = Math.round(chargeableKg * routeInfo.ratePerKg);
+      const insuranceCost = 15000; // Asuransi kargo standar
+      const grandTotal = freightCost + insuranceCost;
+
+      const dpAmount = Math.round(grandTotal * 0.3); // DP 30%
+      const dueAmount = grandTotal - dpAmount;
+
+      // Update Live Slip UI
+      document.getElementById('slipRouteTitle').innerText = `${document.getElementById('originCitySelect').options[document.getElementById('originCitySelect').selectedIndex].text.split('(')[0]} → ${document.getElementById('destCitySelect').options[document.getElementById('destCitySelect').selectedIndex].text.split('(')[0]}`;
+      document.getElementById('slipEtdText').innerText = routeInfo.etd;
+      document.getElementById('slipChargeableWeight').innerText = `${chargeableKg.toFixed(1)} Kg`;
+      document.getElementById('slipRatePerKg').innerText = `${formatRupiah(routeInfo.ratePerKg)} / Kg`;
+      document.getElementById('slipInsuranceCost').innerText = formatRupiah(insuranceCost);
+      document.getElementById('slipGrandTotalText').innerText = formatRupiah(grandTotal);
+
+      // Set Prices in Step 2 Scheme Cards
+      document.getElementById('schemeDpPriceText').innerText = formatRupiah(dpAmount);
+      document.getElementById('schemeFullPriceText').innerText = formatRupiah(grandTotal);
+
+      return { chargeableKg, routeInfo, grandTotal, dpAmount, dueAmount, actualKg, volKg, lenCm, widCm, hgtCm };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      const calc = calculateCargoRates();
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-coffee-espresso text-coffee-espresso pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-coffee-espresso text-white flex items-center justify-center text-[11px] font-bold";
+
+      selectPaymentScheme(selectedPaymentScheme);
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function selectPaymentScheme(scheme) {
+      selectedPaymentScheme = scheme;
+
+      const labelDp = document.getElementById('labelSchemeDp');
+      const labelFull = document.getElementById('labelSchemeFull');
+      const dotDp = document.getElementById('radioDotDp');
+      const dotFull = document.getElementById('radioDotFull');
+      const qrisLabel = document.getElementById('qrisPayableLabel');
+      const qrisAmount = document.getElementById('qrisPayableAmount');
+
+      const calc = calculateCargoRates();
+
+      if (scheme === 'DP') {
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-coffee-oatmealLight border-coffee-espresso";
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-coffee-border hover:border-slate-400";
+        dotDp.className = "w-2 h-2 rounded-full bg-coffee-espresso";
+        dotFull.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Ditagihkan (DP 30%):";
+        qrisAmount.innerText = formatRupiah(calc.dpAmount);
+      } else {
+        labelFull.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-coffee-oatmealLight border-coffee-espresso";
+        labelDp.className = "p-3.5 rounded-xl border-2 cursor-pointer transition select-none bg-white border-coffee-border hover:border-slate-400";
+        dotFull.className = "w-2 h-2 rounded-full bg-coffee-espresso";
+        dotDp.className = "w-2 h-2 rounded-full bg-transparent";
+
+        qrisLabel.innerText = "Nominal Pelunasan Penuh (100%):";
+        qrisAmount.innerText = formatRupiah(calc.grandTotal);
+      }
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi pembayaran QRIS berakhir. Jadwal pickup armada dibatalkan.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const shipperName = document.getElementById('shipperNameInput').value.trim() || 'Tedi Mahendra';
+      const shipperPhone = document.getElementById('shipperPhoneInput').value.trim() || '081299998888';
+      const shipperAddress = document.getElementById('shipperAddressInput').value.trim() || 'Gedung Wirausaha, Jakarta Selatan';
+
+      const consigneeName = document.getElementById('consigneeNameInput').value.trim() || 'Budi Santoso';
+      const consigneePhone = document.getElementById('consigneePhoneInput').value.trim() || '081377889900';
+      const consigneeAddress = document.getElementById('consigneeAddressInput').value.trim() || 'Kawasan Industri SIER, Surabaya';
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-coffee-espresso text-coffee-espresso pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-coffee-espresso text-white flex items-center justify-center text-[11px] font-bold";
+
+      const calc = calculateCargoRates();
+      const paid = selectedPaymentScheme === 'DP' ? calc.dpAmount : calc.grandTotal;
+      const due = calc.grandTotal - paid;
+
+      const randomAwb = "AWB-STX-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invAwbNumber').innerText = randomAwb;
+      document.getElementById('invDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invShipperName').innerText = shipperName;
+      document.getElementById('invShipperPhone').innerText = shipperPhone;
+      document.getElementById('invShipperAddress').innerText = shipperAddress;
+
+      document.getElementById('invConsigneeName').innerText = consigneeName;
+      document.getElementById('invConsigneePhone').innerText = consigneePhone;
+      document.getElementById('invConsigneeAddress').innerText = consigneeAddress;
+
+      document.getElementById('invRouteName').innerText = calc.routeInfo.label;
+      document.getElementById('invDimSpecs').innerText = `Dimensi: ${calc.lenCm} × ${calc.widCm} × ${calc.hgtCm} cm • Aktual: ${calc.actualKg} Kg • Volumetrik: ${calc.volKg.toFixed(1)} Kg`;
+      document.getElementById('invChargeableWeight').innerText = `${calc.chargeableKg.toFixed(1)} Kg`;
+      document.getElementById('invRateKg').innerText = formatRupiah(calc.routeInfo.ratePerKg);
+      document.getElementById('invRawTotal').innerText = formatRupiah(calc.chargeableKg * calc.routeInfo.ratePerKg);
+
+      document.getElementById('invGrandTotal').innerText = formatRupiah(calc.grandTotal);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(paid);
+      document.getElementById('invDueAmount').innerText = formatRupiah(due);
+
+      if (selectedPaymentScheme === 'DP') {
+        document.getElementById('invStatusBadge').innerText = "AWB BOOKED (DP 30%)";
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (DP 30% QRIS):";
+        document.getElementById('invDueLabel').innerText = "Sisa Pelunasan Setelah Timbang Ulang di Hub:";
+      } else {
+        document.getElementById('invStatusBadge').innerText = "AWB PAID IN FULL (100%)";
+        document.getElementById('invPaidLabel').innerText = "Sudah Dibayar (Lunas 100%):";
+        document.getElementById('invDueLabel').innerText = "Status Tagihan:";
+        document.getElementById('invDueAmount').innerText = "LUNAS (Rp 0)";
+      }
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedPaymentScheme = 'DP';
+      switchUtilityTab('RATE');
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-slate-300 text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-white text-slate-500 flex items-center justify-center text-[11px] border border-slate-300 font-bold";
+
+      calculateCargoRates();
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

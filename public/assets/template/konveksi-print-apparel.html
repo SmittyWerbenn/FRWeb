@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KonveksiPrint Apparel - Kalkulator Lusinan, Mock-up Studio & Tracking Produksi</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            banker: {
+              midnight: '#0B132B',    // Midnight Blue Utama
+              indigo: '#1C2541',      // Deep Indigo Surface
+              indigoLight: '#243254', // Hover Surface
+              cyan: '#5BC0BE',        // Soft Cyan Aksen
+              cyanHover: '#3AAFA9',   // Darker Cyan
+              cyanBg: '#0F263B',      // Soft Cyan Tint
+              border: '#28385E',      // Card Border
+              canvas: '#060A17'       // Deepest Dark Background
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(11, 19, 43, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .garment-grid {
+      background-color: #060A17;
+      background-image: 
+        linear-gradient(rgba(40, 56, 94, 0.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(40, 56, 94, 0.35) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .cyan-glow {
+      box-shadow: 0 0 25px rgba(91, 192, 190, 0.22);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableInvoice, #printableInvoice * {
+        visibility: visible;
+      }
+      #printableInvoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: #0B132B !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-banker-canvas text-slate-100 antialiased font-sans min-h-screen flex flex-col selection:bg-banker-cyan selection:text-banker-midnight">
+
+  <!-- Top Announcement Bar (Modern Banker Minimalis) -->
+  <div class="bg-banker-midnight text-slate-300 text-xs py-2.5 px-4 text-center tracking-wide flex justify-center items-center gap-3 border-b border-banker-border font-mono">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-banker-cyan text-banker-midnight">B2B GARMENT FACTORY</span>
+    <span>Kapasitas 15.000 Pcs/Bulan • Kain 100% Cotton Combed Reaktif • Mesin Bordir Komputer Tajima & DTF 8-Head</span>
+  </div>
+
+  <!-- Header / Navigation (Lega & Logo Clickable ke Home) -->
+  <header class="glass-header sticky top-0 z-40 border-b border-banker-border shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Logo (Clickable ke Home) -->
+      <a href="#" onclick="goHome(event)" class="group flex items-center gap-3 select-none focus:outline-none transition active:scale-95" title="Kembali ke Beranda">
+        <div class="w-10 h-10 rounded-xl bg-banker-indigo border border-banker-cyan flex items-center justify-center text-banker-cyan shadow-md shadow-cyan-950/20 flex-shrink-0 transition group-hover:bg-banker-cyan group-hover:text-banker-midnight">
+          <i data-lucide="scissors" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-white block leading-tight font-display">
+            KONVEKSI<span class="text-banker-cyan">PRINT</span>
+            <span class="text-[10px] font-mono bg-banker-indigo text-banker-cyan border border-banker-cyan/40 px-1.5 py-0.5 rounded ml-1 font-bold uppercase">APPAREL</span>
+          </span>
+          <span class="text-[10px] text-slate-400 tracking-wider block font-mono font-medium">OEM PRODUCTION & CUSTOM MERCH</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
+        <a href="#workbench" class="text-banker-cyan hover:text-white transition">Kalkulator Lusinan</a>
+        <a href="#tracking-section" class="hover:text-banker-cyan transition">Tracking Produksi</a>
+        <a href="#standards" class="hover:text-banker-cyan transition">Bahan & Sablon</a>
+      </nav>
+
+      <!-- Action & Production Capacity Indicator -->
+      <div class="flex items-center gap-3.5">
+        <div class="hidden lg:flex items-center gap-2 text-xs bg-banker-indigo text-slate-200 font-mono px-3.5 py-1.5 rounded-lg border border-banker-border">
+          <span class="w-2 h-2 rounded-full bg-banker-cyan animate-pulse"></span>
+          Kapasitas Jahit: Slot 7-10 Hari Ready
+        </div>
+        <button onclick="scrollToWorkbench()" class="bg-banker-cyan hover:bg-banker-cyanHover text-banker-midnight font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-xl transition shadow-md shadow-cyan-950/20 flex items-center gap-2 active:scale-95 font-display">
+          <i data-lucide="calculator" class="w-4 h-4 text-banker-midnight"></i>
+          <span>Hitung Harga Lusin</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section (Modern Banker Palette) -->
+  <section class="garment-grid py-12 sm:py-16 border-b border-banker-border relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+      
+      <div class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-banker-indigo border border-banker-border text-banker-cyan text-xs font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-banker-cyan animate-ping"></span>
+          Automated Garment Quotation & Live Mockup Simulator
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.18] font-display">
+          Produksi Seragam, Kaos, & Hoodie Skala Lusinan Tanpa Menunggu Admin.
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
+          Unggah file desain mock-up Anda langsung ke kanvas simulasi. Hitung biaya produksi otomatis berdasarkan jumlah lusin, pilih ketebalan kain katun reaktif, dan pantau proses pemotongan pola hingga QC secara transparan.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-banker-border text-left font-mono">
+        <div class="p-4 rounded-xl bg-banker-midnight/80 border border-banker-border">
+          <span class="text-xs text-slate-400 block">Minimal Order (MOQ)</span>
+          <span class="text-2xl font-extrabold text-banker-cyan font-display mt-0.5 block">1 Lusin (12 pcs)</span>
+        </div>
+        <div class="p-4 rounded-xl bg-banker-midnight/80 border border-banker-border">
+          <span class="text-xs text-slate-400 block">Diskon Volume</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">Hingga 25%</span>
+        </div>
+        <div class="p-4 rounded-xl bg-banker-midnight/80 border border-banker-border">
+          <span class="text-xs text-slate-400 block">Live Mock-up Tool</span>
+          <span class="text-2xl font-extrabold text-banker-cyan font-display mt-0.5 block">Instant Preview</span>
+        </div>
+        <div class="p-4 rounded-xl bg-banker-midnight/80 border border-banker-border">
+          <span class="text-xs text-slate-400 block">Garansi Jahitan</span>
+          <span class="text-2xl font-extrabold text-white font-display mt-0.5 block">100% Repro</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step Progress Indicator -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
+    <div class="max-w-3xl mx-auto">
+      <div class="grid grid-cols-3 gap-3 text-center text-xs font-mono font-bold">
+        <div id="stepIndicator1" class="border-b-2 border-banker-cyan text-banker-cyan pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-banker-cyan text-banker-midnight flex items-center justify-center text-[11px] font-bold">1</span>
+          Kalkulator Lusinan & Mock-up
+        </div>
+        <div id="stepIndicator2" class="border-b-2 border-banker-border text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-banker-midnight text-slate-400 flex items-center justify-center text-[11px] border border-banker-border font-bold">2</span>
+          Kunci PO & DP 50% QRIS
+        </div>
+        <div id="stepIndicator3" class="border-b-2 border-banker-border text-slate-400 pb-2 flex items-center justify-center gap-1.5">
+          <span class="w-5 h-5 rounded-full bg-banker-midnight text-slate-400 flex items-center justify-center text-[11px] border border-banker-border font-bold">3</span>
+          SPK Potong & Tracking
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Apparel Workbench Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="workbench">
+    
+    <!-- STEP 1: Interactive Apparel Configurator & Live Mock-up Studio -->
+    <div id="step1View" class="space-y-8">
+      
+      <!-- Split Layout: Customizer Controls (7 Cols) vs Live Mockup & Price Slip (5 Cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Configuration & Lusin Sliders (7 Cols) -->
+        <div class="lg:col-span-7 bg-banker-midnight p-6 sm:p-7 rounded-2xl border border-banker-border shadow-xl space-y-6">
+          <div class="flex items-center justify-between border-b border-banker-border pb-3">
+            <div>
+              <h3 class="text-lg font-bold text-white font-display">Konfigurasi Produksi Apparel</h3>
+              <p class="text-xs text-slate-400 font-sans mt-0.5">Tentukan jenis pakaian, bahan kain, metode cetak, dan kuantitas lusin.</p>
+            </div>
+            <span class="text-xs font-mono bg-banker-indigo text-banker-cyan px-2.5 py-1 rounded border border-banker-border">1 LUSIN = 12 PCS</span>
+          </div>
+
+          <!-- Product Type Selector (Kaos / Polo / Hoodie) -->
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-300 mb-2">1. Pilih Tipe Pakaian:</label>
+            <div class="grid grid-cols-3 gap-2.5 text-xs font-mono">
+              <button onclick="selectProductType('TSHIRT')" id="btnTypeTshirt" class="p-3 rounded-xl border-2 border-banker-cyan bg-banker-cyan/15 text-white font-bold text-center">T-Shirt O-Neck</button>
+              <button onclick="selectProductType('POLO')" id="btnTypePolo" class="p-3 rounded-xl border border-banker-border bg-banker-canvas text-slate-300 text-center hover:border-banker-cyan">Polo Shirt CVC</button>
+              <button onclick="selectProductType('HOODIE')" id="btnTypeHoodie" class="p-3 rounded-xl border border-banker-border bg-banker-canvas text-slate-300 text-center hover:border-banker-cyan">Hoodie Jumper</button>
+            </div>
+          </div>
+
+          <!-- Bahan Kain (Fabric Selection) -->
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-300 mb-2">2. Pilihan Bahan Kain Berkualitas:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="fabricOptionsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Metode Cetak / Aplikasi Desain -->
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-300 mb-2">3. Teknik Sablon / Bordir:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="printMethodContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Kalkulator Jumlah Lusin Dinamis -->
+          <div class="space-y-4 bg-banker-canvas p-5 rounded-xl border border-banker-border font-mono">
+            <div class="flex items-center justify-between">
+              <div>
+                <label class="text-xs font-bold text-slate-200 block">Jumlah Kuantitas Pesanan:</label>
+                <span class="text-[11px] text-slate-400 font-sans">Semakin banyak lusin, biaya produksi per pcs semakin hemat</span>
+              </div>
+              <div class="text-right">
+                <span class="text-lg font-black text-banker-cyan font-mono" id="dozenCountDisplay">2 Lusin (24 pcs)</span>
+              </div>
+            </div>
+
+            <!-- Range Slider Lusin -->
+            <input type="range" id="dozenSlider" min="1" max="50" step="1" value="2" oninput="onDozenSliderChange(this.value)" class="w-full accent-banker-cyan cursor-pointer" />
+            
+            <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+              <span>Min: 1 Lusin</span>
+              <span>Tier 5 Lusin (-10%)</span>
+              <span>Tier 20 Lusin (-20%)</span>
+              <span>Max: 50 Lusin</span>
+            </div>
+          </div>
+
+          <!-- Pilihan Warna Kain Mock-up -->
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-300 mb-2">Pilihan Warna Bahan (Live Mock-up):</label>
+            <div class="flex flex-wrap items-center gap-3" id="fabricColorsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Upload Desain Mock-up (Drag & Drop Simulator) -->
+          <div class="p-4 rounded-xl border-2 border-dashed border-banker-border bg-banker-canvas text-center space-y-2">
+            <i data-lucide="upload-cloud" class="w-8 h-8 mx-auto text-banker-cyan"></i>
+            <div class="text-xs text-slate-300">
+              <label for="mockupFileInput" class="font-bold text-banker-cyan hover:underline cursor-pointer">Pilih File Logo / Grafis</label>
+              <span> atau tarik file PNG transparan ke sini</span>
+            </div>
+            <p class="text-[10px] text-slate-500 font-mono">Mendukung format PNG / JPG resolusi tinggi (Otomatis ditempel pada mock-up)</p>
+            <input type="file" id="mockupFileInput" accept="image/*" onchange="handleMockupUpload(event)" class="hidden" />
+          </div>
+
+        </div>
+
+        <!-- Right: Live Mockup Canvas & Order Slip (5 Cols Sticky) -->
+        <div class="lg:col-span-5 bg-banker-midnight p-6 sm:p-7 rounded-2xl border border-banker-border shadow-xl space-y-5 sticky top-24 font-mono text-xs">
+          <div class="flex items-center justify-between border-b border-banker-border pb-3">
+            <div>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Live Mock-up Stage</span>
+              <h4 class="text-sm font-bold text-white font-display mt-0.5">Pratinjau Visual Pakaian</h4>
+            </div>
+            <span class="text-[10px] font-bold bg-banker-cyan text-banker-midnight px-2 py-0.5 rounded font-mono" id="apparelBadgeType">T-SHIRT COTTON</span>
+          </div>
+
+          <!-- Mock-up Visualizer Canvas (Kaos/Hoodie + Uploaded Design Logo) -->
+          <div class="p-5 rounded-xl border border-banker-border bg-[#060A17] flex flex-col items-center justify-center min-h-[260px] relative overflow-hidden" id="mockupCanvasWrapper">
+            
+            <!-- Siluet Mock-up Apparel Dinamis -->
+            <div class="relative w-48 h-56 flex items-center justify-center transition-all duration-300">
+              <!-- SVG Apparel Base (Kaos) -->
+              <svg id="apparelSvg" viewBox="0 0 200 220" class="w-full h-full drop-shadow-xl transition-colors duration-300">
+                <!-- Badan Kaos T-Shirt -->
+                <path id="svgShirtBody" d="M 55,20 L 80,35 C 90,38 110,38 120,35 L 145,20 L 190,65 L 165,90 L 150,75 L 150,210 L 50,210 L 50,75 L 35,90 L 10,65 Z" fill="#0B132B" stroke="#5BC0BE" stroke-width="2"/>
+                <!-- Garis Kerah -->
+                <path d="M 80,35 C 90,50 110,50 120,35" fill="none" stroke="#5BC0BE" stroke-width="1.5"/>
+              </svg>
+
+              <!-- Uploaded Graphic Logo Layer (Ditempel di dada tengah) -->
+              <div class="absolute top-20 w-20 h-20 flex items-center justify-center pointer-events-none p-1">
+                <img id="customLogoPreview" src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=KONVEKSI-PRINT-BRAND" alt="Design Logo" class="max-w-full max-h-full object-contain filter drop-shadow opacity-90 transition-all duration-300" />
+              </div>
+            </div>
+
+            <!-- Indikator Warna Bahan -->
+            <div class="mt-2 flex items-center justify-between w-full text-[10px] text-slate-400 border-t border-banker-border pt-2 font-mono">
+              <span>Warna Kain: <strong class="text-white" id="colorLabelDisplay">Midnight Navy</strong></span>
+              <span class="text-banker-cyan" id="printMethodLabelDisplay">Sablon DTF High-Def</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Price Calculation Matrix -->
+          <div class="space-y-2 text-xs border-t border-banker-border pt-3">
+            <div class="flex justify-between text-slate-300">
+              <span>Kategori & Bahan:</span>
+              <span class="font-bold text-white" id="calcFabricName">Combed 30s Reaktif</span>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <span>Harga Satuan per Pcs:</span>
+              <span class="font-bold text-banker-cyan font-mono" id="calcPricePerPcs">Rp 48.000 / pcs</span>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <span>Subtotal (<span id="calcTotalPcsLabel">24 pcs</span>):</span>
+              <span class="font-bold text-white font-mono" id="calcRawSubtotal">Rp 1.152.000</span>
+            </div>
+            <div class="flex justify-between text-emerald-400" id="volumeDiscountRow">
+              <span id="discountTierLabel">Diskon Lusinan (5%):</span>
+              <span class="font-bold font-mono" id="calcDiscountAmount">- Rp 57.600</span>
+            </div>
+          </div>
+
+          <!-- Grand Total Price Box -->
+          <div class="p-4 bg-banker-canvas rounded-xl border border-banker-border flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-banker-cyan uppercase block">Total Nilai Produksi</span>
+              <span class="text-xs text-slate-400 font-sans">Termasuk Sablon & Packaging Plastik</span>
+            </div>
+            <span class="text-xl font-black text-banker-cyan font-mono" id="calcGrandTotal">Rp 1.094.400</span>
+          </div>
+
+          <!-- Action Button to Step 2 -->
+          <button onclick="goToStep2()" class="w-full bg-banker-cyan hover:bg-banker-cyanHover text-banker-midnight font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-lg shadow-cyan-950/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+            <span>Kunci Antrean Jahit & Bayar DP 50%</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *DP 50% digunakan untuk pembelian rol kain dan pembuatan master film sablon/bordir.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Tracking Timeline Produksi Section (Fitur Spesial 4 Tahap) -->
+    <section id="tracking-section" class="bg-banker-midnight p-6 sm:p-8 rounded-3xl border border-banker-border shadow-xl space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-banker-border pb-4">
+        <div>
+          <span class="text-xs font-mono font-bold text-banker-cyan uppercase tracking-widest">Production Milestone</span>
+          <h3 class="text-xl font-bold text-white font-display mt-0.5">Sistem Monitoring Produksi Garment Real-Time</h3>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Live Tracking Terintegrasi Barcode SPK</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-mono">
+        <!-- Stage 1 -->
+        <div class="p-4 rounded-2xl bg-banker-canvas border-2 border-banker-cyan space-y-2">
+          <div class="flex items-center justify-between text-banker-cyan font-bold">
+            <span>TAHAP 01</span>
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-banker-cyan"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm">Pola & Potong Bahan</h4>
+          <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Kain katun digaruk dan dipotong presisi sesuai ukuran S, M, L, XL, XXL.</p>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="p-4 rounded-2xl bg-banker-canvas border border-banker-border space-y-2">
+          <div class="flex items-center justify-between text-slate-400 font-bold">
+            <span>TAHAP 02</span>
+            <span class="text-[10px] bg-banker-indigo px-1.5 py-0.5 rounded text-banker-cyan">ANTREAN</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">Aplikasi Sablon / Bordir</h4>
+          <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Penyinaran film sablon dan penjahitan bordir komputer benang rayon tebal.</p>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="p-4 rounded-2xl bg-banker-canvas border border-banker-border space-y-2">
+          <div class="flex items-center justify-between text-slate-400 font-bold">
+            <span>TAHAP 03</span>
+            <span class="text-[10px] text-slate-500">PENDING</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">Jahit & Obras Rantai</h4>
+          <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Jahitan stik balik leher dan obras 4-benang standar distro untuk ketahanan ekstra.</p>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="p-4 rounded-2xl bg-banker-canvas border border-banker-border space-y-2">
+          <div class="flex items-center justify-between text-slate-400 font-bold">
+            <span>TAHAP 04</span>
+            <span class="text-[10px] text-slate-500">PENDING</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">Steam, QC & Packing</h4>
+          <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Pembersihan sisa benang, setrika uap, dan kemasan plastik tebal bersegel.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Checkout Order, Delivery Address & DP 50% QRIS Payment -->
+    <div id="step2View" class="hidden max-w-4xl mx-auto space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Customer & Delivery Address Form -->
+        <div class="lg:col-span-7 bg-banker-midnight p-6 sm:p-7 rounded-2xl border border-banker-border shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-banker-border pb-3 font-mono">
+            <h3 class="text-base font-bold text-white flex items-center gap-2 font-display">
+              <i data-lucide="package" class="w-4 h-4 text-banker-cyan"></i>
+              Identitas Pemesan & Pengiriman Lusinan
+            </h3>
+            <span class="text-xs text-slate-400 font-mono">Form SPK Pabrik</span>
+          </div>
+
+          <div class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nama Brand / Komunitas / PT *</label>
+                <input type="text" id="clientBrandName" value="Kolektif Kreatif Apparel" class="w-full bg-banker-canvas px-3.5 py-2.5 rounded-xl border border-banker-border focus:outline-none focus:ring-2 focus:ring-banker-cyan text-white font-sans" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nama Penanggung Jawab *</label>
+                <input type="text" id="clientPicName" value="Tedi Mahendra" class="w-full bg-banker-canvas px-3.5 py-2.5 rounded-xl border border-banker-border focus:outline-none focus:ring-2 focus:ring-banker-cyan text-white font-sans" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Nomor WhatsApp Aktif *</label>
+                <input type="tel" id="clientPhone" value="081299998888" class="w-full bg-banker-canvas px-3.5 py-2.5 rounded-xl border border-banker-border focus:outline-none focus:ring-2 focus:ring-banker-cyan text-white font-sans" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-300 mb-1">Target Tanggal Selesai *</label>
+                <input type="date" id="targetDeadlineInput" class="w-full bg-banker-canvas px-3.5 py-2.5 rounded-xl border border-banker-border focus:outline-none focus:ring-2 focus:ring-banker-cyan text-white font-sans" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Alamat Tujuan Pengiriman Ekspedisi *</label>
+              <textarea id="deliveryAddress" rows="2" class="w-full bg-banker-canvas px-3.5 py-2.5 rounded-xl border border-banker-border focus:outline-none focus:ring-2 focus:ring-banker-cyan text-white font-sans">Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Kuningan, Setiabudi, Jakarta Selatan</textarea>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 mb-1">Rincian Pecahan Ukuran (Size Breakdown):</label>
+              <input type="text" id="sizeBreakdownInput" value="S: 4 pcs, M: 8 pcs, L: 8 pcs, XL: 4 pcs (Total 24 pcs)" class="w-full bg-banker-canvas px-3.5 py-2.5 rounded-xl border border-banker-border focus:outline-none focus:ring-2 focus:ring-banker-cyan text-white font-sans" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: DP 50% QRIS Payment Gateway -->
+        <div class="lg:col-span-5 bg-banker-midnight p-6 rounded-2xl border border-banker-border shadow-xl space-y-5 font-mono">
+          <div class="flex items-center justify-between border-b border-banker-border pb-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Uang Muka (DP 50%)</span>
+            <span class="text-[10px] font-bold bg-banker-cyan text-banker-midnight px-2 py-0.5 rounded">LOCK BAHAN</span>
+          </div>
+
+          <!-- QRIS Box -->
+          <div class="border border-banker-border rounded-xl p-4 bg-banker-canvas text-center flex flex-col items-center">
+            <div class="flex items-center justify-between w-full px-1 mb-2">
+              <span class="text-red-500 font-bold text-xs">QRIS</span>
+              <span class="text-[11px] font-bold text-banker-cyan" id="qrisTimer">09:59</span>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-xl shadow border border-slate-300">
+              <img id="dynamicQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=PROTOTYPE-KONVEKSI-PRINT-DP-PAYMENT" alt="QRIS DP Apparel" class="w-36 h-36 object-contain mx-auto" />
+            </div>
+
+            <div class="mt-3 text-xs text-slate-400">
+              <p class="text-slate-200">BCA, Mandiri, BRI, BNI, GoPay, OVO</p>
+              <p class="text-[10px] text-slate-500">NMID: ID1099238888 - PT KONVEKSIPRINT APPAREL</p>
+            </div>
+
+            <!-- Total DP to Pay -->
+            <div class="mt-3 pt-3 border-t border-banker-border w-full flex items-center justify-between px-1">
+              <span class="text-xs text-slate-300">Total DP 50% Produksi:</span>
+              <span id="dpPayableAmount" class="text-base font-extrabold text-banker-cyan font-mono">Rp 547.200</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-2">
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-banker-cyan hover:bg-banker-cyanHover text-banker-midnight font-bold text-xs py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/20 active:scale-95 font-sans">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Simulasi Bayar DP (Terbitkan SPK Jahit)</span>
+            </button>
+            <button onclick="backToStep1()" class="w-full bg-banker-canvas hover:bg-banker-indigo text-slate-300 font-semibold text-xs py-2.5 px-4 rounded-xl transition font-sans">
+              Kembali / Ubah Konfigurasi Lusin
+            </button>
+          </div>
+
+          <p class="text-[10px] text-slate-400 text-center leading-normal">
+            *Pelunasan sisa 50% diselesaikan saat proses QC selesai dan foto produk siap kirim dikonfirmasi via WhatsApp.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 3: Automated Surat Perintah Kerja (SPK) & Faktur Resmi (Printable) -->
+    <div id="step3View" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Success Banner -->
+      <div class="bg-banker-midnight border border-banker-cyan rounded-2xl p-4 sm:p-5 flex items-center gap-4 text-white no-print">
+        <div class="w-10 h-10 rounded-full bg-banker-cyan text-banker-midnight flex items-center justify-center flex-shrink-0 font-bold">
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold font-display">DP Produksi Berhasil Diterima & SPK Resmi Terbit!</h4>
+          <p class="text-xs text-slate-300 font-sans mt-0.5">Surat Perintah Kerja (SPK) telah dikirim ke kepala bagian potong dan divisi sablon workshop.</p>
+        </div>
+      </div>
+
+      <!-- Printable SPK Document Card -->
+      <div id="printableInvoice" class="bg-banker-midnight rounded-2xl border border-banker-border shadow-2xl p-6 sm:p-9 space-y-6 font-mono text-white">
+        
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-banker-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-banker-cyan flex items-center justify-center text-banker-midnight font-bold">
+                <i data-lucide="scissors" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-lg text-white font-display">KONVEKSI<span class="text-banker-cyan">PRINT</span> APPAREL</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">PT KonveksiPrint Apparel Nusantara • Workshop Sentral Garment Bandung, Jawa Barat</p>
+            <p class="text-[11px] text-slate-400 font-sans">Hotline Produksi: +62 812-9999-8888 • production@konveksiprint.frel.cloud</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-banker-cyan/20 text-banker-cyan uppercase border border-banker-cyan">
+              SURAT PERINTAH KERJA (SPK)
+            </span>
+            <p id="spkDocNumber" class="text-xs font-bold text-white mt-1">SPK-KPA-202610-8821</p>
+            <p id="spkDateText" class="text-[11px] text-slate-400 font-sans">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Client & Production Schedule Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-banker-canvas p-4 rounded-xl border border-banker-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">KLIEN / BRAND:</span>
+            <p id="invBrandName" class="font-bold text-white text-sm font-sans">Kolektif Kreatif Apparel</p>
+            <p id="invClientPic" class="text-slate-400 font-sans">PIC: Tedi Mahendra (081299998888)</p>
+            <p id="invDeliveryAddress" class="text-slate-300 mt-1 leading-relaxed font-sans">Gedung Wirausaha, Jakarta Selatan</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">JADWAL & STATUS PRODUKSI:</span>
+            <p id="invTargetDeadline" class="font-bold text-banker-cyan text-sm font-sans">Target: 08 Nov 2026</p>
+            <p id="invSizeBreakdown" class="text-slate-300 font-sans mt-0.5">S:4, M:8, L:8, XL:4</p>
+            <p class="text-emerald-400 font-bold mt-1">DP 50% BAHAN LUNAS</p>
+          </div>
+        </div>
+
+        <!-- Item Specifications Table -->
+        <div class="border border-banker-border rounded-xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-banker-canvas text-slate-400 border-b border-banker-border">
+              <tr>
+                <th class="py-2.5 px-4 font-bold">Rincian Komponen Apparel</th>
+                <th class="py-2.5 px-3 font-bold text-center">Jumlah Pcs</th>
+                <th class="py-2.5 px-4 font-bold text-right">Harga Satuan</th>
+                <th class="py-2.5 px-4 font-bold text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-banker-border font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-white text-sm block" id="invApparelTitle">T-Shirt O-Neck Cotton Combed 30s</span>
+                  <div class="text-[11px] text-slate-400 font-sans mt-0.5" id="invApparelSpecs">
+                    Warna: Midnight Navy • Cetak: Sablon DTF High-Def • Jahit Rantai Distro
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-300" id="invPcsQty">24 Pcs (2 Lusin)</td>
+                <td class="py-3 px-4 text-right text-slate-300 font-mono" id="invUnitRate">Rp 48.000</td>
+                <td class="py-3 px-4 text-right font-bold text-white font-mono" id="invRawTotal">Rp 1.152.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-banker-canvas border-t border-banker-border text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-400 font-bold">Total Nilai Pesanan:</td>
+                <td class="py-2 px-4 text-right font-bold text-white font-mono" id="invSubtotalAmount">Rp 1.094.400</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-400 font-bold">Uang Muka Diterima (DP 50% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-400 font-mono" id="invPaidAmount">Rp 547.200</td>
+              </tr>
+              <tr class="bg-banker-midnight border-t border-banker-border">
+                <td colspan="3" class="py-2.5 px-4 text-banker-cyan text-right font-extrabold text-xs">
+                  Sisa Pelunasan Saat QC Selesai & Siap Kirim:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-banker-cyan font-mono" id="invDueAmount">
+                  Rp 547.200
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Workshop QC Barcode & Traceability -->
+        <div class="p-4 bg-banker-canvas rounded-xl border border-banker-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Garment Cut & Sew Barcode Traceability</span>
+            <p class="text-xs font-bold text-white font-sans">Scan Barcode untuk Memantau Progres Live di Workshop Bandung</p>
+            <p class="text-[11px] text-slate-400 font-sans">Garansi pengerjaan ulang (100% repro) bila ditemukan cacat sablon atau ukuran tidak sesuai toleransi standar.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-lg inline-block shadow">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=KONVEKSIPRINT-SPK-QC-8821" alt="QC Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1">SPK-8821-APPAREL</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons below Invoice -->
+      <div class="flex items-center justify-between gap-3 no-print font-mono">
+        <button onclick="resetApp()" class="bg-banker-midnight hover:bg-banker-indigo text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-banker-border font-sans">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          Hitung Lusinan Baru
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-banker-cyan hover:bg-banker-cyanHover text-banker-midnight text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-cyan-950/20 font-sans">
+            <i data-lucide="printer" class="w-4 h-4 text-banker-midnight"></i>
+            Cetak SPK & Faktur (PDF)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Standards & Fabric Specifications Strip -->
+  <section id="standards" class="border-t border-banker-border bg-banker-midnight py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <span class="text-xs font-bold text-banker-cyan uppercase tracking-wider font-mono">Garment Standards</span>
+        <h3 class="text-xl font-bold text-white font-display mt-1">Standar Mutu Jahitan & Kain KonveksiPrint</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+        <div class="p-5 rounded-xl bg-banker-canvas border border-banker-border">
+          <div class="w-9 h-9 rounded-lg bg-banker-indigo text-banker-cyan flex items-center justify-center mb-3">
+            <i data-lucide="feather" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">100% Cotton Combed Reaktif</h4>
+          <p class="text-slate-400 leading-relaxed">Bahan katun murni tanpa campuran polyester panas. Sangat menyerap keringat dan tidak luntur saat dicuci berulang kali.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-banker-canvas border border-banker-border">
+          <div class="w-9 h-9 rounded-lg bg-banker-indigo text-banker-cyan flex items-center justify-center mb-3">
+            <i data-lucide="printer" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">Tinta Sablon DTF & Plastisol Elastis</h4>
+          <p class="text-slate-400 leading-relaxed">Warna cetak tajam beresolusi tinggi hingga detail terkecil dengan elastisitas tinggi anti-retak saat ditarik.</p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-banker-canvas border border-banker-border">
+          <div class="w-9 h-9 rounded-lg bg-banker-indigo text-banker-cyan flex items-center justify-center mb-3">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h4 class="font-bold text-white text-sm mb-1 font-display">Jahitan Rantai Standar Distro</h4>
+          <p class="text-slate-400 leading-relaxed">Bagian pundak dijahit rantai rapi dan bagian leher menggunakan bis katun berkualitas agar kerah tidak mudah melar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Midnight Blue & Soft Cyan) -->
+  <footer class="bg-banker-canvas text-slate-500 py-8 border-t border-banker-border text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded bg-banker-indigo border border-banker-cyan flex items-center justify-center text-banker-cyan font-bold text-[10px]">K</div>
+        <span class="font-bold text-slate-300">KonveksiPrint Apparel Indonesia</span>
+        <span class="text-slate-600">| ID: konveksi-print-apparel</span>
+      </div>
+      <p class="text-slate-500 text-center md:text-right font-sans">&copy; 2026 PT KonveksiPrint Apparel Nusantara. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Core Interactive Script -->
+  <script>
+    // 1. Data Bahan Kain Pilihan
+    const fabricData = {
+      TSHIRT: [
+        { id: "FAB-30S", name: "Cotton Combed 30s", baseRate: 48000, tag: "Paling Laris Distro", desc: "Ketebalan pas, adem, cocok untuk iklim tropis" },
+        { id: "FAB-24S", name: "Cotton Combed 24s", baseRate: 52000, tag: "Sedikit Lebih Tebal", desc: "Bahan kokoh, tidak menerawang, kualitas premium" },
+        { id: "FAB-HVY", name: "Heavyweight Cotton 16s", baseRate: 65000, tag: "Oversized Streetwear", desc: "Kain tebal kaku gaya boxy streetwear kekinian" }
+      ],
+      POLO: [
+        { id: "FAB-CVC", name: "Lacoste CVC Premium", baseRate: 75000, tag: "Seragam Kantor", desc: "Tekstur pori madu lembut, tidak mudah kusut" },
+        { id: "FAB-PIQ", name: "Cotton Pique 100%", baseRate: 85000, tag: "Exclusive Executive", desc: "Full katun lembut dengan kerah rajut tebal" }
+      ],
+      HOODIE: [
+        { id: "FAB-FLC", name: "Cotton Fleece 280 GSM", baseRate: 125000, tag: "Hangat Lembut", desc: "Bagian dalam berbulu halus, lembut di kulit" },
+        { id: "FAB-TER", name: "Baby Terry Premium", baseRate: 115000, tag: "Casual Ringan", desc: "Tekstur handuk halus, nyaman untuk indoor AC" }
+      ]
+    };
+
+    // 2. Data Teknik Sablon / Bordir
+    const printMethods = [
+      { id: "METH-DTF", name: "Sablon DTF High-Def", extraPrice: 0, desc: "Bebas warna & gradasi tajam" },
+      { id: "METH-PLAST", name: "Sablon Plastisol Karet", extraPrice: 5000, desc: "Finishing doff karet tahan lama" },
+      { id: "METH-BORDIR", name: "Bordir Komputer Tajima", extraPrice: 8000, desc: "Jahitan benang timbul berkelas" }
+    ];
+
+    // 3. Pilihan Warna Kain Mock-up
+    const fabricColors = [
+      { name: "Midnight Navy", hex: "#0B132B", stroke: "#5BC0BE" },
+      { name: "Deep Indigo", hex: "#1C2541", stroke: "#5BC0BE" },
+      { name: "Jet Black", hex: "#0F0F12", stroke: "#3AAFA9" },
+      { name: "Pure White", hex: "#F8FAFC", stroke: "#0B132B" },
+      { name: "Emerald Forest", hex: "#064E3B", stroke: "#5BC0BE" },
+      { name: "Maroon Red", hex: "#4C0519", stroke: "#5BC0BE" }
+    ];
+
+    // State Management
+    let selectedApparelType = 'TSHIRT';
+    let selectedFabric = fabricData.TSHIRT[0];
+    let selectedPrintMethod = printMethods[0];
+    let selectedColor = fabricColors[0];
+    let currentDozens = 2; // 2 Lusin = 24 Pcs
+
+    let qrisTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set default deadline to 10 days from now
+      const deadline = new Date();
+      deadline.setDate(deadline.getDate() + 10);
+      document.getElementById('targetDeadlineInput').value = deadline.toISOString().split('T')[0];
+
+      renderFabricOptions();
+      renderPrintMethods();
+      renderFabricColors();
+      updateCalculator();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Logo Click to Home
+    function goHome(e) {
+      if (e) e.preventDefault();
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-banker-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-banker-midnight text-slate-400 flex items-center justify-center text-[11px] border border-banker-border font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-banker-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-banker-midnight text-slate-400 flex items-center justify-center text-[11px] border border-banker-border font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToWorkbench() {
+      document.getElementById('workbench').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Switch Product Type
+    function selectProductType(type) {
+      selectedApparelType = type;
+      const btnTshirt = document.getElementById('btnTypeTshirt');
+      const btnPolo = document.getElementById('btnTypePolo');
+      const btnHoodie = document.getElementById('btnTypeHoodie');
+
+      [btnTshirt, btnPolo, btnHoodie].forEach(b => {
+        b.className = "p-3 rounded-xl border border-banker-border bg-banker-canvas text-slate-300 text-center hover:border-banker-cyan font-mono";
+      });
+
+      if (type === 'TSHIRT') {
+        btnTshirt.className = "p-3 rounded-xl border-2 border-banker-cyan bg-banker-cyan/15 text-white font-bold text-center font-mono";
+        document.getElementById('apparelBadgeType').innerText = "T-SHIRT COTTON";
+      } else if (type === 'POLO') {
+        btnPolo.className = "p-3 rounded-xl border-2 border-banker-cyan bg-banker-cyan/15 text-white font-bold text-center font-mono";
+        document.getElementById('apparelBadgeType').innerText = "POLO SHIRT CVC";
+      } else if (type === 'HOODIE') {
+        btnHoodie.className = "p-3 rounded-xl border-2 border-banker-cyan bg-banker-cyan/15 text-white font-bold text-center font-mono";
+        document.getElementById('apparelBadgeType').innerText = "HOODIE JUMPER";
+      }
+
+      selectedFabric = fabricData[type][0];
+      renderFabricOptions();
+      updateCalculator();
+    }
+
+    // Render Fabric Options
+    function renderFabricOptions() {
+      const container = document.getElementById('fabricOptionsContainer');
+      const fabrics = fabricData[selectedApparelType];
+
+      container.innerHTML = fabrics.map(f => {
+        const isSelected = selectedFabric.id === f.id;
+        return `
+          <div onclick="selectFabric('${f.id}')" class="p-3.5 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between font-mono ${
+            isSelected 
+              ? 'border-banker-cyan bg-banker-cyanBg ring-2 ring-banker-cyan/20' 
+              : 'border-banker-border bg-banker-canvas hover:border-slate-500'
+          }">
+            <div>
+              <span class="font-bold text-xs text-white block">${f.name}</span>
+              <span class="text-[9px] text-banker-cyan mt-0.5 block font-sans">${f.tag}</span>
+              <p class="text-[10px] text-slate-400 mt-1 font-sans leading-normal">${f.desc}</p>
+            </div>
+            <span class="text-xs font-bold text-slate-200 mt-3 block font-mono">Mulai ${formatRupiah(f.baseRate)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectFabric(id) {
+      selectedFabric = fabricData[selectedApparelType].find(f => f.id === id);
+      renderFabricOptions();
+      updateCalculator();
+    }
+
+    // Render Print Methods
+    function renderPrintMethods() {
+      const container = document.getElementById('printMethodContainer');
+      container.innerHTML = printMethods.map(m => {
+        const isSelected = selectedPrintMethod.id === m.id;
+        return `
+          <div onclick="selectPrintMethod('${m.id}')" class="p-3 rounded-xl border-2 transition cursor-pointer flex flex-col justify-between font-mono ${
+            isSelected 
+              ? 'border-banker-cyan bg-banker-cyanBg' 
+              : 'border-banker-border bg-banker-canvas hover:border-slate-500'
+          }">
+            <div>
+              <span class="font-bold text-xs text-white block">${m.name}</span>
+              <span class="text-[10px] text-slate-400 font-sans mt-0.5 block">${m.desc}</span>
+            </div>
+            <span class="text-[11px] font-bold text-banker-cyan mt-2 block">${m.extraPrice > 0 ? '+ ' + formatRupiah(m.extraPrice) : 'Include Standar'}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectPrintMethod(id) {
+      selectedPrintMethod = printMethods.find(m => m.id === id);
+      renderPrintMethods();
+      updateCalculator();
+    }
+
+    // Render Fabric Colors
+    function renderFabricColors() {
+      const container = document.getElementById('fabricColorsContainer');
+      container.innerHTML = fabricColors.map((c, index) => {
+        const isSelected = selectedColor.name === c.name;
+        return `
+          <button onclick="selectColor(${index})" title="${c.name}" class="w-8 h-8 rounded-full border-2 transition transform hover:scale-110 flex items-center justify-center ${
+            isSelected ? 'border-banker-cyan ring-2 ring-banker-cyan/40 scale-110' : 'border-slate-500'
+          }" style="background-color: ${c.hex}">
+            ${isSelected ? '<span class="w-2 h-2 rounded-full bg-white"></span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectColor(index) {
+      selectedColor = fabricColors[index];
+      renderFabricColors();
+
+      // Update Live Mockup SVG Color
+      const svgShirt = document.getElementById('svgShirtBody');
+      svgShirt.setAttribute('fill', selectedColor.hex);
+      svgShirt.setAttribute('stroke', selectedColor.stroke);
+
+      document.getElementById('colorLabelDisplay').innerText = selectedColor.name;
+    }
+
+    // Upload Desain Simulator
+    function handleMockupUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const imgEl = document.getElementById('customLogoPreview');
+        imgEl.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Slider Lusinan Event
+    function onDozenSliderChange(val) {
+      currentDozens = parseInt(val);
+      updateCalculator();
+    }
+
+    // Dynamic Calculator Engine
+    function updateCalculator() {
+      const totalPcs = currentDozens * 12;
+      document.getElementById('dozenCountDisplay').innerText = `${currentDozens} Lusin (${totalPcs} pcs)`;
+
+      // Tier Diskon Lusinan Konveksi
+      let discountRate = 0;
+      if (currentDozens >= 20) {
+        discountRate = 0.20; // 20% Diskon untuk 20+ Lusin (240+ pcs)
+      } else if (currentDozens >= 10) {
+        discountRate = 0.15; // 15% Diskon untuk 10+ Lusin (120+ pcs)
+      } else if (currentDozens >= 5) {
+        discountRate = 0.10; // 10% Diskon untuk 5+ Lusin (60+ pcs)
+      } else if (currentDozens >= 2) {
+        discountRate = 0.05; // 5% Diskon untuk 2+ Lusin (24+ pcs)
+      }
+
+      const rawPcsRate = selectedFabric.baseRate + selectedPrintMethod.extraPrice;
+      const rawSubtotal = rawPcsRate * totalPcs;
+      const discountVal = Math.round(rawSubtotal * discountRate);
+      const grandTotal = rawSubtotal - discountVal;
+      const effectiveRatePerPcs = Math.round(grandTotal / totalPcs);
+
+      // Update UI Text
+      document.getElementById('calcFabricName').innerText = selectedFabric.name;
+      document.getElementById('calcPricePerPcs').innerText = `${formatRupiah(effectiveRatePerPcs)} / pcs`;
+      document.getElementById('calcTotalPcsLabel').innerText = `${totalPcs} pcs (${currentDozens} Lusin)`;
+      document.getElementById('calcRawSubtotal').innerText = formatRupiah(rawSubtotal);
+
+      const discountRow = document.getElementById('volumeDiscountRow');
+      if (discountRate > 0) {
+        discountRow.classList.remove('hidden');
+        document.getElementById('discountTierLabel').innerText = `Diskon Lusinan (${discountRate * 100}%):`;
+        document.getElementById('calcDiscountAmount').innerText = `- ${formatRupiah(discountVal)}`;
+      } else {
+        discountRow.classList.add('hidden');
+      }
+
+      document.getElementById('calcGrandTotal').innerText = formatRupiah(grandTotal);
+      document.getElementById('printMethodLabelDisplay').innerText = selectedPrintMethod.name;
+
+      return { totalPcs, rawPcsRate, effectiveRatePerPcs, rawSubtotal, discountVal, grandTotal };
+    }
+
+    // Step 2 Navigation
+    function goToStep2() {
+      const calc = updateCalculator();
+
+      document.getElementById('step1View').classList.add('hidden');
+      document.getElementById('step2View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-banker-cyan text-banker-cyan pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-banker-cyan text-banker-midnight flex items-center justify-center text-[11px] font-bold";
+
+      const dp50 = Math.round(calc.grandTotal * 0.5);
+      document.getElementById('dpPayableAmount').innerText = formatRupiah(dp50);
+
+      startQrisTimer(10 * 60);
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function backToStep1() {
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-banker-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-banker-midnight text-slate-400 flex items-center justify-center text-[11px] border border-banker-border font-bold";
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+    }
+
+    function startQrisTimer(seconds) {
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+      let rem = seconds;
+      const el = document.getElementById('qrisTimer');
+      
+      qrisTimerInterval = setInterval(() => {
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
+        el.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        if (rem <= 0) {
+          clearInterval(qrisTimerInterval);
+          alert("Waktu sesi pembayaran DP berakhir. Silakan ulangi pemesanan.");
+        }
+        rem--;
+      }, 1000);
+    }
+
+    // Step 3: Trigger Simulated Payment Success
+    function simulatePaymentSuccess() {
+      const brand = document.getElementById('clientBrandName').value.trim() || 'Kolektif Kreatif Apparel';
+      const pic = document.getElementById('clientPicName').value.trim() || 'Tedi Mahendra';
+      const phone = document.getElementById('clientPhone').value.trim() || '081299998888';
+      const address = document.getElementById('deliveryAddress').value.trim() || 'Gedung Wirausaha, Jakarta Selatan';
+      const deadline = document.getElementById('targetDeadlineInput').value;
+      const sizes = document.getElementById('sizeBreakdownInput').value.trim() || 'S: 4, M: 8, L: 8, XL: 4';
+
+      if (qrisTimerInterval) clearInterval(qrisTimerInterval);
+
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step3View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator3').className = "border-b-2 border-banker-cyan text-banker-cyan pb-2 flex items-center justify-center gap-1.5 font-bold font-mono";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-banker-cyan text-banker-midnight flex items-center justify-center text-[11px] font-bold";
+
+      const calc = updateCalculator();
+      const dp50 = Math.round(calc.grandTotal * 0.5);
+      const due = calc.grandTotal - dp50;
+
+      const randomSpk = "SPK-KPA-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('spkDocNumber').innerText = randomSpk;
+      document.getElementById('spkDateText').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('invBrandName').innerText = brand;
+      document.getElementById('invClientPic').innerText = `PIC: ${pic} (${phone})`;
+      document.getElementById('invDeliveryAddress').innerText = address;
+      document.getElementById('invTargetDeadline').innerText = `Target: ${deadline}`;
+      document.getElementById('invSizeBreakdown').innerText = sizes;
+
+      let typeName = "T-Shirt O-Neck";
+      if (selectedApparelType === 'POLO') typeName = "Polo Shirt Berkerah";
+      if (selectedApparelType === 'HOODIE') typeName = "Hoodie Jumper";
+
+      document.getElementById('invApparelTitle').innerText = `${typeName} ${selectedFabric.name}`;
+      document.getElementById('invApparelSpecs').innerText = `Warna: ${selectedColor.name} • Cetak: ${selectedPrintMethod.name} • Jahit Rantai Standar Distro`;
+      document.getElementById('invPcsQty').innerText = `${calc.totalPcs} Pcs (${currentDozens} Lusin)`;
+      document.getElementById('invUnitRate').innerText = formatRupiah(calc.effectiveRatePerPcs);
+      document.getElementById('invRawTotal').innerText = formatRupiah(calc.grandTotal);
+
+      document.getElementById('invSubtotalAmount').innerText = formatRupiah(calc.grandTotal);
+      document.getElementById('invPaidAmount').innerText = formatRupiah(dp50);
+      document.getElementById('invDueAmount').innerText = formatRupiah(due);
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function resetApp() {
+      selectedApparelType = 'TSHIRT';
+      selectedFabric = fabricData.TSHIRT[0];
+      selectedPrintMethod = printMethods[0];
+      selectedColor = fabricColors[0];
+      currentDozens = 2;
+
+      document.getElementById('step3View').classList.add('hidden');
+      document.getElementById('step2View').classList.add('hidden');
+      document.getElementById('step1View').classList.remove('hidden');
+
+      document.getElementById('stepIndicator2').className = "border-b-2 border-banker-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator2').querySelector('span').className = "w-5 h-5 rounded-full bg-banker-midnight text-slate-400 flex items-center justify-center text-[11px] border border-banker-border font-bold";
+      document.getElementById('stepIndicator3').className = "border-b-2 border-banker-border text-slate-400 pb-2 flex items-center justify-center gap-1.5";
+      document.getElementById('stepIndicator3').querySelector('span').className = "w-5 h-5 rounded-full bg-banker-midnight text-slate-400 flex items-center justify-center text-[11px] border border-banker-border font-bold";
+
+      document.getElementById('dozenSlider').value = 2;
+      selectProductType('TSHIRT');
+      selectColor(0);
+
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
