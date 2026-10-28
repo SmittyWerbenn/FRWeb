@@ -1,5 +1,5 @@
-import { ArrowRight, Check, Clock, MessageCircle, Sparkles } from '../../lib/icons'
-import { WA_CONSULT, formatIDR } from '../../lib/format'
+import { ArrowRight, Check, Clock, MessageCircle, ShieldCheck, Sparkles } from '../../lib/icons'
+import { WA_CONSULT } from '../../lib/format'
 import { scrollToSection, useOrder } from '../../context/OrderContext'
 
 const POINTS = [
@@ -8,88 +8,65 @@ const POINTS = [
   'Pendampingan konten via WhatsApp',
 ]
 
+const GUARANTEES = [
+  { icon: Clock, label: 'Go-live ± 30 menit', note: 'Setelah pembayaran terkonfirmasi' },
+  { icon: ShieldCheck, label: 'Domain, SSL & hosting beres', note: 'Tidak ada biaya tersembunyi' },
+  { icon: MessageCircle, label: 'Pendampingan 1-on-1', note: 'Langsung ke tim, bukan bot' },
+]
+
 export default function CtaSection() {
-  const { plan, template, domain, checkoutReady, waOrderLink } = useOrder()
-  const totalLabel = plan.price === null ? 'Custom' : formatIDR(plan.price)
+  const { checkoutReady, waOrderLink } = useOrder()
 
   return (
     <section className="relative px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-      <div className="mx-auto w-full max-w-7xl">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-br from-[#0b1424] via-[#070c16] to-[#0a1a17] px-5 py-9 sm:px-9 sm:py-11">
+      <div className="mx-auto w-full max-w-5xl">
+        <div className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-br from-[#0b1424] via-[#070c16] to-[#0a1a17] px-5 py-10 sm:px-9 sm:py-12">
           <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-indigo-500/15 blur-[90px]" />
-          <div className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-emerald-400/10 blur-[90px]" />
+          <div className="pointer-events-none absolute -bottom-28 -left-20 h-64 w-64 rounded-full bg-emerald-400/12 blur-[90px]" />
+          <div className="pointer-events-none absolute left-1/2 top-0 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-emerald-300/40 to-transparent" />
 
-          <div className="relative grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-            <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/25 bg-indigo-400/10 px-3 py-1 text-[11px] font-semibold text-indigo-300">
-                <Sparkles className="h-3.5 w-3.5" />
-                Siap go-live hari ini
-              </span>
-              <h2 className="mt-4 text-[26px] font-extrabold leading-tight tracking-tight text-white sm:text-[34px]">
-                Website resmi bisnis Anda bisa online sebelum makan siang
-              </h2>
-              <p className="mt-3 max-w-xl text-[13.5px] leading-relaxed text-slate-400">
-                Pilih paket, kunci domain, tentukan tema — sisanya kami yang kerjakan. Tidak perlu
-                tim IT, tidak perlu menunggu antrean pengembangan.
-              </p>
+          <div className="relative mx-auto flex max-w-2xl flex-col items-center text-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/25 bg-indigo-400/10 px-3 py-1 text-[11px] font-semibold text-indigo-300">
+              <Sparkles className="h-3.5 w-3.5" />
+              Siap go-live hari ini
+            </span>
 
-              <ul className="mt-5 grid gap-2 sm:grid-cols-2">
-                {POINTS.map((point) => (
-                  <li key={point} className="flex items-start gap-2 text-[12.5px] text-slate-300">
-                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-300" strokeWidth={3} />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <h2 className="mt-4 text-[26px] font-extrabold leading-tight tracking-tight text-white sm:text-[34px]">
+              Website resmi bisnis Anda bisa online sebelum makan siang
+            </h2>
 
-            <div className="rounded-2xl border border-slate-800/80 bg-[#080c14]/80 p-4 backdrop-blur">
-              <p className="text-[10px] uppercase tracking-wider text-slate-500">Order Anda saat ini</p>
-              <div className="mt-3 space-y-2 text-[12px]">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-slate-400">Paket</span>
-                  <span className="truncate font-semibold text-white">{plan.name}</span>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-slate-400">Domain</span>
-                  <span className={`truncate font-semibold ${domain ? 'text-white' : 'text-slate-500'}`}>
-                    {domain || 'belum dipilih'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-slate-400">Template</span>
-                  <span className={`truncate font-semibold ${template ? 'text-white' : 'text-slate-500'}`}>
-                    {template ? template.name : 'belum dipilih'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-3 border-t border-slate-800/80 pt-2.5">
-                  <span className="text-slate-400">Total</span>
-                  <span className="text-[14px] font-extrabold text-white">{totalLabel}</span>
-                </div>
-              </div>
+            <p className="mt-3 max-w-xl text-[13.5px] leading-relaxed text-slate-400">
+              Pilih paket, kunci domain, tentukan tema — sisanya kami yang kerjakan. Tidak perlu tim
+              IT, tidak perlu menunggu antrean pengembangan.
+            </p>
 
-              <div className="mt-3 flex items-center gap-1.5 text-[10.5px] text-slate-500">
-                <Clock className="h-3 w-3" />
-                Estimasi go-live ± 30 menit
-              </div>
+            <ul className="mt-5 flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-5 sm:gap-y-2">
+              {POINTS.map((point) => (
+                <li key={point} className="flex items-start gap-2 text-[12.5px] text-slate-300">
+                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-300" strokeWidth={3} />
+                  {point}
+                </li>
+              ))}
+            </ul>
 
+            <div className="mt-7 flex w-full flex-col items-stretch gap-2.5 sm:w-auto sm:flex-row sm:items-center sm:justify-center">
               {checkoutReady ? (
                 <a
                   href={waOrderLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 px-4 py-3 text-[12.5px] font-bold text-[#04140f] transition hover:brightness-110"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 px-6 py-3.5 text-[13px] font-bold text-[#04140f] shadow-[0_10px_30px_-12px_rgba(16,185,129,0.7)] transition hover:brightness-110"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Proses &amp; Go-Live
+                  Proses &amp; Go-Live via WhatsApp
                 </a>
               ) : (
                 <button
                   type="button"
-                  onClick={() => scrollToSection('paket')}
-                  className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-400 to-violet-300 px-4 py-3 text-[12.5px] font-bold text-[#04121f] transition hover:brightness-110"
+                  onClick={() => scrollToSection('order')}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 px-6 py-3.5 text-[13px] font-bold text-[#04140f] shadow-[0_10px_30px_-12px_rgba(16,185,129,0.7)] transition hover:brightness-110"
                 >
-                  Mulai Pilih Paket
+                  Proses &amp; Go-Live via WhatsApp
                   <ArrowRight className="h-4 w-4" />
                 </button>
               )}
@@ -98,10 +75,31 @@ export default function CtaSection() {
                 href={WA_CONSULT}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-800/80 px-4 py-2.5 text-[11.5px] font-semibold text-slate-300 transition hover:border-white/25 hover:bg-white/5"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-700/80 px-6 py-3.5 text-[12.5px] font-semibold text-slate-300 transition hover:border-white/25 hover:bg-white/5 hover:text-white"
               >
-                Konsultasi dulu
+                Konsultasi Dulu
               </a>
+            </div>
+
+            <p className="mt-3 text-[11px] text-slate-500">
+              {checkoutReady
+                ? 'Pesanan Anda sudah lengkap — lanjut konfirmasi lewat WhatsApp.'
+                : 'Belum lengkap? Tombol di atas mengarahkan ke langkah yang tersisa.'}
+            </p>
+
+            <div className="mt-8 grid w-full gap-2.5 border-t border-slate-800/70 pt-6 sm:grid-cols-3">
+              {GUARANTEES.map(({ icon: Icon, label, note }) => (
+                <div
+                  key={label}
+                  className="flex items-start gap-2.5 rounded-xl border border-slate-800/60 bg-[#080c14]/60 px-3 py-2.5 text-left"
+                >
+                  <Icon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
+                  <div>
+                    <p className="text-[11.5px] font-semibold leading-tight text-white">{label}</p>
+                    <p className="mt-0.5 text-[10.5px] leading-snug text-slate-500">{note}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

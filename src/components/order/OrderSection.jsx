@@ -128,8 +128,8 @@ export default function OrderSection() {
           </p>
         </div>
 
-        <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_0.85fr] lg:items-start">
-          <div className="space-y-4">
+        <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:items-start">
+          <div className="min-w-0 space-y-4">
             <div className="rounded-2xl border border-slate-800/80 bg-[#0b1120] p-4 sm:p-5">
               <div className="flex items-center justify-between">
                 <h3 className="text-[13px] font-bold text-white">Kelengkapan order</h3>
@@ -197,7 +197,7 @@ export default function OrderSection() {
             </div>
           </div>
 
-          <div className="lg:sticky lg:top-24">
+          <div className="min-w-0 lg:sticky lg:top-24">
             <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-[#0b1120] shadow-2xl shadow-black/40">
               <div className="flex items-center justify-between border-b border-slate-800/80 bg-gradient-to-r from-indigo-500/10 via-transparent to-emerald-400/10 px-4 py-3">
                 <h3 className="text-[13px] font-bold text-white">Detail Pesanan</h3>
