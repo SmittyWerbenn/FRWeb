@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { TEMPLATES } from '../data'
 import { CUSTOM_FEATURE_IDS } from '../data/customFeatures'
 import { DEFAULT_PLAN_ID, PLANS_BY_ID } from '../data/plans'
+import { PAYMENT_ADDON } from '../data/paymentAddon'
 import { DEFAULT_TLD, fullDomain, validateDomainName } from '../lib/domain'
 import { buildCustomOrderLink, buildOrderLink, buildWhatsAppLink } from '../lib/format'
 
@@ -32,6 +33,7 @@ function readInitialOrder() {
     tld: DEFAULT_TLD,
     templateId: '',
     designMode: 'template',
+    includePaymentGateway: false,
     custom: { ...EMPTY_BRIEF },
   }
   if (typeof window === 'undefined') return fallback
@@ -45,6 +47,7 @@ function readInitialOrder() {
       tld: typeof parsed.tld === 'string' && parsed.tld.startsWith('.') ? parsed.tld : fallback.tld,
       templateId: TEMPLATES.some((item) => item.id === parsed.templateId) ? parsed.templateId : '',
       designMode: DESIGN_MODES.includes(parsed.designMode) ? parsed.designMode : fallback.designMode,
+      includePaymentGateway: parsed.includePaymentGateway === true,
       custom: sanitizeBrief(parsed.custom),
     }
   } catch {
@@ -99,6 +102,10 @@ export function OrderProvider({ children }) {
   const designLocked = plan.price === null
   const designMode = designLocked ? 'custom' : order.designMode
   const customBrief = order.custom ?? EMPTY_BRIEF
+  const includePaymentGateway = order.includePaymentGateway === true
+  const addonPrice = includePaymentGateway ? PAYMENT_ADDON.price : 0
+  // Total final: harga paket + add-on. Paket Custom tetap "menunggu penawaran".
+  const orderTotal = plan.price === null ? null : plan.price + addonPrice
 
   useEffect(() => {
     try {
@@ -175,6 +182,14 @@ export function OrderProvider({ children }) {
     setOrder((current) => ({ ...current, templateId: '' }))
   }, [])
 
+  const togglePaymentGateway = useCallback(() => {
+    setOrder((current) => ({ ...current, includePaymentGateway: !current.includePaymentGateway }))
+  }, [])
+
+  const setPaymentGateway = useCallback((next) => {
+    setOrder((current) => ({ ...current, includePaymentGateway: Boolean(next) }))
+  }, [])
+
   const setCustomReference = useCallback((reference) => {
     setOrder((current) => ({ ...current, custom: { ...current.custom, reference } }))
   }, [])
@@ -211,6 +226,7 @@ export function OrderProvider({ children }) {
       tld: DEFAULT_TLD,
       templateId: '',
       designMode: 'template',
+      includePaymentGateway: false,
       custom: { ...EMPTY_BRIEF },
     })
   }, [])
@@ -237,12 +253,15 @@ export function OrderProvider({ children }) {
           reference: customBrief.reference,
           features: customBrief.features,
           notes: customBrief.notes,
+          includePaymentGateway,
         })
       : buildOrderLink({
           planName: plan.name,
           planPrice: plan.price,
           domain,
           templateName: template?.name,
+          includePaymentGateway,
+          totalPrice: orderTotal,
         })
 
   const waTemplateLink = template ? buildWhatsAppLink(template.name) : ''
@@ -264,6 +283,10 @@ export function OrderProvider({ children }) {
     isDesignReady,
     checkoutReady,
     completedSteps,
+    includePaymentGateway,
+    paymentAddon: PAYMENT_ADDON,
+    addonPrice,
+    orderTotal,
     waOrderLink,
     waTemplateLink,
     selectPlan,
@@ -272,6 +295,8 @@ export function OrderProvider({ children }) {
     setDesignMode,
     selectTemplate,
     clearTemplate,
+    togglePaymentGateway,
+    setPaymentGateway,
     setCustomReference,
     setCustomNotes,
     toggleCustomFeature,

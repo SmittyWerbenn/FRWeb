@@ -1,7 +1,9 @@
 import { ArrowUpRight, Check, CreditCard, MessageCircle, Minus, Sparkles } from '../../lib/icons'
 import { PLANS } from '../../data/plans'
+import { PAYMENT_ADDON } from '../../data/paymentAddon'
 import { formatIDR } from '../../lib/format'
 import { scrollToSection, useOrder } from '../../context/OrderContext'
+import PaymentGatewayToggle from './PaymentGatewayToggle'
 
 function PlanCard({ plan }) {
   const { order, selectPlan } = useOrder()
@@ -114,6 +116,12 @@ function PlanCard({ plan }) {
 }
 
 export default function PricingSection() {
+  const { plan, includePaymentGateway, orderTotal } = useOrder()
+  const isCustomPlan = plan.price === null
+  const liveTotal = isCustomPlan
+    ? 'Custom — penawaran terpisah'
+    : formatIDR(orderTotal)
+
   return (
     <section id="paket" className="relative scroll-mt-20 px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto w-full max-w-7xl">
@@ -141,6 +149,36 @@ export default function PricingSection() {
           {PLANS.map((plan) => (
             <PlanCard key={plan.id} plan={plan} />
           ))}
+        </div>
+
+        {/* Add-on opsional: Payment Gateway & QRIS Otomatis (Step 1) */}
+        <div
+          id="addon-pembayaran"
+          className="mt-5 scroll-mt-24 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3 sm:p-4"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 px-1">
+            <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              Add-on opsional · tidak wajib
+            </p>
+            <p className="text-[11px] text-slate-400">
+              {plan.name}
+              {includePaymentGateway ? ' + add-on QRIS' : ' tanpa add-on'}
+              <span className="mx-1.5 text-slate-600">=</span>
+              <span
+                data-pricing-live-total
+                className={`font-extrabold ${includePaymentGateway ? 'text-emerald-300' : 'text-white'}`}
+              >
+                {liveTotal}
+              </span>
+            </p>
+          </div>
+
+          <PaymentGatewayToggle className="mt-2.5" />
+
+          <p className="mt-2.5 px-1 text-[10.5px] leading-snug text-slate-500">
+            {PAYMENT_ADDON.footnote} Tanpa add-on, seluruh paket sudah termasuk checkout via WhatsApp
+            dengan konfirmasi pembayaran manual oleh tim FRWeb.
+          </p>
         </div>
 
         <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3 text-[11.5px] text-slate-400">

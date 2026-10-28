@@ -1,7 +1,9 @@
-import { ArrowRight, Check, Clock, CreditCard, Globe, Layers, MessageCircle, RotateCcw, ShieldCheck, Sparkles, Zap } from '../../lib/icons'
+import { ArrowRight, Check, Clock, CreditCard, Globe, Layers, MessageCircle, QrCode, RotateCcw, ShieldCheck, Sparkles, Zap } from '../../lib/icons'
 import { formatIDR } from '../../lib/format'
 import { CUSTOM_TIMELINE, featureLabels } from '../../data/customFeatures'
+import { PAYMENT_ADDON } from '../../data/paymentAddon'
 import { scrollToSection, useOrder } from '../../context/OrderContext'
+import PaymentGatewayToggle from './PaymentGatewayToggle'
 
 const TEMPLATE_TIMELINE = [
   {
@@ -64,11 +66,15 @@ export default function OrderSection() {
     waOrderLink,
     resetOrder,
     clearTemplate,
+    includePaymentGateway,
+    addonPrice,
+    orderTotal,
   } = useOrder()
 
   const isCustom = plan.price === null
   const isCustomMode = designMode === 'custom'
-  const totalLabel = isCustom ? 'Custom' : formatIDR(plan.price)
+  const totalLabel = isCustom ? 'Custom' : formatIDR(orderTotal)
+  const planSubtotalLabel = isCustom ? 'Penawaran terpisah' : formatIDR(plan.price)
 
   const designValue = isCustomMode
     ? customBrief.features.length > 0
@@ -325,6 +331,25 @@ export default function OrderSection() {
                   />
                 )}
                 <SummaryRow
+                  icon={QrCode}
+                  label="Add-On Pembayaran"
+                  value={
+                    includePaymentGateway
+                      ? `Payment Gateway & QRIS Otomatis (+${formatIDR(PAYMENT_ADDON.price)})`
+                      : 'Standard checkout WhatsApp (gratis)'
+                  }
+                  tone={includePaymentGateway ? 'default' : 'muted'}
+                  action={
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('addon-pembayaran')}
+                      className="text-[10.5px] font-semibold text-slate-400 hover:text-white"
+                    >
+                      {includePaymentGateway ? 'Ubah' : 'Tambah'}
+                    </button>
+                  }
+                />
+                <SummaryRow
                   icon={Clock}
                   label={isCustomMode ? 'Estimasi pengerjaan' : 'Estimasi go-live'}
                   value={
@@ -336,10 +361,37 @@ export default function OrderSection() {
               </div>
 
               <div className="border-t border-slate-800/80 px-4 py-3">
+                <div className="space-y-1.5 pb-3 text-[11.5px]">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-slate-500">Paket {plan.name}</span>
+                    <span className="font-semibold text-slate-200">{planSubtotalLabel}</span>
+                  </div>
+                  {includePaymentGateway ? (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-500">
+                        Add-on Payment Gateway &amp; QRIS <span className="text-slate-600">(one-time)</span>
+                      </span>
+                      <span className="font-semibold text-emerald-300">+{formatIDR(addonPrice)}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-slate-500">Checkout WhatsApp manual</span>
+                      <span className="shrink-0 font-semibold text-slate-400">Gratis</span>
+                    </div>
+                  )}
+                </div>
+
+                <PaymentGatewayToggle compact className="mb-3" />
+
                 <div className="flex items-end justify-between">
                   <div>
                     <p className="text-[10px] uppercase tracking-wider text-slate-500">Total setup</p>
-                    <p className="mt-0.5 text-[20px] font-extrabold leading-none text-white">{totalLabel}</p>
+                    <p
+                      data-order-total
+                      className="mt-0.5 text-[20px] font-extrabold leading-none text-white"
+                    >
+                      {totalLabel}
+                    </p>
                   </div>
                   <p className="text-right text-[10px] leading-snug text-slate-500">
                     sekali bayar
@@ -409,6 +461,7 @@ export default function OrderSection() {
           <div className="min-w-0 flex-1">
             <p className="text-[9.5px] uppercase tracking-wider text-slate-500">
               Total · {isCustomMode ? CUSTOM_TIMELINE : '± 30 menit'}
+              {includePaymentGateway && <span className="text-emerald-300/90"> · incl. add-on QRIS</span>}
             </p>
             <p className="truncate text-[14px] font-extrabold text-white">{totalLabel}</p>
           </div>

@@ -1,4 +1,5 @@
 import { CUSTOM_TIMELINE, featureLabels } from '../data/customFeatures'
+import { PAYMENT_ADDON, paymentAddonLine } from '../data/paymentAddon'
 
 /** Nomor sales FRWeb (format internasional tanpa +). */
 export const SALES_WHATSAPP = '6285782846851'
@@ -52,19 +53,34 @@ export function buildWhatsAppLink(templateName, { extra } = {}) {
 
 /**
  * Link checkout jalur template — website go-live 30 menit.
+ * Menyertakan baris add-on Payment Gateway/QRIS dan estimasi total final
+ * agar tim sales tidak perlu menghitung ulang saat menerima pesan.
  */
-export function buildOrderLink({ planName, planPrice, domain, templateName }) {
+export function buildOrderLink({
+  planName,
+  planPrice,
+  domain,
+  templateName,
+  includePaymentGateway = false,
+  totalPrice = null,
+}) {
   const priceLabel = planPrice ? ` (${formatIDR(planPrice)})` : ' (Custom — perlu penawaran)'
+  const totalLabel =
+    totalPrice || planPrice
+      ? formatIDR(totalPrice ?? planPrice)
+      : 'Custom — menunggu penawaran'
   const lines = [
-    'Halo tim FRWeb, saya ingin setup website go-live 30 menit.',
+    'Halo tim FRWeb, saya ingin setup website go-live.',
     '',
     '*Detail Pesanan:*',
     `- Paket: ${planName || '-'}${priceLabel}`,
     `- Domain: ${domain || 'belum ditentukan'}`,
-    `- Mode Desain: Template Katalog (Go-Live 30 Menit)`,
-    `- Template: ${templateName || 'belum dipilih'}`,
+    '- Mode Desain: Template Katalog (Go-Live 30 Menit)',
+    `- Template/Desain: ${templateName || 'belum dipilih'}`,
+    paymentAddonLine(includePaymentGateway),
+    `- *Estimasi Total:* ${totalLabel}`,
     '',
-    'Mohon dibantu proses aktivasi dan pembayarannya.',
+    'Mohon dibantu tahap aktivasi dan pembayarannya.',
   ]
   return `https://wa.me/${SALES_WHATSAPP}?text=${encodeURIComponent(lines.join('\n'))}`
 }
@@ -73,11 +89,22 @@ export function buildOrderLink({ planName, planPrice, domain, templateName }) {
  * Link checkout jalur Custom Design — format pesan mengikuti brief:
  * referensi web, fitur khusus yang dicentang, dan catatan bisnis.
  */
-export function buildCustomOrderLink({ planName, planPrice, domain, reference, features, notes }) {
+export function buildCustomOrderLink({
+  planName,
+  planPrice,
+  domain,
+  reference,
+  features,
+  notes,
+  includePaymentGateway = false,
+}) {
   const priceLabel = planPrice ? ` (${formatIDR(planPrice)})` : ' (Custom — perlu penawaran)'
   const featureList = featureLabels(features ?? [])
+  const totalLabel = planPrice
+    ? formatIDR(planPrice + (includePaymentGateway ? PAYMENT_ADDON.price : 0))
+    : 'Custom — menunggu penawaran setelah brief disetujui'
   const lines = [
-    'Halo tim FRCloud, saya tertarik setup website dengan *Custom Design*.',
+    'Halo tim FRWeb, saya tertarik setup website dengan *Custom Design*.',
     '',
     '*Detail Kebutuhan:*',
     `- Paket: ${planName || '-'}${priceLabel}`,
@@ -86,6 +113,8 @@ export function buildCustomOrderLink({ planName, planPrice, domain, reference, f
     `- Referensi Web: ${(reference || '').trim() || '-'}`,
     `- Fitur Khusus: ${featureList.length > 0 ? featureList.join(', ') : 'belum ada — akan didiskusikan'}`,
     `- Catatan: ${(notes || '').trim() || '-'}`,
+    paymentAddonLine(includePaymentGateway),
+    `- *Estimasi Total:* ${totalLabel}`,
     `- Estimasi Pengerjaan: ${CUSTOM_TIMELINE} setelah brief disetujui`,
     '',
     'Bisa dibantu estimasi timeline dan tahap selanjutnya?',

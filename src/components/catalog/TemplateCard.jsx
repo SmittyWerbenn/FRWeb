@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ArrowUpRight, Check, Clock, Eye, Sparkles } from '../../lib/icons'
+import { ArrowUpRight, Check, Clock, Eye, Info, Sparkles } from '../../lib/icons'
 import { getCategoryLabel } from '../../data'
+import { PAYMENT_ADDON, hasPaymentHighlight } from '../../data/paymentAddon'
 import ArchetypeThumb from './ArchetypeThumb'
 
 const BADGE_STYLES = {
@@ -15,6 +16,8 @@ const BADGE_STYLES = {
 
 export default function TemplateCard({ template, onPreview, onSelect, selected = false }) {
   const { theme, badgeLabel, variantStyle, layoutType, colorPalette = [], industry, thumbnail } = template
+  const features = template.features ?? template.bullets ?? []
+  const paymentHighlight = hasPaymentHighlight(features)
   const badgeClass = BADGE_STYLES[badgeLabel] || 'bg-white/10 text-slate-300 ring-white/20'
   const [thumbBroken, setThumbBroken] = useState(!thumbnail)
 
@@ -125,7 +128,7 @@ export default function TemplateCard({ template, onPreview, onSelect, selected =
         </div>
 
         <ul className="mt-4 flex-1 space-y-1.5">
-          {(template.features ?? template.bullets ?? []).slice(0, 3).map((feature) => (
+          {features.slice(0, 3).map((feature) => (
             <li key={feature} className="flex items-start gap-2 text-[12px] leading-snug text-slate-300">
               <span
                 className="mt-[3px] grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full"
@@ -137,6 +140,17 @@ export default function TemplateCard({ template, onPreview, onSelect, selected =
             </li>
           ))}
         </ul>
+
+        {paymentHighlight && (
+          <p
+            data-payment-footnote
+            title={PAYMENT_ADDON.footnote}
+            className="mt-2.5 flex items-start gap-1.5 rounded-lg border border-amber-300/15 bg-amber-300/[0.06] px-2 py-1.5 text-[10px] leading-snug text-amber-200/80"
+          >
+            <Info className="mt-[1px] h-2.5 w-2.5 shrink-0" />
+            <span>*{PAYMENT_ADDON.footnote}</span>
+          </p>
+        )}
 
         <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3.5">
           <div className="min-w-0">

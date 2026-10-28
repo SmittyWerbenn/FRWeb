@@ -28,6 +28,10 @@ const FAQS = [
     a: 'Pembayaran via transfer bank atau QRIS dengan invoice resmi. Untuk Paket Custom Solution tersedia opsi DP 50% sebelum pengerjaan dan pelunasan setelah uji terima.',
   },
   {
+    q: 'Apakah integrasi pembayaran online/QRIS otomatis sudah termasuk di dalam paket?',
+    a: 'Semua website sudah mendukung pesanan & invoice via WhatsApp. Jika bisnis Anda membutuhkan integrasi gateway otomatis (QRIS real-time & Virtual Account bank terverifikasi otomatis via Midtrans/Xendit), tersedia modul add-on seharga Rp 1.000.000 (sudah termasuk setup API, webhook status, dan testing sandbox hingga go-live). Add-on ini opsional dan bisa diaktifkan langsung dari pilihan paket.',
+  },
+  {
     q: 'Apakah termasuk revisi?',
     a: 'Setiap paket mendapat garansi revisi konten selama 7 hari setelah go-live. Revisi struktur atau penambahan fitur di luar cakupan paket dihitung terpisah dan selalu dikonfirmasi lebih dulu.',
   },

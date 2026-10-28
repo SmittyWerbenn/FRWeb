@@ -22,7 +22,7 @@ export const PLANS = [
       'Form kontak langsung ke WhatsApp',
       'Halaman cepat & responsif di semua perangkat',
     ],
-    notIncluded: ['Database terisolasi', 'Integrasi QRIS otomatis', 'Auto-backup harian'],
+    notIncluded: ['Database terisolasi', 'Add-on QRIS/gateway otomatis (opsional)', 'Auto-backup harian'],
   },
   {
     id: 'growth',
@@ -38,7 +38,7 @@ export const PLANS = [
       'Performa dioptimalkan untuk trafik promo & campaign',
       'Caching cepat + asset CDN',
       'Database terisolasi & aman',
-      'Integrasi auto WhatsApp + QRIS',
+      'Integrasi auto WhatsApp (konfirmasi transfer/QRIS manual)',
       'Proteksi anti-downtime saat trafik promo',
       'Free SSL, setup domain 1 tahun, backup mingguan',
     ],
