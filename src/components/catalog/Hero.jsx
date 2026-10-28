@@ -1,7 +1,7 @@
-import { ArrowRight, Check, Clock, Eye, Sparkles, Star } from '../../lib/icons'
+import { ArrowRight, Check, Eye, Sparkles, Star } from '../../lib/icons'
 import { scrollToSection, useOrder } from '../../context/OrderContext'
 import { TEMPLATES } from '../../data'
-import HeroBrowser from './HeroBrowser'
+import HeroShowcase from './HeroShowcase'
 import Stepper from '../order/Stepper'
 
 const VALUES = [
@@ -18,10 +18,19 @@ const STATS = [
   { value: '0%', label: 'Potongan penjualan' },
 ]
 
-const padel = TEMPLATES.find((template) => template.id === 'padel-futsal-master')
+const SHOWCASE_IDS = [
+  'padel-futsal-master',
+  'quadra-coffee-shop',
+  'sinar-trans-express',
+  'fine-wo',
+]
+
+const SHOWCASE_TEMPLATES = SHOWCASE_IDS.map((id) => TEMPLATES.find((template) => template.id === id)).filter(
+  Boolean,
+)
 
 export default function Hero() {
-  const { completedSteps } = useOrder()
+  const { completedSteps, openPreview } = useOrder()
 
   return (
     <section
@@ -123,22 +132,8 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[520px] lg:max-w-none">
-          <HeroBrowser template={padel} />
-
-          <div className="absolute -bottom-6 left-2 z-20 hidden items-center gap-2.5 rounded-xl border border-slate-800/80 bg-[#0b1120]/95 px-3 py-2.5 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.95)] backdrop-blur-md sm:-left-4 sm:flex">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-500/15 text-indigo-300">
-              <Clock className="h-4 w-4" />
-            </span>
-            <div>
-              <p className="text-[11px] font-bold text-white">Estimasi go-live</p>
-              <p className="text-[10px] text-slate-400">± 30 menit setelah pembayaran</p>
-            </div>
-            <span className="ml-1 flex items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[9px] font-bold text-emerald-300">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              READY
-            </span>
-          </div>
+        <div className="relative mx-auto w-full min-w-0 max-w-[520px] lg:max-w-none">
+          <HeroShowcase templates={SHOWCASE_TEMPLATES} onOpenFullscreen={openPreview} />
         </div>
       </div>
 
