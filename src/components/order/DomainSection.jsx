@@ -34,22 +34,30 @@ export default function DomainSection() {
     }
 
     let cancelled = false
+    const controller = new AbortController()
     setStatus({ state: 'checking', message: '', suggestions: [] })
 
-    checkDomainAvailability(clean, order.tld).then((result) => {
-      if (cancelled) return
-      setStatus({
-        state: result.state,
-        message:
-          result.state === 'available'
-            ? 'Domain tersedia — bisa langsung disambungkan saat setup.'
-            : 'Domain ini sudah dipakai. Pilih rekomendasi di bawah atau ubah namanya.',
-        suggestions: result.suggestions,
+    const timer = window.setTimeout(() => {
+      checkDomainAvailability(clean, order.tld, { signal: controller.signal }).then((result) => {
+        if (cancelled) return
+        const domain = result.domain || fullDomain(clean, order.tld)
+        setStatus({
+          state: result.state,
+          message:
+            result.state === 'available'
+              ? `${domain} tersedia — bisa langsung disambungkan saat setup.`
+              : result.state === 'taken'
+                ? `${domain} tidak tersedia — sudah ada yang menggunakan. Pilih rekomendasi di bawah atau ubah namanya.`
+                : `Belum bisa memastikan ${domain} sekarang (registry tidak merespons). Coba lagi sebentar lagi atau lanjutkan — tim kami verifikasi manual.`,
+          suggestions: result.suggestions,
+        })
       })
-    })
+    }, 400)
 
     return () => {
       cancelled = true
+      controller.abort()
+      window.clearTimeout(timer)
     }
   }, [order.domainName, order.tld])
 
@@ -74,7 +82,8 @@ export default function DomainSection() {
     invalid: 'border-rose-400/40 bg-rose-400/[0.07] text-rose-200',
     checking: 'border-indigo-400/40 bg-indigo-400/[0.07] text-indigo-200',
     available: 'border-emerald-400/45 bg-emerald-400/[0.08] text-emerald-200',
-    taken: 'border-amber-400/40 bg-amber-400/[0.07] text-amber-200',
+    taken: 'border-rose-400/45 bg-rose-400/[0.08] text-rose-200',
+    unknown: 'border-amber-400/40 bg-amber-400/[0.07] text-amber-200',
   }
 
   const StatusIcon =
@@ -163,9 +172,10 @@ export default function DomainSection() {
               <span>
                 {status.state === 'idle' && 'Mulai ketik nama domain untuk cek ketersediaan otomatis.'}
                 {status.state === 'invalid' && status.message}
-                {status.state === 'checking' && 'Mengecek ketersediaan domain…'}
+                {status.state === 'checking' && 'Mengecek langsung ke registry domain (RDAP)…'}
                 {status.state === 'available' && status.message}
                 {status.state === 'taken' && status.message}
+                {status.state === 'unknown' && status.message}
               </span>
             </div>
 
@@ -199,9 +209,9 @@ export default function DomainSection() {
             <button
               type="button"
               onClick={() => scrollToSection('katalog')}
-              disabled={status.state !== 'available'}
+              disabled={status.state !== 'available' && status.state !== 'unknown'}
               className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-[13px] font-bold transition ${
-                status.state === 'available'
+                status.state === 'available' || status.state === 'unknown'
                   ? 'bg-gradient-to-r from-indigo-400 to-violet-300 text-[#04121f] shadow-lg shadow-indigo-500/20 hover:brightness-110'
                   : 'cursor-not-allowed border border-slate-800/80 bg-white/[0.03] text-slate-500'
               }`}
@@ -210,7 +220,8 @@ export default function DomainSection() {
               <ArrowRight className="h-4 w-4" />
             </button>
             <p className="mt-2 text-center text-[10.5px] text-slate-500">
-              Cek domain hanya simulasi di halaman ini. Tim kami verifikasi final saat aktivasi.
+              Ketersediaan dicek real-time ke registry resmi (.com/.net: Verisign, .id/.co.id: PANDI).
+              Verifikasi final tetap dilakukan tim kami saat aktivasi.
             </p>
           </div>
         </div>

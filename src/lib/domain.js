@@ -7,7 +7,18 @@ export const TLD_OPTIONS = [
 
 export const DEFAULT_TLD = '.com'
 
-/** Domain yang jelas sudah dipakai brand besar — untuk simulasi ketersediaan. */
+/**
+ * Endpoint RDAP resmi registry. Query langsung ke registry berarti hasilnya
+ * ketersediaan sebenarnya, bukan simulasi.
+ */
+const RDAP_ENDPOINTS = {
+  '.com': 'https://rdap.verisign.com/com/v1/domain/',
+  '.net': 'https://rdap.verisign.com/net/v1/domain/',
+  '.id': 'https://rdap.pandi.id/rdap/domain/',
+  '.co.id': 'https://rdap.pandi.id/rdap/domain/',
+}
+
+/** Brand besar yang pasti sudah dipakai — dipakai saat jaringan gagal. */
 const RESERVED = new Set([
   'google',
   'facebook',
@@ -26,6 +37,10 @@ const RESERVED = new Set([
   'amazon',
   'frcloud',
 ])
+
+const CACHE_TTL = 5 * 60 * 1000
+const TIMEOUT_MS = 7000
+const cache = new Map()
 
 const LABEL_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/
 
@@ -90,46 +105,115 @@ export function validateDomainName(name) {
   return { state: 'valid', message: '' }
 }
 
-function hashString(value) {
-  let hash = 0
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(i)
-    hash |= 0
+function tldOf(domain) {
+  const ordered = [...TLD_OPTIONS].sort((a, b) => b.value.length - a.value.length)
+  return ordered.find((option) => domain.endsWith(option.value))?.value ?? ''
+}
+
+function readCache(key) {
+  const hit = cache.get(key)
+  if (!hit) return null
+  if (hit.expires < Date.now()) {
+    cache.delete(key)
+    return null
   }
-  return Math.abs(hash)
+  return hit.state
 }
 
-/** Simulasi ketersediaan: deterministik, tanpa jaringan. */
-export function isDomainTaken(name, tld = DEFAULT_TLD) {
-  const clean = sanitizeDomainInput(name)
-  if (!clean) return false
-  if (RESERVED.has(clean)) return true
-  return hashString(`${clean}${tld}`) % 7 === 0
-}
-
-export function suggestAlternatives(name, tld = DEFAULT_TLD) {
-  const clean = sanitizeDomainInput(name).replace(/-/g, '')
-  if (!clean) return []
-  const candidates = [`${clean}id`, `${clean}-official`, `get${clean}`, `${clean}hq`]
-  return candidates
-    .filter((candidate) => !RESERVED.has(candidate))
-    .filter((candidate) => !isDomainTaken(candidate, tld))
-    .slice(0, 3)
-    .map((candidate) => `${candidate}${tld}`)
+function writeCache(key, state) {
+  cache.set(key, { state, expires: Date.now() + CACHE_TTL })
 }
 
 /**
- * Cek domain dengan jeda kecil supaya terasa seperti query whois sungguhan.
- * @returns {Promise<{ state: 'available'|'taken', suggestions: string[] }>}
+ * Query RDAP registry.
+ * @returns {Promise<'available'|'taken'|'unknown'>}
  */
-export function checkDomainAvailability(name, tld = DEFAULT_TLD) {
-  return new Promise((resolve) => {
-    window.setTimeout(() => {
-      const taken = isDomainTaken(name, tld)
-      resolve({
-        state: taken ? 'taken' : 'available',
-        suggestions: taken ? suggestAlternatives(name, tld) : [],
-      })
-    }, 520)
-  })
+async function rdapLookup(domain, signal) {
+  const tld = tldOf(domain)
+  const endpoint = RDAP_ENDPOINTS[tld]
+  if (!endpoint) return 'unknown'
+
+  const cached = readCache(domain)
+  if (cached) return cached
+
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+  const forwardAbort = () => controller.abort()
+  signal?.addEventListener('abort', forwardAbort)
+
+  let state = 'unknown'
+  try {
+    const response = await fetch(`${endpoint}${encodeURIComponent(domain)}`, {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-store',
+      headers: { accept: 'application/rdap+json' },
+      signal: controller.signal,
+    })
+
+    if (response.status === 404 || response.status === 410) {
+      state = 'available'
+    } else if (response.ok) {
+      state = 'taken'
+    }
+  } catch {
+    state = 'unknown'
+  } finally {
+    clearTimeout(timer)
+    signal?.removeEventListener('abort', forwardAbort)
+  }
+
+  if (state !== 'unknown') writeCache(domain, state)
+  return state
+}
+
+function slugVariants(name) {
+  const clean = sanitizeDomainInput(name).replace(/-/g, '')
+  if (!clean) return []
+  return [`${clean}id`, `${clean}-official`, `get${clean}`, `${clean}hq`, `${clean}studio`]
+}
+
+/** Rekomendasi nama alternatif yang benar-benar masih kosong menurut registry. */
+async function availableAlternatives(name, tld, signal) {
+  const candidates = slugVariants(name)
+    .filter((candidate) => !RESERVED.has(candidate))
+    .map((candidate) => `${candidate}${tld}`)
+    .slice(0, 5)
+
+  const results = await Promise.all(
+    candidates.map(async (domain) => ({ domain, state: await rdapLookup(domain, signal) })),
+  )
+
+  return results
+    .filter((item) => item.state === 'available')
+    .map((item) => item.domain)
+    .slice(0, 3)
+}
+
+/**
+ * Cek ketersediaan domain ke registry resmi (RDAP).
+ * state: 'available' (bebas), 'taken' (sudah dipakai), 'unknown' (registry tidak terjangkau).
+ * @returns {Promise<{ state: 'available'|'taken'|'unknown', suggestions: string[], domain: string }>}
+ */
+export async function checkDomainAvailability(name, tld = DEFAULT_TLD, options = {}) {
+  const clean = sanitizeDomainInput(name)
+  const validation = validateDomainName(clean)
+  if (validation.state !== 'valid') {
+    return { state: 'unknown', suggestions: [], domain: '' }
+  }
+
+  const domain = `${clean}${tld}`
+  const { signal } = options
+  const state = await rdapLookup(domain, signal)
+
+  if (state === 'taken') {
+    const suggestions = await availableAlternatives(clean, tld, signal)
+    return { state: 'taken', suggestions, domain }
+  }
+
+  if (state === 'unknown' && RESERVED.has(clean)) {
+    return { state: 'taken', suggestions: [], domain }
+  }
+
+  return { state, suggestions: [], domain }
 }
