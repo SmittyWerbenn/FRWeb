@@ -1,7 +1,10 @@
-import { useMemo } from 'react'
-import { Search, Sparkles, X } from '../../lib/icons'
+import { useEffect, useMemo, useState } from 'react'
+import { ArrowRight, ChevronDown, Search, Sparkles, X } from '../../lib/icons'
 import { CATEGORIES, TEMPLATES, SEARCH_INDEX, countByCategory } from '../../data'
 import TemplateCard from './TemplateCard'
+
+/** Jumlah kartu yang tampil sebelum tombol "template lainnya" ditekan. */
+const INITIAL_VISIBLE = 12
 
 const CATEGORY_NOTES = {
   all: 'Semua template unggulan FRWeb — tiap kategori punya varian visual yang berlawanan.',
@@ -39,6 +42,16 @@ export default function CatalogSection({
     onCategoryChange('all')
     onQueryChange('')
   }
+
+  const [showAll, setShowAll] = useState(false)
+  // Ganti kategori atau kata kunci → kembali ke 12 kartu pertama.
+  useEffect(() => {
+    setShowAll(false)
+  }, [category, query])
+
+  const visible = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE)
+  const hiddenCount = filtered.length - visible.length
+  const canToggle = filtered.length > INITIAL_VISIBLE
 
   return (
     <div className="mt-6">
@@ -103,23 +116,61 @@ export default function CatalogSection({
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
         <p className="text-[12px] text-slate-500">{CATEGORY_NOTES[category]}</p>
         <p className="text-[12px] font-medium text-slate-400">
-          Menampilkan <span className="font-bold text-white">{filtered.length}</span> dari{' '}
-          {TEMPLATES.length} template
+          Menampilkan <span className="font-bold text-white">{visible.length}</span> dari{' '}
+          {filtered.length} template
+          {canToggle && !showAll && (
+            <span className="text-slate-500"> · {hiddenCount} template lainnya</span>
+          )}
         </p>
       </div>
 
       {filtered.length > 0 ? (
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((template) => (
-            <TemplateCard
-              key={template.id}
-              template={template}
-              onPreview={onPreview}
-              onSelect={onSelect}
-              selected={template.id === selectedTemplateId}
-            />
-          ))}
-        </div>
+        <>
+          <div id="grid-template-katalog" className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {visible.map((template) => (
+              <TemplateCard
+                key={template.id}
+                template={template}
+                onPreview={onPreview}
+                onSelect={onSelect}
+                selected={template.id === selectedTemplateId}
+              />
+            ))}
+          </div>
+
+          {canToggle && (
+            <div className="mt-8 flex flex-col items-center gap-2">
+              <button
+                type="button"
+                data-show-all-templates
+                onClick={() => setShowAll((value) => !value)}
+                aria-expanded={showAll}
+                aria-controls="grid-template-katalog"
+                className="group inline-flex items-center gap-2 rounded-full border border-slate-700/80 bg-white/[0.03] px-6 py-3 text-[13px] font-semibold text-white transition hover:border-indigo-400/60 hover:bg-indigo-500/10"
+              >
+                {showAll ? (
+                  <>
+                    Tampilkan 12 template pertama
+                    <ChevronDown className="h-4 w-4 rotate-180 text-indigo-300 transition group-hover:-translate-y-0.5" />
+                  </>
+                ) : (
+                  <>
+                    Lihat semua template
+                    <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-[11px] font-bold text-indigo-200 tabular-nums">
+                      {filtered.length}
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-indigo-300 transition group-hover:translate-x-0.5" />
+                  </>
+                )}
+              </button>
+              {!showAll && (
+                <p className="text-[11.5px] text-slate-500">
+                  {hiddenCount} template lainnya siap dilihat — thumbnail & live preview tetap lengkap.
+                </p>
+              )}
+            </div>
+          )}
+        </>
       ) : (
         <div className="mt-10 rounded-2xl border border-dashed border-slate-800 bg-white/[0.02] px-6 py-16 text-center">
           <p className="text-[15px] font-bold text-white">Template tidak ditemukan</p>
