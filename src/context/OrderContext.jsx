@@ -5,6 +5,7 @@ import { DEFAULT_PLAN_ID, PLANS_BY_ID } from '../data/plans'
 import { PAYMENT_ADDON } from '../data/paymentAddon'
 import { DEFAULT_TLD, fullDomain, validateDomainName } from '../lib/domain'
 import { buildCustomOrderLink, buildOrderLink, buildWhatsAppLink } from '../lib/format'
+import { lockScroll } from '../lib/scrollLock'
 
 const STORAGE_KEY = 'frcloud:order:v2'
 const VIEWPORT_IDS = ['desktop', 'tablet', 'mobile']
@@ -125,8 +126,7 @@ export function OrderProvider({ children }) {
 
   useEffect(() => {
     if (!previewId) return undefined
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const release = lockScroll()
 
     const onKeyDown = (event) => {
       if (event.key === 'Escape') closePreview()
@@ -134,7 +134,7 @@ export function OrderProvider({ children }) {
     window.addEventListener('keydown', onKeyDown)
 
     return () => {
-      document.body.style.overflow = previousOverflow
+      release()
       window.removeEventListener('keydown', onKeyDown)
     }
   }, [previewId, closePreview])

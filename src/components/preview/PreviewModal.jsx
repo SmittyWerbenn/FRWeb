@@ -13,6 +13,7 @@ import {
   X,
 } from '../../lib/icons'
 import { buildWhatsAppLink } from '../../lib/format'
+import { lockScroll } from '../../lib/scrollLock'
 import { getCategoryLabel } from '../../data'
 import PreviewRenderer from './PreviewRenderer'
 
@@ -110,11 +111,9 @@ export default function PreviewModal({ template, viewport, onViewportChange, onC
   }, [template.htmlPath, template.id, reloadKey])
 
   useEffect(() => {
-    const previous = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = previous
-    }
+    // Scroll-lock ref-counted: aman walau OrderContext juga mengunci body.
+    const release = lockScroll()
+    return release
   }, [])
 
   const content = (
