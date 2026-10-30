@@ -4,7 +4,7 @@ import { TEMPLATES_BY_ID } from '../data'
 import { useOrder } from '../context/OrderContext'
 import { buildWhatsAppLink } from '../lib/format'
 import { leavePreview, previewPath } from '../lib/router'
-import PreviewFloatingBar from '../components/preview/PreviewFloatingBar'
+import PreviewHeader from '../components/preview/PreviewHeader'
 import PreviewRenderer from '../components/preview/PreviewRenderer'
 import NotFoundPage from './NotFoundPage'
 
@@ -149,10 +149,21 @@ export default function PreviewPage({ slug }) {
   const isFramed = viewport !== 'desktop'
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-[#05070d] text-slate-100 antialiased">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-[#05070d] text-slate-100 antialiased">
+      <PreviewHeader
+        template={template}
+        viewport={viewport}
+        onViewportChange={handleViewportChange}
+        onBack={leavePreview}
+        onReload={handleReload}
+        waHref={waHref}
+        onUseTemplate={handleUseTemplate}
+        htmlPath={template.htmlPath}
+      />
+
       <div
-        className={`flex h-full w-full items-stretch justify-center bg-[#05070d] ${
-          isFramed ? 'px-3 pb-4 pt-20 sm:px-6 sm:pt-24' : ''
+        className={`flex min-h-0 w-full flex-1 items-stretch justify-center bg-[#05070d] ${
+          isFramed ? 'px-3 pb-4 pt-3 sm:px-6 sm:pt-4' : ''
         }`}
       >
         <div
@@ -215,17 +226,6 @@ export default function PreviewPage({ slug }) {
           )}
         </div>
       </div>
-
-      <PreviewFloatingBar
-        template={template}
-        viewport={viewport}
-        onViewportChange={handleViewportChange}
-        onBack={leavePreview}
-        onReload={handleReload}
-        waHref={waHref}
-        onUseTemplate={handleUseTemplate}
-        htmlPath={template.htmlPath}
-      />
     </div>
   )
 }
