@@ -77,21 +77,26 @@ function Routes() {
   const route = useRoute()
   const isHome = route.name === 'home'
 
-  // Kembali dari pratinjau: pulihkan posisi scroll katalog (atau lompat ke
-  // anchor bila URL memang membawa hash, mis. `/#katalog`).
+  // Kembali dari pratinjau: pulihkan posisi scroll katalog persis di tempat
+  // terakhir user berada. Bila tidak ada posisi tersimpan (mis. halaman dibuka
+  // langsung dari tautan luar), baru lompat ke anchor di URL.
   useEffect(() => {
     if (!isHome) return undefined
     const saved = consumeCatalogScroll()
     const frame = window.requestAnimationFrame(() => {
-      const hash = window.location.hash.replace('#', '')
-      if (hash) {
-        const node = document.getElementById(hash)
-        if (node) {
-          node.scrollIntoView({ block: 'start' })
-          return
+      if (saved !== null) {
+        // Hash pada URL akan memicu lompatan anchor oleh browser setelah ini,
+        // jadi buang dulu agar posisi hasil restore tidak tertimpa.
+        if (window.location.hash) {
+          window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
         }
+        window.scrollTo({ top: saved, behavior: 'instant' })
+        return
       }
-      if (saved !== null) window.scrollTo({ top: saved, behavior: 'instant' })
+      const hash = window.location.hash.replace('#', '')
+      if (!hash) return
+      const node = document.getElementById(hash)
+      if (node) node.scrollIntoView({ block: 'start' })
     })
     return () => window.cancelAnimationFrame(frame)
   }, [isHome])
