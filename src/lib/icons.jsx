@@ -160,6 +160,7 @@ export {
   Globe,
   Info,
   Layers,
+  LayoutGrid,
   Leaf,
   Link2,
   Loader2,

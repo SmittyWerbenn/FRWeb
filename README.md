@@ -30,38 +30,46 @@ sebagai pesan WhatsApp yang sudah terformat.
 3. **Domain input + validator live** — TLD `.com`, `.id`, `.co.id`, `.net`, sanitasi input,
    deteksi TLD yang ikut diketik, simulasi ketersediaan (deterministik, tanpa jaringan),
    rekomendasi alternatif bila domain "terpakai".
-4. **Katalog 18 template / 4 kategori** — tiap kategori punya varian visual berlawanan
+4. **Katalog 25 template / 5 kategori** — tiap kategori punya varian visual berlawanan
    (Neon Athletic vs Luxury Country Club, Warm Dining vs Wabi-sabi, Brutalist Grid vs
    Glass Bento, Editorial vs Cyberpunk Spec Grid). Card menampilkan color dots, badge,
-   layout type, dan thumbnail yang auto-scroll saat hover. Filter tab: Semua (18),
-   Sport & Club (4), F&B (4), Corporate & Agency (5), Online Store (5) + pencarian.
-   Tombol **Live Interactive Demo** membuka replika company profile lengkap (navbar, hero,
-   fasilitas/menu, kalkulator/booking, review, footer) dengan switcher Desktop / Tablet / Mobile.
-   Deep link: `?preview=slug&viewport=desktop|tablet|mobile`.
-5. **Pilih Tema Ini** — mengunci tema ke ringkasan order dari kartu maupun dari dalam modal preview.
+   layout type, dan thumbnail yang auto-scroll saat hover. Filter tab: Semua (25),
+   Sport & Club (4), F&B (5), Corporate & Service (7), Online Store (6),
+   Event & Hospitality (3) + pencarian.
+   Tombol **Live Demo** membuka **halaman pratinjau penuh** di route tersendiri
+   `/preview/<slug>` (iframe file template 100% viewport, tanpa modal & tanpa scroll-lock),
+   lengkap dengan floating bar: kembali ke katalog, nama + kategori template,
+   switcher Desktop/Tablet/Mobile, dan CTA WhatsApp prefilled.
+   Tautan lama `?preview=slug&viewport=desktop|tablet|mobile` otomatis dialihkan ke URL bersih.
+5. **Pilih Tema Ini** — mengunci tema ke ringkasan order, baik dari kartu katalog
+   maupun dari halaman pratinjau (state order tetap tersimpan setelah kembali).
 6. **Ringkasan order sticky** — paket + harga, domain, template, estimasi go-live 30 menit,
    status kelengkapan, tombol **Proses & Go-Live via WhatsApp**, plus sticky bar checkout di mobile.
 7. **WhatsApp automation** — pesan checkout dibentuk `buildOrderLink()`:
    `Halo tim FRWeb, saya ingin setup website go-live 30 menit.` + `*Detail Pesanan:*`
    (Paket, Domain, Template) + permintaan aktivasi & pembayaran.
 8. **SEO** — meta OG/Twitter, canonical, JSON-LD (Organization, WebSite, Service + OfferCatalog
-   4 paket, ItemList 18 template, FAQPage), `robots.txt`, `sitemap.xml`.
+   4 paket, ItemList 25 template, FAQPage), `robots.txt`, `sitemap.xml`.
 
 ## Struktur
 
 ```
 src/
-├── App.jsx                      # komposisi halaman + OrderProvider
-├── context/OrderContext.jsx     # state order, persistensi, preview modal, URL sync
+├── App.jsx                      # komposisi halaman + pemilih route
+├── pages/
+│   ├── PreviewPage.jsx          # route /preview/:slug — iframe fullscreen + floating bar
+│   └── NotFoundPage.jsx         # 404 slug pratinjau / path tak dikenal
+├── context/OrderContext.jsx     # state order (paket, domain, template, add-on) + persistensi
 ├── data/
 │   ├── plans.js                 # 4 paket + harga + spesifikasi
-│   ├── categories.js            # 4 kategori katalog
-│   ├── index.js                 # agregasi 18 template + metadata + search index
+│   ├── categories.js            # 5 kategori katalog
+│   ├── index.js                 # agregasi 25 template + metadata + search index
 │   ├── templateMeta.js          # variantStyle, colorPalette, layoutType, badgeLabel, skin
 │   └── templates/               # data template per kategori (4 varian kontras di variants.js)
 ├── styles/theme.css             # skin preview (.pv-skin-*) + tilt frame hero
 ├── lib/
 │   ├── format.js                # BRAND, format IDR, generator link WhatsApp
+│   ├── router.js                # router path-based, scroll & filter restore, deep link lama
 │   ├── domain.js                # sanitasi, validasi, simulasi ketersediaan domain
 │   └── icons.jsx                # re-export ikon lucide
 ├── components/
@@ -69,7 +77,7 @@ src/
 │   │                            # TemplateCard, MiniMockup, ProcessSection, ValueSection,
 │   │                            # FaqSection, CtaSection, Footer, Logo
 │   ├── order/                   # Stepper, PricingSection, DomainSection, OrderSection
-│   └── preview/                 # PreviewModal + renderer replika company profile
+│   └── preview/                 # PreviewFloatingBar + renderer replika company profile
 public/                          # CNAME, favicon, robots.txt, sitemap.xml
 ```
 
@@ -98,6 +106,8 @@ Live sekarang: **https://frel.cloud/** (custom domain)
 1. Push ke branch `main` — workflow `.github/workflows/deploy.yml` menjalankan
    `npm ci → npm run lint → npm run build → deploy-pages`. Build memakai `base: '/'`
    karena domain disajikan dari root, dan `public/CNAME` berisi `frel.cloud`.
+   Plugin `spaFallback` di `vite.config.js` menyalin `index.html` menjadi `dist/404.html`
+   agar URL dalam seperti `/preview/padel-futsal-master` tetap memuat aplikasi di GitHub Pages.
 2. Pages diaktifkan sekali dengan source **GitHub Actions**
    (`gh api -X POST repos/<user>/<repo>/pages -f build_type=workflow`).
 3. DNS custom domain `frel.cloud`:

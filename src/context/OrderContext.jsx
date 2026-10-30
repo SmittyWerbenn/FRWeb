@@ -5,10 +5,8 @@ import { DEFAULT_PLAN_ID, PLANS_BY_ID } from '../data/plans'
 import { PAYMENT_ADDON } from '../data/paymentAddon'
 import { DEFAULT_TLD, fullDomain, validateDomainName } from '../lib/domain'
 import { buildCustomOrderLink, buildOrderLink, buildWhatsAppLink } from '../lib/format'
-import { lockScroll } from '../lib/scrollLock'
 
 const STORAGE_KEY = 'frcloud:order:v2'
-const VIEWPORT_IDS = ['desktop', 'tablet', 'mobile']
 export const DESIGN_MODES = ['template', 'custom']
 
 const EMPTY_BRIEF = { reference: '', features: [], notes: '' }
@@ -56,30 +54,6 @@ function readInitialOrder() {
   }
 }
 
-function readPreviewFromUrl() {
-  if (typeof window === 'undefined') return { previewId: null, viewport: 'desktop' }
-  const params = new URLSearchParams(window.location.search)
-  const preview = params.get('preview')
-  const viewport = params.get('viewport')
-  return {
-    previewId: TEMPLATES.some((item) => item.id === preview) ? preview : null,
-    viewport: VIEWPORT_IDS.includes(viewport) ? viewport : 'desktop',
-  }
-}
-
-function syncPreviewUrl(previewId, viewport) {
-  if (typeof window === 'undefined') return
-  const url = new URL(window.location.href)
-  if (previewId) {
-    url.searchParams.set('preview', previewId)
-    url.searchParams.set('viewport', viewport)
-  } else {
-    url.searchParams.delete('preview')
-    url.searchParams.delete('viewport')
-  }
-  window.history.replaceState({}, '', url)
-}
-
 export function scrollToSection(id) {
   if (typeof document === 'undefined') return
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -87,9 +61,6 @@ export function scrollToSection(id) {
 
 export function OrderProvider({ children }) {
   const [order, setOrder] = useState(readInitialOrder)
-  const [initialPreview] = useState(readPreviewFromUrl)
-  const [previewId, setPreviewId] = useState(initialPreview.previewId)
-  const [previewViewport, setPreviewViewport] = useState(initialPreview.viewport)
 
   const plan = PLANS_BY_ID[order.planId] ?? PLANS_BY_ID[DEFAULT_PLAN_ID]
   const template = useMemo(
@@ -115,29 +86,6 @@ export function OrderProvider({ children }) {
       /* mode privat — abaikan */
     }
   }, [order])
-
-  useEffect(() => {
-    syncPreviewUrl(previewId, previewViewport)
-  }, [previewId, previewViewport])
-
-  const closePreview = useCallback(() => {
-    setPreviewId(null)
-  }, [])
-
-  useEffect(() => {
-    if (!previewId) return undefined
-    const release = lockScroll()
-
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') closePreview()
-    }
-    window.addEventListener('keydown', onKeyDown)
-
-    return () => {
-      release()
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [previewId, closePreview])
 
   const selectPlan = useCallback((planId) => {
     const next = PLANS_BY_ID[planId]
@@ -213,12 +161,6 @@ export function OrderProvider({ children }) {
     setOrder((current) => ({ ...current, custom: { ...EMPTY_BRIEF } }))
   }, [])
 
-  const openPreview = useCallback((nextTemplate) => {
-    if (!nextTemplate?.id) return
-    setPreviewId(nextTemplate.id)
-    setPreviewViewport('desktop')
-  }, [])
-
   const resetOrder = useCallback(() => {
     setOrder({
       planId: DEFAULT_PLAN_ID,
@@ -230,11 +172,6 @@ export function OrderProvider({ children }) {
       custom: { ...EMPTY_BRIEF },
     })
   }, [])
-
-  const previewTemplate = useMemo(
-    () => TEMPLATES.find((item) => item.id === previewId) ?? null,
-    [previewId],
-  )
 
   const isDomainReady = domainCheck.state === 'valid'
   const isTemplateReady = designMode === 'template' && Boolean(template)
@@ -272,8 +209,6 @@ export function OrderProvider({ children }) {
     template,
     domain,
     domainCheck,
-    previewTemplate,
-    previewViewport,
     designMode,
     designLocked,
     customBrief,
@@ -302,9 +237,6 @@ export function OrderProvider({ children }) {
     toggleCustomFeature,
     resetCustomBrief,
     resetOrder,
-    openPreview,
-    closePreview,
-    setPreviewViewport,
   }
 
   return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>

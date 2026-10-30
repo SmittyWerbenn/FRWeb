@@ -24,7 +24,6 @@ export default function CatalogSection({
   onCategoryChange,
   query,
   onQueryChange,
-  onPreview,
   onSelect,
   selectedTemplateId,
   onRequestCustom,
@@ -131,7 +130,6 @@ export default function CatalogSection({
               <TemplateCard
                 key={template.id}
                 template={template}
-                onPreview={onPreview}
                 onSelect={onSelect}
                 selected={template.id === selectedTemplateId}
               />

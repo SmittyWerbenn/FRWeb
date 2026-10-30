@@ -287,7 +287,7 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
           className="group absolute -bottom-6 right-1 z-30 inline-flex items-center gap-1.5 rounded-xl border border-indigo-400/40 bg-indigo-500/90 px-2.5 py-2 text-[10.5px] font-bold text-white shadow-[0_20px_45px_-22px_rgba(99,102,241,0.95)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-indigo-500 sm:right-0 sm:px-3"
         >
           <Maximize2 className="h-3.5 w-3.5" />
-          Coba Demo Fullscreen
+          Buka Preview Penuh
           <ArrowUpRight className="h-3 w-3 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </button>
       </div>

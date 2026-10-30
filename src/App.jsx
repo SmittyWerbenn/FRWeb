@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from './components/catalog/Navbar'
 import Hero from './components/catalog/Hero'
 import ValueStrip from './components/catalog/ValueStrip'
@@ -11,27 +11,25 @@ import ProcessSection from './components/catalog/ProcessSection'
 import FaqSection from './components/catalog/FaqSection'
 import CtaSection from './components/catalog/CtaSection'
 import Footer from './components/catalog/Footer'
-import PreviewModal from './components/preview/PreviewModal'
-import { OrderProvider, scrollToSection, useOrder } from './context/OrderContext'
+import PreviewPage from './pages/PreviewPage'
+import NotFoundPage from './pages/NotFoundPage'
+import { OrderProvider, useOrder } from './context/OrderContext'
+import {
+  consumeCatalogScroll,
+  readCatalogFilter,
+  useRoute,
+  writeCatalogFilter,
+} from './lib/router'
 
 function Site() {
-  const [category, setCategory] = useState('all')
-  const [query, setQuery] = useState('')
-  const {
-    previewTemplate,
-    previewViewport,
-    openPreview,
-    closePreview,
-    setPreviewViewport,
-    selectTemplate,
-    setDesignMode,
-  } = useOrder()
+  const [category, setCategory] = useState(() => readCatalogFilter().category)
+  const [query, setQuery] = useState(() => readCatalogFilter().query)
+  const { selectTemplate, setDesignMode } = useOrder()
 
-  const handleSelectFromPreview = (template) => {
-    selectTemplate(template.id)
-    closePreview()
-    window.setTimeout(() => scrollToSection('ringkasan'), 120)
-  }
+  // Filter dipertahankan saat pengguna masuk ke pratinjau lalu kembali.
+  useEffect(() => {
+    writeCatalogFilter({ category, query })
+  }, [category, query])
 
   return (
     <div className="relative min-h-screen bg-[#080c14] text-slate-100 antialiased">
@@ -54,7 +52,6 @@ function Site() {
             onCategoryChange={setCategory}
             query={query}
             onQueryChange={setQuery}
-            onPreview={openPreview}
             onSelect={(template) => selectTemplate(template.id)}
             onRequestCustom={() => setDesignMode('custom')}
           />
@@ -66,24 +63,48 @@ function Site() {
         </main>
         <Footer />
       </div>
-
-      {previewTemplate && (
-        <PreviewModal
-          template={previewTemplate}
-          viewport={previewViewport}
-          onViewportChange={setPreviewViewport}
-          onClose={closePreview}
-          onSelect={handleSelectFromPreview}
-        />
-      )}
     </div>
   )
+}
+
+/**
+ * Pemilih halaman berbasis URL:
+ *   `/`                 → katalog (landing + alur order)
+ *   `/preview/:slug`    → pratinjau template layar penuh
+ *   path lain           → halaman 404
+ */
+function Routes() {
+  const route = useRoute()
+  const isHome = route.name === 'home'
+
+  // Kembali dari pratinjau: pulihkan posisi scroll katalog (atau lompat ke
+  // anchor bila URL memang membawa hash, mis. `/#katalog`).
+  useEffect(() => {
+    if (!isHome) return undefined
+    const saved = consumeCatalogScroll()
+    const frame = window.requestAnimationFrame(() => {
+      const hash = window.location.hash.replace('#', '')
+      if (hash) {
+        const node = document.getElementById(hash)
+        if (node) {
+          node.scrollIntoView({ block: 'start' })
+          return
+        }
+      }
+      if (saved !== null) window.scrollTo({ top: saved, behavior: 'instant' })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [isHome])
+
+  if (route.name === 'preview') return <PreviewPage slug={route.slug} />
+  if (route.name === 'notfound') return <NotFoundPage />
+  return <Site />
 }
 
 export default function App() {
   return (
     <OrderProvider>
-      <Site />
+      <Routes />
     </OrderProvider>
   )
 }

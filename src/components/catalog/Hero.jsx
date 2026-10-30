@@ -2,6 +2,7 @@ import { ArrowRight, Check, Eye, Sparkles, Star } from '../../lib/icons'
 import { scrollToSection, useOrder } from '../../context/OrderContext'
 import { TEMPLATES } from '../../data'
 import HeroShowcase from './HeroShowcase'
+import { openPreviewRoute } from '../../lib/router'
 import Stepper from '../order/Stepper'
 
 const VALUES = [
@@ -30,7 +31,11 @@ const SHOWCASE_TEMPLATES = SHOWCASE_IDS.map((id) => TEMPLATES.find((template) =>
 )
 
 export default function Hero() {
-  const { completedSteps, openPreview } = useOrder()
+  const { completedSteps } = useOrder()
+
+  const openFullscreenPreview = (template) => {
+    if (template?.id) openPreviewRoute(template.id)
+  }
 
   return (
     <section
@@ -133,7 +138,7 @@ export default function Hero() {
         </div>
 
         <div className="relative mx-auto w-full min-w-0 max-w-[520px] lg:max-w-none">
-          <HeroShowcase templates={SHOWCASE_TEMPLATES} onOpenFullscreen={openPreview} />
+          <HeroShowcase templates={SHOWCASE_TEMPLATES} onOpenFullscreen={openFullscreenPreview} />
         </div>
       </div>
 

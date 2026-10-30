@@ -55,7 +55,6 @@ export default function DesignModeSection({
   onCategoryChange,
   query,
   onQueryChange,
-  onPreview,
   onSelect,
   onRequestCustom,
 }) {
@@ -176,7 +175,6 @@ export default function DesignModeSection({
               onCategoryChange={onCategoryChange}
               query={query}
               onQueryChange={onQueryChange}
-              onPreview={onPreview}
               onSelect={onSelect}
               selectedTemplateId={template?.id ?? ''}
               onRequestCustom={onRequestCustom}

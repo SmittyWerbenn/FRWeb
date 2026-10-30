@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowUpRight, Check, Clock, Eye, Info, Sparkles } from '../../lib/icons'
 import { getCategoryLabel } from '../../data'
 import { PAYMENT_ADDON, hasPaymentHighlight } from '../../data/paymentAddon'
+import { previewLinkProps } from '../../lib/router'
 import ArchetypeThumb from './ArchetypeThumb'
 
 const BADGE_STYLES = {
@@ -14,7 +15,7 @@ const BADGE_STYLES = {
   Favorit: 'bg-rose-400/15 text-rose-300 ring-rose-400/30',
 }
 
-export default function TemplateCard({ template, onPreview, onSelect, selected = false }) {
+export default function TemplateCard({ template, onSelect, selected = false }) {
   const { theme, badgeLabel, variantStyle, layoutType, colorPalette = [], industry, thumbnail } = template
   const features = template.features ?? template.bullets ?? []
   const paymentHighlight = hasPaymentHighlight(features)
@@ -37,9 +38,8 @@ export default function TemplateCard({ template, onPreview, onSelect, selected =
         </span>
       )}
 
-      <button
-        type="button"
-        onClick={() => onPreview(template)}
+      <a
+        {...previewLinkProps(template.id)}
         className="relative block w-full cursor-pointer overflow-hidden border-b border-slate-800/80 bg-[#080c14] text-left"
         aria-label={`Buka live preview ${template.name}`}
       >
@@ -101,7 +101,7 @@ export default function TemplateCard({ template, onPreview, onSelect, selected =
             Live Preview
           </span>
         </div>
-      </button>
+      </a>
 
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-2">
@@ -164,15 +164,14 @@ export default function TemplateCard({ template, onPreview, onSelect, selected =
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => onPreview(template)}
+          <a
+            {...previewLinkProps(template.id)}
             title="Live Preview"
             className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-700/80 bg-white/[0.03] px-2 py-2.5 text-[11px] font-bold text-white transition hover:border-indigo-400/50 hover:bg-indigo-500/10"
           >
             <Eye className="h-3.5 w-3.5" />
             Live Demo
-          </button>
+          </a>
           <button
             type="button"
             onClick={() => onSelect(template)}
