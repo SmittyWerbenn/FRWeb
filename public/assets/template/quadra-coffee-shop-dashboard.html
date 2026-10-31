@@ -7,10 +7,10 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Outfit, Plus Jakarta Sans, JetBrains Mono -->
+  <!-- Google Fonts: Fraunces (display) + Instrument Sans (UI) — sama dengan customer site -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..600&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Chart.js -->
@@ -21,39 +21,114 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            display: ['"Outfit"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
+            sans: ['"Instrument Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            display: ['"Fraunces"', 'Georgia', 'serif'],
+            mono: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
           },
           colors: {
+            /* Sand -> Clay: pengganti cyan, mengikuti palet cream + terracotta customer site */
             cyan: {
-              50: '#ecfeff',
-              100: '#cffafe',
-              200: '#a5f3fc',
-              300: '#67e8f9',
-              400: '#22d3ee',
-              500: '#06b6d4',
-              600: '#0891b2',
-              700: '#0e7490',
-              800: '#155e75',
-              900: '#164e63',
+              50: '#FAF4EA',
+              100: '#F1E3D0',
+              200: '#E5CFB6',
+              300: '#D8B394',
+              400: '#CB9270',
+              500: '#C1673F', // Clay (accent utama customer site)
+              600: '#A9552F',
+              700: '#8A4527',
+              800: '#6C361F',
+              900: '#522915',
             },
+            /* Honey / ochre: aksen sekunder roastery */
             gold: {
-              50: '#fefce8',
-              100: '#fef9c3',
-              200: '#fef08a',
-              300: '#fde047',
-              400: '#eab308',
-              500: '#d4af37', // Roasted Specialty Gold
-              600: '#b48c28',
-              700: '#8a681c',
+              50: '#FBF4E5',
+              100: '#F5E6C6',
+              200: '#EAD39F',
+              300: '#DDBA73',
+              400: '#CC9E4F',
+              500: '#B6863B',
+              600: '#986C2C',
+              700: '#7A5524',
+              800: '#5C4020',
+            },
+            /* Netral hangat: cream -> ink espresso (pengganti slate dingin) */
+            slate: {
+              50: '#FAF6EF',
+              100: '#F3EADB',
+              200: '#E7D8C5',
+              300: '#D0BCA6',
+              400: '#AC9480',
+              500: '#7E6853',
+              600: '#6F5A49',
+              700: '#55453A',
+              750: '#46382E',
+              800: '#362A22',
+              850: '#2A201A',
+              900: '#1F1712',
+              950: '#14100D',
+            },
+            stone: {
+              50: '#FBF7F0',
+              100: '#F4EADA',
+              200: '#E8D9C3',
+              300: '#D6C1A4',
+              400: '#856B50',
+              500: '#7A6148',
+              600: '#6E5843',
+              700: '#574634',
+              800: '#3E3126',
+              900: '#2A211A',
+            },
+            /* Success -> hijau hutan, senada aksen customer site (#2F7D58) */
+            emerald: {
+              50: '#EFF5F1',
+              100: '#DCEAE2',
+              200: '#B9D5C6',
+              300: '#90BBA6',
+              400: '#5CA98A',
+              500: '#37956A',
+              600: '#2F7D58',
+              700: '#266547',
+              800: '#1D4E37',
+              900: '#163A29',
+            },
+            /* Danger -> brick */
+            rose: {
+              50: '#FBF1EC',
+              100: '#F6DCD2',
+              200: '#EBBAAF',
+              300: '#DB9587',
+              400: '#C8715F',
+              500: '#B35644',
+              600: '#974331',
+              700: '#7B3528',
+              800: '#5D2820',
+              900: '#451D17',
+            },
+            /* Warning -> amber hangat */
+            amber: {
+              50: '#FCF6E6',
+              100: '#F8ECD0',
+              200: '#EFDCA6',
+              300: '#E0C079',
+              400: '#CBA254',
+              500: '#B0863A',
+              600: '#936A2C',
+              700: '#775325',
+              800: '#5B3F1D',
+              900: '#453014',
             },
             lab: {
-              bg: '#F8FCFD',
-              slate900: '#0f172a',
-              slate850: '#151e2e',
-              slate800: '#1e293b',
+              bg: '#F6EEE2',      // cream customer site
+              slate900: '#171210', // ink espresso
+              slate850: '#201812',
+              slate800: '#2A1D17',
+              card: '#FFFCF6',
+              line: '#EFE2CE',
             }
+          },
+          boxShadow: {
+            soft: '0 26px 60px -38px rgba(23, 18, 16, 0.45)',
           }
         }
       }
@@ -61,29 +136,82 @@
   </script>
 
   <style>
+    :root {
+      --ink: #171210;
+      --espresso: #2A1D17;
+      --cream: #F6EEE2;
+      --sand: #E8D9C3;
+      --clay: #C1673F;
+      --clay-deep: #A9552F;
+      --honey: #B6863B;
+      --card: #FFFCF6;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: 'Instrument Sans', Inter, system-ui, sans-serif;
+      background-color: var(--cream);
+      color: var(--espresso);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: -0.006em;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+    }
+
+    /* Kartu dibuat off-white hangat agar tidak bertabrakan dengan cream */
+    body .bg-white { background-color: var(--card); }
+
+    /* Tipografi */
+    .font-display {
+      font-family: 'Fraunces', Georgia, serif;
+      font-optical-sizing: auto;
+      letter-spacing: -0.018em;
+    }
+    .font-mono {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.012em;
+    }
+    h1, h2, h3 { text-wrap: balance; }
+
+    ::selection { background: #EBD8C1; color: var(--ink); }
+    :focus-visible { outline: 2px solid rgba(193, 103, 63, 0.6); outline-offset: 2px; }
+
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #0f172a;
+      background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
+      background: #D6C1A4;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: content-box;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #0891b2;
+      background: var(--clay);
+      background-clip: content-box;
     }
 
     .glass-nav {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: rgba(23, 18, 16, 0.94);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
     }
     .gold-gradient-tag {
-      background: linear-gradient(135deg, #d4af37 0%, #b48c28 100%);
+      background: linear-gradient(135deg, #DDBA73 0%, #B6863B 100%);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
     }
 
     /* Print View for Barista Receipts & Slips */
@@ -718,11 +846,11 @@
 
   <!-- ==================== PRINTABLE THERMAL RECEIPT CONTAINER ==================== -->
   <div id="printableThermalSlip" class="hidden">
-    <div style="font-family: 'JetBrains Mono', monospace; max-width: 320px; margin: 0 auto; text-align: left; font-size: 11px;">
-      <div style="text-align: center; border-bottom: 2px dashed #0891b2; padding-bottom: 8px; margin-bottom: 8px;">
-        <h2 style="margin: 0; font-size: 16px; font-weight: 800; font-family: 'Outfit', sans-serif;">QUADRA COFFEE LAB</h2>
-        <p style="margin: 2px 0; font-size: 10px; color: #555;">Specialty Roastery & Slow Bar</p>
-        <p style="margin: 0; font-size: 9px; color: #888;">Jl. Senopati No. 42, Kebayoran Baru, Jaksel</p>
+    <div style="font-family: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace; max-width: 320px; margin: 0 auto; text-align: left; font-size: 11px; color: #2A1D17;">
+      <div style="text-align: center; border-bottom: 2px dashed #C1673F; padding-bottom: 8px; margin-bottom: 8px;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 800; font-family: 'Fraunces', Georgia, serif; letter-spacing: -0.01em;">QUADRA COFFEE LAB</h2>
+        <p style="margin: 2px 0; font-size: 10px; color: #6E5843;">Specialty Roastery & Slow Bar</p>
+        <p style="margin: 0; font-size: 9px; color: #6E5843;">Jl. Senopati No. 42, Kebayoran Baru, Jaksel</p>
       </div>
 
       <div style="margin-bottom: 8px;">
@@ -733,7 +861,7 @@
         <p style="margin: 2px 0;"><strong>Waktu:</strong> <span id="prnTime">15 Menit Pickup</span></p>
       </div>
 
-      <div style="border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; padding: 6px 0; margin-bottom: 8px;">
+      <div style="border-top: 1px dashed #D6C1A4; border-bottom: 1px dashed #D6C1A4; padding: 6px 0; margin-bottom: 8px;">
         <table style="width: 100%;" id="prnItemsTable">
           <!-- Injected via JS -->
         </table>
@@ -751,15 +879,15 @@
           </tr>
           <tr style="font-size: 13px; font-weight: bold;">
             <td>TOTAL LUNAS:</td>
-            <td style="text-align: right; color: #0891b2;" id="prnGrandTotal">Rp 88.000</td>
+            <td style="text-align: right; color: #A9552F;" id="prnGrandTotal">Rp 88.000</td>
           </tr>
         </table>
       </div>
 
       <div style="text-align: center; margin-top: 10px;">
         <p style="margin: 0; font-weight: bold;">TOKEN BARCODE: <span id="prnToken">CUP-BAR-8821</span></p>
-        <p style="margin: 3px 0 0; font-size: 9px; color: #666;">Silakan tunjukkan barcode di Pickup Bar Counter.</p>
-        <p style="margin: 2px 0 0; font-size: 9px; color: #666;">Enjoy your specialty coffee extraction!</p>
+        <p style="margin: 3px 0 0; font-size: 9px; color: #6E5843;">Silakan tunjukkan barcode di Pickup Bar Counter.</p>
+        <p style="margin: 2px 0 0; font-size: 9px; color: #6E5843;">Enjoy your specialty coffee extraction!</p>
       </div>
     </div>
   </div>
@@ -947,13 +1075,13 @@
               {
                 label: 'Takeaway Bar (Cups)',
                 data: [28, 42, 35, 38, 46, 32, 21],
-                backgroundColor: '#0891b2',
+                backgroundColor: '#A9552F',
                 borderRadius: 6
               },
               {
                 label: 'Slow Bar Flights (Cups)',
                 data: [4, 8, 8, 8, 8, 8, 6],
-                backgroundColor: '#d4af37',
+                backgroundColor: '#CC9E4F',
                 borderRadius: 6
               }
             ]
@@ -966,11 +1094,11 @@
               y: {
                 beginAtZero: true,
                 max: 55,
-                ticks: { stepSize: 10, color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } },
-                grid: { color: '#ecfeff' }
+                ticks: { stepSize: 10, color: '#8B7460', font: { family: 'Instrument Sans', size: 10 } },
+                grid: { color: '#EFE2CE' }
               },
               x: {
-                ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } },
+                ticks: { color: '#8B7460', font: { family: 'Instrument Sans', size: 10 } },
                 grid: { display: false }
               }
             }
@@ -987,7 +1115,7 @@
             labels: ['Signature Mocktail', 'Slow Bar Single Origin', 'Oat & Specialty White'],
             datasets: [{
               data: [48, 28, 24],
-              backgroundColor: ['#0891b2', '#d4af37', '#22d3ee'],
+              backgroundColor: ['#A9552F', '#CC9E4F', '#77795C'],
               borderWidth: 2,
               borderColor: '#ffffff'
             }]
@@ -996,7 +1124,7 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Instrument Sans', size: 10 } } }
             },
             cutout: '70%'
           }
@@ -1055,7 +1183,7 @@
         }
 
         const colDiv = document.createElement('div');
-        colDiv.className = `p-4 rounded-3xl border-2 ${col.border} bg-[#FAFDFE] space-y-3`;
+        colDiv.className = `p-4 rounded-3xl border-2 ${col.border} bg-[#FBF6EC] space-y-3`;
         colDiv.innerHTML = `
           <div class="flex items-center justify-between p-2.5 rounded-2xl ${col.headerBg}">
             <span class="font-bold text-xs font-display">${col.title}</span>
