@@ -249,9 +249,8 @@
 
 /* ---------- Live preview theming ---------- */
 /*
-  Every preview is rendered inside a container-query scope so the fake website
-  reacts to the device width chosen in the modal (desktop / tablet / mobile)
-  instead of the real browser viewport.
+  Legacy scope for the old fake preview renderer: keeps early markup zoomed to
+  the container width instead of the real browser viewport.
 */
 .pv-root {
   container-type: inline-size;

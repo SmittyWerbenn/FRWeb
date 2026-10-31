@@ -4,18 +4,9 @@ import {
   Eye,
   LayoutGrid,
   MessageCircle,
-  Monitor,
   RotateCcw,
-  Smartphone,
-  Tablet,
 } from '../../lib/icons'
 import { getCategoryLabel } from '../../data'
-
-const VIEWPORT_OPTIONS = [
-  { id: 'desktop', label: 'Desktop', icon: Monitor },
-  { id: 'tablet', label: 'Tablet', icon: Tablet },
-  { id: 'mobile', label: 'Mobile', icon: Smartphone },
-]
 
 /**
  * Dua antarmuka yang dibundel dalam setiap paket:
@@ -47,8 +38,6 @@ export const VIEW_OPTIONS = [
  */
 export default function PreviewHeader({
   template,
-  viewport,
-  onViewportChange,
   view = 'customer',
   onViewChange,
   onBack,
@@ -125,29 +114,6 @@ export default function PreviewHeader({
           )
         })}
       </div>
-
-      {view === 'customer' && (
-        <div className="hidden shrink-0 items-center gap-0.5 rounded-full border border-white/10 bg-white/[0.04] p-0.5 lg:flex">
-          {VIEWPORT_OPTIONS.map((option) => {
-            const Icon = option.icon
-            const active = option.id === viewport
-            return (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => onViewportChange(option.id)}
-                aria-pressed={active}
-                title={`Tampilan ${option.label}`}
-                className={`grid h-6 w-7 place-items-center rounded-full transition ${
-                  active ? 'bg-white text-[#08111f]' : 'text-slate-400 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5" />
-              </button>
-            )
-          })}
-        </div>
-      )}
 
       <button
         type="button"

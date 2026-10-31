@@ -22,16 +22,8 @@ const IFRAME_SANDBOX = [
   'allow-downloads',
 ].join(' ')
 
-const VIEWPORT_MAX_WIDTH = { desktop: null, tablet: 834, mobile: 390 }
-const VIEWPORT_IDS = Object.keys(VIEWPORT_MAX_WIDTH)
 const SLOW_AFTER_MS = 8000
 const VIEW_IDS = ['customer', 'admin']
-
-function readViewportFromUrl() {
-  if (typeof window === 'undefined') return 'desktop'
-  const value = new URLSearchParams(window.location.search).get('viewport')
-  return VIEWPORT_IDS.includes(value) ? value : 'desktop'
-}
 
 function readViewFromUrl() {
   if (typeof window === 'undefined') return 'customer'
@@ -48,15 +40,13 @@ function readViewFromUrl() {
 export default function PreviewPage({ slug }) {
   const template = TEMPLATES_BY_ID[slug] ?? null
   const { selectTemplate } = useOrder()
-  const [viewport, setViewport] = useState(readViewportFromUrl)
   const [view, setView] = useState(readViewFromUrl)
   const [frameState, setFrameState] = useState('loading')
   const [slow, setSlow] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
 
-  // Dashboard admin selalu tampil lebar penuh: layout panel tidak dirancang
-  // untuk frame mobile, jadi viewport dipaksa desktop saat Admin View aktif.
-  const effectiveViewport = view === 'admin' ? 'desktop' : viewport
+  // Pratinjau selalu lebar penuh: tidak ada lagi simulator viewport, jadi
+  // halaman template memakai seluruh ruang iframe.
   const activePath = template ? (view === 'admin' ? template.adminHtmlPath : template.htmlPath) : null
 
   const waHref = useMemo(
@@ -140,23 +130,10 @@ export default function PreviewPage({ slug }) {
     setFrameState('loading')
     if (typeof window === 'undefined') return
     const url = new URL(window.location.href)
-    if (next === 'admin') {
-      url.searchParams.set('view', 'admin')
-      url.searchParams.delete('viewport')
-      setViewport('desktop')
-    } else {
-      url.searchParams.delete('view')
-    }
-    window.history.replaceState(window.history.state, '', url)
-  }, [])
-
-  const handleViewportChange = useCallback((next) => {
-    if (!VIEWPORT_IDS.includes(next)) return
-    setViewport(next)
-    if (typeof window === 'undefined') return
-    const url = new URL(window.location.href)
-    if (next === 'desktop') url.searchParams.delete('viewport')
-    else url.searchParams.set('viewport', next)
+    if (next === 'admin') url.searchParams.set('view', 'admin')
+    else url.searchParams.delete('view')
+    // Bersihkan parameter lama `?viewport=` dari tautan yang masih tersebar.
+    url.searchParams.delete('viewport')
     window.history.replaceState(window.history.state, '', url)
   }, [])
 
@@ -177,15 +154,10 @@ export default function PreviewPage({ slug }) {
 
   if (!template) return <NotFoundPage slug={slug} />
 
-  const maxWidth = VIEWPORT_MAX_WIDTH[effectiveViewport]
-  const isFramed = effectiveViewport !== 'desktop'
-
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-[#05070d] text-slate-100 antialiased">
       <PreviewHeader
         template={template}
-        viewport={effectiveViewport}
-        onViewportChange={handleViewportChange}
         view={view}
         onViewChange={handleViewChange}
         onBack={leavePreview}
@@ -195,19 +167,8 @@ export default function PreviewPage({ slug }) {
         htmlPath={activePath}
       />
 
-      <div
-        className={`flex min-h-0 w-full flex-1 items-stretch justify-center bg-[#05070d] ${
-          isFramed ? 'px-3 pb-4 pt-3 sm:px-6 sm:pt-4' : ''
-        }`}
-      >
-        <div
-          className={`relative h-full w-full overflow-hidden bg-white ${
-            isFramed
-              ? 'rounded-[26px] border-[6px] border-[#12161f] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)]'
-              : ''
-          }`}
-          style={{ maxWidth: maxWidth ? `${maxWidth}px` : '100%', width: '100%' }}
-        >
+      <div className="flex min-h-0 w-full flex-1 items-stretch justify-center bg-[#05070d]">
+        <div className="relative h-full w-full overflow-hidden bg-white">
           {frameState === 'error' ? (
             view === 'customer' ? (
               <div className="preview-scroll h-full w-full overflow-y-auto overscroll-contain bg-white">
