@@ -188,9 +188,8 @@ export function redirectLegacyPreview() {
   const params = new URLSearchParams(window.location.search)
   const slug = params.get('preview')
   if (!slug) return
-  const viewport = params.get('viewport')
-  const query = viewport ? `?viewport=${encodeURIComponent(viewport)}` : ''
-  window.history.replaceState({ frweb: true }, '', `${previewPath(slug)}${query}`)
+  // `viewport` lama dibuang: simulator desktop/tablet/mobile sudah tidak ada.
+  window.history.replaceState({ frweb: true }, '', previewPath(slug))
 }
 
 /** Ambil (sekali pakai) posisi scroll katalog yang tersimpan. */
