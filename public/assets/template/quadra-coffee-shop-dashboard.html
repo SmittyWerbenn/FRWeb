@@ -1010,7 +1010,7 @@
         toggleSidebar();
       }
 
-      if (tabKey === 'overview') renderSlowbarLiveStrip();
+      if (tabKey === 'overview') { renderSlowbarLiveStrip(); initCharts(); }
       if (tabKey === 'kds') renderKDSColumns();
       if (tabKey === 'slowbar') renderSlowbarScheduler();
       if (tabKey === 'inventory') renderSingleOriginLots();
@@ -1064,6 +1064,10 @@
     }
 
     function initCharts() {
+      // Idempotent: hancurkan instance lama supaya tidak dobel saat tab dibuka ulang
+      if (cupPeakHourChartInstance) { cupPeakHourChartInstance.destroy(); cupPeakHourChartInstance = null; }
+      if (beverageRatioChartInstance) { beverageRatioChartInstance.destroy(); beverageRatioChartInstance = null; }
+
       // 1. Hourly Cup Volume Bar Chart
       const ctxHour = document.getElementById('cupPeakHourChart');
       if (ctxHour) {
@@ -1094,11 +1098,11 @@
               y: {
                 beginAtZero: true,
                 max: 55,
-                ticks: { stepSize: 10, color: '#8B7460', font: { family: 'Instrument Sans', size: 10 } },
+                ticks: { stepSize: 10, color: '#7E6853', font: { family: 'Instrument Sans', size: 10 } },
                 grid: { color: '#EFE2CE' }
               },
               x: {
-                ticks: { color: '#8B7460', font: { family: 'Instrument Sans', size: 10 } },
+                ticks: { color: '#7E6853', font: { family: 'Instrument Sans', size: 10 } },
                 grid: { display: false }
               }
             }
@@ -1115,9 +1119,9 @@
             labels: ['Signature Mocktail', 'Slow Bar Single Origin', 'Oat & Specialty White'],
             datasets: [{
               data: [48, 28, 24],
-              backgroundColor: ['#A9552F', '#CC9E4F', '#77795C'],
+              backgroundColor: ['#A9552F', '#CC9E4F', '#9C8270'],
               borderWidth: 2,
-              borderColor: '#ffffff'
+              borderColor: '#FFFCF6'
             }]
           },
           options: {
@@ -1878,6 +1882,41 @@
       document.getElementById('badgeQueueCount').innerText = `${activeQueueCount} Cup`;
       document.getElementById('badgeSlowbarSeats').innerText = `${bookedStools} Stool Booked`;
       document.getElementById('kpiSlowbarActive').innerText = `${bookedStools} / 4 Stool`;
+    }
+
+    // ==================== 9. INITIALIZATION ====================
+    function initDashboard() {
+      // Chart.js dimuat async dari CDN: tunggu sampai tersedia
+      if (typeof Chart === 'undefined') {
+        let tries = 0;
+        const t = setInterval(() => {
+          tries++;
+          if (typeof Chart !== 'undefined' || tries > 40) {
+            clearInterval(t);
+            if (typeof Chart !== 'undefined') initCharts();
+          }
+        }, 150);
+      } else {
+        initCharts();
+      }
+
+      renderSlowbarLiveStrip();
+      renderKDSColumns();
+      renderSlowbarScheduler();
+      renderSingleOriginLots();
+      renderPickupLogs();
+      renderPOSMenuOptions();
+      updatePOSCartUI();
+      renderMasterTxTable();
+      updateDashboardCounters();
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initDashboard);
+    } else {
+      initDashboard();
     }
   </script>
 
