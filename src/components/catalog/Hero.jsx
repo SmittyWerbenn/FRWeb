@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Eye, Sparkles, Star } from '../../lib/icons'
+import { ArrowRight, Check, Eye, Globe, LayoutGrid, Sparkles, Star } from '../../lib/icons'
 import { scrollToSection, useOrder } from '../../context/OrderContext'
 import { TEMPLATES } from '../../data'
 import HeroShowcase from './HeroShowcase'
@@ -94,6 +94,37 @@ export default function Hero() {
               </li>
             ))}
           </ul>
+
+          {/* Value proposition 2-in-1: satu paket, dua antarmuka */}
+          <div className="mt-6 flex max-w-xl items-start gap-3 rounded-2xl border border-emerald-400/25 bg-gradient-to-r from-emerald-400/[0.10] via-emerald-400/[0.04] to-transparent p-3.5">
+            <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300 ring-1 ring-inset ring-emerald-400/30">
+              <LayoutGrid className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
+                Sistem 2-in-1 di setiap paket
+              </p>
+              <p className="mt-1 text-[12.5px] leading-relaxed text-slate-200">
+                Setiap paket sudah mencakup <strong className="font-bold text-white">Web Customer</strong>{' '}
+                (Landing Page &amp; Booking) +{' '}
+                <strong className="font-bold text-white">Dashboard Admin Pengelola</strong> (Pantau
+                Pesanan, Jadwal &amp; Transaksi).
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.05] px-2 py-1 text-[10px] font-semibold text-slate-200">
+                  <Globe className="h-2.5 w-2.5 text-emerald-300" />
+                  Customer View
+                </span>
+                <span aria-hidden="true" className="text-[10px] font-bold text-slate-500">
+                  +
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.05] px-2 py-1 text-[10px] font-semibold text-slate-200">
+                  <LayoutGrid className="h-2.5 w-2.5 text-emerald-300" />
+                  Admin View
+                </span>
+              </div>
+            </div>
+          </div>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
             <button

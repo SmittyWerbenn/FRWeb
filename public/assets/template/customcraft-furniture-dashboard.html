@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CustomCraft - Workshop Production & SPK Management Portal</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            slateTech: {
+              dark: '#0F172A',
+              darker: '#0A101D',
+              card: '#1E293B',
+              gray: '#334155',
+              grayLight: '#475569',
+              sky: '#38BDF8',
+              skyHover: '#0284C7',
+              skyMuted: 'rgba(56, 189, 248, 0.15)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0F172A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #38BDF8;
+    }
+
+    .glass-header {
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .cad-canvas-bg {
+      background-color: #070D18;
+      background-image: 
+        linear-gradient(rgba(51, 65, 85, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(51, 65, 85, 0.3) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .blueprint-border {
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.12);
+    }
+
+    /* Print View - Technical SPK Blueprint Document */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableSPKModal, #printableSPKModal * {
+        visibility: visible !important;
+      }
+      #printableSPKModal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #0F172A !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slateTech-dark text-slate-100 antialiased font-sans min-h-screen flex selection:bg-slateTech-sky selection:text-slate-900 overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-slateTech-darker border-r border-slateTech-gray/60 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-slateTech-gray/50 bg-[#070D18]/80">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-slateTech-card border border-slateTech-sky/50 flex items-center justify-center text-slateTech-sky shadow-sm flex-shrink-0">
+            <i data-lucide="hammer" class="w-5 h-5 text-slateTech-sky"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-white block leading-tight">
+              CUSTOM<span class="text-slateTech-sky">CRAFT</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-slateTech-card text-slateTech-sky border border-slateTech-sky/30 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">WORKSHOP OS</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Workshop Status & Moisture Level Summary -->
+      <div class="px-5 py-3 border-b border-slateTech-gray/50 bg-[#0D1524]">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-400"></i> Oven Kiln-Dry
+          </span>
+          <span class="text-emerald-400 font-bold" id="sidebarOvenStatus">MC 10.4% OPTIMAL</span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1.5 font-mono">
+          <span>Kapasitas Bengkel:</span>
+          <span class="text-slateTech-sky font-bold" id="sidebarLoad">14 SPK Aktif</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-slateTech-sky bg-slateTech-card border-l-4 border-slateTech-sky shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Overview & KPI Bengkel</span>
+        </button>
+
+        <button onclick="switchTab('kanban')" id="tab-kanban" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slateTech-card">
+          <i data-lucide="kanban" class="w-4 h-4"></i>
+          <span>Workshop Kanban (SPK)</span>
+          <span class="ml-auto bg-slateTech-sky/20 text-slateTech-sky border border-slateTech-sky/30 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgeActiveSPK">14 SPK</span>
+        </button>
+
+        <button onclick="switchTab('cad')" id="tab-cad" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slateTech-card">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+          <span>CAD Inspector & Studio</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 ml-auto animate-pulse"></span>
+        </button>
+
+        <button onclick="switchTab('inventory')" id="tab-inventory" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slateTech-card">
+          <i data-lucide="boxes" class="w-4 h-4"></i>
+          <span>Kayu Solid & Rangka Besi</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] px-1.5 py-0.5 rounded" id="badgeLowWood">1 Reorder</span>
+        </button>
+
+        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slateTech-card">
+          <i data-lucide="scan" class="w-4 h-4"></i>
+          <span>QC Scanner Barcode</span>
+          <span class="w-2 h-2 rounded-full bg-slateTech-sky ml-auto animate-ping"></span>
+        </button>
+
+        <button onclick="switchTab('finance')" id="tab-finance" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slateTech-card">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Kasir Pelunasan & SPK</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-bold" id="badgePendingDP">4 Sisa 50%</span>
+        </button>
+
+        <button onclick="switchTab('database')" id="tab-database" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slateTech-card">
+          <i data-lucide="database" class="w-4 h-4"></i>
+          <span>Database Klien & Export</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Workshop User / Role Profile Widget -->
+    <div class="p-4 border-t border-slateTech-gray/50 bg-[#070D18]/90">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slateTech-card border border-slateTech-sky/40 flex items-center justify-center text-slateTech-sky font-bold text-xs font-mono shadow-sm">
+          CC
+        </div>
+        <div class="flex-1 min-w-0 font-sans">
+          <p class="text-xs font-bold text-white truncate" id="profileName">Bambang S. (Pakde)</p>
+          <select id="userRoleSelect" onchange="switchUserRole()" class="bg-transparent text-[10px] text-slate400 text-slateTech-sky font-mono focus:outline-none cursor-pointer">
+            <option value="HEAD_CARPENTER" class="bg-slateTech-dark text-white">Kepala Tukang (Lead Carpenter)</option>
+            <option value="QC_SPECIALIST" class="bg-slateTech-dark text-white">QC & Finish Specialist</option>
+            <option value="ESTIMATOR" class="bg-slateTech-dark text-white">Admin & Cost Estimator</option>
+          </select>
+        </div>
+        <button onclick="showToast('Parameter bengkel disinkronkan')" title="Pengaturan Bengkel" class="text-slate-400 hover:text-slateTech-sky transition">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-[#0A101D] text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-slateTech-gray/50 font-mono gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slateTech-sky/15 text-slateTech-sky border border-slateTech-sky/30">SENTUL CENTRAL WORKSHOP - ONLINE</span>
+        <span>Standar Kadar Air: <strong class="text-emerald-400">Oven Kering MC &lt;12% Terkalibrasi</strong> • Garansi Struktur 10 Tahun</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-400">
+        <span>Suhu Bengkel: <strong class="text-white">28.4°C / 58% RH</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span>Shift: <strong class="text-slateTech-sky font-sans">Produksi Pagi-Sore</strong></span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-header sticky top-0 z-30 border-b border-slateTech-gray/50 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1.5 rounded-lg bg-slateTech-card">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2">
+            <span id="currentViewTitle">Overview & KPI Bengkel</span>
+          </h1>
+          <p class="text-slate-400 text-xs hidden sm:block font-mono">Custom Solid Wood Furniture Workbench, Dimensional CAD & Job Order Control</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- Live Real-Time Clock -->
+        <div class="hidden lg:flex items-center bg-[#070D18] border border-slateTech-gray/60 px-3 py-1.5 rounded-xl text-slate-300">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-slateTech-sky mr-2"></i>
+          <span id="liveClockText">--:--:-- WIB</span>
+        </div>
+
+        <!-- Quick New SPK Button -->
+        <button onclick="switchTab('cad')" class="bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-slateTech-sky/20 flex items-center gap-1.5 active:scale-95 font-sans">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-slate-900"></i>
+          <span>+ Buka CAD Inspector</span>
+        </button>
+
+        <!-- Notification Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-slateTech-card border border-slateTech-gray/60 text-slate-300 hover:text-slateTech-sky flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-slateTech-sky rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown Panel -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-slateTech-card rounded-2xl shadow-2xl border border-slateTech-gray p-3 text-slate-200 z-50 font-sans">
+            <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-2 px-1">
+              <span class="font-bold text-xs text-white">Notifikasi Bengkel Terkini</span>
+              <span class="text-[10px] font-mono text-slateTech-sky font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-[#0D1524] rounded-xl border border-slateTech-gray/60">
+                <p class="font-bold text-white">SPK-8812-OK: Meja Kerja Jati</p>
+                <p class="text-slate-400 text-[10px] font-mono">Tedi Mahendra • Selesai Finishing Satin (QC Pass)</p>
+                <span class="text-[9px] text-emerald-400 font-bold font-mono">2 menit lalu</span>
+              </div>
+              <div class="p-2.5 bg-[#0D1524] rounded-xl border border-slateTech-gray/60">
+                <p class="font-bold text-white">Stok White Oak Menipis</p>
+                <p class="text-slate-400 text-[10px] font-mono">Tersisa 1.85 m³ (Batas Reorder 2.0 m³)</p>
+                <span class="text-[9px] text-amber-400 font-bold font-mono">18 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1">
+
+      <!-- ==================== VIEW 1: OVERVIEW & WORKSHOP KPI ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Cards Grid (4 Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Active SPK -->
+          <div class="bg-slateTech-card p-5 rounded-3xl border border-slateTech-gray/70 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 font-mono">TOTAL SPK AKTIF DI BENGKEL</span>
+              <div class="w-8 h-8 rounded-xl bg-slateTech-sky/15 text-slateTech-sky flex items-center justify-center font-bold border border-slateTech-sky/30">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-white font-mono block" id="kpiActiveSPK">14 Unit</span>
+              <p class="text-emerald-400 text-[11px] font-semibold flex items-center gap-1 mt-1 font-mono">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> 8 Sedang Perakitan & Las
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2: Gross Omset Bulan Ini -->
+          <div class="bg-slateTech-card p-5 rounded-3xl border border-slateTech-gray/70 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 font-mono">NILAI KONTRAK BULAN INI</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-bold border border-emerald-500/30">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-white font-mono block" id="kpiTotalRevenue">Rp 118.450.000</span>
+              <p class="text-slate-400 text-[11px] mt-1 font-mono">DP 50% Terkunci: <strong class="text-slateTech-sky">Rp 59.225.000</strong></p>
+            </div>
+          </div>
+
+          <!-- Card 3: Ready Wood Volume (m³) -->
+          <div class="bg-slateTech-card p-5 rounded-3xl border border-slateTech-gray/70 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 font-mono">STOK KAYU OVEN KERING (MC &lt;12%)</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-bold border border-amber-500/30">
+                <i data-lucide="trees" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-white font-mono block" id="kpiWoodVolume">14.82 m³</span>
+              <p class="text-emerald-400 text-[11px] mt-1 font-mono">Cukup untuk ~240 unit meja standar</p>
+            </div>
+          </div>
+
+          <!-- Card 4: Meja Selesai QC -->
+          <div class="bg-slateTech-card p-5 rounded-3xl border border-slateTech-gray/70 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 font-mono">MEJA LOLOS QC BULAN INI</span>
+              <div class="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center font-bold border border-purple-500/30">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-white font-mono block" id="kpiQCPassed">32 Meja</span>
+              <div class="w-full bg-slateTech-gray h-1.5 rounded-full overflow-hidden mt-2">
+                <div class="bg-slateTech-sky h-full rounded-full" style="width: 94%"></div>
+              </div>
+              <p class="text-[10px] text-slate-400 font-mono mt-1">94% First-Pass Inspection Rate</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (2 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Wood Solid Volume Bar Chart (8 Cols) -->
+          <div class="lg:col-span-8 bg-slateTech-card p-6 rounded-3xl border border-slateTech-gray/70 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slateTech-gray/60 pb-3">
+              <div>
+                <h3 class="font-bold text-base text-white">Alokasi Volume Kayu Solid per Jenis (m³)</h3>
+                <p class="text-xs text-slate-400 font-mono">Jati Perhutani vs American Walnut vs White Oak yang terpakai</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-slate-300">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slateTech-sky"></span> Stok Tersedia
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-300">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Dalam SPK Aktif
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="woodVolumeChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Furniture Model Share Doughnut Chart (4 Cols) -->
+          <div class="lg:col-span-4 bg-slateTech-card p-6 rounded-3xl border border-slateTech-gray/70 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-slateTech-gray/60 pb-3">
+              <h3 class="font-bold text-base text-white">Sebaran Model Furnitur</h3>
+              <p class="text-xs text-slate-400 font-mono">Proporsi pesanan custom meja bengkel</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="furnitureModelDoughnutChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-slate-400 space-y-1 border-t border-slateTech-gray/60">
+              <div class="flex justify-between">
+                <span>Meja Kerja Solid Desk:</span>
+                <strong class="text-white">48% (7 Unit)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Meja Makan Dining 8-Seat:</span>
+                <strong class="text-slateTech-sky">30% (4 Unit)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Kredensa & TV Cabinet:</span>
+                <strong class="text-slate-300">14% (2 Unit)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Kitchen Island Top:</span>
+                <strong class="text-amber-400">8% (1 Unit)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Production Pipeline Fast View -->
+        <div class="bg-[#070D18] text-white rounded-3xl p-6 sm:p-7 border border-slateTech-gray/60 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-slateTech-sky text-xs font-mono uppercase font-bold tracking-widest">LIVE WORKSHOP PIPELINE</span>
+              <h3 class="text-lg font-bold mt-0.5">Alur Kerja Pengerjaan SPK Hari Ini</h3>
+            </div>
+            <button onclick="switchTab('kanban')" class="bg-slateTech-card hover:bg-slate-800 text-xs text-slateTech-sky px-3.5 py-2 rounded-xl border border-slateTech-gray/80 transition flex items-center gap-1.5 font-mono">
+              <span>Buka Papan Kanban Penuh</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slateTech-sky"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="overviewPipelineStrip">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: WORKSHOP KANBAN PRODUCTION BOARD ==================== -->
+      <section id="view-kanban" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slateTech-card p-5 rounded-3xl border border-slateTech-gray/70 shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-white">Papan Produksi Kanban Bengkel (Alur 4 Tahap)</h3>
+            <p class="text-xs text-slate-400 font-mono">Klik "Lanjut Tahap" untuk memajukan pesanan meja dari pembelahan kayu sampai siap diantar</p>
+          </div>
+          <button onclick="switchTab('cad')" class="bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold text-xs font-mono px-4 py-2.5 rounded-xl transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4 text-slate-900"></i> + Tambah SPK dari CAD Studio
+          </button>
+        </div>
+
+        <!-- 4 Kanban Columns Container -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start" id="kanbanBoardColumns">
+          <!-- Populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: LIVE ISOMETRIC CAD SPEC INSPECTOR ==================== -->
+      <section id="view-cad" class="hidden space-y-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Sliders & Material Pickers (7 Cols) -->
+          <div class="lg:col-span-7 bg-slateTech-card p-6 sm:p-7 rounded-3xl border border-slateTech-gray/70 shadow-xl space-y-6">
+            <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-3">
+              <div>
+                <h3 class="text-lg font-bold text-white">CAD Parameter Meja & Kalkulator Bahan</h3>
+                <p class="text-xs text-slate-400 font-mono">Atur dimensi sentimeter untuk menghitung kubikasi kayu dan estimasi SPK</p>
+              </div>
+              <span class="text-[10px] font-mono font-bold bg-slateTech-sky/15 text-slateTech-sky px-2 py-0.5 rounded border border-slateTech-sky/30">CAD ENGINE V4</span>
+            </div>
+
+            <!-- Model Selection -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-2 font-mono">Pilih Model Meja:</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-medium font-sans">
+                <button onclick="selectStudioType('DESK')" id="cadTypeBtn-DESK" class="p-2.5 rounded-xl border-2 border-slateTech-sky bg-slateTech-sky/15 text-white font-bold text-center">Meja Kerja</button>
+                <button onclick="selectStudioType('DINING')" id="cadTypeBtn-DINING" class="p-2.5 rounded-xl border border-slateTech-gray bg-[#0E1626] text-slate-300 text-center hover:border-slateTech-sky">Meja Makan</button>
+                <button onclick="selectStudioType('CREDENZA')" id="cadTypeBtn-CREDENZA" class="p-2.5 rounded-xl border border-slateTech-gray bg-[#0E1626] text-slate-300 text-center hover:border-slateTech-sky">Kredensa</button>
+                <button onclick="selectStudioType('ISLAND')" id="cadTypeBtn-ISLAND" class="p-2.5 rounded-xl border border-slateTech-gray bg-[#0E1626] text-slate-300 text-center hover:border-slateTech-sky">Island Dapur</button>
+              </div>
+            </div>
+
+            <!-- Sliders for Length, Width, Height -->
+            <div class="space-y-5 bg-[#0D1524] p-5 rounded-2xl border border-slateTech-gray/60">
+              <!-- Length -->
+              <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-300 font-medium">Panjang Daun Meja (P):</span>
+                  <span class="text-slateTech-sky font-bold font-mono text-sm" id="cadLengthDisplay">180 cm</span>
+                </div>
+                <input type="range" id="cadLengthSlider" min="100" max="300" step="5" value="180" oninput="updateCadParameters()" class="w-full accent-slateTech-sky cursor-pointer" />
+                <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+                  <span>100 cm</span>
+                  <span>180 cm (Standar)</span>
+                  <span>300 cm (Max Board)</span>
+                </div>
+              </div>
+
+              <!-- Width -->
+              <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-300 font-medium">Lebar Daun Meja (L):</span>
+                  <span class="text-slateTech-sky font-bold font-mono text-sm" id="cadWidthDisplay">80 cm</span>
+                </div>
+                <input type="range" id="cadWidthSlider" min="50" max="140" step="5" value="80" oninput="updateCadParameters()" class="w-full accent-slateTech-sky cursor-pointer" />
+                <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+                  <span>50 cm</span>
+                  <span>80 cm (Standar)</span>
+                  <span>140 cm (Double-Sided)</span>
+                </div>
+              </div>
+
+              <!-- Height -->
+              <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-300 font-medium">Tinggi Meja (T):</span>
+                  <span class="text-slateTech-sky font-bold font-mono text-sm" id="cadHeightDisplay">75 cm</span>
+                </div>
+                <input type="range" id="cadHeightSlider" min="40" max="105" step="1" value="75" oninput="updateCadParameters()" class="w-full accent-slateTech-sky cursor-pointer" />
+                <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+                  <span>40 cm (Coffee Table)</span>
+                  <span>75 cm (Duduk Ergonomis)</span>
+                  <span>105 cm (Bar Standar)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Material Wood Selector -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-2 font-mono">Spesies Kayu Solid:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="cadWoodSelectorContainer">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Frame Selector -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-2 font-mono">Rangka Kaki Besi Powder Coating:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="cadFrameSelectorContainer">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Live Realistic 3D Isometric SVG Canvas (5 Cols) -->
+          <div class="lg:col-span-5 bg-slateTech-card p-6 sm:p-7 rounded-3xl border border-slateTech-gray/70 shadow-xl space-y-5 sticky top-24">
+            <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Schematic Wireframe</span>
+              <span class="text-[10px] font-bold text-slateTech-sky bg-slateTech-sky/15 border border-slateTech-sky/30 px-2 py-0.5 rounded font-mono">REAL-TIME SVG</span>
+            </div>
+
+            <!-- Isometric SVG Blueprint Canvas -->
+            <div class="cad-canvas-bg rounded-2xl border border-slateTech-gray/80 relative overflow-hidden flex flex-col items-center justify-center p-3 h-64 shadow-inner">
+              <svg id="cadSvgInspectorCanvas" viewBox="0 0 400 240" class="w-full h-full">
+                <!-- Ground Drop Shadow -->
+                <ellipse cx="200" cy="180" rx="140" ry="25" fill="#030712" opacity="0.6"/>
+
+                <!-- 4 Kaki Meja Isometrik -->
+                <rect id="svgInspectorLegBL" x="120" y="85" width="10" height="75" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
+                <rect id="svgInspectorLegBR" x="270" y="85" width="10" height="75" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
+                <rect id="svgInspectorLegFL" x="95" y="115" width="12" height="75" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5"/>
+                <rect id="svgInspectorLegFR" x="293" y="115" width="12" height="75" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5"/>
+
+                <!-- Front Thickness Edge -->
+                <polygon id="svgInspectorTableFront" points="90,115 310,115 310,125 90,125" fill="#5A3A2C" stroke="#38BDF8" stroke-width="1"/>
+
+                <!-- Top Isometric Surface -->
+                <polygon id="svgInspectorTableTop" points="135,75 265,75 310,115 90,115" fill="#8D5B4C" stroke="#38BDF8" stroke-width="1.5"/>
+
+                <!-- CAD Dimension Annotations -->
+                <line x1="90" y1="135" x2="310" y2="135" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text id="svgTextInspectorLength" x="200" y="150" fill="#38BDF8" font-size="11" font-family="monospace" font-weight="bold" text-anchor="middle">P: 180 cm</text>
+
+                <line x1="330" y1="75" x2="330" y2="190" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text id="svgTextInspectorHeight" x="338" y="135" fill="#38BDF8" font-size="11" font-family="monospace" font-weight="bold">T: 75 cm</text>
+
+                <line x1="65" y1="110" x2="110" y2="70" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text id="svgTextInspectorWidth" x="70" y="85" fill="#94A3B8" font-size="10" font-family="monospace">L: 80 cm</text>
+              </svg>
+
+              <!-- Wood & Volume Tag Overlay -->
+              <div class="absolute top-2.5 left-3 text-[11px] font-mono text-slate-300 bg-slateTech-card/90 px-2.5 py-0.5 rounded-md border border-slateTech-gray">
+                Kayu: <span id="cadTagWoodName" class="text-slateTech-sky font-bold">Jati Perhutani</span>
+              </div>
+              <div class="absolute bottom-2.5 left-3 text-[10px] font-mono text-slate-400" id="cadTagVolume">
+                Kubikasi: 0.058 m³
+              </div>
+            </div>
+
+            <!-- Material Calculation Cost -->
+            <div class="space-y-2 text-xs font-mono border-t border-slateTech-gray/60 pt-3">
+              <div class="flex justify-between text-slate-400">
+                <span>Kubikasi Kayu (<span id="cadCostWoodName">Jati</span>):</span>
+                <span class="font-bold text-white" id="cadCostWood">Rp 4.200.000</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>Rangka Kaki (<span id="cadCostFrameName">Matte Black</span>):</span>
+                <span class="font-bold text-white" id="cadCostFrame">Rp 1.400.000</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>Biaya Bengkel & Finishing Satin:</span>
+                <span class="font-bold text-white">Rp 950.000</span>
+              </div>
+            </div>
+
+            <!-- Grand Total Price Box -->
+            <div class="p-4 bg-[#0D1524] rounded-2xl border border-slateTech-sky/30 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slateTech-sky uppercase block font-mono">Estimasi Nilai SPK</span>
+                <span class="text-xs text-slate-400 font-sans">Garansi Struktur 10 Tahun</span>
+              </div>
+              <span class="text-xl font-black text-white font-mono" id="cadCostTotal">Rp 6.550.000</span>
+            </div>
+
+            <!-- Generate SPK Directly to Kanban -->
+            <button onclick="generateSPKFromCAD()" class="w-full bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-slateTech-sky/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <i data-lucide="file-plus" class="w-4 h-4"></i>
+              <span>Generate SPK Baru ke Kanban Bengkel</span>
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: RAW WOOD & METAL INVENTORY ==================== -->
+      <section id="view-inventory" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slateTech-card p-5 rounded-3xl border border-slateTech-gray/70 shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-white">Stok Kayu Log Solid & Rangka Besi (Oven Kiln Dry)</h3>
+            <p class="text-xs text-slate-400 font-mono">Kadar air kayu (Moisture Content) wajib di bawah 12% sebelum dipotong agar tidak melengkung di ruangan AC</p>
+          </div>
+          <button onclick="openRestockWoodModal()" class="bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold font-mono text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-slateTech-sky/20">
+            <i data-lucide="plus" class="w-4 h-4"></i> + Input Penerimaan Log Kayu
+          </button>
+        </div>
+
+        <!-- Inventory Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="woodInventoryGridContainer">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: QC SCANNER & BARCODE INSPECTOR ==================== -->
+      <section id="view-scanner" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Optical SPK Scanner Simulator (7 Cols) -->
+          <div class="lg:col-span-7 bg-slateTech-card p-6 sm:p-7 rounded-3xl border border-slateTech-gray/70 shadow-sm space-y-6 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-4">
+              <div>
+                <h3 class="font-bold text-base text-white font-sans flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-slateTech-sky"></i>
+                  SPK Barcode & Quality Control Scanner
+                </h3>
+                <p class="text-xs text-slate-400 font-mono">Pindai barcode surat perintah kerja untuk inspeksi QC 4-titik sebelum pengiriman</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slateTech-sky/15 text-slateTech-sky text-xs font-mono font-bold border border-slateTech-sky/30">
+                <span class="w-2 h-2 rounded-full bg-slateTech-sky animate-pulse"></span> SCANNER ACTIVE
+              </span>
+            </div>
+
+            <!-- Optical Sensor Graphic -->
+            <div class="cad-canvas-bg rounded-2xl p-8 border border-slateTech-gray text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-slateTech-sky/70 rounded-2xl relative flex items-center justify-center p-4 bg-slateTech-dark/60">
+                <div class="w-full h-0.5 bg-slateTech-sky absolute top-1/2 -translate-y-1/2 shadow-lg shadow-cyan-400 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-slateTech-gray opacity-60"></i>
+              </div>
+              <p class="text-slate-300 text-xs font-mono mt-4">Arahkan Barcode SPK (Cth: <strong>SPK-8812-OK</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-slate-300">Input Manual Nomor Token SPK:</label>
+              <div class="flex gap-2">
+                <input type="text" id="spkScanInput" value="SPK-8812-OK" placeholder="Masukkan token SPK..." class="flex-1 bg-[#0D1524] px-4 py-2.5 rounded-xl border border-slateTech-gray font-bold text-white uppercase focus:outline-none focus:ring-2 focus:ring-slateTech-sky" />
+                <button onclick="executeSPKScan()" class="bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-slateTech-sky/20 active:scale-95 font-sans">
+                  <i data-lucide="check" class="w-4 h-4"></i> Inspeksi QC
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-400 font-sans">Contoh cepat pengujian token SPK: 
+                <span onclick="setScannerVal('SPK-8812-OK')" class="underline cursor-pointer text-slateTech-sky font-mono font-bold">SPK-8812-OK (Jati - Tedi M.)</span> • 
+                <span onclick="setScannerVal('SPK-8813-OK')" class="underline cursor-pointer text-amber-400 font-mono font-bold">SPK-8813-OK (Walnut - Bank Mandiri)</span> •
+                <span onclick="setScannerVal('INVALID-SPK-000')" class="underline cursor-pointer text-rose-400 font-mono font-bold">INVALID-SPK-000 (Tidak Ada)</span>
+              </p>
+            </div>
+
+            <!-- Scanner Feedback Result Card -->
+            <div id="spkScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Live QC Inspection Logs (5 Cols) -->
+          <div class="lg:col-span-5 bg-slateTech-card p-6 rounded-3xl border border-slateTech-gray/70 shadow-sm space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-3">
+              <h3 class="font-bold text-sm text-white font-sans">Log Audit QC Pengerjaan Bengkel</h3>
+              <span class="text-[10px] text-slate-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs" id="qcAuditLogsContainer">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 6: KASIR POS PELUNASAN 50% & SPK ==================== -->
+      <section id="view-finance" class="hidden space-y-6">
+        
+        <!-- Shift Financial Overview Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-slateTech-card p-5 rounded-2xl border border-slateTech-gray/70 shadow-sm">
+            <span class="text-xs text-slate-400 font-mono font-bold">TOTAL OMSET KONTRAK SELESAI</span>
+            <span class="text-2xl font-black text-white font-mono block mt-2">Rp 118.450.000</span>
+            <p class="text-slate-400 text-[11px] font-mono mt-1">14 SPK Aktif Bulan Ini</p>
+          </div>
+
+          <div class="bg-slateTech-card p-5 rounded-2xl border border-slateTech-gray/70 shadow-sm">
+            <span class="text-xs text-slate-400 font-mono font-bold">DP 50% TERKUNCI (QRIS)</span>
+            <span class="text-2xl font-black text-slateTech-sky font-mono block mt-2">Rp 59.225.000</span>
+            <p class="text-emerald-400 text-[11px] font-mono mt-1">Bahan Kayu & Besi Terbiayai</p>
+          </div>
+
+          <div class="bg-slateTech-card p-5 rounded-2xl border border-slateTech-gray/70 shadow-sm">
+            <span class="text-xs text-slate-400 font-mono font-bold">SISA PELUNASAN SAAT DIANTAR (COD)</span>
+            <span class="text-2xl font-black text-amber-400 font-mono block mt-2" id="financeDueSummaryCard">Rp 24.150.000</span>
+            <p class="text-amber-400 text-[11px] font-mono mt-1">4 Unit Menunggu Serah Terima</p>
+          </div>
+        </div>
+
+        <!-- Master Finance Reconciliation Table -->
+        <div class="bg-slateTech-card rounded-3xl border border-slateTech-gray/70 shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slateTech-gray/60 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-white">Jurnal Kasir Pelunasan Meja & Cetak SPK</h3>
+              <p class="text-xs text-slate-400 font-mono">Pencatatan pembayaran uang muka DP 50%, pelunasan COD di lokasi, dan cetak faktur resmi</p>
+            </div>
+            <button onclick="exportSPKToCSV()" class="bg-[#070D18] hover:bg-slate-800 text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-slateTech-gray">
+              <i data-lucide="download" class="w-4 h-4 text-slateTech-sky"></i> Ekspor CSV Rekonsiliasi
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-[#0D1524] text-slate-400 font-semibold border-b border-slateTech-gray/60">
+                <tr>
+                  <th class="py-3 px-4">NO. SPK</th>
+                  <th class="py-3 px-4">KLIEN & PERUSAHAAN</th>
+                  <th class="py-3 px-4">MODEL & DIMENSI</th>
+                  <th class="py-3 px-4">TOTAL BIAYA</th>
+                  <th class="py-3 px-4">DP 50%</th>
+                  <th class="py-3 px-4">SISA KASIR</th>
+                  <th class="py-3 px-4">STATUS BAYAR</th>
+                  <th class="py-3 px-4 text-center">AKSI PELUNASAN</th>
+                </tr>
+              </thead>
+              <tbody id="financeTableBody" class="divide-y divide-slateTech-gray/50 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 7: DATABASE KLIEN & EXPORT ==================== -->
+      <section id="view-database" class="hidden space-y-6">
+        
+        <!-- Filter Header -->
+        <div class="bg-slateTech-card p-5 rounded-3xl border border-slateTech-gray/70 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+            <input type="text" id="dbSearchInput" onkeyup="filterDatabaseTable()" placeholder="Cari Klien, SPK, No. WA..." class="w-full pl-9 pr-3 py-2.5 bg-[#0D1524] border border-slateTech-gray rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-slateTech-sky" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button onclick="filterDBType('ALL')" class="db-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slateTech-darker text-white transition" data-type="ALL">Semua Unit</button>
+            <button onclick="filterDBType('DESK')" class="db-filter-btn px-3.5 py-2 rounded-xl font-bold bg-[#0D1524] text-slate-400 hover:text-white transition" data-type="DESK">Meja Kerja</button>
+            <button onclick="filterDBType('DINING')" class="db-filter-btn px-3.5 py-2 rounded-xl font-bold bg-[#0D1524] text-slate-400 hover:text-white transition" data-type="DINING">Meja Makan</button>
+            <button onclick="filterDBType('CREDENZA')" class="db-filter-btn px-3.5 py-2 rounded-xl font-bold bg-[#0D1524] text-slate-400 hover:text-white transition" data-type="CREDENZA">Kredensa</button>
+          </div>
+        </div>
+
+        <!-- Master Client Table -->
+        <div class="bg-slateTech-card rounded-3xl border border-slateTech-gray/70 shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-white">Master Arsip Pesanan Kustom CustomCraft</h3>
+              <p class="text-xs text-slate-400 font-mono" id="dbCountLabel">Menampilkan seluruh data SPK tersimpan</p>
+            </div>
+            <button onclick="exportSPKToCSV()" class="bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-mono font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-[#0D1524] text-slate-400 font-semibold border-b border-slateTech-gray/60">
+                <tr>
+                  <th class="py-3 px-4">NO. SPK</th>
+                  <th class="py-3 px-4">KLIEN & WHATSAPP</th>
+                  <th class="py-3 px-4">LOKASI PEMASANGAN</th>
+                  <th class="py-3 px-4">SPESIFIKASI KAYU</th>
+                  <th class="py-3 px-4">DIMENSI (CM)</th>
+                  <th class="py-3 px-4">TOTAL</th>
+                  <th class="py-3 px-4">PROGRESS</th>
+                  <th class="py-3 px-4 text-center">SURAT KERJA</th>
+                </tr>
+              </thead>
+              <tbody id="masterDatabaseTableBody" class="divide-y divide-slateTech-gray/50 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: PRINTABLE BLUEPRINT SPK & FAKTUR ==================== -->
+  <div id="spkPrintableModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slateTech-card rounded-3xl max-w-3xl w-full border border-slateTech-gray shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Top Action Bar -->
+      <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-4 no-print font-mono">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slateTech-sky/15 text-slateTech-sky uppercase border border-slateTech-sky/30">
+            OFFICIAL WORK ORDER & FAKTUR RESMI
+          </span>
+          <span class="text-xs text-slate-400">GARANSI 10 TAHUN</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm font-sans">
+            <i data-lucide="printer" class="w-4 h-4"></i> Cetak SPK Blueprint (PDF)
+          </button>
+          <button onclick="closeSPKModal()" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slateTech-dark">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Area -->
+      <div id="printableSPKModal" class="space-y-6">
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-slateTech-gray/60 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-slateTech-sky flex items-center justify-center text-slate-900 font-bold">
+                <i data-lucide="hammer" class="w-5 h-5"></i>
+              </div>
+              <span class="font-extrabold text-xl tracking-tight text-white">CUSTOM<span class="text-slateTech-sky">CRAFT</span></span>
+            </div>
+            <p class="text-[11px] text-slate-400">Workshop Kayu Sentul, Jawa Barat • Hotline: +62 812-9999-8888</p>
+            <p class="text-[11px] text-slate-400">Pengrajin Kayu Solid Oven & Rangka Besi Powder Coating Presisi</p>
+          </div>
+
+          <div class="text-right font-mono">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-slateTech-sky/15 text-slateTech-sky uppercase border border-slateTech-sky/30" id="modalSPKStatusBadge">
+              SPK DP 50% VERIFIED
+            </span>
+            <p id="modalSPKNumber" class="text-xs font-bold text-white mt-1">SPK-8812-OK</p>
+            <p id="modalSPKDate" class="text-[11px] text-slate-400">31 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Client & Job Order Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#0D1524] p-4 rounded-2xl border border-slateTech-gray/60">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5 font-mono">PEMESAN UNIT:</span>
+            <p id="modalClientName" class="font-bold text-white text-sm">Tedi Mahendra</p>
+            <p id="modalClientPhone" class="text-slate-400 font-mono">081299998888</p>
+            <p id="modalDeliveryAddress" class="text-slate-300 mt-1 leading-relaxed">Gedung Wirausaha Lt. 5, Kuningan, Jaksel</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5 font-mono">TARGET PENGERJAAN BENGKEL:</span>
+            <p class="font-bold text-slateTech-sky text-sm">14 Hari Kerja</p>
+            <p id="modalTargetDate" class="text-slate-300 font-mono">Est. Selesai: 14 Nov 2026</p>
+            <p class="text-emerald-400 font-semibold font-mono mt-0.5" id="modalPaymentStatusText">DP 50% LUNAS via QRIS</p>
+          </div>
+        </div>
+
+        <!-- Specification Table -->
+        <div class="border border-slateTech-gray/60 rounded-2xl overflow-hidden text-xs">
+          <table class="w-full text-left font-mono">
+            <thead class="bg-[#0D1524] text-slate-400 font-bold border-b border-slateTech-gray/60">
+              <tr>
+                <th class="py-2.5 px-4 font-sans">Rincian Meja Kustom</th>
+                <th class="py-2.5 px-3 text-center">Ukuran (P × L × T)</th>
+                <th class="py-2.5 px-4 text-right">Biaya Pembuatan</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slateTech-gray/50 font-medium">
+              <tr>
+                <td class="py-3 px-4 font-sans">
+                  <div class="font-bold text-white text-sm" id="modalProductTitle">Meja Kerja Kayu Solid Jati</div>
+                  <div class="text-xs text-slate-400 mt-0.5" id="modalMaterialSpecs">
+                    Kayu: Jati Perhutani • Rangka: Matte Black Steel • Lapisan: Satin Polyurethane
+                  </div>
+                  <div class="text-xs text-slateTech-sky mt-1" id="modalFeatureSpec">
+                    Fitur: 1x Kotak Kabel Aluminium Rata (Flush Mount)
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-300 font-bold" id="modalDimensionsText">180 × 80 × 75 cm</td>
+                <td class="py-3 px-4 text-right font-bold text-white" id="modalItemTotalCost">Rp 6.550.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-[#0D1524] border-t border-slateTech-gray/60 text-xs font-mono">
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-right text-slate-400">Total Nilai Kontrak Pembuatan:</td>
+                <td class="py-2 px-4 text-right font-bold text-white" id="modalSubtotalAmount">Rp 6.550.000</td>
+              </tr>
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-emerald-400 text-right">Uang Muka Diterima (DP 50%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-400" id="modalPaidAmount">Rp 3.275.000</td>
+              </tr>
+              <tr class="bg-[#070D18] border-t border-slateTech-gray/60">
+                <td colspan="2" class="py-2.5 px-4 text-slateTech-sky text-right font-bold text-xs" id="modalDueLabel">
+                  Sisa Pelunasan Saat Meja Tiba di Lokasi:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-slateTech-sky" id="modalDueAmount">
+                  Rp 3.275.000
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Workshop QC Token & Barcode Box -->
+        <div class="p-4 bg-[#0D1524] rounded-2xl border border-slateTech-gray/60 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">TRACKING PRODUKSI & QC TOKEN</span>
+            <p class="text-xs font-bold text-white">Scan Barcode untuk Update Progress Pengamplasan & Finishing</p>
+            <p class="text-[11px] text-slate-400">Garansi struktur 10 tahun meliputi kekuatan sambungan dan kekeringan kayu.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-slate-300 inline-block shadow">
+              <img id="modalSPKBarcodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=SPK-8812-OK" alt="Barcode SPK" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1" id="modalSPKToken">TOKEN: SPK-8812-OK</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: PELUNASAN KASIR 50% ==================== -->
+  <div id="settlePaymentModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slateTech-card rounded-3xl max-w-md w-full border border-slateTech-gray shadow-2xl p-6 space-y-5 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-slateTech-gray/60 pb-3">
+        <h3 class="font-bold text-base text-white font-sans flex items-center gap-2">
+          <i data-lucide="hand-coins" class="w-5 h-5 text-slateTech-sky"></i>
+          Pelunasan Sisa 50% di Lokasi / Meja Kasir
+        </h3>
+        <button onclick="closeSettleModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-[#0D1524] p-4 rounded-2xl border border-slateTech-gray/60 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-slate-400">Nomor SPK:</span>
+          <span class="font-bold text-white" id="settleSPKCode">SPK-8812-OK</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Nama Pemesan:</span>
+          <span class="font-bold text-white font-sans" id="settleClientName">Tedi Mahendra</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Total Biaya Meja:</span>
+          <span class="font-bold text-white" id="settleTotalCost">Rp 6.550.000</span>
+        </div>
+        <div class="flex justify-between text-emerald-400">
+          <span>DP 50% Terbayar:</span>
+          <span class="font-bold" id="settlePaidDP">Rp 3.275.000</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-slateTech-gray/60 text-sm font-bold text-white">
+          <span>Sisa Tagihan Pelunasan:</span>
+          <span class="text-slateTech-sky font-extrabold" id="settleRemainingDue">Rp 3.275.000</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-300 mb-1 font-sans">Metode Pelunasan Meja Serah Terima:</label>
+        <select id="settleMethodSelect" class="w-full bg-[#0D1524] border border-slateTech-gray rounded-xl p-2.5 text-white font-sans focus:outline-none focus:ring-2 focus:ring-slateTech-sky">
+          <option value="Transfer Bank BCA Escrow">Transfer Bank BCA Workshop</option>
+          <option value="Debit EDC Mobile Driver">Debit EDC Mandiri / BCA Driver</option>
+          <option value="Uang Tunai (Cash COD)">Uang Tunai ke Tim Pasang</option>
+          <option value="QRIS Statis Kasir">QRIS Statis Pelunasan</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slateTech-gray/60 font-sans">
+        <button onclick="closeSettleModal()" class="px-4 py-2 bg-slateTech-dark hover:bg-slate-800 text-slate-300 rounded-xl font-bold transition">Batal</button>
+        <button onclick="confirmSettlePayment()" class="px-5 py-2.5 bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold rounded-xl transition flex items-center gap-1.5 shadow-md shadow-slateTech-sky/20">
+          <i data-lucide="check-circle" class="w-4 h-4 text-slate-900"></i> Konfirmasi Lunas & Terbitkan Faktur
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-[#070D18] text-white px-4 py-3 rounded-2xl shadow-2xl border border-slateTech-sky flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+    <div class="w-6 h-6 rounded-full bg-slateTech-sky flex items-center justify-center text-slate-900 font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Operasi bengkel berhasil diperbarui</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT MASTER OPERATIONS LOGIC ==================== -->
+  <script>
+    // 1. Data Material Kayu Solid
+    const woodMaterials = [
+      { id: "TEAK", name: "Jati Perhutani", rate: 28000000, topColor: "#8D5B4C", frontColor: "#613D32", desc: "Kuat, awet & serat khas" },
+      { id: "WALNUT", name: "American Walnut", rate: 34000000, topColor: "#503D33", frontColor: "#352720", desc: "Cokelat gelap mewah" },
+      { id: "OAK", name: "White Oak", rate: 26000000, topColor: "#B89B72", frontColor: "#8F7653", desc: "Cerah & minimalis" }
+    ];
+
+    // 2. Data Material Rangka Kaki Besi
+    const frameMaterials = [
+      { id: "STEEL_BLACK", name: "Matte Black", cost: 1400000, color: "#0F172A", stroke: "#38BDF8" },
+      { id: "STEEL_WHITE", name: "Putih Bersih", cost: 1400000, color: "#E2E8F0", stroke: "#94A3B8" },
+      { id: "BRASS", name: "Emas Kuningan", cost: 2300000, color: "#D4AF37", stroke: "#F59E0B" }
+    ];
+
+    // 3. Data Master SPK & Job Orders
+    let masterSPKOrders = [
+      {
+        spkNumber: "SPK-8812-OK",
+        clientName: "Tedi Mahendra",
+        phone: "081299998888",
+        address: "Gedung Wirausaha Lt. 5, Kuningan, Jaksel",
+        productType: "DESK",
+        productTitle: "Meja Kerja Kayu Solid Jati",
+        woodId: "TEAK",
+        woodName: "Jati Perhutani",
+        frameId: "STEEL_BLACK",
+        frameName: "Matte Black Steel",
+        finish: "Satin Polyurethane",
+        feature: "1x Kotak Kabel Aluminium Rata",
+        length: 180,
+        width: 80,
+        height: 75,
+        volumeM3: 0.058,
+        totalCost: 6550000,
+        paidDP: 3275000,
+        dueAmount: 3275000,
+        stage: "QC_PASS", // (1) CAD_DESIGN, (2) KILN_CUT, (3) FRAME_ASSEMBLY, (4) QC_PASS
+        moistureContent: 10.4,
+        notes: "Siku meja dibuat agak bulat (radius 1 cm) agar tidak tajam.",
+        targetDate: "2026-11-12",
+        statusPayment: "DP_50"
+      },
+      {
+        spkNumber: "SPK-8813-OK",
+        clientName: "PT Bank Mandiri Corporate",
+        phone: "081134567890",
+        address: "Plaza Mandiri Lt. 18, Gatot Subroto, Jaksel",
+        productType: "DINING",
+        productTitle: "Meja Rapat Boardroom 8-Kursi",
+        woodId: "WALNUT",
+        woodName: "American Walnut",
+        frameId: "BRASS",
+        frameName: "Emas Kuningan",
+        finish: "Matte Alami Serat",
+        feature: "Wireless Charger Tanam 2x",
+        length: 240,
+        width: 100,
+        height: 76,
+        volumeM3: 0.096,
+        totalCost: 11450000,
+        paidDP: 5725000,
+        dueAmount: 5725000,
+        stage: "FRAME_ASSEMBLY",
+        moistureContent: 11.2,
+        notes: "Pakai rangka besi hollow tebal 2mm kuningan brushed",
+        targetDate: "2026-11-18",
+        statusPayment: "DP_50"
+      },
+      {
+        spkNumber: "SPK-8814-OK",
+        clientName: "Nadia Hutagalung",
+        phone: "081844556677",
+        address: "Cluster Greenwich Park BSD City, Tangsel",
+        productType: "CREDENZA",
+        productTitle: "Kredensa TV Minimalis 3-Pintu",
+        woodId: "OAK",
+        woodName: "White Oak",
+        frameId: "STEEL_BLACK",
+        frameName: "Matte Black Steel",
+        finish: "Danish Oil Tradisional",
+        feature: "Soft Close Blum Hinge",
+        length: 160,
+        width: 50,
+        height: 85,
+        volumeM3: 0.032,
+        totalCost: 5200000,
+        paidDP: 5200000,
+        dueAmount: 0,
+        stage: "QC_PASS",
+        moistureContent: 9.8,
+        notes: "Pintu kisi-kisi kayu oak rapi",
+        targetDate: "2026-11-05",
+        statusPayment: "PAID_FULL"
+      },
+      {
+        spkNumber: "SPK-8815-OK",
+        clientName: "Bima Santoso",
+        phone: "081355667788",
+        address: "Apartemen Menteng Park, Cikini, Jakpus",
+        productType: "ISLAND",
+        productTitle: "Kitchen Island Top Heavy Duty",
+        woodId: "TEAK",
+        woodName: "Jati Perhutani",
+        frameId: "STEEL_BLACK",
+        frameName: "Matte Black Steel",
+        finish: "Satin Polyurethane Food Safe",
+        feature: "Stop Kontak Pop-up",
+        length: 200,
+        width: 90,
+        height: 90,
+        volumeM3: 0.072,
+        totalCost: 7850000,
+        paidDP: 3925000,
+        dueAmount: 3925000,
+        stage: "KILN_CUT",
+        moistureContent: 10.9,
+        notes: "Ketebalan daun meja dibuat 5 cm solid slab",
+        targetDate: "2026-11-22",
+        statusPayment: "DP_50"
+      },
+      {
+        spkNumber: "SPK-8816-OK",
+        clientName: "Agung Pratama",
+        phone: "081722334411",
+        address: "Permata Hijau Blok C-12, Kebayoran Lama",
+        productType: "DESK",
+        productTitle: "Meja Kerja Minimalis Single Slab",
+        woodId: "WALNUT",
+        woodName: "American Walnut",
+        frameId: "STEEL_WHITE",
+        frameName: "Putih Bersih",
+        finish: "Matte Alami Serat",
+        feature: "1x Kotak Kabel Aluminium Rata",
+        length: 170,
+        width: 75,
+        height: 75,
+        volumeM3: 0.051,
+        totalCost: 5900000,
+        paidDP: 5900000,
+        dueAmount: 0,
+        stage: "CAD_DESIGN",
+        moistureContent: 10.1,
+        notes: "Menunggu approval posisi laci gantung",
+        targetDate: "2026-11-26",
+        statusPayment: "PAID_FULL"
+      }
+    ];
+
+    // 4. Data Inventori Kayu Log & Rangka Besi
+    let masterWoodInventory = [
+      { id: "WOOD-01", name: "Jati Perhutani Solid TPK Cepu", stockM3: 6.85, minThresholdM3: 3.0, moistureContent: 10.4, status: "OPTIMAL", supplier: "Perhutani KPH Cepu", ratePerM3: 28000000 },
+      { id: "WOOD-02", name: "American Black Walnut Kiln Dry", stockM3: 4.12, minThresholdM3: 2.0, moistureContent: 11.2, status: "OPTIMAL", supplier: "Timber Export Co. USA", ratePerM3: 34000000 },
+      { id: "WOOD-03", name: "White Oak FAS Grade Import", stockM3: 1.85, minThresholdM3: 2.5, moistureContent: 9.8, status: "LOW_STOCK", supplier: "Euro Wood Trade", ratePerM3: 26000000 },
+      { id: "FRAME-01", name: "Besi Hollow 40x40 Tebal 2.0mm", stockM3: 140, minThresholdM3: 50, moistureContent: null, status: "OPTIMAL", supplier: "PT Krakatau Steel", ratePerM3: 1400000 },
+      { id: "FRAME-02", name: "Rangka Kuningan Solid Brushed", stockM3: 18, minThresholdM3: 20, moistureContent: null, status: "LOW_STOCK", supplier: "Artisan Brassworks", ratePerM3: 2300000 },
+      { id: "FINISH-01", name: "Satin Polyurethane Topcoat", stockM3: 45, minThresholdM3: 15, moistureContent: null, status: "OPTIMAL", supplier: "Milesi Wood Coatings", ratePerM3: 450000 }
+    ];
+
+    // 5. QC Inspection Logs
+    let qcAudiLogs = [
+      { time: "11:24:10", token: "SPK-8812-OK", item: "Meja Kerja Jati 180x80", inspector: "Pak Bambang S.", result: "LOLOS QC (MC 10.4%, SIKU PRESISI)" },
+      { time: "10:15:44", token: "SPK-8814-OK", item: "Kredensa White Oak 160x50", inspector: "Andi Wijaya (QC)", result: "LOLOS QC (FINISH DANISH OIL OK)" },
+      { time: "09:30:12", token: "SPK-8810-QC", item: "Meja Makan Jati 200x90", inspector: "Pak Bambang S.", result: "RE-SANDING (CATATAN SERAT HALUS)" }
+    ];
+
+    // State Variables
+    let cadStudioProductType = 'DESK';
+    let cadStudioWood = woodMaterials[0];
+    let cadStudioFrame = frameMaterials[0];
+    let cadStudioLength = 180;
+    let cadStudioWidth = 80;
+    let cadStudioHeight = 75;
+
+    let activeSettleSPKNumber = null;
+    let woodVolumeChartInstance = null;
+    let furnitureModelChartInstance = null;
+
+    // Helper: Formatter
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Overview & KPI Bengkel",
+        kanban: "Workshop Kanban (Alur Produksi SPK)",
+        cad: "Live CAD Inspector & Custom Studio",
+        inventory: "Monitoring Kayu Solid (MC <12%) & Rangka Besi",
+        scanner: "QC Scanner Barcode & Sertifikasi Unit",
+        finance: "Kasir Pelunasan Meja & SPK Faktur Resmi",
+        database: "Master Database Klien & Ekspor CSV"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "CustomCraft Console";
+
+      ['overview', 'kanban', 'cad', 'inventory', 'scanner', 'finance', 'database'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slateTech-card font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-slateTech-sky bg-slateTech-card border-l-4 border-slateTech-sky shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'overview') renderOverviewPipelineStrip();
+      if (tabKey === 'kanban') renderKanbanBoard();
+      if (tabKey === 'cad') { renderCadWoodOptions(); renderCadFrameOptions(); updateCadParameters(); }
+      if (tabKey === 'inventory') renderWoodInventoryGrid();
+      if (tabKey === 'scanner') renderQCLogs();
+      if (tabKey === 'finance') renderFinanceTable();
+      if (tabKey === 'database') renderDatabaseTable();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    function startLiveClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClockText').innerText = now.toTimeString().split(' ')[0] + " WIB";
+      }, 1000);
+    }
+
+    function switchUserRole() {
+      const role = document.getElementById('userRoleSelect').value;
+      const names = {
+        HEAD_CARPENTER: "Bambang S. (Pakde)",
+        QC_SPECIALIST: "Andi Wijaya (QC Lead)",
+        ESTIMATOR: "Tedi Mahendra (Estimator)"
+      };
+      document.getElementById('profileName').innerText = names[role];
+      showToast(`Akses berganti ke mode: ${role}`);
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      startLiveClock();
+      initCharts();
+      renderOverviewPipelineStrip();
+      renderKanbanBoard();
+      renderCadWoodOptions();
+      renderCadFrameOptions();
+      updateCadParameters();
+      renderWoodInventoryGrid();
+      renderQCLogs();
+      renderFinanceTable();
+      renderDatabaseTable();
+      updateDashboardCounters();
+      lucide.createIcons();
+    });
+
+    // ==================== 1. OVERVIEW & CHARTS ====================
+    function renderOverviewPipelineStrip() {
+      const container = document.getElementById('overviewPipelineStrip');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const stages = [
+        { title: "1. CAD Desain & SPK", count: masterSPKOrders.filter(o => o.stage === 'CAD_DESIGN').length, icon: "file-code", color: "text-slateTech-sky" },
+        { title: "2. Oven Kayu (MC<12%)", count: masterSPKOrders.filter(o => o.stage === 'KILN_CUT').length, icon: "flame", color: "text-amber-400" },
+        { title: "3. Rakit & Las Besi", count: masterSPKOrders.filter(o => o.stage === 'FRAME_ASSEMBLY').length, icon: "hammer", color: "text-purple-400" },
+        { title: "4. Finishing & QC Lolos", count: masterSPKOrders.filter(o => o.stage === 'QC_PASS').length, icon: "shield-check", color: "text-emerald-400" }
+      ];
+
+      stages.forEach(st => {
+        const div = document.createElement('div');
+        div.className = "bg-[#0D1524] border border-slateTech-gray/60 p-4 rounded-2xl space-y-2 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-center text-slate-400">
+            <span class="truncate">${st.title}</span>
+            <i data-lucide="${st.icon}" class="w-4 h-4 ${st.color}"></i>
+          </div>
+          <span class="text-2xl font-black text-white font-mono">${st.count} Unit</span>
+        `;
+        container.appendChild(div);
+      });
+      lucide.createIcons();
+    }
+
+    function initCharts() {
+      // 1. Wood Solid Volume Bar Chart
+      const ctxWood = document.getElementById('woodVolumeChart');
+      if (ctxWood) {
+        woodVolumeChartInstance = new Chart(ctxWood, {
+          type: 'bar',
+          data: {
+            labels: ['Jati Perhutani', 'American Walnut', 'White Oak Import'],
+            datasets: [
+              {
+                label: 'Stok Tersedia di Bengkel (m³)',
+                data: [6.85, 4.12, 1.85],
+                backgroundColor: '#38BDF8',
+                borderRadius: 6
+              },
+              {
+                label: 'Terpakai di SPK Aktif (m³)',
+                data: [1.82, 1.45, 0.95],
+                backgroundColor: '#F59E0B',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 8,
+                ticks: { stepSize: 2, color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: 'rgba(51, 65, 85, 0.3)' }
+              },
+              x: {
+                ticks: { color: '#CBD5E1', font: { family: 'Plus Jakarta Sans', size: 11 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Furniture Model Share Doughnut Chart
+      const ctxModel = document.getElementById('furnitureModelDoughnutChart');
+      if (ctxModel) {
+        furnitureModelChartInstance = new Chart(ctxModel, {
+          type: 'doughnut',
+          data: {
+            labels: ['Meja Kerja Solid', 'Meja Makan Dining', 'Kredensa TV', 'Kitchen Island'],
+            datasets: [{
+              data: [48, 30, 14, 8],
+              backgroundColor: ['#38BDF8', '#0284C7', '#F59E0B', '#10B981'],
+              borderWidth: 2,
+              borderColor: '#1E293B'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#94A3B8' } }
+            },
+            cutout: '70%'
+          }
+        });
+      }
+    }
+
+    // ==================== 2. WORKSHOP KANBAN PRODUCTION BOARD ====================
+    function renderKanbanBoard() {
+      const container = document.getElementById('kanbanBoardColumns');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const columns = [
+        { key: "CAD_DESIGN", title: "1. Desain CAD & Potong", badgeColor: "bg-slateTech-sky/15 text-slateTech-sky border border-slateTech-sky/30" },
+        { key: "KILN_CUT", title: "2. Oven Kering (MC<12%)", badgeColor: "bg-amber-500/15 text-amber-300 border border-amber-400/30" },
+        { key: "FRAME_ASSEMBLY", title: "3. Rakit Besi & Las", badgeColor: "bg-purple-500/15 text-purple-300 border border-purple-400/30" },
+        { key: "QC_PASS", title: "4. Finishing & QC Lolos", badgeColor: "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30" }
+      ];
+
+      columns.forEach(col => {
+        const ordersInCol = masterSPKOrders.filter(o => o.stage === col.key);
+
+        let cardsHtml = ordersInCol.map(o => `
+          <div class="bg-[#0D1524] p-4 rounded-2xl border border-slateTech-gray/80 shadow-sm space-y-2.5 font-mono text-xs">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] text-slateTech-sky font-bold">${o.spkNumber}</span>
+                <h4 class="font-bold text-white text-sm font-sans truncate max-w-[150px]">${o.clientName}</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold ${col.badgeColor}">MC ${o.moistureContent}%</span>
+            </div>
+
+            <div class="space-y-1 font-sans text-xs">
+              <p class="text-slate-300 font-bold">${o.productTitle}</p>
+              <p class="text-[11px] text-slate-400 font-mono">${o.length} × ${o.width} × ${o.height} cm (${o.volumeM3} m³)</p>
+              <p class="text-[10px] text-slate-400 truncate">Kayu: ${o.woodName} • Rangka: ${o.frameName}</p>
+            </div>
+
+            <div class="pt-2 border-t border-slateTech-gray/50 flex items-center justify-between text-[10px]">
+              <span class="text-slate-500">${o.targetDate}</span>
+              ${col.key !== 'QC_PASS' ? `
+                <button onclick="advanceKanbanOrder('${o.spkNumber}')" class="px-2.5 py-1 rounded-lg bg-slateTech-card hover:bg-slate-700 text-slateTech-sky font-bold transition flex items-center gap-1 font-mono">
+                  <span>Proses</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </button>
+              ` : `
+                <button onclick="previewSPKModal('${o.spkNumber}')" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold transition flex items-center gap-1 font-mono">
+                  <i data-lucide="check" class="w-3 h-3"></i> Siap Kirim
+                </button>
+              `}
+            </div>
+          </div>
+        `).join('');
+
+        if (ordersInCol.length === 0) {
+          cardsHtml = `<div class="p-5 text-center text-slate-500 text-xs italic font-mono">Antrean kosong</div>`;
+        }
+
+        const colDiv = document.createElement('div');
+        colDiv.className = "bg-slateTech-card p-4 rounded-3xl border border-slateTech-gray/70 space-y-3";
+        colDiv.innerHTML = `
+          <div class="flex items-center justify-between p-2.5 rounded-2xl bg-[#0D1524] border border-slateTech-gray/60 font-mono">
+            <span class="font-bold text-xs text-white">${col.title}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slateTech-card text-slateTech-sky">${ordersInCol.length}</span>
+          </div>
+          <div class="space-y-3">
+            ${cardsHtml}
+          </div>
+        `;
+        container.appendChild(colDiv);
+      });
+
+      lucide.createIcons();
+    }
+
+    function advanceKanbanOrder(spkNumber) {
+      const o = masterSPKOrders.find(x => x.spkNumber === spkNumber);
+      if (!o) return;
+
+      const stages = ["CAD_DESIGN", "KILN_CUT", "FRAME_ASSEMBLY", "QC_PASS"];
+      const currentIdx = stages.indexOf(o.stage);
+
+      if (currentIdx < stages.length - 1) {
+        o.stage = stages[currentIdx + 1];
+        showToast(`Pesanan ${o.spkNumber} beralih ke tahap: ${stages[currentIdx + 1]}`);
+        renderKanbanBoard();
+        renderOverviewPipelineStrip();
+        updateDashboardCounters();
+      }
+    }
+
+    // ==================== 3. LIVE ISOMETRIC CAD SPEC INSPECTOR ====================
+    function selectStudioType(type) {
+      cadStudioProductType = type;
+      ['DESK', 'DINING', 'CREDENZA', 'ISLAND'].forEach(t => {
+        const btn = document.getElementById(`cadTypeBtn-${t}`);
+        if (t === type) {
+          btn.className = "p-2.5 rounded-xl border-2 border-slateTech-sky bg-slateTech-sky/15 text-white font-bold text-center";
+        } else {
+          btn.className = "p-2.5 rounded-xl border border-slateTech-gray bg-[#0E1626] text-slate-300 text-center hover:border-slateTech-sky";
+        }
+      });
+
+      if (type === 'DESK') { cadStudioLength = 180; cadStudioWidth = 80; cadStudioHeight = 75; }
+      else if (type === 'DINING') { cadStudioLength = 240; cadStudioWidth = 100; cadStudioHeight = 76; }
+      else if (type === 'CREDENZA') { cadStudioLength = 160; cadStudioWidth = 50; cadStudioHeight = 85; }
+      else if (type === 'ISLAND') { cadStudioLength = 200; cadStudioWidth = 90; cadStudioHeight = 90; }
+
+      document.getElementById('cadLengthSlider').value = cadStudioLength;
+      document.getElementById('cadWidthSlider').value = cadStudioWidth;
+      document.getElementById('cadHeightSlider').value = cadStudioHeight;
+
+      updateCadParameters();
+    }
+
+    function renderCadWoodOptions() {
+      const container = document.getElementById('cadWoodSelectorContainer');
+      container.innerHTML = woodMaterials.map(w => `
+        <div onclick="selectCadWood('${w.id}')" class="p-3 rounded-xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          cadStudioWood.id === w.id 
+            ? 'border-slateTech-sky bg-slateTech-sky/15' 
+            : 'border-slateTech-gray/60 bg-[#0E1626] hover:border-slate-500'
+        }">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-3.5 h-3.5 rounded-full border border-white" style="background-color: ${w.topColor}"></span>
+            <span class="font-bold text-xs text-white">${w.name}</span>
+          </div>
+          <span class="text-[11px] text-slate-400">${w.desc}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectCadWood(id) {
+      cadStudioWood = woodMaterials.find(w => w.id === id);
+      renderCadWoodOptions();
+      updateCadParameters();
+    }
+
+    function renderCadFrameOptions() {
+      const container = document.getElementById('cadFrameSelectorContainer');
+      container.innerHTML = frameMaterials.map(f => `
+        <div onclick="selectCadFrame('${f.id}')" class="p-3 rounded-xl border-2 transition cursor-pointer flex items-center gap-2 ${
+          cadStudioFrame.id === f.id 
+            ? 'border-slateTech-sky bg-slateTech-sky/15' 
+            : 'border-slateTech-gray/60 bg-[#0E1626] hover:border-slate-500'
+        }">
+          <span class="w-3.5 h-3.5 rounded-full border border-slate-600" style="background-color: ${f.color}"></span>
+          <span class="font-bold text-xs text-white">${f.name}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectCadFrame(id) {
+      cadStudioFrame = frameMaterials.find(f => f.id === id);
+      renderCadFrameOptions();
+      updateCadParameters();
+    }
+
+    function updateCadParameters() {
+      cadStudioLength = parseInt(document.getElementById('cadLengthSlider').value);
+      cadStudioWidth = parseInt(document.getElementById('cadWidthSlider').value);
+      cadStudioHeight = parseInt(document.getElementById('cadHeightSlider').value);
+
+      document.getElementById('cadLengthDisplay').innerText = `${cadStudioLength} cm`;
+      document.getElementById('cadWidthDisplay').innerText = `${cadStudioWidth} cm`;
+      document.getElementById('cadHeightDisplay').innerText = `${cadStudioHeight} cm`;
+
+      // Volume Kubikasi Kayu (Ketebalan 4 cm = 0.04m)
+      const volumeM3 = (cadStudioLength / 100) * (cadStudioWidth / 100) * 0.04;
+      const woodCost = Math.round(volumeM3 * cadStudioWood.rate);
+      const frameCost = cadStudioFrame.cost;
+      const laborCost = 950000;
+      const grandTotal = woodCost + frameCost + laborCost;
+
+      // Update Cost Texts
+      document.getElementById('cadCostWoodName').innerText = cadStudioWood.name;
+      document.getElementById('cadCostWood').innerText = formatRupiah(woodCost);
+      document.getElementById('cadCostFrameName').innerText = cadStudioFrame.name;
+      document.getElementById('cadCostFrame').innerText = formatRupiah(frameCost);
+      document.getElementById('cadCostTotal').innerText = formatRupiah(grandTotal);
+
+      document.getElementById('cadTagWoodName').innerText = cadStudioWood.name;
+      document.getElementById('cadTagVolume').innerText = `Kubikasi: ${volumeM3.toFixed(3)} m³`;
+
+      // Update SVG Text
+      document.getElementById('svgTextInspectorLength').textContent = `P: ${cadStudioLength} cm`;
+      document.getElementById('svgTextInspectorWidth').textContent = `L: ${cadStudioWidth} cm`;
+      document.getElementById('svgTextInspectorHeight').textContent = `T: ${cadStudioHeight} cm`;
+
+      // Update 3D SVG Shape
+      const lenFactor = (cadStudioLength - 100) / 200;
+      const pLeft = 120 - (lenFactor * 45);
+      const pRight = 280 + (lenFactor * 45);
+
+      const widFactor = (cadStudioWidth - 50) / 90;
+      const depthOffset = 30 + (widFactor * 25);
+
+      const hFactor = (cadStudioHeight - 40) / 65;
+      const legHeight = 55 + (hFactor * 35);
+      const topY = 190 - legHeight;
+
+      const pFL = [pLeft, topY];
+      const pFR = [pRight, topY];
+      const pBL = [pLeft + depthOffset, topY - depthOffset * 0.8];
+      const pBR = [pRight - depthOffset * 0.4, topY - depthOffset * 0.8];
+
+      const topPoints = `${pBL[0]},${pBL[1]} ${pBR[0]},${pBR[1]} ${pFR[0]},${pFR[1]} ${pFL[0]},${pFL[1]}`;
+      const frontPoints = `${pFL[0]},${pFL[1]} ${pFR[0]},${pFR[1]} ${pFR[0]},${pFL[1] + 10} ${pFL[0]},${pFL[1] + 10}`;
+
+      const svgTableTop = document.getElementById('svgInspectorTableTop');
+      const svgTableFront = document.getElementById('svgInspectorTableFront');
+
+      svgTableTop.setAttribute('points', topPoints);
+      svgTableTop.setAttribute('fill', cadStudioWood.topColor);
+
+      svgTableFront.setAttribute('points', frontPoints);
+      svgTableFront.setAttribute('fill', cadStudioWood.frontColor);
+
+      // Legs
+      const svgLegFL = document.getElementById('svgInspectorLegFL');
+      const svgLegFR = document.getElementById('svgInspectorLegFR');
+      const svgLegBL = document.getElementById('svgInspectorLegBL');
+      const svgLegBR = document.getElementById('svgInspectorLegBR');
+
+      svgLegFL.setAttribute('x', pFL[0] + 6);
+      svgLegFL.setAttribute('y', pFL[1] + 10);
+      svgLegFL.setAttribute('height', legHeight);
+      svgLegFL.setAttribute('fill', cadStudioFrame.color);
+      svgLegFL.setAttribute('stroke', cadStudioFrame.stroke);
+
+      svgLegFR.setAttribute('x', pFR[0] - 18);
+      svgLegFR.setAttribute('y', pFR[1] + 10);
+      svgLegFR.setAttribute('height', legHeight);
+      svgLegFR.setAttribute('fill', cadStudioFrame.color);
+      svgLegFR.setAttribute('stroke', cadStudioFrame.stroke);
+
+      svgLegBL.setAttribute('x', pBL[0] + 6);
+      svgLegBL.setAttribute('y', pBL[1] + 5);
+      svgLegBL.setAttribute('height', legHeight);
+      svgLegBL.setAttribute('fill', cadStudioFrame.color);
+      svgLegBL.setAttribute('stroke', cadStudioFrame.stroke);
+
+      svgLegBR.setAttribute('x', pBR[0] - 18);
+      svgLegBR.setAttribute('y', pBR[1] + 5);
+      svgLegBR.setAttribute('height', legHeight);
+      svgLegBR.setAttribute('fill', cadStudioFrame.color);
+      svgLegBR.setAttribute('stroke', cadStudioFrame.stroke);
+
+      return { volumeM3, woodCost, frameCost, grandTotal };
+    }
+
+    function generateSPKFromCAD() {
+      const client = prompt("Masukkan Nama Klien Pemesan:", "Ibu Dian Sastrowardoyo");
+      if (!client) return;
+
+      const calc = updateCadParameters();
+      const randomSPK = "SPK-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      const dpVal = Math.round(calc.grandTotal * 0.5);
+
+      let title = "Meja Kerja Solid Custom";
+      if (cadStudioProductType === 'DINING') title = "Meja Makan Solid Custom";
+      if (cadStudioProductType === 'CREDENZA') title = "Kredensa TV Solid Custom";
+      if (cadStudioProductType === 'ISLAND') title = "Kitchen Island Top Solid";
+
+      const newOrder = {
+        spkNumber: randomSPK,
+        clientName: client,
+        phone: "0812-3344-5566",
+        address: "Kawasan Bintaro Sektor 9, Tangerang Selatan",
+        productType: cadStudioProductType,
+        productTitle: title,
+        woodId: cadStudioWood.id,
+        woodName: cadStudioWood.name,
+        frameId: cadStudioFrame.id,
+        frameName: cadStudioFrame.name,
+        finish: "Satin Polyurethane",
+        feature: "1x Kotak Kabel Aluminium Rata",
+        length: cadStudioLength,
+        width: cadStudioWidth,
+        height: cadStudioHeight,
+        volumeM3: parseFloat(calc.volumeM3.toFixed(3)),
+        totalCost: calc.grandTotal,
+        paidDP: dpVal,
+        dueAmount: calc.grandTotal - dpVal,
+        stage: "CAD_DESIGN",
+        moistureContent: 10.4,
+        notes: "Dibuat dari parameter CAD Studio Inspector",
+        targetDate: "2026-11-28",
+        statusPayment: "DP_50"
+      };
+
+      masterSPKOrders.unshift(newOrder);
+      renderKanbanBoard();
+      renderOverviewPipelineStrip();
+      renderFinanceTable();
+      renderDatabaseTable();
+      updateDashboardCounters();
+
+      showToast(`SPK Baru ${randomSPK} untuk ${client} berhasil digenerate ke Kanban!`);
+      switchTab('kanban');
+    }
+
+    // ==================== 4. RAW WOOD & METAL INVENTORY ====================
+    function renderWoodInventoryGrid() {
+      const container = document.getElementById('woodInventoryGridContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterWoodInventory.forEach(item => {
+        const isLow = item.status === 'LOW_STOCK';
+        const isWood = item.id.startsWith('WOOD');
+
+        const card = document.createElement('div');
+        card.className = "bg-slateTech-card p-5 rounded-3xl border border-slateTech-gray/70 shadow-sm space-y-3 font-mono text-xs";
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-slateTech-gray/60 pb-2">
+            <div>
+              <span class="text-[10px] text-slateTech-sky font-bold">${item.id}</span>
+              <h4 class="font-bold text-white text-sm font-sans mt-0.5">${item.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isLow ? 'bg-amber-500/20 text-amber-300 border border-amber-400/40 animate-pulse' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+              ${item.status}
+            </span>
+          </div>
+
+          <div class="space-y-1.5 font-sans">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-400">Sisa Stok Fisik:</span>
+              <strong class="text-white font-mono font-bold">${item.stockM3} ${isWood ? 'm³' : 'Batang/Kaleng'}</strong>
+            </div>
+            ${isWood ? `
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-400">Kadar Air (Moisture Content):</span>
+                <strong class="text-emerald-400 font-mono font-bold">MC ${item.moistureContent}% (Aman &lt;12%)</strong>
+              </div>
+            ` : ''}
+            <div class="flex justify-between text-slate-500 text-[10px] font-mono">
+              <span>Batas Min: ${item.minThresholdM3}</span>
+              <span>Supplier: ${item.supplier}</span>
+            </div>
+          </div>
+
+          <button onclick="topUpWoodStock('${item.id}')" class="w-full bg-[#0D1524] hover:bg-slate-800 text-slateTech-sky font-bold py-2 rounded-xl transition text-[11px] font-sans border border-slateTech-gray/60">
+            + Tambah Pasokan Log / Rangka
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function topUpWoodStock(invId) {
+      const item = masterWoodInventory.find(x => x.id === invId);
+      if (item) {
+        if (item.id.startsWith('WOOD')) item.stockM3 = parseFloat((item.stockM3 + 1.5).toFixed(2));
+        else item.stockM3 += 20;
+        item.status = "OPTIMAL";
+        renderWoodInventoryGrid();
+        updateDashboardCounters();
+        showToast(`Stok ${item.name} berhasil ditambahkan.`);
+      }
+    }
+
+    function openRestockWoodModal() {
+      const woodName = prompt("Masukkan nama varietas log kayu solid baru:", "Kayu Kamper Samarinda Kiln Dry");
+      if (woodName) {
+        showToast(`Penerimaan log ${woodName} dicatat ke antrean oven`);
+      }
+    }
+
+    // ==================== 5. QC SCANNER & BARCODE INSPECTOR ====================
+    function setScannerVal(tok) {
+      document.getElementById('spkScanInput').value = tok;
+      executeSPKScan();
+    }
+
+    function executeSPKScan() {
+      const token = document.getElementById('spkScanInput').value.trim().toUpperCase();
+      const card = document.getElementById('spkScanFeedbackCard');
+      card.classList.remove('hidden');
+
+      const match = masterSPKOrders.find(o => o.spkNumber.toUpperCase() === token);
+
+      if (!match) {
+        card.className = "p-5 rounded-2xl border border-rose-500/50 bg-rose-950/20 text-rose-200 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-400 font-sans">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-500"></i> TOKEN SPK TIDAK DITEMUKAN
+          </div>
+          <p class="text-xs font-sans">Nomor SPK <strong>${token}</strong> tidak memiliki catatan gambar kerja di CustomCraft Workshop.</p>
+        `;
+        recordQCLog(token, "UNKNOWN UNIT", "Pakde Bambang", "DITOLAK (INVALID SPK)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-slateTech-sky/50 bg-[#0D1524] text-slate-200 space-y-3 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-slateTech-sky flex items-center gap-1.5 font-sans">
+              <i data-lucide="check-circle" class="w-5 h-5 text-slateTech-sky"></i> SPK INSPEKSI TERVERIFIKASI
+            </span>
+            <span class="text-xs font-bold bg-slateTech-sky/20 text-slateTech-sky px-2 py-0.5 rounded">${match.spkNumber}</span>
+          </div>
+
+          <div class="space-y-1 font-sans text-xs">
+            <p>Pemesan: <strong class="text-white">${match.clientName}</strong> (${match.phone})</p>
+            <p>Model: <strong class="text-slateTech-sky">${match.productTitle}</strong> (${match.length} × ${match.width} × ${match.height} cm)</p>
+            <p class="text-slate-400">Kayu: ${match.woodName} • Rangka: ${match.frameName} • Finish: ${match.finish}</p>
+          </div>
+
+          <!-- QC 4-Point Checklist -->
+          <div class="p-3 bg-slateTech-card rounded-xl border border-slateTech-gray space-y-1.5 text-xs font-sans">
+            <span class="text-[10px] font-mono text-slateTech-sky font-bold block">4-POINT QC INSPECTION CHECKLIST:</span>
+            <div class="flex items-center gap-2 text-emerald-400">
+              <i data-lucide="check" class="w-4 h-4"></i> <span>Kadar Air Kayu Solid Teruji MC ${match.moistureContent}% (Target &lt;12%)</span>
+            </div>
+            <div class="flex items-center gap-2 text-emerald-400">
+              <i data-lucide="check" class="w-4 h-4"></i> <span>Kelurusan Daun Meja Terkalibrasi Waterpass (Zero Warp)</span>
+            </div>
+            <div class="flex items-center gap-2 text-emerald-400">
+              <i data-lucide="check" class="w-4 h-4"></i> <span>Kekuatan Sambungan Baut & Rangka Las Bebas Retak</span>
+            </div>
+            <div class="flex items-center gap-2 text-emerald-400">
+              <i data-lucide="check" class="w-4 h-4"></i> <span>Powder Coating Rangka Besi Tebal & Anti Karat</span>
+            </div>
+          </div>
+
+          <button onclick="approveQCOrder('${match.spkNumber}')" class="w-full bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-md shadow-slateTech-sky/20">
+            <i data-lucide="shield-check" class="w-4 h-4 text-slate-900"></i> Sahkan Lolos QC & Siap Kirim ke Konsumen
+          </button>
+        `;
+        recordQCLog(token, match.productTitle, "Pakde Bambang (Lead Carpenter)", "INSPEKSI MEMENUHI STANDAR");
+      }
+
+      lucide.createIcons();
+    }
+
+    function approveQCOrder(spkNumber) {
+      const o = masterSPKOrders.find(x => x.spkNumber === spkNumber);
+      if (o) {
+        o.stage = "QC_PASS";
+        showToast(`Unit ${o.spkNumber} (${o.productTitle}) LOLOS QC dan siap kirim!`);
+        renderKanbanBoard();
+        renderOverviewPipelineStrip();
+        updateDashboardCounters();
+        switchTab('kanban');
+      }
+    }
+
+    function recordQCLog(token, item, inspector, result) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      qcAudiLogs.unshift({
+        time: timeStr,
+        token: token,
+        item: item,
+        inspector: inspector,
+        result: result
+      });
+      renderQCLogs();
+    }
+
+    function renderQCLogs() {
+      const list = document.getElementById('qcAuditLogsContainer');
+      if (!list) return;
+      list.innerHTML = '';
+
+      qcAudiLogs.slice(0, 7).forEach(l => {
+        const isOk = l.result.includes('LOLOS') || l.result.includes('MEMENUHI');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-slateTech-sky/10 border-slateTech-sky/40 text-slateTech-sky" : "bg-rose-950/20 border-rose-500/40 text-rose-300");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs font-sans text-white">${l.item}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-slateTech-darker font-mono font-bold border border-slateTech-gray">${l.token}</span>
+            </div>
+            <span class="text-[10px] text-slate-400">${l.inspector} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold font-mono">${l.result}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 6. KASIR PELUNASAN & SPK FAKTUR RESMI ====================
+    function renderFinanceTable() {
+      const tbody = document.getElementById('financeTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterSPKOrders.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-[#0D1524] transition";
+
+        let statusText = o.dueAmount === 0 ? "LUNAS 100%" : "SISA COD 50%";
+        let statusBadge = o.dueAmount === 0 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-amber-500/20 text-amber-300 border border-amber-400/30";
+
+        let actionBtn = '';
+        if (o.dueAmount > 0) {
+          actionBtn = `
+            <button onclick="openSettlePaymentModal('${o.spkNumber}')" class="px-3 py-1.5 rounded-lg bg-slateTech-sky hover:bg-slateTech-skyHover text-slate-900 font-bold text-[10px] transition font-sans shadow-sm">
+              Pelunasan
+            </button>
+          `;
+        } else {
+          actionBtn = `
+            <button onclick="previewSPKModal('${o.spkNumber}')" class="px-2.5 py-1.5 rounded-lg bg-slateTech-card hover:bg-slate-700 text-slate-300 font-bold text-[10px] transition font-sans inline-flex items-center gap-1">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Faktur
+            </button>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-white">${o.spkNumber}</td>
+          <td class="py-3 px-4 font-sans">${o.clientName}<br><span class="text-slate-400 text-[10px] font-mono">${o.phone}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-300"><strong>${o.productTitle}</strong><br><span class="text-[10px] text-slate-400 font-mono">${o.length} × ${o.width} × ${o.height} cm</span></td>
+          <td class="py-3 px-4 font-bold text-white">${formatRupiah(o.totalCost)}</td>
+          <td class="py-3 px-4 text-emerald-400 font-bold">${formatRupiah(o.paidDP)}</td>
+          <td class="py-3 px-4 font-bold ${o.dueAmount > 0 ? 'text-slateTech-sky' : 'text-slate-500'}">${formatRupiah(o.dueAmount)}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusBadge}">${statusText}</span>
+          </td>
+          <td class="py-3 px-4 text-center">${actionBtn}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function previewSPKModal(spkNumber) {
+      const o = masterSPKOrders.find(x => x.spkNumber === spkNumber);
+      if (!o) return;
+
+      document.getElementById('modalSPKNumber').innerText = o.spkNumber;
+      document.getElementById('modalSPKDate').innerText = "31 Okt 2026";
+      document.getElementById('modalClientName').innerText = o.clientName;
+      document.getElementById('modalClientPhone').innerText = o.phone;
+      document.getElementById('modalDeliveryAddress').innerText = o.address;
+      document.getElementById('modalTargetDate').innerText = `Est. Selesai: ${o.targetDate}`;
+
+      document.getElementById('modalProductTitle').innerText = o.productTitle;
+      document.getElementById('modalMaterialSpecs').innerText = `Kayu: ${o.woodName} • Rangka: ${o.frameName} • Lapisan: ${o.finish}`;
+      document.getElementById('modalFeatureSpec').innerText = `Fitur: ${o.feature}`;
+      document.getElementById('modalDimensionsText').innerText = `${o.length} × ${o.width} × ${o.height} cm`;
+
+      document.getElementById('modalItemTotalCost').innerText = formatRupiah(o.totalCost);
+      document.getElementById('modalSubtotalAmount').innerText = formatRupiah(o.totalCost);
+      document.getElementById('modalPaidAmount').innerText = formatRupiah(o.paidDP);
+      document.getElementById('modalDueAmount').innerText = formatRupiah(o.dueAmount);
+
+      document.getElementById('modalSPKToken').innerText = `TOKEN: ${o.spkNumber}`;
+      document.getElementById('modalSPKBarcodeImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${o.spkNumber}`;
+
+      if (o.dueAmount === 0) {
+        document.getElementById('modalSPKStatusBadge').innerText = "SPK LUNAS 100% (FAKTUR)";
+        document.getElementById('modalPaymentStatusText').innerText = "LUNAS (100% SETTLED)";
+        document.getElementById('modalDueLabel').innerText = "Status Tagihan:";
+        document.getElementById('modalDueAmount').innerText = "LUNAS (Rp 0)";
+      } else {
+        document.getElementById('modalSPKStatusBadge').innerText = "SPK DP 50% VERIFIED";
+        document.getElementById('modalPaymentStatusText').innerText = "DP 50% LUNAS via QRIS";
+        document.getElementById('modalDueLabel').innerText = "Sisa Pelunasan Saat Meja Tiba di Lokasi:";
+      }
+
+      document.getElementById('spkPrintableModal').classList.remove('hidden');
+    }
+
+    function closeSPKModal() {
+      document.getElementById('spkPrintableModal').classList.add('hidden');
+    }
+
+    function openSettlePaymentModal(spkNumber) {
+      const o = masterSPKOrders.find(x => x.spkNumber === spkNumber);
+      if (!o) return;
+
+      activeSettleSPKNumber = spkNumber;
+      document.getElementById('settleSPKCode').innerText = o.spkNumber;
+      document.getElementById('settleClientName').innerText = `${o.clientName} (${o.phone})`;
+      document.getElementById('settleTotalCost').innerText = formatRupiah(o.totalCost);
+      document.getElementById('settlePaidDP').innerText = formatRupiah(o.paidDP);
+      document.getElementById('settleRemainingDue').innerText = formatRupiah(o.dueAmount);
+
+      document.getElementById('settlePaymentModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settlePaymentModal').classList.add('hidden');
+      activeSettleSPKNumber = null;
+    }
+
+    function confirmSettlePayment() {
+      if (!activeSettleSPKNumber) return;
+      const o = masterSPKOrders.find(x => x.spkNumber === activeSettleSPKNumber);
+      if (o) {
+        o.paidDP = o.totalCost;
+        o.dueAmount = 0;
+        o.statusPayment = "PAID_FULL";
+
+        closeSettleModal();
+        renderFinanceTable();
+        renderDatabaseTable();
+        updateDashboardCounters();
+
+        showToast(`Pelunasan meja ${o.spkNumber} (${o.clientName}) berhasil dicatat kasir!`);
+        previewSPKModal(o.spkNumber);
+      }
+    }
+
+    // ==================== 7. DATABASE KLIEN & EXPORT CSV ====================
+    function renderDatabaseTable(filteredList = null) {
+      const tbody = document.getElementById('masterDatabaseTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterSPKOrders;
+      document.getElementById('dbCountLabel').innerText = `Menampilkan ${list.length} arsip SPK meja solid`;
+
+      list.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-[#0D1524] transition";
+
+        let stageText = "CAD Desain";
+        if (o.stage === 'KILN_CUT') stageText = "Oven Kayu";
+        if (o.stage === 'FRAME_ASSEMBLY') stageText = "Rakit Besi";
+        if (o.stage === 'QC_PASS') stageText = "QC Lolos";
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slateTech-sky">${o.spkNumber}</td>
+          <td class="py-3 px-4 font-sans font-bold text-white">${o.clientName}<br><span class="text-slate-400 font-mono text-[10px] font-normal">${o.phone}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-300 max-w-[180px] truncate" title="${o.address}">${o.address}</td>
+          <td class="py-3 px-4 text-slate-300">${o.woodName}<br><span class="text-[10px] text-slate-500">${o.finish}</span></td>
+          <td class="py-3 px-4 font-bold text-white">${o.length} × ${o.width} × ${o.height}</td>
+          <td class="py-3 px-4 font-bold text-white">${formatRupiah(o.totalCost)}</td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-slateTech-card text-slateTech-sky font-bold border border-slateTech-gray">${stageText}</span></td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="previewSPKModal('${o.spkNumber}')" class="px-2.5 py-1 rounded-lg bg-[#0D1524] hover:bg-slate-800 text-slateTech-sky font-bold text-[10px] transition border border-slateTech-gray/80 inline-flex items-center gap-1 font-mono">
+              <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Buka SPK
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterDatabaseTable() {
+      const q = document.getElementById('dbSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderDatabaseTable();
+        return;
+      }
+      const filtered = masterSPKOrders.filter(o => 
+        o.spkNumber.toLowerCase().includes(q) ||
+        o.clientName.toLowerCase().includes(q) ||
+        o.phone.toLowerCase().includes(q) ||
+        o.address.toLowerCase().includes(q) ||
+        o.woodName.toLowerCase().includes(q)
+      );
+      renderDatabaseTable(filtered);
+    }
+
+    function filterDBType(typeKey) {
+      document.querySelectorAll('.db-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-type') === typeKey) {
+          btn.className = "db-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slateTech-darker text-white transition";
+        } else {
+          btn.className = "db-filter-btn px-3.5 py-2 rounded-xl font-bold bg-[#0D1524] text-slate-400 hover:text-white transition";
+        }
+      });
+
+      if (typeKey === 'ALL') {
+        renderDatabaseTable();
+      } else {
+        renderDatabaseTable(masterSPKOrders.filter(o => o.productType === typeKey));
+      }
+    }
+
+    function exportSPKToCSV() {
+      let csv = "data:text/csv;charset=utf-8,No SPK,Klien,WhatsApp,Alamat,Model,Kayu,Rangka,Panjang,Lebar,Tinggi,Kubikasi_m3,Total,DP_50,Sisa_COD,Tahap,MC_Percent\n";
+      masterSPKOrders.forEach(o => {
+        csv += `"${o.spkNumber}","${o.clientName}","${o.phone}","${o.address}","${o.productTitle}","${o.woodName}","${o.frameName}","${o.length}","${o.width}","${o.height}","${o.volumeM3}","${o.totalCost}","${o.paidDP}","${o.dueAmount}","${o.stage}","${o.moistureContent}%"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `CustomCraft_SPK_Database_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 8. DASHBOARD COUNTERS ====================
+    function updateDashboardCounters() {
+      const activeCount = masterSPKOrders.length;
+      const totalRev = masterSPKOrders.reduce((sum, o) => sum + o.totalCost, 0);
+      const totalDue = masterSPKOrders.reduce((sum, o) => sum + o.dueAmount, 0);
+      const pendingDueCount = masterSPKOrders.filter(o => o.dueAmount > 0).length;
+      const qcPassedCount = masterSPKOrders.filter(o => o.stage === 'QC_PASS').length;
+
+      document.getElementById('kpiActiveSPK').innerText = `${activeCount} Unit`;
+      document.getElementById('kpiTotalRevenue').innerText = formatRupiah(totalRev);
+      document.getElementById('financeDueSummaryCard').innerText = formatRupiah(totalDue);
+      document.getElementById('kpiQCPassed').innerText = `${qcPassedCount} Meja`;
+
+      document.getElementById('badgeActiveSPK').innerText = `${activeCount} SPK`;
+      document.getElementById('badgePendingDP').innerText = `${pendingDueCount} Sisa 50%`;
+      document.getElementById('sidebarLoad').innerText = `${activeCount} SPK Aktif`;
+    }
+  </script>
+
+</body>
+</html>

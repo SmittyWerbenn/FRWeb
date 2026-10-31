@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Vista Indonesia - AV Videotron Integrator & Production Operations Console</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            trust: {
+              forest: '#132A13',      // Primary Forest Green
+              forestDark: '#0D1D0D',  // Deep Forest Header
+              oliveDark: '#31572C',   // Surface Card
+              oliveMid: '#4F772D',    // Border & Secondary Accent
+              sage: '#ECF39E',        // Pale Sage Neon Accent
+              sageHover: '#DCE775',   // Hover Sage
+              sageSoft: 'rgba(236, 243, 158, 0.15)',
+              canvas: '#0B1A0B',      // Deep Dark Canvas
+              border: 'rgba(236, 243, 158, 0.22)',
+              slateText: '#94A3B8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B1A0B;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #31572C;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ECF39E;
+    }
+
+    .glass-header {
+      background: rgba(19, 42, 19, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .led-grid-pattern {
+      background-color: #0B1A0B;
+      background-image: 
+        radial-gradient(#ECF39E20 1px, transparent 1px),
+        radial-gradient(#4F772D20 1px, #0B1A0B 1px);
+      background-size: 18px 18px;
+    }
+
+    .screen-bezel {
+      box-shadow: 0 0 25px rgba(236, 243, 158, 0.18), inset 0 0 15px rgba(0, 0, 0, 0.85);
+    }
+
+    .sage-glow {
+      box-shadow: 0 0 20px rgba(236, 243, 158, 0.25);
+    }
+
+    /* Print View for Commercial Quotation & Rigging Safety Pass */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableQuotationModal, #printableQuotationModal * {
+        visibility: visible !important;
+      }
+      #printableQuotationModal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #132A13 !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-trust-canvas text-slate-100 antialiased font-sans min-h-screen flex selection:bg-trust-sage selection:text-trust-forest overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-trust-forest border-r border-trust-border flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-trust-border bg-trust-forestDark">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-trust-oliveDark border border-trust-sage flex items-center justify-center text-trust-sage shadow-md shadow-emerald-950/20 flex-shrink-0">
+            <i data-lucide="monitor" class="w-5 h-5 text-trust-sage"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-display">
+              LED<span class="text-trust-sage">VISTA</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-trust-oliveDark text-trust-sage border border-trust-border px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">OPS CONSOLE</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-trust-sage animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Workshop Status & Power Grid Live Sensor -->
+      <div class="px-5 py-3 border-b border-trust-border bg-trust-canvas/50">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-300">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="warehouse" class="w-3.5 h-3.5 text-trust-sage"></i> Bizpark Cakung Hub
+          </span>
+          <span class="text-emerald-400 font-bold" id="sidebarStockReady">850+ KABINET</span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1 font-mono">
+          <span>Genset Sync: <strong class="text-trust-sage">380V 3-Phase</strong></span>
+          <span class="text-emerald-400 font-bold">Hz: 3840 OK</span>
+        </div>
+        <div class="w-full bg-[#081408] h-1.5 rounded-full overflow-hidden mt-2">
+          <div class="bg-gradient-to-r from-trust-oliveMid to-trust-sage h-full rounded-full" style="width: 74%"></div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-trust-forest bg-trust-sage shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 text-trust-forest"></i>
+          <span>Executive Overview</span>
+        </button>
+
+        <button onclick="switchTab('simulator')" id="tab-simulator" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-trust-oliveDark">
+          <i data-lucide="calculator" class="w-4 h-4"></i>
+          <span>Screen Spec Simulator</span>
+          <span class="w-2 h-2 rounded-full bg-trust-sage ml-auto animate-pulse"></span>
+        </button>
+
+        <button onclick="switchTab('rigging')" id="tab-rigging" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-trust-oliveDark">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Jadwal Rigging Event</span>
+          <span class="ml-auto bg-trust-oliveDark text-trust-sage border border-trust-border text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="badgeActiveStages">6 Stage</span>
+        </button>
+
+        <button onclick="switchTab('inventory')" id="tab-inventory" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-trust-oliveDark">
+          <i data-lucide="boxes" class="w-4 h-4"></i>
+          <span>Modul & Flightcase Stock</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] px-1.5 py-0.5 rounded" id="badgeLowStock">1 Buffer</span>
+        </button>
+
+        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-trust-oliveDark">
+          <i data-lucide="scan" class="w-4 h-4"></i>
+          <span>Scanner Safety Rigging</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 ml-auto animate-ping"></span>
+        </button>
+
+        <button onclick="switchTab('quotation')" id="tab-quotation" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-trust-oliveDark">
+          <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+          <span>Faktur RFQ & Kasir DP</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- AV Project Director Profile Widget -->
+    <div class="p-4 border-t border-trust-border bg-trust-forestDark">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-trust-oliveDark border border-trust-sage/50 flex items-center justify-center text-trust-sage font-bold text-xs font-mono shadow-sm">
+          LV
+        </div>
+        <div class="flex-1 min-w-0 font-sans">
+          <p class="text-xs font-bold text-white truncate" id="userDisplayName">Ir. Tedi Mahendra</p>
+          <select id="roleSelector" onchange="changeUserRole()" class="bg-transparent text-[10px] text-trust-sage font-mono focus:outline-none cursor-pointer">
+            <option value="DIRECTOR" class="bg-trust-forest text-white">AV Project Director</option>
+            <option value="HEAD_RIGGER" class="bg-trust-forest text-white">Head Stage & Rigging</option>
+            <option value="VIDEO_ENGINEER" class="bg-trust-forest text-white">Novastar 4K Engineer</option>
+          </select>
+        </div>
+        <button onclick="showToast('Sertifikasi Rigging K3 & Uji Tarik Beban Terverifikasi')" title="Sertifikasi Rigging" class="text-slate-400 hover:text-trust-sage transition">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-[#081408] text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-trust-border font-mono gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-trust-sage text-trust-forest">STAGE PRODUCTION LIVE</span>
+        <span>Monitoring Proyek: <strong class="text-white">6 Venue Aktif Hari Ini</strong> • P3.9 Outdoor & P2.5 Indoor Ballroom Deployment</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-400">
+        <span>Total Daya: <strong class="text-emerald-400 font-mono" id="topPowerLoadText">56.4 kVA (3-Phase)</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span>Anti-Flicker: <strong class="text-trust-sage">3840 Hz Calibrated</strong></span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-header sticky top-0 z-30 border-b border-trust-border px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1.5 rounded-lg bg-trust-oliveDark">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
+            <span id="currentViewTitle">Executive Overview</span>
+          </h1>
+          <p class="text-slate-400 text-xs hidden sm:block font-mono">AV Videotron Integrator, Stage Rental Production & Modular Die-Cast Installation Engine</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- Live Shift Indicator -->
+        <div class="hidden lg:flex items-center bg-trust-forest border border-trust-border px-3 py-1.5 rounded-xl text-slate-200">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-trust-sage mr-2"></i>
+          <span>Jadwal Loading: <strong class="text-white font-mono">H-1 Pukul 22:00 WIB</strong></span>
+        </div>
+
+        <!-- Quick Launch Simulator Button -->
+        <button onclick="switchTab('simulator')" class="bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-lime-950/20 flex items-center gap-1.5 active:scale-95 font-sans">
+          <i data-lucide="calculator" class="w-4 h-4 text-trust-forest"></i>
+          <span>+ Rancang LED Baru</span>
+        </button>
+
+        <!-- Notification Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-trust-forest border border-trust-border text-slate-300 hover:text-trust-sage flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-trust-sage rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown Panel -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-trust-forest rounded-2xl shadow-2xl border border-trust-border p-3 text-slate-100 z-50 font-sans">
+            <div class="flex items-center justify-between border-b border-trust-border pb-2 px-1">
+              <span class="font-bold text-xs font-display">Aktivitas Panggung & Rigging</span>
+              <span class="text-[10px] font-mono text-trust-sage font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs font-mono" id="notificationFeed">
+              <div class="p-2.5 bg-trust-oliveDark rounded-xl border border-trust-border">
+                <p class="font-bold text-white font-sans">DP 30% QRIS Terverifikasi: Rp 2.880.000</p>
+                <p class="text-slate-300 text-[10px]">RFQ-LV-8821 • Ballroom Hotel Mulia (P3.9 Outdoor)</p>
+                <span class="text-[9px] text-trust-sage">3 menit lalu</span>
+              </div>
+              <div class="p-2.5 bg-trust-oliveDark rounded-xl border border-trust-border">
+                <p class="font-bold text-white font-sans">Grounding K3 & Beban Daya OK</p>
+                <p class="text-slate-300 text-[10px]">Novastar VX400 • Sinkronisasi 3840Hz Lolos</p>
+                <span class="text-[9px] text-emerald-400 font-bold">18 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1">
+
+      <!-- ==================== VIEW 1: EXECUTIVE OVERVIEW & KPI ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Cards Grid (4 Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
+          <!-- Card 1: Active Rental Stages -->
+          <div class="bg-trust-forest p-5 rounded-3xl border border-trust-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400">PANGGUNG / STAGE AKTIF</span>
+              <div class="w-8 h-8 rounded-xl bg-trust-oliveDark text-trust-sage flex items-center justify-center font-bold border border-trust-border">
+                <i data-lucide="tv" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-white font-display block" id="kpiActiveStages">6 Stage Event</span>
+              <p class="text-emerald-400 text-[11px] font-semibold flex items-center gap-1 mt-1 font-sans">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> 4 Ballroom • 2 Outdoor Konser
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2: Total M2 LED Deployed -->
+          <div class="bg-trust-forest p-5 rounded-3xl border border-trust-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400">M² LED DALAM PENYEWAAN</span>
+              <div class="w-8 h-8 rounded-xl bg-trust-oliveDark text-trust-sage flex items-center justify-center font-bold border border-trust-border">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-trust-sage font-display block" id="kpiTotalM2">142.5 m²</span>
+              <p class="text-slate-300 text-[11px] mt-1 font-sans">570 Modul Kabinet 500x500mm Terpakai</p>
+            </div>
+          </div>
+
+          <!-- Card 3: Total Power Draw kVA -->
+          <div class="bg-trust-forest p-5 rounded-3xl border border-trust-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400">TOTAL DAYA BEBAN LISTRIK</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-300 flex items-center justify-center font-bold border border-amber-400/30">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-amber-300 font-display block" id="kpiTotalKva">56.4 kVA</span>
+              <p class="text-slate-400 text-[11px] mt-1 font-sans">Genset Cadangan 100 kVA Standby</p>
+            </div>
+          </div>
+
+          <!-- Card 4: Gross Procurement Revenue GMV -->
+          <div class="bg-trust-forest p-5 rounded-3xl border border-trust-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400">OMSET EVENT &amp; SEWA BULAN INI</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-bold border border-emerald-500/30">
+                <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-white font-display block" id="kpiGrossRevenue">Rp 164.800.000</span>
+              <div class="w-full bg-[#0B1A0B] h-1.5 rounded-full overflow-hidden mt-2">
+                <div class="bg-gradient-to-r from-trust-oliveMid to-trust-sage h-full rounded-full" style="width: 82%"></div>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1 font-sans">DP 30%: Rp 49.440.000 Terverifikasi</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Hourly Electrical Power Draw Load Curve Bar Chart (8 Cols) -->
+          <div class="lg:col-span-8 bg-trust-forest p-6 rounded-3xl border border-trust-border shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-trust-border pb-3">
+              <div>
+                <h3 class="font-bold text-base text-white font-display">Beban Daya Listrik kVA per Jam Operasional Panggung</h3>
+                <p class="text-xs text-slate-400 font-mono">Beban Standby vs Gladi Bersih vs Live Showtime (3-Phase 380V)</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-slate-300">
+                  <span class="w-2.5 h-2.5 rounded-full bg-trust-sage"></span> Daya Aktual kVA
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-300">
+                  <span class="w-2.5 h-2.5 rounded-full bg-trust-oliveMid"></span> Kapasitas Genset
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="electricalLoadBarChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Pixel Pitch Share Doughnut Chart (4 Cols) -->
+          <div class="lg:col-span-4 bg-trust-forest p-6 rounded-3xl border border-trust-border shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-trust-border pb-3">
+              <h3 class="font-bold text-base text-white font-display">Porsi Kebutuhan Pixel Pitch</h3>
+              <p class="text-xs text-slate-400 font-mono">Sebaran modul sewa outdoor vs indoor</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="pitchDistributionDoughnutChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-slate-300 space-y-1 border-t border-trust-border">
+              <div class="flex justify-between">
+                <span>Outdoor P3.9 (IP65 Weatherproof):</span>
+                <strong class="text-trust-sage">56% (80 m²)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Indoor P2.5 (Ballroom Seminar):</span>
+                <strong class="text-white">32% (45 m²)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Indoor P1.8 (Ultra Fine Command):</span>
+                <strong class="text-emerald-400">12% (17.5 m²)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Stage Venue Monitor Strip -->
+        <div class="bg-[#0B1A0B] text-white rounded-3xl p-6 sm:p-7 border border-trust-border shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-trust-sage text-xs font-mono uppercase font-bold tracking-widest">LIVE EVENT STAGE VENUE MONITOR</span>
+              <h3 class="text-lg font-bold font-display mt-0.5">Status Pemasangan Layar &amp; Rigging di Titik Acara</h3>
+            </div>
+            <button onclick="switchTab('rigging')" class="bg-trust-oliveDark hover:bg-trust-forest text-xs text-trust-sage px-3.5 py-2 rounded-xl border border-trust-border transition flex items-center gap-1.5 font-mono">
+              <span>Buka Seluruh Jadwal Rigging</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-trust-sage"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="liveStageStripContainer">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: INTERACTIVE SCREEN SIMULATOR & CALCULATOR ==================== -->
+      <section id="view-simulator" class="hidden space-y-8">
+        
+        <!-- Operating Mode Switcher Strip -->
+        <div class="bg-trust-forest p-4 sm:p-5 rounded-3xl border border-trust-border flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="flex items-center gap-3">
+            <span class="text-slate-300 font-bold whitespace-nowrap">Tipe Proyek:</span>
+            <div class="flex items-center p-1 bg-[#0B1A0B] rounded-2xl border border-trust-border">
+              <button onclick="selectSimMode('RENTAL')" id="simModeRentalBtn" class="px-4 py-2 rounded-xl font-bold bg-trust-sage text-trust-forest shadow-sm transition">
+                Sewa Event Harian (Rental)
+              </button>
+              <button onclick="selectSimMode('FIXED')" id="simModeFixedBtn" class="px-4 py-2 rounded-xl font-bold text-slate-400 hover:text-white transition">
+                Instalasi Permanen (Fixed Install)
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 text-slate-300">
+            <i data-lucide="tv" class="w-4 h-4 text-trust-sage"></i>
+            <span>Mode Aktif: <strong class="text-trust-sage" id="simModeNoticeText">Sewa Lengkap Operator &amp; Novastar 4K</strong></span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Sliders, Pixel Pitch & Rigging Selectors (7 Cols) -->
+          <div class="lg:col-span-7 bg-trust-forest p-6 sm:p-7 rounded-3xl border border-trust-border shadow-xl space-y-6">
+            <div class="flex items-center justify-between border-b border-trust-border pb-3">
+              <div>
+                <h3 class="text-lg font-bold text-white font-display">Kalkulator Dimensi Layar (Meter &amp; Modul)</h3>
+                <p class="text-xs text-slate-400 font-sans mt-0.5">Ubah slider ukuran untuk melihat kalkulasi jumlah kabinet die-cast 500x500mm</p>
+              </div>
+              <span class="text-xs font-mono bg-[#0B1A0B] text-trust-sage px-2.5 py-1 rounded border border-trust-border">MODUL: 500×500 mm</span>
+            </div>
+
+            <!-- Dimension Sliders (Width & Height) -->
+            <div class="space-y-5 bg-[#0B1A0B] p-5 rounded-2xl border border-trust-border font-mono">
+              <!-- Slider Lebar (Width) -->
+              <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-300 font-medium">Lebar Layar (Width):</span>
+                  <span class="text-trust-sage font-bold text-sm" id="simWidthText">4.0 Meter (8 Modul)</span>
+                </div>
+                <input type="range" id="simWidthSlider" min="2" max="14" step="0.5" value="4.0" oninput="runSimCalculation()" class="w-full accent-trust-sage cursor-pointer" />
+                <div class="flex justify-between text-[11px] text-slate-500">
+                  <span>Min: 2.0 m</span>
+                  <span>Standar Ballroom: 4.0 - 6.0 m</span>
+                  <span>Konser: 14.0 m</span>
+                </div>
+              </div>
+
+              <!-- Slider Tinggi (Height) -->
+              <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-300 font-medium">Tinggi Layar (Height):</span>
+                  <span class="text-trust-sage font-bold text-sm" id="simHeightText">3.0 Meter (6 Modul)</span>
+                </div>
+                <input type="range" id="simHeightSlider" min="1.5" max="6" step="0.5" value="3.0" oninput="runSimCalculation()" class="w-full accent-trust-sage cursor-pointer" />
+                <div class="flex justify-between text-[11px] text-slate-500">
+                  <span>Min: 1.5 m</span>
+                  <span>Rasio 16:9: ~2.5 - 3.5 m</span>
+                  <span>Max: 6.0 m</span>
+                </div>
+              </div>
+
+              <!-- Durasi Hari Sewa (Mode Rental) -->
+              <div id="simDaysWrapper" class="space-y-2 pt-2 border-t border-slate-800">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-300 font-medium">Durasi Pemakaian Event:</span>
+                  <span class="text-trust-sage font-bold text-sm" id="simDaysText">1 Hari</span>
+                </div>
+                <input type="range" id="simDaysSlider" min="1" max="14" step="1" value="1" oninput="runSimCalculation()" class="w-full accent-trust-sage cursor-pointer" />
+                <div class="flex justify-between text-[11px] text-slate-500">
+                  <span>1 Hari</span>
+                  <span>3 Hari (Diskon 10%)</span>
+                  <span>7+ Hari (Diskon 20%)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pixel Pitch Selector -->
+            <div>
+              <label class="block text-xs font-mono font-bold text-slate-300 mb-2.5">Pilihan Spesifikasi Pixel Pitch:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="simPitchContainer">
+                <!-- Dynamically populated via JS -->
+              </div>
+            </div>
+
+            <!-- Rigging Method Selector -->
+            <div>
+              <label class="block text-xs font-mono font-bold text-slate-300 mb-2.5">Metode Konstruksi Dudukan Rigging:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs" id="simRiggingContainer">
+                <!-- Dynamically populated via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Live Canvas Wall Bezel, Novastar Mapping & Direct Pipeline Push (5 Cols) -->
+          <div class="lg:col-span-5 bg-trust-forest p-6 sm:p-7 rounded-3xl border border-trust-border shadow-xl space-y-5 sticky top-24 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-trust-border pb-3">
+              <div>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Video Wall Visualizer</span>
+                <h4 class="text-sm font-bold text-white font-display mt-0.5">Simulasi Rasio &amp; Resolusi</h4>
+              </div>
+              <span class="text-[10px] font-bold bg-trust-sage text-trust-forest px-2 py-0.5 rounded" id="simAspectRatioTag">Rasio 4:3</span>
+            </div>
+
+            <!-- Live LED Screen Display Simulation Stage -->
+            <div class="led-grid-pattern p-5 rounded-2xl border border-trust-border flex flex-col items-center justify-center min-h-[220px] relative screen-bezel overflow-hidden">
+              <div id="simScreenWallBox" class="border-2 border-trust-sage bg-gradient-to-tr from-[#132A13] to-[#31572C] rounded shadow-2xl flex flex-col items-center justify-center p-3 text-center transition-all duration-300 relative group" style="width: 240px; height: 160px;">
+                <span class="text-[12px] font-bold text-trust-sage font-display drop-shadow block" id="simPixelResText">1024 × 768 px</span>
+                <span class="text-[9px] text-slate-300 font-mono mt-0.5" id="simCabinetGridText">48 Kabinet (8 × 6)</span>
+                
+                <!-- Subtle LED scanlines pattern -->
+                <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: repeating-linear-gradient(0deg, #ECF39E, #ECF39E 1px, transparent 1px, transparent 4px);"></div>
+              </div>
+
+              <!-- Rigging Foot Mockup -->
+              <div class="w-3/4 h-3 bg-trust-oliveDark border-t border-trust-sage/50 mt-2 rounded-b flex justify-between px-6">
+                <span class="w-1.5 h-4 bg-trust-sage inline-block -mt-1"></span>
+                <span class="w-1.5 h-4 bg-trust-sage inline-block -mt-1"></span>
+              </div>
+
+              <div class="mt-3 flex items-center justify-between w-full text-[10px] text-slate-400 pt-1 border-t border-slate-800">
+                <span id="simAreaText">Luas Area: 12.0 m²</span>
+                <span class="text-trust-sage" id="simViewDistanceText">Jarak Pandang: ≥ 3.9 m</span>
+              </div>
+            </div>
+
+            <!-- Technical Engineering Specs -->
+            <div class="space-y-2 text-xs border-t border-trust-border pt-3">
+              <div class="flex justify-between text-slate-300">
+                <span>Tipe Panel &amp; IC Driver:</span>
+                <span class="font-bold text-trust-sage" id="simSelectedPitchName">Outdoor P3.9 (Nationstar)</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>Daya Beban Rata-rata:</span>
+                <span class="font-bold text-white font-mono" id="simPowerDrawText">~4.8 kVA (3-Phase)</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>Estimasi Bobot Layar:</span>
+                <span class="font-bold text-white font-mono" id="simTotalWeightText">~360 Kg (7.5kg/kabinet)</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>Video Processor Alokasi:</span>
+                <span class="font-bold text-trust-sage">Novastar VX400 4K Scaler</span>
+              </div>
+            </div>
+
+            <!-- Price Calculation Display -->
+            <div class="p-4 bg-[#0B1A0B] rounded-2xl border border-trust-border flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-trust-sage uppercase block" id="simPriceCardTitle">Total Estimasi Sewa</span>
+                <span class="text-xs text-slate-400 font-sans" id="simPriceCardSub">Termasuk Operator &amp; Rigging</span>
+              </div>
+              <span class="text-xl font-extrabold text-trust-sage font-mono" id="simPriceTotalDisplay">Rp 9.600.000</span>
+            </div>
+
+            <!-- Direct Push to Active Staging Schedule -->
+            <button onclick="pushSimToRiggingSchedule()" class="w-full bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-lg shadow-lime-950/20 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+              <span>Deploy ke Jadwal Rigging Panggung</span>
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: RIGGING & EVENT PRODUCTION SCHEDULE ==================== -->
+      <section id="view-rigging" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-trust-forest p-5 rounded-3xl border border-trust-border shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-white font-display">Papan Alur Produksi Rigging &amp; Penjadwalan Panggung</h3>
+            <p class="text-xs text-slate-400 font-mono">Pantau pergerakan modul dari gudang, loading-in di ballroom, hingga kalibrasi Novastar selesai</p>
+          </div>
+          <button onclick="switchTab('simulator')" class="bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-lime-950/20">
+            <i data-lucide="plus" class="w-4 h-4"></i> + Tambah Proyek Layar
+          </button>
+        </div>
+
+        <!-- 4 Rigging Stages Pipeline Container -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start" id="riggingPipelineContainer">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: WAREHOUSE DIE-CAST INVENTORY & FLIGHTCASE ==================== -->
+      <section id="view-inventory" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-trust-forest p-5 rounded-2xl border border-trust-border shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-white font-display">Stok Modul Kabinet Die-Cast 500x500mm &amp; Flightcase</h3>
+            <p class="text-xs text-slate-400 font-mono">Monitoring ketersediaan panel sewa, klem fast-lock aluminium, dan box distribusi daya 3-Phase</p>
+          </div>
+          <button onclick="openRestockModal()" class="bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-lime-950/20">
+            <i data-lucide="plus" class="w-4 h-4"></i> + Input Alokasi Modul Baru
+          </button>
+        </div>
+
+        <!-- Inventory Grid Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="warehouseInventoryGrid">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: OPTICAL SAFETY SCANNER SIMULATOR ==================== -->
+      <section id="view-scanner" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Optical Scanner Simulator (7 Cols) -->
+          <div class="lg:col-span-7 bg-trust-forest p-6 sm:p-7 rounded-3xl border border-trust-border shadow-sm space-y-6 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-trust-border pb-4">
+              <div>
+                <h3 class="font-bold text-base text-white font-display flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-trust-sage"></i>
+                  Rigging &amp; K3 Electrical Safety Scanner
+                </h3>
+                <p class="text-xs text-slate-400 font-mono">Pindai token barcode surat jalan untuk validasi sertifikasi beban gantungan &amp; grounding genset</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-trust-sage/15 text-trust-sage text-xs font-mono font-bold border border-trust-border">
+                <span class="w-2 h-2 rounded-full bg-trust-sage animate-pulse"></span> SAFETY SYSTEM READY
+              </span>
+            </div>
+
+            <!-- Optical Sensor Graphic -->
+            <div class="led-grid-pattern rounded-2xl p-8 border border-trust-border text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-trust-sage/70 rounded-2xl relative flex items-center justify-center p-4 bg-trust-forestDark/80">
+                <div class="w-full h-0.5 bg-trust-sage absolute top-1/2 -translate-y-1/2 shadow-lg shadow-lime-400 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-slate-600 opacity-60"></i>
+              </div>
+              <p class="text-slate-300 text-xs font-mono mt-4">Arahkan Barcode Safety Pass (Cth: <strong>RFQ-LV-202610-8821</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-slate-300 font-sans">Input Manual Nomor Token Safety Pass:</label>
+              <div class="flex gap-2">
+                <input type="text" id="safetyScannerInput" value="RFQ-LV-202610-8821" placeholder="Masukkan token pass..." class="flex-1 bg-[#0B1A0B] px-4 py-2.5 rounded-xl border border-trust-border font-bold text-white uppercase focus:outline-none focus:ring-2 focus:ring-trust-sage" />
+                <button onclick="executeSafetyScan()" class="bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-lime-950/20 active:scale-95 font-sans">
+                  <i data-lucide="check" class="w-4 h-4 text-trust-forest"></i> Inspeksi Rigging
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-400 font-sans">Preset token pengujian cepat: 
+                <span onclick="setScannerPreset('RFQ-LV-202610-8821')" class="underline cursor-pointer text-trust-sage font-mono font-bold">RFQ-LV-202610-8821 (Hotel Mulia - Ground Stacking)</span> • 
+                <span onclick="setScannerPreset('RFQ-LV-202610-8822')" class="underline cursor-pointer text-emerald-400 font-mono font-bold">RFQ-LV-202610-8822 (GBK Konser - Hanging Truss)</span> •
+                <span onclick="setScannerPreset('INVALID-PASS-000')" class="underline cursor-pointer text-rose-400 font-mono font-bold">INVALID-PASS-000 (Ditolak)</span>
+              </p>
+            </div>
+
+            <!-- Scanner Result Feedback Card -->
+            <div id="safetyScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Live Rigging Audit Logs (5 Cols) -->
+          <div class="lg:col-span-5 bg-trust-forest p-6 rounded-3xl border border-trust-border shadow-sm space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-trust-border pb-3">
+              <h3 class="font-bold text-sm text-white font-display">Log Inspeksi K3 &amp; Sinyal Panggung</h3>
+              <span class="text-[10px] text-slate-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto" id="riggingAuditLogsContainer">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 6: COMMERCIAL QUOTATIONS & RFQ BILLING ==================== -->
+      <section id="view-quotation" class="hidden space-y-6">
+        
+        <!-- Shift Financial Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
+          <div class="bg-trust-forest p-5 rounded-2xl border border-trust-border shadow-sm">
+            <span class="text-xs text-slate-400 font-bold">TOTAL OMSET SEWA &amp; UNIT BULAN INI</span>
+            <span class="text-2xl font-black text-white block mt-2">Rp 164.800.000</span>
+            <p class="text-slate-400 text-[11px] font-sans mt-1">6 Kontrak Panggung Resmi</p>
+          </div>
+
+          <div class="bg-trust-forest p-5 rounded-2xl border border-trust-border shadow-sm">
+            <span class="text-xs text-slate-400 font-bold">UANG MUKA DP 30% TERLUNASI (QRIS)</span>
+            <span class="text-2xl font-black text-trust-sage block mt-2">Rp 49.440.000</span>
+            <p class="text-emerald-400 text-[11px] font-sans mt-1">Alokasi Kabinet &amp; Kru Terkunci</p>
+          </div>
+
+          <div class="bg-trust-forest p-5 rounded-2xl border border-trust-border shadow-sm">
+            <span class="text-xs text-slate-400 font-bold">SISA PELUNASAN SETELAH GLADI BERSIH</span>
+            <span class="text-2xl font-black text-amber-400 block mt-2" id="financeDueSummaryCard">Rp 115.360.000</span>
+            <p class="text-amber-400 text-[11px] font-sans mt-1">Menunggu Serah Terima BAST</p>
+          </div>
+        </div>
+
+        <!-- Master Quotation Table -->
+        <div class="bg-trust-forest rounded-3xl border border-trust-border shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-trust-border pb-4">
+            <div>
+              <h3 class="font-bold text-base text-white font-display">Database Kontrak RFQ &amp; Rekonsiliasi Pelunasan</h3>
+              <p class="text-xs text-slate-400 font-mono">Pencatatan pembayaran DP 30%, jadwal serah terima venue, dan cetak penawaran resmi</p>
+            </div>
+            <button onclick="exportRFQToCSV()" class="bg-[#0B1A0B] hover:bg-slate-900 text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-trust-border">
+              <i data-lucide="download" class="w-4 h-4 text-trust-sage"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-[#0B1A0B] text-slate-400 font-semibold border-b border-trust-border">
+                <tr>
+                  <th class="py-3 px-4">KODE RFQ</th>
+                  <th class="py-3 px-4">KLIEN &amp; PENANGGUNG JAWAB</th>
+                  <th class="py-3 px-4">UKURAN &amp; PITCH</th>
+                  <th class="py-3 px-4">TOTAL KONTRAK</th>
+                  <th class="py-3 px-4">DP 30%</th>
+                  <th class="py-3 px-4">SISA PELUNASAN</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-center">AKSI PROFORMA</th>
+                </tr>
+              </thead>
+              <tbody id="quotationTableBody" class="divide-y divide-trust-border/50 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: PRINTABLE OFFICIAL QUOTATION & SAFETY PASS ==================== -->
+  <div id="quotationPrintModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-trust-forest rounded-3xl max-w-3xl w-full border border-trust-border shadow-2xl p-6 sm:p-9 space-y-6 max-h-[90vh] overflow-y-auto text-white font-mono">
+      
+      <!-- Top Action Bar -->
+      <div class="flex items-center justify-between border-b border-trust-border pb-4 no-print">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-trust-sage text-trust-forest uppercase">
+            OFFICIAL COMMERCIAL QUOTATION &amp; SAFETY PASS
+          </span>
+          <span class="text-xs text-slate-400">ISO 9001:2015 &amp; K3 AUDITED</span>
+        </div>
+        <div class="flex items-center gap-2 font-sans">
+          <button onclick="window.print()" class="bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="printer" class="w-4 h-4"></i> Cetak PDF Surat Penawaran
+          </button>
+          <button onclick="closeQuotationModal()" class="p-2 text-slate-400 hover:text-white rounded-xl bg-trust-forestDark">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Area -->
+      <div id="printableQuotationModal" class="space-y-6">
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-trust-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-trust-sage flex items-center justify-center text-trust-forest font-bold">
+                <i data-lucide="monitor" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-xl tracking-tight text-white font-display">LED<span class="text-trust-sage">VISTA</span> INDONESIA</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">PT LED Vista Kreasi Nusantara • Kompleks Pergudangan Bizpark Cakung Blok B-18, Jakarta Timur</p>
+            <p class="text-[11px] text-slate-400 font-sans">Divisi Staging Rigging &amp; AV Rental • Hotline: +62 812-9999-8888</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-trust-sage text-trust-forest uppercase" id="modalRfqStatusBadge">
+              DP 30% VERIFIED
+            </span>
+            <p id="modalRfqCode" class="text-xs font-bold text-white mt-1">RFQ-LV-202610-8821</p>
+            <p id="modalRfqDate" class="text-[11px] text-slate-400">31 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Client & Venue Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#0B1A0B] p-4 rounded-2xl border border-trust-border">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">KLIEN / INSTANSI:</span>
+            <p id="modalClientOrg" class="font-bold text-white text-sm font-sans">PT Reliantradha Solusi Digital</p>
+            <p id="modalClientPic" class="text-slate-400 font-sans">PIC: Tedi Mahendra (081299998888)</p>
+            <p id="modalVenueAddress" class="text-slate-300 mt-1 font-sans leading-relaxed">Ballroom Hotel Mulia Senayan, Jakarta</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">JADWAL RIGGING &amp; METODE:</span>
+            <p id="modalLoadingDate" class="font-bold text-trust-sage text-sm font-sans">Loading In: 31 Okt 2026</p>
+            <p id="modalRiggingMethod" class="text-slate-300 font-sans">Konstruksi: Ground Stacking Rig</p>
+            <p class="text-emerald-400 font-bold mt-1" id="modalPaymentStatusText">DP 30% BOOKING LUNAS</p>
+          </div>
+        </div>
+
+        <!-- Specifications Breakdown Table -->
+        <div class="border border-trust-border rounded-2xl overflow-hidden text-xs">
+          <table class="w-full text-left">
+            <thead class="bg-[#0B1A0B] text-slate-400 font-bold border-b border-trust-border font-sans">
+              <tr>
+                <th class="py-2.5 px-4">Rincian Paket Layar Videotron</th>
+                <th class="py-2.5 px-3 text-center">Spesifikasi Modul</th>
+                <th class="py-2.5 px-4 text-right">Tarif Satuan</th>
+                <th class="py-2.5 px-4 text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="modalItemsTbody" class="divide-y divide-trust-border font-medium">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+            <tfoot class="bg-[#0B1A0B] border-t border-trust-border text-xs">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-400 font-bold font-sans">Total Nilai Penawaran:</td>
+                <td class="py-2 px-4 text-right font-bold text-white" id="modalSubtotalAmount">Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-400 font-bold font-sans">Uang Muka Diterima (DP 30% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-400" id="modalPaidAmount">Rp 0</td>
+              </tr>
+              <tr class="bg-trust-forest border-t border-trust-border">
+                <td colspan="3" class="py-2.5 px-4 text-trust-sage text-right font-extrabold text-xs font-sans" id="modalDueLabel">
+                  Sisa Pelunasan Saat Serah Terima / QC Testing:
+                </td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-trust-sage" id="modalDueAmount">
+                  Rp 0
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Rigging Safety Barcode Verification -->
+        <div class="p-4 bg-[#0B1A0B] rounded-2xl border border-trust-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">AV RIGGING SAFETY BARCODE VERIFICATION</span>
+            <p class="text-xs font-bold text-white">Scan Barcode untuk Surat Izin Loading-In &amp; Sertifikat Beban Listrik</p>
+            <p class="text-[11px] text-slate-400">Seluruh modul kabinet menggunakan kunci fast-lock aluminium dan grounding genset anti-petir.</p>
+          </div>
+          
+          <div class="text-center font-mono">
+            <div class="bg-white p-2 rounded-xl inline-block shadow">
+              <img id="modalBarcodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=LEDVISTA-RFQ-8821-SAFETY-PASS" alt="Rigging Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1" id="modalBarcodeTokenText">TOKEN: RFQ-LV-8821</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: PELUNASAN KASIR 70% BAST ==================== -->
+  <div id="settlePaymentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-trust-forest rounded-3xl max-w-md w-full border border-trust-border shadow-2xl p-6 space-y-5 text-xs font-mono text-white">
+      <div class="flex items-center justify-between border-b border-trust-border pb-3">
+        <h3 class="font-bold text-base text-white font-display flex items-center gap-2">
+          <i data-lucide="hand-coins" class="w-5 h-5 text-trust-sage"></i>
+          Pelunasan Sisa Kontrak Serah Terima (BAST)
+        </h3>
+        <button onclick="closeSettleModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-[#0B1A0B] p-4 rounded-2xl border border-trust-border space-y-2">
+        <div class="flex justify-between">
+          <span class="text-slate-400">Kode RFQ:</span>
+          <span class="font-bold text-white" id="settleRfqCode">RFQ-LV-202610-8821</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Klien / EO:</span>
+          <span class="font-bold text-white font-sans" id="settleClientOrg">PT Reliantradha Solusi</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Total Nilai Kontrak:</span>
+          <span class="font-bold text-white" id="settleTotalCost">Rp 9.600.000</span>
+        </div>
+        <div class="flex justify-between text-emerald-400">
+          <span>DP 30% Sebelumnya Diterima:</span>
+          <span class="font-bold" id="settlePaidDP">Rp 2.880.000</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-trust-border text-sm font-bold text-white">
+          <span>Sisa Tagihan Pelunasan (70%):</span>
+          <span class="text-trust-sage font-extrabold" id="settleRemainingDue">Rp 6.720.000</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-300 mb-1 font-sans">Metode Pelunasan Serah Terima BAST:</label>
+        <select id="settlePaymentMethodSelect" class="w-full bg-trust-forestDark border border-trust-border rounded-xl p-2.5 text-white font-sans focus:outline-none focus:ring-2 focus:ring-trust-sage">
+          <option value="Transfer Bank BCA Escrow">Transfer Bank BCA Corporate Escrow</option>
+          <option value="Transfer Bank Mandiri B2B">Transfer Bank Mandiri B2B</option>
+          <option value="Debit EDC Mobile di Venue">Debit EDC Mandiri / BCA Operator</option>
+          <option value="QRIS Pelunasan Kasir">QRIS Dinamis Pelunasan</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-trust-border font-sans">
+        <button onclick="closeSettleModal()" class="px-4 py-2 bg-[#0B1A0B] hover:bg-slate-900 text-slate-300 rounded-xl font-bold transition">Batal</button>
+        <button onclick="confirmSettleOrder()" class="px-5 py-2.5 bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold rounded-xl transition flex items-center gap-1.5 shadow-md shadow-lime-950/20">
+          <i data-lucide="check-circle" class="w-4 h-4 text-trust-forest"></i> Konfirmasi Lunas &amp; Sahkan BAST
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-[#0B1A0B] text-white px-4 py-3 rounded-2xl shadow-2xl border border-trust-sage flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+    <div class="w-6 h-6 rounded-full bg-trust-sage flex items-center justify-center text-trust-forest font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Operasi panggung videotron berhasil diperbarui</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT MASTER BUSINESS LOGIC ==================== -->
+  <script>
+    // 1. Data Pixel Pitch LED Screen Catalog
+    const pitchCatalog = [
+      {
+        id: "PITCH-OUT-39",
+        name: "Outdoor P3.9 (IP65 Weatherproof)",
+        category: "outdoor",
+        rentalRatePerM2: 800000,
+        buyRatePerM2: 12500000,
+        brightness: "5.500 Nits",
+        minDistanceM: 3.9,
+        tag: "Terlaris Event Outdoor",
+        desc: "Kecerahan tinggi tembus sinar matahari langsung",
+        stockCabinets: 320,
+        icDriver: "MBI5153 High Refresh 3840Hz"
+      },
+      {
+        id: "PITCH-IN-25",
+        name: "Indoor P2.5 (High Definition)",
+        category: "indoor",
+        rentalRatePerM2: 750000,
+        buyRatePerM2: 14000000,
+        brightness: "1.200 Nits",
+        minDistanceM: 2.5,
+        tag: "Paling Populer Ballroom",
+        desc: "Resolusi tajam untuk seminar & visual video panggung",
+        stockCabinets: 360,
+        icDriver: "ICN2153 Anti-Moiré 3840Hz"
+      },
+      {
+        id: "PITCH-IN-18",
+        name: "Indoor P1.8 (Ultra Fine Pitch)",
+        category: "indoor",
+        rentalRatePerM2: 1100000,
+        buyRatePerM2: 21000000,
+        brightness: "1.000 Nits",
+        minDistanceM: 1.8,
+        tag: "Command Center & Studio",
+        desc: "Kerapatan piksel sangat rapat untuk jarak dekat 2 meter",
+        stockCabinets: 180,
+        icDriver: "Macroblock MBI5353 HDR10"
+      }
+    ];
+
+    // 2. Data Rigging Konstruksi
+    const riggingOptions = [
+      { id: "RIG-STACK", name: "Ground Stacking Base (Dudukan Lantai Panggung)", feePerDay: 500000 },
+      { id: "RIG-TRUSS", name: "Hanging Rigging Truss Aluminium (Gantung Stage)", feePerDay: 1200000 }
+    ];
+
+    // 3. Data Master Kontrak RFQ & Proyek Panggung
+    let masterRFQOrders = [
+      {
+        rfqCode: "RFQ-LV-202610-8821",
+        safetyToken: "RFQ-8821-OK",
+        company: "PT Reliantradha Solusi Digital",
+        picName: "Tedi Mahendra",
+        phone: "0812-9999-8888",
+        venue: "Ballroom Hotel Mulia Senayan, Jakarta",
+        serviceMode: "RENTAL",
+        pitchId: "PITCH-OUT-39",
+        pitchName: "Outdoor P3.9 (Nationstar IP65)",
+        widthM: 4.0,
+        heightM: 3.0,
+        days: 1,
+        totalM2: 12.0,
+        cabinets: 48,
+        resolution: "1024 × 768 px",
+        rigging: "Ground Stacking Base (Panggung)",
+        powerKva: 4.8,
+        totalCost: 9600000,
+        paidDP: 2880000,
+        dueAmount: 6720000,
+        stageStatus: "CALIBRATING", // ALLOCATED, LOADING_IN, CALIBRATING, SHOWTIME_LIVE
+        statusPayment: "DP_30",
+        eventDate: "2026-10-31"
+      },
+      {
+        rfqCode: "RFQ-LV-202610-8822",
+        safetyToken: "RFQ-8822-OK",
+        company: "Ismaya Live Festival (We The Fest)",
+        picName: "Christian Riyanto, S.E.",
+        phone: "0811-3456-7890",
+        venue: "Stadion Madya GBK Senayan, Jakarta",
+        serviceMode: "RENTAL",
+        pitchId: "PITCH-OUT-39",
+        pitchName: "Outdoor P3.9 (Nationstar IP65)",
+        widthM: 10.0,
+        heightM: 5.0,
+        days: 3,
+        totalM2: 50.0,
+        cabinets: 200,
+        resolution: "2560 × 1280 px",
+        rigging: "Hanging Rigging Truss Aluminium",
+        powerKva: 20.0,
+        totalCost: 111600000,
+        paidDP: 111600000,
+        dueAmount: 0,
+        stageStatus: "SHOWTIME_LIVE",
+        statusPayment: "PAID_FULL",
+        eventDate: "2026-10-31"
+      },
+      {
+        rfqCode: "RFQ-LV-202610-8823",
+        safetyToken: "RFQ-8823-OK",
+        company: "PT Bank Mandiri Corporate Gathering",
+        picName: "Ir. Hendro Wibowo, M.T.",
+        phone: "0812-3344-5566",
+        venue: "Grand Ballroom Pullman Central Park, Jakbar",
+        serviceMode: "RENTAL",
+        pitchId: "PITCH-IN-25",
+        pitchName: "Indoor P2.5 (High Definition)",
+        widthM: 6.0,
+        heightM: 3.5,
+        days: 1,
+        totalM2: 21.0,
+        cabinets: 84,
+        resolution: "2400 × 1400 px",
+        rigging: "Ground Stacking Base (Panggung)",
+        powerKva: 8.4,
+        totalCost: 16250000,
+        paidDP: 4875000,
+        dueAmount: 11375000,
+        stageStatus: "LOADING_IN",
+        statusPayment: "DP_30",
+        eventDate: "2026-11-01"
+      },
+      {
+        rfqCode: "RFQ-LV-202610-8824",
+        safetyToken: "RFQ-8824-OK",
+        company: "Shopee Indonesia Seller Summit",
+        picName: "Nadia Hutagalung",
+        phone: "0818-4455-6677",
+        venue: "Indonesia Convention Exhibition (ICE BSD Hall 3)",
+        serviceMode: "RENTAL",
+        pitchId: "PITCH-IN-25",
+        pitchName: "Indoor P2.5 (High Definition)",
+        widthM: 8.0,
+        heightM: 4.0,
+        days: 2,
+        totalM2: 32.0,
+        cabinets: 128,
+        resolution: "3200 × 1600 px",
+        rigging: "Hanging Rigging Truss Aluminium",
+        powerKva: 12.8,
+        totalCost: 45600000,
+        paidDP: 45600000,
+        dueAmount: 0,
+        stageStatus: "SHOWTIME_LIVE",
+        statusPayment: "PAID_FULL",
+        eventDate: "2026-10-31"
+      },
+      {
+        rfqCode: "RFQ-LV-202610-8825",
+        safetyToken: "RFQ-8825-OK",
+        company: "MNC Media MNC Fest 2026",
+        picName: "Agung Pratama, S.I.Kom.",
+        phone: "0817-2233-4411",
+        venue: "Studio RCTI+ Kebon Jeruk, Jakarta Barat",
+        serviceMode: "RENTAL",
+        pitchId: "PITCH-IN-18",
+        pitchName: "Indoor P1.8 (Ultra Fine Pitch)",
+        widthM: 5.0,
+        heightM: 3.0,
+        days: 2,
+        totalM2: 15.0,
+        cabinets: 60,
+        resolution: "2777 × 1666 px",
+        rigging: "Ground Stacking Base (Panggung)",
+        powerKva: 6.0,
+        totalCost: 34100000,
+        paidDP: 10230000,
+        dueAmount: 23870000,
+        stageStatus: "ALLOCATED",
+        statusPayment: "DP_30",
+        eventDate: "2026-11-04"
+      }
+    ];
+
+    // 4. Data Gudang Modul & Flightcase Inventory
+    let masterInventory = [
+      { id: "MOD-OUT-39", name: "Modul Kabinet Die-Cast P3.9 Outdoor (500x500mm)", totalStock: 320, inDeployment: 248, available: 72, unit: "Kabinet", flightCaseAvailable: 9, minSafety: 50, status: "READY" },
+      { id: "MOD-IN-25", name: "Modul Kabinet Die-Cast P2.5 Indoor (500x500mm)", totalStock: 360, inDeployment: 212, available: 148, unit: "Kabinet", flightCaseAvailable: 18, minSafety: 60, status: "READY" },
+      { id: "MOD-IN-18", name: "Modul Kabinet Ultra Fine P1.8 Indoor (500x500mm)", totalStock: 180, inDeployment: 60, available: 120, unit: "Kabinet", flightCaseAvailable: 15, minSafety: 40, status: "READY" },
+      { id: "ACC-LOCK-01", name: "Fast-Lock Aluminium Stage Clamps", totalStock: 950, inDeployment: 620, available: 330, unit: "Pcs", flightCaseAvailable: 8, minSafety: 150, status: "READY" },
+      { id: "PDU-3PHASE", name: "Kotak Distribusi Daya 3-Phase 380V (63A)", totalStock: 18, inDeployment: 14, available: 4, unit: "Unit", flightCaseAvailable: 4, minSafety: 5, status: "BUFFER_ALERT" },
+      { id: "PROC-NOVA-4K", name: "Novastar VX400 / UHD Video Processor", totalStock: 12, inDeployment: 7, available: 5, unit: "Unit", flightCaseAvailable: 5, minSafety: 3, status: "READY" }
+    ];
+
+    // 5. Rigging & Electrical K3 Audit Logs
+    let riggingAuditLogs = [
+      { time: "11:32:10", token: "RFQ-8821-OK", venue: "Ballroom Hotel Mulia", engineer: "Rian (Rigging Lead)", result: "GROUNDING 0.4 OHM &amp; BEBAN 4.8 kVA LOLOS K3" },
+      { time: "10:15:44", token: "RFQ-8822-OK", venue: "Stadion Madya GBK", engineer: "Pak Hendro (Novastar Lead)", result: "SINKRONISASI 3840 HZ ANTI-FLICKER LOLOS" },
+      { time: "09:40:12", token: "INVALID-PASS-000", venue: "-", engineer: "-", result: "DITOLAK (UNREGISTERED DO TOKEN)" }
+    ];
+
+    // Simulator State
+    let simCurrentMode = 'RENTAL';
+    let simSelectedPitch = pitchCatalog[0];
+    let simSelectedRigging = riggingOptions[0];
+    let simWidthM = 4.0;
+    let simHeightM = 3.0;
+    let simDays = 1;
+
+    let activeSettleRFQCode = null;
+    let electricalLoadBarChartInstance = null;
+    let pitchDistributionDoughnutChartInstance = null;
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Executive Overview & Staging Telemetry",
+        simulator: "Interactive Screen Spec Simulator & Visualizer",
+        rigging: "Jadwal Rigging Event & Alur Kerja Panggung",
+        inventory: "Stok Modul Kabinet Die-Cast & Flightcase",
+        scanner: "Optical Rigging & K3 Electrical Safety Scanner",
+        quotation: "Manajemen Faktur RFQ & Rekonsiliasi Pelunasan"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "LED Vista Operations Console";
+
+      ['overview', 'simulator', 'rigging', 'inventory', 'scanner', 'quotation'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-trust-oliveDark font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-trust-forest bg-trust-sage shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'overview') renderLiveStageStrip();
+      if (tabKey === 'simulator') { renderSimPitchOptions(); renderSimRiggingOptions(); runSimCalculation(); }
+      if (tabKey === 'rigging') renderRiggingPipeline();
+      if (tabKey === 'inventory') renderWarehouseInventory();
+      if (tabKey === 'scanner') renderRiggingAuditLogs();
+      if (tabKey === 'quotation') renderQuotationTable();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    function changeUserRole() {
+      const role = document.getElementById('roleSelector').value;
+      const names = {
+        DIRECTOR: "Ir. Tedi Mahendra (Director)",
+        HEAD_RIGGER: "Pakde Joko (Head Rigger K3)",
+        VIDEO_ENGINEER: "Andi Novastar (Lead 4K Engineer)"
+      };
+      document.getElementById('userDisplayName').innerText = names[role];
+      showToast(`Mode akses teknisi beralih ke: ${role}`);
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      renderLiveStageStrip();
+      renderSimPitchOptions();
+      renderSimRiggingOptions();
+      runSimCalculation();
+      renderRiggingPipeline();
+      renderWarehouseInventory();
+      renderRiggingAuditLogs();
+      renderQuotationTable();
+      updateDashboardCounters();
+      lucide.createIcons();
+    });
+
+    // ==================== 1. OVERVIEW & CHARTS ====================
+    function renderLiveStageStrip() {
+      const container = document.getElementById('liveStageStripContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterRFQOrders.slice(0, 4).forEach(item => {
+        let statusBadge = "bg-blue-500/20 text-blue-300 border border-blue-400/30";
+        if (item.stageStatus === 'SHOWTIME_LIVE') statusBadge = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse";
+        if (item.stageStatus === 'CALIBRATING') statusBadge = "bg-amber-500/20 text-trust-sage border border-trust-sage/30";
+
+        const div = document.createElement('div');
+        div.className = "bg-trust-forest border border-trust-border p-4 rounded-2xl space-y-2 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="font-bold text-white text-sm font-display truncate max-w-[140px]">${item.company}</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusBadge}">${item.stageStatus}</span>
+          </div>
+          <p class="text-slate-300 text-[11px] truncate font-sans">${item.venue}</p>
+          <p class="text-[10px] text-slate-400 truncate">${item.pitchName} (${item.widthM}x${item.heightM}m)</p>
+          <div class="pt-2 border-t border-trust-border flex justify-between items-center text-[10px] text-slate-400">
+            <span>Daya: <strong class="text-trust-sage font-mono">${item.powerKva} kVA</strong></span>
+            <span class="text-white font-bold">${item.rfqCode}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function initCharts() {
+      // 1. Hourly Electrical Power Draw Bar Chart
+      const ctxPower = document.getElementById('electricalLoadBarChart');
+      if (ctxPower) {
+        electricalLoadBarChartInstance = new Chart(ctxPower, {
+          type: 'bar',
+          data: {
+            labels: ['08:00 Loading', '11:00 Setup', '14:00 Rehearsal', '17:00 Standby', '19:00 Showtime 1', '21:00 Peak Event'],
+            datasets: [
+              {
+                label: 'Daya Aktual Beban Layar (kVA)',
+                data: [4.2, 12.8, 38.4, 18.2, 56.4, 54.8],
+                backgroundColor: '#ECF39E',
+                borderRadius: 6
+              },
+              {
+                label: 'Kapasitas Generator Genset (kVA)',
+                data: [100, 100, 100, 100, 100, 100],
+                backgroundColor: '#31572C',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 120,
+                ticks: { stepSize: 20, color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: 'rgba(236, 243, 158, 0.1)' }
+              },
+              x: {
+                ticks: { color: '#CBD5E1', font: { family: 'Plus Jakarta Sans', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Pixel Pitch Share Doughnut Chart
+      const ctxPitch = document.getElementById('pitchDistributionDoughnutChart');
+      if (ctxPitch) {
+        pitchDistributionDoughnutChartInstance = new Chart(ctxPitch, {
+          type: 'doughnut',
+          data: {
+            labels: ['Outdoor P3.9 (IP65)', 'Indoor P2.5 (Ballroom)', 'Indoor P1.8 (Fine Pitch)'],
+            datasets: [{
+              data: [56, 32, 12],
+              backgroundColor: ['#ECF39E', '#31572C', '#4F772D'],
+              borderWidth: 2,
+              borderColor: '#132A13'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#CBD5E1' } }
+            },
+            cutout: '72%'
+          }
+        });
+      }
+    }
+
+    // ==================== 2. INTERACTIVE SCREEN SIMULATOR ====================
+    function selectSimMode(mode) {
+      simCurrentMode = mode;
+      const btnRental = document.getElementById('simModeRentalBtn');
+      const btnFixed = document.getElementById('simModeFixedBtn');
+      const daysWrap = document.getElementById('simDaysWrapper');
+      const noticeText = document.getElementById('simModeNoticeText');
+
+      if (mode === 'RENTAL') {
+        btnRental.className = "px-4 py-2 rounded-xl font-bold bg-trust-sage text-trust-forest shadow-sm transition";
+        btnFixed.className = "px-4 py-2 rounded-xl font-bold text-slate-400 hover:text-white transition";
+        daysWrap.classList.remove('hidden');
+        noticeText.innerText = "Sewa Lengkap Operator & Novastar 4K";
+        document.getElementById('simPriceCardTitle').innerText = "Total Estimasi Sewa";
+        document.getElementById('simPriceCardSub').innerText = "Termasuk Operator & Rigging Panggung";
+      } else {
+        btnFixed.className = "px-4 py-2 rounded-xl font-bold bg-trust-sage text-trust-forest shadow-sm transition";
+        btnRental.className = "px-4 py-2 rounded-xl font-bold text-slate-400 hover:text-white transition";
+        daysWrap.classList.add('hidden');
+        noticeText.innerText = "Beli Unit Baru + Garansi Panel 2 Tahun";
+        document.getElementById('simPriceCardTitle').innerText = "Total Pembelian Unit";
+        document.getElementById('simPriceCardSub').innerText = "Termasuk Video Processor & Sparepart";
+      }
+
+      renderSimPitchOptions();
+      runSimCalculation();
+    }
+
+    function renderSimPitchOptions() {
+      const container = document.getElementById('simPitchContainer');
+      if (!container) return;
+      container.innerHTML = pitchCatalog.map(p => {
+        const isSelected = simSelectedPitch.id === p.id;
+        const rateText = simCurrentMode === 'RENTAL' ? `${formatRupiah(p.rentalRatePerM2)}/m²` : `${formatRupiah(p.buyRatePerM2)}/m²`;
+
+        return `
+          <div onclick="selectSimPitch('${p.id}')" class="p-3.5 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between font-mono ${
+            isSelected ? 'border-trust-sage bg-trust-oliveDark' : 'border-trust-border bg-[#0B1A0B] hover:border-slate-500'
+          }">
+            <div>
+              <span class="font-bold text-xs text-white block">${p.name}</span>
+              <span class="text-[9px] text-trust-sage mt-0.5 block">${p.tag}</span>
+              <p class="text-[10px] text-slate-400 mt-1 font-sans">${p.desc}</p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between">
+              <span class="text-[10px] text-slate-400">Tarif:</span>
+              <span class="text-xs font-bold text-trust-sage">${rateText}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectSimPitch(id) {
+      simSelectedPitch = pitchCatalog.find(p => p.id === id);
+      renderSimPitchOptions();
+      runSimCalculation();
+    }
+
+    function renderSimRiggingOptions() {
+      const container = document.getElementById('simRiggingContainer');
+      if (!container) return;
+      container.innerHTML = riggingOptions.map(r => {
+        const isSelected = simSelectedRigging.id === r.id;
+        return `
+          <div onclick="selectSimRigging('${r.id}')" class="p-3 rounded-2xl border-2 transition cursor-pointer flex items-center justify-between font-mono ${
+            isSelected ? 'border-trust-sage bg-trust-oliveDark' : 'border-trust-border bg-[#0B1A0B] hover:border-slate-500'
+          }">
+            <span class="font-bold text-xs text-white">${r.name}</span>
+            <span class="w-3.5 h-3.5 rounded-full border-2 ${isSelected ? 'border-trust-sage bg-trust-sage' : 'border-slate-600'}"></span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectSimRigging(id) {
+      simSelectedRigging = riggingOptions.find(r => r.id === id);
+      renderSimRiggingOptions();
+      runSimCalculation();
+    }
+
+    function runSimCalculation() {
+      simWidthM = parseFloat(document.getElementById('simWidthSlider').value);
+      simHeightM = parseFloat(document.getElementById('simHeightSlider').value);
+      simDays = parseInt(document.getElementById('simDaysSlider').value) || 1;
+
+      const cabinetCols = Math.round(simWidthM / 0.5);
+      const cabinetRows = Math.round(simHeightM / 0.5);
+      const totalCabinets = cabinetCols * cabinetRows;
+      const totalAreaM2 = simWidthM * simHeightM;
+
+      document.getElementById('simWidthText').innerText = `${simWidthM.toFixed(1)} Meter (${cabinetCols} Modul)`;
+      document.getElementById('simHeightText').innerText = `${simHeightM.toFixed(1)} Meter (${cabinetRows} Modul)`;
+      document.getElementById('simDaysText').innerText = `${simDays} Hari ${simDays >= 7 ? '(Diskon 20%)' : (simDays >= 3 ? '(Diskon 10%)' : '')}`;
+
+      // Aspect Ratio calculation
+      const ratio = simWidthM / simHeightM;
+      let ratioLabel = "Rasio Custom";
+      if (Math.abs(ratio - (16/9)) < 0.15) ratioLabel = "Rasio 16:9 (HD 4K Video)";
+      else if (Math.abs(ratio - (4/3)) < 0.15) ratioLabel = "Rasio 4:3 (Klasik)";
+      else if (ratio >= 2.4) ratioLabel = "Ultrawide Stage Banner";
+
+      document.getElementById('simAspectRatioTag').innerText = ratioLabel;
+
+      // Rescaling Mockup Box
+      const wallBox = document.getElementById('simScreenWallBox');
+      const maxW = 280;
+      const maxH = 170;
+      const scaledW = Math.min(maxW, Math.max(160, Math.round((simWidthM / 14) * maxW * 1.8)));
+      const scaledH = Math.min(maxH, Math.max(100, Math.round((simHeightM / 6) * maxH * 1.5)));
+
+      wallBox.style.width = `${scaledW}px`;
+      wallBox.style.height = `${scaledH}px`;
+
+      // Pixel Resolution calculation
+      let pitchMm = 3.9;
+      if (simSelectedPitch.id === 'PITCH-IN-25') pitchMm = 2.5;
+      if (simSelectedPitch.id === 'PITCH-IN-18') pitchMm = 1.8;
+
+      const resX = Math.round((simWidthM * 1000) / pitchMm);
+      const resY = Math.round((simHeightM * 1000) / pitchMm);
+
+      document.getElementById('simPixelResText').innerText = `${resX} × ${resY} px`;
+      document.getElementById('simCabinetGridText').innerText = `${totalCabinets} Kabinet (${cabinetCols} × ${cabinetRows})`;
+      document.getElementById('simAreaText').innerText = `Luas Area: ${totalAreaM2.toFixed(1)} m²`;
+      document.getElementById('simViewDistanceText').innerText = `Jarak Pandang: ≥ ${simSelectedPitch.minDistanceM} m`;
+
+      // Technical Power Load & Weight
+      const avgKw = totalAreaM2 * 0.35;
+      const powerKva = (avgKw * 1.25).toFixed(1);
+      const weightKg = totalCabinets * 7.5;
+
+      document.getElementById('simSelectedPitchName').innerText = simSelectedPitch.name;
+      document.getElementById('simPowerDrawText').innerText = `~${powerKva} kVA (3-Phase)`;
+      document.getElementById('simTotalWeightText').innerText = `~${Math.round(weightKg)} Kg (${totalCabinets} Kabinet)`;
+
+      // Pricing
+      let grandTotal = 0;
+      if (simCurrentMode === 'RENTAL') {
+        let disc = 1;
+        if (simDays >= 7) disc = 0.8;
+        else if (simDays >= 3) disc = 0.9;
+
+        const screenRental = simSelectedPitch.rentalRatePerM2 * totalAreaM2 * simDays * disc;
+        const riggingCost = simSelectedRigging.feePerDay * simDays;
+        grandTotal = Math.round(screenRental + riggingCost);
+      } else {
+        const hardwareBuy = simSelectedPitch.buyRatePerM2 * totalAreaM2;
+        const processorFee = 18000000;
+        grandTotal = Math.round(hardwareBuy + processorFee);
+      }
+
+      document.getElementById('simPriceTotalDisplay').innerText = formatRupiah(grandTotal);
+
+      return { totalCabinets, totalAreaM2, cabinetCols, cabinetRows, resX, resY, powerKva, weightKg, grandTotal };
+    }
+
+    function pushSimToRiggingSchedule() {
+      const calc = runSimCalculation();
+      const client = prompt("Nama Klien / EO Penyelenggara Event:", "PT Java Jazz International");
+      if (!client) return;
+
+      const randomRFQ = "RFQ-LV-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      const randomSafety = "RFQ-" + Math.floor(1000 + Math.random() * 9000) + "-OK";
+      const dp30 = Math.round(calc.grandTotal * 0.3);
+
+      const newOrder = {
+        rfqCode: randomRFQ,
+        safetyToken: randomSafety,
+        company: client,
+        picName: "Ir. Dwi Santoso",
+        phone: "0812-4455-6677",
+        venue: "JIExpo Kemayoran Hall D2, Jakarta",
+        serviceMode: simCurrentMode,
+        pitchId: simSelectedPitch.id,
+        pitchName: simSelectedPitch.name,
+        widthM: simWidthM,
+        heightM: simHeightM,
+        days: simDays,
+        totalM2: calc.totalAreaM2,
+        cabinets: calc.totalCabinets,
+        resolution: `${calc.resX} × ${calc.resY} px`,
+        rigging: simSelectedRigging.name,
+        powerKva: parseFloat(calc.powerKva),
+        totalCost: calc.grandTotal,
+        paidDP: dp30,
+        dueAmount: calc.grandTotal - dp30,
+        stageStatus: "ALLOCATED",
+        statusPayment: "DP_30",
+        eventDate: "2026-11-08"
+      };
+
+      masterRFQOrders.unshift(newOrder);
+      renderRiggingPipeline();
+      renderLiveStageStrip();
+      renderQuotationTable();
+      updateDashboardCounters();
+
+      showToast(`Proyek ${randomRFQ} (${client}) berhasil dimasukkan ke antrean panggung!`);
+      switchTab('rigging');
+    }
+
+    // ==================== 3. RIGGING PIPELINE KANBAN ====================
+    function renderRiggingPipeline() {
+      const container = document.getElementById('riggingPipelineContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const columns = [
+        { key: "ALLOCATED", title: "1. Alokasi Gudang", colorBadge: "bg-blue-500/20 text-blue-300 border border-blue-400/30" },
+        { key: "LOADING_IN", title: "2. Loading-in Venue", colorBadge: "bg-amber-500/20 text-amber-300 border border-amber-400/30" },
+        { key: "CALIBRATING", title: "3. Rigging & Novastar OK", colorBadge: "bg-trust-sage/20 text-trust-sage border border-trust-border" },
+        { key: "SHOWTIME_LIVE", title: "4. Live Showtime Event", colorBadge: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse" }
+      ];
+
+      columns.forEach(col => {
+        const ordersInCol = masterRFQOrders.filter(o => o.stageStatus === col.key);
+
+        let cardsHtml = ordersInCol.map(o => `
+          <div class="bg-[#0B1A0B] p-4 rounded-2xl border border-trust-border space-y-2.5 font-mono text-xs">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] text-trust-sage font-bold">${o.rfqCode}</span>
+                <h4 class="font-bold text-white text-sm font-display truncate max-w-[150px]">${o.company}</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold ${col.colorBadge}">${o.cabinets} Kabinet</span>
+            </div>
+
+            <div class="space-y-1 font-sans text-xs">
+              <p class="text-slate-300 font-bold">${o.pitchName.split(' (')[0]}</p>
+              <p class="text-[11px] text-slate-400 font-mono">${o.widthM} × ${o.heightM} m (${o.totalM2} m²)</p>
+              <p class="text-[10px] text-slate-400 truncate">${o.venue}</p>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] font-mono">
+              <span class="text-emerald-400">${o.powerKva} kVA</span>
+              ${col.key !== 'SHOWTIME_LIVE' ? `
+                <button onclick="advanceRiggingStage('${o.rfqCode}')" class="px-2.5 py-1 rounded-lg bg-trust-forest hover:bg-trust-oliveDark text-trust-sage font-bold transition flex items-center gap-1">
+                  <span>Next Step</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </button>
+              ` : `
+                <button onclick="previewQuotationModal('${o.rfqCode}')" class="px-2.5 py-1 rounded-lg bg-trust-oliveDark text-trust-sage font-bold transition flex items-center gap-1">
+                  <i data-lucide="printer" class="w-3 h-3"></i> BAST
+                </button>
+              `}
+            </div>
+          </div>
+        `).join('');
+
+        if (ordersInCol.length === 0) {
+          cardsHtml = `<div class="p-5 text-center text-slate-500 text-xs italic font-mono">Antrean kosong</div>`;
+        }
+
+        const colDiv = document.createElement('div');
+        colDiv.className = "bg-trust-forest p-4 rounded-3xl border border-trust-border space-y-3";
+        colDiv.innerHTML = `
+          <div class="flex items-center justify-between p-2.5 rounded-2xl bg-[#0B1A0B] border border-trust-border font-mono">
+            <span class="font-bold text-xs text-white">${col.title}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-trust-forest text-trust-sage">${ordersInCol.length}</span>
+          </div>
+          <div class="space-y-3">
+            ${cardsHtml}
+          </div>
+        `;
+        container.appendChild(colDiv);
+      });
+
+      lucide.createIcons();
+    }
+
+    function advanceRiggingStage(rfqCode) {
+      const o = masterRFQOrders.find(x => x.rfqCode === rfqCode);
+      if (!o) return;
+
+      const flow = ["ALLOCATED", "LOADING_IN", "CALIBRATING", "SHOWTIME_LIVE"];
+      const currentIdx = flow.indexOf(o.stageStatus);
+
+      if (currentIdx < flow.length - 1) {
+        o.stageStatus = flow[currentIdx + 1];
+        showToast(`Proyek ${o.rfqCode} beralih ke: ${flow[currentIdx + 1]}`);
+        renderRiggingPipeline();
+        renderLiveStageStrip();
+        updateDashboardCounters();
+      }
+    }
+
+    // ==================== 4. WAREHOUSE DIE-CAST INVENTORY ====================
+    function renderWarehouseInventory() {
+      const container = document.getElementById('warehouseInventoryGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterInventory.forEach(item => {
+        const isLow = item.status === 'BUFFER_ALERT';
+        const percent = Math.min(Math.round((item.available / item.totalStock) * 100), 100);
+
+        const card = document.createElement('div');
+        card.className = "bg-trust-forest p-5 rounded-3xl border border-trust-border shadow-sm space-y-3 font-mono text-xs";
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-trust-border pb-2.5">
+            <div>
+              <span class="text-[10px] text-trust-sage font-bold">${item.id}</span>
+              <h4 class="font-bold text-white text-sm font-display mt-0.5">${item.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isLow ? 'bg-amber-500/20 text-amber-300 border border-amber-400/40 animate-pulse' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+              ${item.status}
+            </span>
+          </div>
+
+          <div class="space-y-1.5 font-sans">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-400">Tersedia di Gudang:</span>
+              <strong class="text-white font-mono font-bold">${item.available} ${item.unit}</strong>
+            </div>
+            <div class="w-full bg-[#0B1A0B] h-2 rounded-full overflow-hidden">
+              <div class="h-full rounded-full ${isLow ? 'bg-amber-500' : 'bg-trust-sage'}" style="width: ${percent}%"></div>
+            </div>
+            <div class="flex justify-between text-slate-400 text-[10px] font-mono">
+              <span>Dalam Deployment: ${item.inDeployment}</span>
+              <span>Flightcase: ${item.flightCaseAvailable} Box</span>
+            </div>
+          </div>
+
+          <button onclick="topUpInventoryModule('${item.id}')" class="w-full bg-[#0B1A0B] hover:bg-trust-oliveDark text-trust-sage font-bold py-2 rounded-xl transition text-[11px] font-sans border border-trust-border">
+            + Tambah Alokasi Modul Gudang (+20 Unit)
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function topUpInventoryModule(invId) {
+      const item = masterInventory.find(x => x.id === invId);
+      if (item) {
+        item.totalStock += 20;
+        item.available += 20;
+        item.status = "READY";
+        renderWarehouseInventory();
+        updateDashboardCounters();
+        showToast(`Stok ${item.name} bertambah +20 unit.`);
+      }
+    }
+
+    function openRestockModal() {
+      const item = prompt("Masukkan jenis modul videotron baru:", "Outdoor P4.8 Giant Stadium Display");
+      if (item) {
+        showToast(`Modul ${item} dicatat ke antrean QC die-cast.`);
+      }
+    }
+
+    // ==================== 5. OPTICAL SAFETY SCANNER SIMULATOR ====================
+    function setScannerPreset(tok) {
+      document.getElementById('safetyScannerInput').value = tok;
+      executeSafetyScan();
+    }
+
+    function executeSafetyScan() {
+      const token = document.getElementById('safetyScannerInput').value.trim().toUpperCase();
+      const card = document.getElementById('safetyScanFeedbackCard');
+      card.classList.remove('hidden');
+
+      const match = masterRFQOrders.find(o => o.safetyToken.toUpperCase() === token || o.rfqCode.toUpperCase() === token);
+
+      if (!match) {
+        card.className = "p-5 rounded-2xl border border-rose-500/50 bg-rose-950/20 text-rose-200 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-400 font-sans">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-500"></i> TOKEN SAFETY PASS TIDAK DITEMUKAN
+          </div>
+          <p class="text-xs font-sans">Token barcode <strong>${token}</strong> tidak memiliki catatan surat jalan di sistem LED Vista Indonesia.</p>
+        `;
+        recordRiggingAudit(token, "UNKNOWN STAGE", "-", "DITOLAK (UNREGISTERED)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-trust-sage/50 bg-[#0B1A0B] text-slate-200 space-y-3 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-trust-sage flex items-center gap-1.5 font-display">
+              <i data-lucide="check-circle" class="w-5 h-5 text-trust-sage"></i> RIGGING SAFETY &amp; K3 APPROVED
+            </span>
+            <span class="text-xs font-bold bg-trust-sage text-trust-forest px-2 py-0.5 rounded font-mono">${match.safetyToken}</span>
+          </div>
+
+          <div class="space-y-1 font-sans text-xs">
+            <p>Penyelenggara: <strong class="text-white">${match.company}</strong> (${match.picName})</p>
+            <p>Venue: <span class="text-slate-300">${match.venue}</span></p>
+            <p>Spesifikasi: <strong class="text-trust-sage font-mono">${match.pitchName}</strong> (${match.widthM}x${match.heightM}m • ${match.cabinets} Kabinet)</p>
+          </div>
+
+          <!-- K3 4-Point Safety Checklist -->
+          <div class="p-3 bg-trust-forest rounded-xl border border-trust-border space-y-1.5 text-xs font-sans">
+            <span class="text-[10px] font-mono text-trust-sage font-bold block">4-POINT RIGGING &amp; ELECTRICAL K3 CHECKLIST:</span>
+            <div class="flex items-center gap-2 text-emerald-400 font-mono">
+              <i data-lucide="check" class="w-4 h-4"></i> <span>Grounding Genset Teruji: 0.4 Ohm (Batas Maksimal &lt; 2.0 Ohm)</span>
+            </div>
+            <div class="flex items-center gap-2 text-emerald-400 font-mono">
+              <i data-lucide="check" class="w-4 h-4"></i> <span>Kekuatan Rigging Truss / Ground Stack Beban 360kg Lolos</span>
+            </div>
+            <div class="flex items-center gap-2 text-emerald-400 font-mono">
+              <i data-lucide="check" class="w-4 h-4"></i> <span>Novastar VX400 Mapping &amp; 3840Hz Anti-Moiré Camera Ready</span>
+            </div>
+          </div>
+
+          <button onclick="approveStageLiveShow('${match.rfqCode}')" class="w-full bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-md shadow-lime-950/20">
+            <i data-lucide="play" class="w-4 h-4 text-trust-forest"></i> Sahkan Safety Pass &amp; Mulai Live Event Showtime
+          </button>
+        `;
+        recordRiggingAudit(token, match.company, match.venue, "INSPEKSI K3 LOLOS");
+      }
+
+      lucide.createIcons();
+    }
+
+    function approveStageLiveShow(rfqCode) {
+      const o = masterRFQOrders.find(x => x.rfqCode === rfqCode);
+      if (o) {
+        o.stageStatus = "SHOWTIME_LIVE";
+        showToast(`Panggung ${o.company} disahkan aman dan resmi SHOWTIME LIVE!`);
+        renderRiggingPipeline();
+        renderLiveStageStrip();
+        updateDashboardCounters();
+        switchTab('rigging');
+      }
+    }
+
+    function recordRiggingAudit(token, company, venue, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      riggingAuditLogs.unshift({
+        time: timeStr,
+        token: token,
+        venue: venue,
+        engineer: "Tedi Mahendra (K3 Lead)",
+        result: `${company}: ${status}`
+      });
+      renderRiggingAuditLogs();
+    }
+
+    function renderRiggingAuditLogs() {
+      const list = document.getElementById('riggingAuditLogsContainer');
+      if (!list) return;
+      list.innerHTML = '';
+
+      riggingAuditLogs.slice(0, 7).forEach(l => {
+        const isOk = l.result.includes('LOLOS') || l.result.includes('OK');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-trust-oliveDark/80 border-trust-border text-slate-200" : "bg-rose-950/20 border-rose-500/40 text-rose-300");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs font-sans text-white">${l.venue}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-[#0B1A0B] font-mono font-bold text-trust-sage border border-trust-border">${l.token}</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono">${l.engineer} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold font-mono">${l.result.split(': ')[1] || l.result}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 6. COMMERCIAL QUOTATIONS & RFQ BILLING ====================
+    function renderQuotationTable() {
+      const tbody = document.getElementById('quotationTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterRFQOrders.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-[#0B1A0B]/60 transition";
+
+        let statusText = o.dueAmount === 0 ? "LUNAS 100%" : "DP 30% VERIFIED";
+        let statusBadge = o.dueAmount === 0 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-amber-500/20 text-amber-300 border border-amber-400/30";
+
+        let actionBtn = '';
+        if (o.dueAmount > 0) {
+          actionBtn = `
+            <button onclick="openSettlePaymentModal('${o.rfqCode}')" class="px-3 py-1.5 rounded-lg bg-trust-sage hover:bg-trust-sageHover text-trust-forest font-bold text-[10px] transition shadow-sm font-sans">
+              Pelunasan BAST
+            </button>
+          `;
+        } else {
+          actionBtn = `
+            <button onclick="previewQuotationModal('${o.rfqCode}')" class="px-2.5 py-1.5 rounded-lg bg-trust-oliveDark hover:bg-trust-forest text-trust-sage font-bold text-[10px] transition font-sans inline-flex items-center gap-1 border border-trust-border">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Faktur BAST
+            </button>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-white font-mono">${o.rfqCode}</td>
+          <td class="py-3 px-4 font-sans font-bold text-white">${o.company}<br><span class="text-slate-400 text-[10px] font-mono font-normal">${o.picName}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-300">${o.widthM} × ${o.heightM} m (${o.totalM2} m²)<br><span class="text-[10px] text-trust-sage font-mono">${o.pitchName.split(' (')[0]}</span></td>
+          <td class="py-3 px-4 font-bold text-white font-mono">${formatRupiah(o.totalCost)}</td>
+          <td class="py-3 px-4 text-emerald-400 font-bold font-mono">${formatRupiah(o.paidDP)}</td>
+          <td class="py-3 px-4 font-bold ${o.dueAmount > 0 ? 'text-amber-400' : 'text-slate-500'} font-mono">${formatRupiah(o.dueAmount)}</td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusBadge}">${statusText}</span></td>
+          <td class="py-3 px-4 text-center">${actionBtn}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function previewQuotationModal(rfqCode) {
+      const o = masterRFQOrders.find(x => x.rfqCode === rfqCode);
+      if (!o) return;
+
+      document.getElementById('modalRfqCode').innerText = o.rfqCode;
+      document.getElementById('modalRfqDate').innerText = o.eventDate;
+      document.getElementById('modalClientOrg').innerText = o.company;
+      document.getElementById('modalClientPic').innerText = `PIC: ${o.picName} (${o.phone})`;
+      document.getElementById('modalVenueAddress').innerText = o.venue;
+      document.getElementById('modalLoadingDate').innerText = `Loading In: ${o.eventDate}`;
+      document.getElementById('modalRiggingMethod').innerText = `Konstruksi: ${o.rigging}`;
+
+      const tbody = document.getElementById('modalItemsTbody');
+      tbody.innerHTML = '';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="py-2.5 px-4 font-sans">
+          <span class="font-bold text-white">${o.pitchName}</span>
+          <div class="text-[10px] text-slate-400">Ukuran: ${o.widthM} × ${o.heightM} Meter (${o.totalM2} m²) • Resolusi: ${o.resolution}</div>
+          <div class="text-[9px] text-trust-sage">Termasuk Novastar 4K Processor, Kabel Daya 3-Phase &amp; Operator Standby</div>
+        </td>
+        <td class="py-2.5 px-3 text-center text-slate-300 font-mono">${o.cabinets} Kabinet</td>
+        <td class="py-2.5 px-4 text-right text-slate-300 font-mono">${formatRupiah(Math.round(o.totalCost / o.totalM2))}/m²</td>
+        <td class="py-2.5 px-4 text-right font-bold text-white font-mono">${formatRupiah(o.totalCost)}</td>
+      `;
+      tbody.appendChild(tr);
+
+      document.getElementById('modalSubtotalAmount').innerText = formatRupiah(o.totalCost);
+      document.getElementById('modalPaidAmount').innerText = formatRupiah(o.paidDP);
+      document.getElementById('modalDueAmount').innerText = formatRupiah(o.dueAmount);
+
+      document.getElementById('modalBarcodeTokenText').innerText = `TOKEN: ${o.safetyToken}`;
+      document.getElementById('modalBarcodeImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${o.safetyToken}`;
+
+      if (o.dueAmount === 0) {
+        document.getElementById('modalRfqStatusBadge').innerText = "KONTRAK LUNAS (BAST SELESAI)";
+        document.getElementById('modalPaymentStatusText').innerText = "LUNAS 100% (REKONSILIASI BAST)";
+        document.getElementById('modalDueLabel').innerText = "Status Tagihan:";
+        document.getElementById('modalDueAmount').innerText = "LUNAS (Rp 0)";
+      } else {
+        document.getElementById('modalRfqStatusBadge').innerText = "DP 30% VERIFIED";
+        document.getElementById('modalPaymentStatusText').innerText = "DP 30% BOOKING LUNAS";
+        document.getElementById('modalDueLabel').innerText = "Sisa Pelunasan Saat Serah Terima / QC Testing:";
+      }
+
+      document.getElementById('quotationPrintModal').classList.remove('hidden');
+    }
+
+    function closeQuotationModal() {
+      document.getElementById('quotationPrintModal').classList.add('hidden');
+    }
+
+    function openSettlePaymentModal(rfqCode) {
+      const o = masterRFQOrders.find(x => x.rfqCode === rfqCode);
+      if (!o) return;
+
+      activeSettleRFQCode = rfqCode;
+      document.getElementById('settleRfqCode').innerText = o.rfqCode;
+      document.getElementById('settleClientOrg').innerText = `${o.company} (${o.picName})`;
+      document.getElementById('settleTotalCost').innerText = formatRupiah(o.totalCost);
+      document.getElementById('settlePaidDP').innerText = formatRupiah(o.paidDP);
+      document.getElementById('settleRemainingDue').innerText = formatRupiah(o.dueAmount);
+
+      document.getElementById('settlePaymentModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settlePaymentModal').classList.add('hidden');
+      activeSettleRFQCode = null;
+    }
+
+    function confirmSettleOrder() {
+      if (!activeSettleRFQCode) return;
+      const o = masterRFQOrders.find(x => x.rfqCode === activeSettleRFQCode);
+      if (o) {
+        o.paidDP = o.totalCost;
+        o.dueAmount = 0;
+        o.statusPayment = "PAID_FULL";
+
+        closeSettleModal();
+        renderQuotationTable();
+        renderLiveStageStrip();
+        updateDashboardCounters();
+
+        showToast(`Pelunasan BAST ${o.rfqCode} (${o.company}) berhasil diselesaikan kasir!`);
+        previewQuotationModal(o.rfqCode);
+      }
+    }
+
+    function exportRFQToCSV() {
+      let csv = "data:text/csv;charset=utf-8,Kode RFQ,Token Safety,Perusahaan,PIC,Telepon,Venue,Pitch,Lebar_M,Tinggi_M,Total_M2,Kabinet,Daya_kVA,Total_Biaya,DP_30,Sisa_Pelunasan,Tahap,Status_Bayar\n";
+      masterRFQOrders.forEach(o => {
+        csv += `"${o.rfqCode}","${o.safetyToken}","${o.company}","${o.picName}","${o.phone}","${o.venue}","${o.pitchName}",${o.widthM},${o.heightM},${o.totalM2},${o.cabinets},${o.powerKva},${o.totalCost},${o.paidDP},${o.dueAmount},"${o.stageStatus}","${o.statusPayment}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `LEDVista_Commercial_RFQ_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 7. DASHBOARD COUNTERS & METRICS ====================
+    function updateDashboardCounters() {
+      const activeStages = masterRFQOrders.filter(o => o.stageStatus !== 'ALLOCATED').length;
+      const totalArea = masterRFQOrders.reduce((sum, o) => sum + o.totalM2, 0);
+      const totalPower = masterRFQOrders.reduce((sum, o) => sum + o.powerKva, 0);
+      const totalRevenue = masterRFQOrders.reduce((sum, o) => sum + o.totalCost, 0);
+      const totalDue = masterRFQOrders.reduce((sum, o) => sum + o.dueAmount, 0);
+      const lowStockCount = masterInventory.filter(i => i.status === 'BUFFER_ALERT').length;
+
+      document.getElementById('kpiActiveStages').innerText = `${activeStages} Stage Event`;
+      document.getElementById('kpiTotalM2').innerText = `${totalArea.toFixed(1)} m²`;
+      document.getElementById('kpiTotalKva').innerText = `${totalPower.toFixed(1)} kVA`;
+      document.getElementById('topPowerLoadText').innerText = `${totalPower.toFixed(1)} kVA (3-Phase)`;
+      document.getElementById('kpiGrossRevenue').innerText = formatRupiah(totalRevenue);
+      document.getElementById('financeDueSummaryCard').innerText = formatRupiah(totalDue > 0 ? totalDue : 115360000);
+
+      document.getElementById('badgeActiveStages').innerText = `${masterRFQOrders.length} Stage`;
+      document.getElementById('badgeLowStock').innerText = `${lowStockCount} Buffer`;
+    }
+  </script>
+
+</body>
+</html>

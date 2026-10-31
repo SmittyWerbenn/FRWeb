@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetCare Clinic - Admin & Veterinary Operations Dashboard</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            steel: {
+              ice: '#F0F4F8',        // Ice Gray Background
+              navy: '#102A43',       // Dark Navy Utama
+              navyLight: '#243B53',  // Card Surface
+              denim: '#486581',      // Muted Denim
+              denimLight: '#627D98', // Soft Denim Text
+              blueMuted: '#BCCCDC',  // Light Blue Ice
+              border: '#D9E2EC',     // Border Gray Light
+              accent: '#334E68'      // Deep Steel Button
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(240, 244, 248, 0.94);
+      backdrop-filter: blur(14px);
+    }
+    .clinical-pattern {
+      background-color: #F0F4F8;
+      background-image: radial-gradient(#48658115 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printAreaPassport, #printAreaPassport * {
+        visibility: visible;
+      }
+      #printAreaPassport {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #102A43 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="clinical-pattern text-slate-800 antialiased font-sans min-h-screen flex selection:bg-steel-blueMuted selection:text-steel-navy">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="w-64 bg-steel-navy border-r border-steel-navyLight flex-shrink-0 hidden md:flex flex-col justify-between z-30 font-mono text-white">
+    <div>
+      <!-- Brand Header -->
+      <div class="p-5 border-b border-steel-navyLight flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-steel-navyLight border border-steel-blueMuted/30 flex items-center justify-center text-white shadow-md">
+          <i data-lucide="paw-print" class="w-5 h-5 text-steel-blueMuted"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-display">
+            PETCARE<span class="text-steel-blueMuted">CLINIC</span>
+          </span>
+          <span class="text-[9px] text-steel-blueMuted font-mono tracking-wider uppercase block">HOSPITAL & GROOMING ERP</span>
+        </div>
+      </div>
+
+      <!-- Nav Menu Items -->
+      <nav class="p-4 space-y-1.5 text-xs">
+        <button onclick="switchTab('overview')" id="tabBtn-overview" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold bg-steel-denim text-white transition shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard Overview</span>
+        </button>
+        <button onclick="switchTab('rooms')" id="tabBtn-rooms" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-steel-blueMuted hover:text-white hover:bg-steel-navyLight transition">
+          <i data-lucide="hospital" class="w-4 h-4"></i>
+          <span>Status Ruangan Vet</span>
+        </button>
+        <button onclick="switchTab('kanban')" id="tabBtn-kanban" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-steel-blueMuted hover:text-white hover:bg-steel-navyLight transition">
+          <i data-lucide="kanban" class="w-4 h-4"></i>
+          <span>Alur Pasien Kanban</span>
+        </button>
+        <button onclick="switchTab('patients')" id="tabBtn-patients" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-steel-blueMuted hover:text-white hover:bg-steel-navyLight transition">
+          <i data-lucide="folder-heart" class="w-4 h-4"></i>
+          <span>Rekam Medis (EMR)</span>
+        </button>
+        <button onclick="switchTab('pharmacy')" id="tabBtn-pharmacy" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-steel-blueMuted hover:text-white hover:bg-steel-navyLight transition">
+          <i data-lucide="syringe" class="w-4 h-4"></i>
+          <span>Farmasi & Cold-Chain</span>
+        </button>
+        <button onclick="switchTab('scanner')" id="tabBtn-scanner" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-steel-blueMuted hover:text-white hover:bg-steel-navyLight transition">
+          <i data-lucide="scan-barcode" class="w-4 h-4"></i>
+          <span>Scanner QR Paspor</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Cold-Chain & Vet Duty Badge -->
+    <div class="p-4 border-t border-steel-navyLight">
+      <div class="p-3 bg-steel-navyLight rounded-xl border border-steel-navyLight/80 text-xs space-y-1.5 font-mono">
+        <div class="flex items-center justify-between">
+          <span class="text-steel-blueMuted">Cold-Chain Vaksin</span>
+          <span class="flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> +3.8°C AMAN
+          </span>
+        </div>
+        <div class="text-[11px] text-white">Bintaro Sektor 9 Hub</div>
+        <div class="w-full bg-steel-navy h-1.5 rounded-full overflow-hidden mt-1">
+          <div class="bg-steel-blueMuted h-full rounded-full" style="width: 78%"></div>
+        </div>
+        <div class="text-[9px] text-steel-blueMuted flex justify-between">
+          <span>Kapasitas: 18/25 Pasien</span>
+          <span>Vet Jaga: 3 drh</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Header -->
+    <header class="glass-header sticky top-0 z-20 border-b border-steel-border px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button class="md:hidden text-steel-navy" onclick="alert('Buka di layar desktop/tablet untuk dashboard operasional klinik terlengkap')">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div>
+          <h1 class="text-lg font-bold text-steel-navy font-display" id="pageTitleDisplay">Dashboard Overview Klinik</h1>
+          <p class="text-xs text-steel-denim font-mono">Manajemen Praktik Dokter Hewan, Grooming & Paspor Vaksin</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3.5 font-mono text-xs">
+        <div class="hidden sm:flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-steel-border text-steel-navy">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-steel-denim"></i>
+          <span id="liveClockDisplay">Live Time</span>
+        </div>
+        <button onclick="openRegistrationModal()" class="bg-steel-navy hover:bg-steel-navyLight text-white font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-steel-blueMuted"></i>
+          <span>Registrasi Pasien Baru</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="p-6 sm:p-8 space-y-8 flex-1">
+      
+      <!-- TAB 1: OVERVIEW -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
+          <div class="p-5 rounded-2xl bg-white border border-steel-border shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-steel-denim text-xs">
+              <span>Pasien di Klinik Hari Ini</span>
+              <i data-lucide="paw-print" class="w-4 h-4 text-steel-navy"></i>
+            </div>
+            <div class="text-2xl font-black text-steel-navy font-display" id="kpiActivePatients">14 Pasien</div>
+            <div class="text-[10px] text-emerald-600 font-bold font-sans">9 Selesai • 5 Sedang Dirawat</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-steel-border shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-steel-denim text-xs">
+              <span>Total Omset Bulan Ini</span>
+              <i data-lucide="banknote" class="w-4 h-4 text-emerald-600"></i>
+            </div>
+            <div class="text-2xl font-black text-steel-navy font-display" id="kpiRevenue">Rp 48.250.000</div>
+            <div class="text-[10px] text-slate-500 font-sans">Grooming & Vet Balanced</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-steel-border shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-steel-denim text-xs">
+              <span>Sisa Tagihan Outstanding (70%)</span>
+              <i data-lucide="wallet" class="w-4 h-4 text-amber-600"></i>
+            </div>
+            <div class="text-2xl font-black text-steel-denim font-display" id="kpiDueAmount">Rp 4.120.000</div>
+            <div class="text-[10px] text-amber-600 font-bold font-sans">Menunggu Pasien Dijemput</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-steel-border shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-steel-denim text-xs">
+              <span>Vaksin Terjadwal Pekan Ini</span>
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+            </div>
+            <div class="text-2xl font-black text-steel-navy font-display">28 Dosis</div>
+            <div class="text-[10px] text-emerald-600 font-bold font-sans">WA Reminder Terkirim</div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (Chart.js) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-8 bg-white p-6 rounded-2xl border border-steel-border shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-steel-navy font-display">Kunjungan Pasien Anabul Mingguan</h3>
+                <p class="text-xs text-steel-denim font-mono">Berdasarkan spesies Kucing (Cat) vs Anjing (Dog)</p>
+              </div>
+              <span class="text-xs font-mono text-steel-navy bg-steel-ice px-2.5 py-1 rounded border border-steel-border">Oktober 2026</span>
+            </div>
+            <div class="h-64">
+              <canvas id="speciesVisitChartCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 bg-white p-6 rounded-2xl border border-steel-border shadow-sm space-y-4">
+            <div>
+              <h3 class="text-sm font-bold text-steel-navy font-display">Distribusi Layanan Medis</h3>
+              <p class="text-xs text-steel-denim font-mono">Porsi Grooming vs Vet & Vaksin</p>
+            </div>
+            <div class="h-64 flex items-center justify-center">
+              <canvas id="serviceShareChartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Antrean Pasien Hari Ini Table -->
+        <div class="bg-white rounded-2xl border border-steel-border shadow-sm overflow-hidden font-mono text-xs">
+          <div class="p-5 border-b border-steel-border flex items-center justify-between">
+            <h3 class="text-sm font-bold text-steel-navy font-display">Antrean Pasien Terkini</h3>
+            <button onclick="switchTab('patients')" class="text-xs font-mono font-bold text-steel-denim hover:underline">Lihat Semua Pasien EMR →</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-steel-ice text-steel-denim border-b border-steel-border">
+                <tr>
+                  <th class="py-3 px-4">No. Paspor Medis</th>
+                  <th class="py-3 px-4">Pasien & Ras</th>
+                  <th class="py-3 px-4">Pemilik (Owner)</th>
+                  <th class="py-3 px-4">Tindakan / Servis</th>
+                  <th class="py-3 px-3 text-center">Ruangan</th>
+                  <th class="py-3 px-4 text-right">Biaya</th>
+                  <th class="py-3 px-3 text-center">Tahap Status</th>
+                  <th class="py-3 px-4 text-center">Aksi Cepat</th>
+                </tr>
+              </thead>
+              <tbody id="recentPatientsTableBody" class="divide-y divide-steel-border font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TAB 2: STATUS RUANGAN VET (4 ROOMS) -->
+      <section id="view-rooms" class="hidden space-y-6">
+        <div class="flex items-center justify-between font-mono">
+          <div>
+            <h3 class="text-base font-bold text-steel-navy font-display">Monitoring Ruang Praktek Dokter & Grooming Spa</h3>
+            <p class="text-xs text-steel-denim">Tekanan udara positif & sterilisasi UV-C aktif terjadwal</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="flex items-center gap-1.5 text-emerald-600 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Digunakan</span>
+            <span class="flex items-center gap-1.5 text-slate-400 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> Steril (Ready)</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 font-mono text-xs" id="clinicRoomsContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- TAB 3: PAPAN ALUR PASIEN KANBAN -->
+      <section id="view-kanban" class="hidden space-y-6">
+        <div class="flex items-center justify-between font-mono">
+          <div>
+            <h3 class="text-base font-bold text-steel-navy font-display">Alur Rawat Pasien Anabul (Kanban 4-Tahap)</h3>
+            <p class="text-xs text-steel-denim">Pantau pergerakan anabul dari registrasi hingga serah terima pulang</p>
+          </div>
+          <button onclick="openRegistrationModal()" class="text-xs font-bold text-white bg-steel-navy px-3 py-1.5 rounded-xl hover:bg-steel-navyLight">
+            + Tambah Pasien ke Antrean
+          </button>
+        </div>
+
+        <!-- 4 Kolom Kanban -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start font-mono text-xs">
+          <!-- Tahap 1: Check-in / Triage -->
+          <div class="bg-white rounded-2xl border border-steel-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-steel-border">
+              <span class="font-bold text-steel-navy flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> 1. Check-in / Triage
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-steel-ice text-blue-600 border border-blue-200" id="badge-stage-1">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-1"></div>
+          </div>
+
+          <!-- Tahap 2: Grooming / Pemeriksaan Vet -->
+          <div class="bg-white rounded-2xl border border-steel-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-steel-border">
+              <span class="font-bold text-steel-navy flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 2. Tindakan / Groom
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-steel-ice text-amber-600 border border-amber-200" id="badge-stage-2">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-2"></div>
+          </div>
+
+          <!-- Tahap 3: Recovery / Pembuatan Resep -->
+          <div class="bg-white rounded-2xl border border-steel-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-steel-border">
+              <span class="font-bold text-steel-navy flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> 3. Recovery & Obat
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-steel-ice text-indigo-600 border border-indigo-200" id="badge-stage-3">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-3"></div>
+          </div>
+
+          <!-- Tahap 4: Serah Terima & Pelunasan -->
+          <div class="bg-white rounded-2xl border border-steel-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-steel-border">
+              <span class="font-bold text-steel-navy flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 4. Siap Pulang / Lunas
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-steel-ice text-emerald-600 border border-emerald-200" id="badge-stage-4">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-4"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: REKAM MEDIS (EMR) -->
+      <section id="view-patients" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-steel-border shadow-sm space-y-4 font-mono text-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-steel-navy font-display">Database Rekam Medis Anabul (EMR)</h3>
+              <p class="text-steel-denim">Riwayat imunisasi, alergi, pemilik terdaftar & status pelunasan</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportPatientsToCsv()" class="bg-steel-ice hover:bg-steel-border text-steel-navy px-3.5 py-2 rounded-xl border border-steel-border flex items-center gap-1.5 font-bold">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-steel-denim"></i>
+                <span>Ekspor CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Filter Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="relative sm:col-span-2">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5"></i>
+              <input type="text" id="patientSearchInput" oninput="renderMasterPatientsTable()" placeholder="Cari nama anabul (Mochi), ras, owner (Tedi), atau ID..." class="w-full pl-9 pr-4 py-2 bg-steel-ice border border-steel-border rounded-xl text-steel-navy focus:outline-none focus:ring-1 focus:ring-steel-navy font-mono" />
+            </div>
+            <select id="patientStatusFilter" onchange="renderMasterPatientsTable()" class="bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy font-mono focus:outline-none focus:ring-1 focus:ring-steel-navy">
+              <option value="ALL">Semua Tahap Layanan</option>
+              <option value="STAGE_1">1. Check-in & Triage</option>
+              <option value="STAGE_2">2. Tindakan / Grooming</option>
+              <option value="STAGE_3">3. Recovery & Obat</option>
+              <option value="STAGE_4">4. Siap Pulang</option>
+              <option value="COMPLETED">Selesai & Lunas 100%</option>
+            </select>
+          </div>
+
+          <!-- Table EMR -->
+          <div class="overflow-x-auto rounded-xl border border-steel-border">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-steel-ice text-steel-denim border-b border-steel-border">
+                <tr>
+                  <th class="py-3 px-4">ID Paspor</th>
+                  <th class="py-3 px-4">Nama Anabul & Ras</th>
+                  <th class="py-3 px-4">Pemilik (WhatsApp)</th>
+                  <th class="py-3 px-4">Tindakan / Servis</th>
+                  <th class="py-3 px-4">Vaksin Terdaftar</th>
+                  <th class="py-3 px-4 text-right">DP / Sisa Due</th>
+                  <th class="py-3 px-3 text-center">Status</th>
+                  <th class="py-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="masterPatientsTableBody" class="divide-y divide-steel-border font-medium">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: FARMASI & COLD-CHAIN VAKSIN -->
+      <section id="view-pharmacy" class="hidden space-y-6 font-mono text-xs">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-steel-border space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-steel-navy text-sm font-sans">Kulkas Vaksin (+2°C s/d +8°C)</h4>
+              <button onclick="restockMedicine('vaksin')" class="text-steel-navy text-[10px] font-bold border border-steel-border px-2 py-1 rounded bg-steel-ice hover:bg-steel-border">+ Restock Dosis</button>
+            </div>
+            <div class="space-y-3" id="pharmacyVaccineList"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-steel-border space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-steel-navy text-sm font-sans">Obat Tetes Kutu & Cacing</h4>
+              <button onclick="restockMedicine('kutu')" class="text-steel-navy text-[10px] font-bold border border-steel-border px-2 py-1 rounded bg-steel-ice hover:bg-steel-border">+ Restock Pipet</button>
+            </div>
+            <div class="space-y-3" id="pharmacyFleaList"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-steel-border space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-steel-navy text-sm font-sans">Sampo Terapi & Sanitasi</h4>
+              <button onclick="restockMedicine('shampoo')" class="text-steel-navy text-[10px] font-bold border border-steel-border px-2 py-1 rounded bg-steel-ice hover:bg-steel-border">+ Restock Galon</button>
+            </div>
+            <div class="space-y-3" id="pharmacyShampooList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: SCANNER QR PASPOR MEDIS -->
+      <section id="view-scanner" class="hidden space-y-6 font-mono text-xs max-w-2xl mx-auto">
+        <div class="bg-white p-7 rounded-3xl border border-steel-border shadow-xl space-y-6 text-center">
+          <div class="space-y-1">
+            <div class="w-12 h-12 rounded-2xl bg-steel-ice border border-steel-border text-steel-navy flex items-center justify-center mx-auto mb-2">
+              <i data-lucide="scan-barcode" class="w-6 h-6 text-steel-denim"></i>
+            </div>
+            <h3 class="text-base font-bold text-steel-navy font-display">Simulator Pemindai Paspor Medis Anabul</h3>
+            <p class="text-steel-denim font-sans">Verifikasi kedatangan anabul di meja resepsionis untuk sinkronisasi antrean.</p>
+          </div>
+
+          <!-- Scanner Simulation Box -->
+          <div class="p-6 bg-steel-ice rounded-2xl border-2 border-dashed border-steel-border space-y-4">
+            <div class="relative w-48 h-32 mx-auto border-2 border-steel-navy rounded-xl flex items-center justify-center bg-white overflow-hidden shadow-inner">
+              <div class="w-full h-0.5 bg-emerald-500 shadow-lg shadow-emerald-500 animate-pulse"></div>
+              <span class="absolute bottom-2 text-[9px] text-slate-400">AREA SCAN OPTIK</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="barcodeScanInput" placeholder="Masukkan ID Paspor (cth: PASSPORT-VET-202610-8812)" class="w-full bg-white border border-steel-border rounded-xl px-3.5 py-2.5 text-steel-navy focus:outline-none focus:ring-1 focus:ring-steel-navy text-center font-mono" />
+              <button onclick="processBarcodeScan()" class="bg-steel-navy hover:bg-steel-navyLight text-white font-bold px-4 py-2.5 rounded-xl transition">
+                Validasi
+              </button>
+            </div>
+            <div class="text-[10px] text-slate-500">
+              Preset Quick Test: 
+              <button onclick="testBarcode('PASSPORT-VET-202610-8812')" class="underline text-steel-navy font-bold">Mochi (BSH)</button> • 
+              <button onclick="testBarcode('PASSPORT-VET-202610-8813')" class="underline text-steel-navy font-bold">Brownie (Poodle)</button>
+            </div>
+          </div>
+
+          <!-- Scan Result Box -->
+          <div id="scanResultBox" class="hidden p-5 bg-steel-ice rounded-2xl border border-steel-navy text-left space-y-3">
+            <div class="flex items-center justify-between border-b border-steel-border pb-2">
+              <div>
+                <span class="font-bold text-steel-navy text-sm font-sans block" id="scanPetTitle">Mochi (British Shorthair)</span>
+                <span class="text-[10px] text-steel-denim" id="scanPassportCodeTitle">PASSPORT-VET-202610-8812</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-steel-navy text-white" id="scanStageBadge">STAGE 01</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-700 font-sans">
+              <div>Owner: <strong class="text-steel-navy" id="scanOwnerName">-</strong></div>
+              <div>WhatsApp: <strong class="text-steel-navy font-mono" id="scanPhone">-</strong></div>
+              <div>Layanan: <strong class="text-steel-denim" id="scanServiceName">-</strong></div>
+              <div>Ruangan: <strong class="text-steel-navy" id="scanRoomName">-</strong></div>
+            </div>
+
+            <!-- Health Status Check -->
+            <div class="pt-2 border-t border-steel-border space-y-2 font-sans">
+              <span class="text-[10px] text-steel-navy block uppercase font-bold font-mono">Triage Checklist Penerimaan:</span>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="triageCheck1" checked class="accent-steel-navy" />
+                <span>1. Cek suhu rektal anabul (normal 38°C - 39.2°C)</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="triageCheck2" checked class="accent-steel-navy" />
+                <span>2. Verifikasi status vaksin rabies dan kutu/jamur</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="triageCheck3" checked class="accent-steel-navy" />
+                <span>3. Anabul tidak menunjukkan gejala flu / batuk menular</span>
+              </label>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+              <button onclick="advanceStageFromScanner()" class="flex-1 bg-steel-navy text-white font-bold py-2 rounded-xl hover:bg-steel-navyLight font-sans">
+                Arahkan ke Meja Tindakan / Groomer →
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- MODAL 1: FORM REGISTRASI PASIEN BARU -->
+  <div id="registrationModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 border border-steel-border shadow-2xl space-y-4 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-steel-border pb-3">
+        <h3 class="text-base font-bold text-steel-navy font-display">Registrasi Pasien Anabul Baru</h3>
+        <button onclick="closeRegistrationModal()" class="w-7 h-7 rounded-full bg-steel-ice flex items-center justify-center text-slate-400 hover:text-steel-navy">✕</button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Nama Anabul *</label>
+            <input type="text" id="mPetNameInput" value="Milo" class="w-full bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy focus:outline-none focus:ring-1 focus:ring-steel-navy" />
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Spesies & Ras *</label>
+            <input type="text" id="mBreedInput" value="Kucing Persia Flatnose" class="w-full bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy focus:outline-none focus:ring-1 focus:ring-steel-navy" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Nama Pemilik (Owner) *</label>
+            <input type="text" id="mOwnerNameInput" value="Tedi Mahendra" class="w-full bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy focus:outline-none focus:ring-1 focus:ring-steel-navy" />
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Nomor WhatsApp *</label>
+            <input type="tel" id="mPhoneInput" value="081299998888" class="w-full bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy focus:outline-none focus:ring-1 focus:ring-steel-navy font-mono" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Kategori Layanan</label>
+            <select id="mServiceTypeSelect" class="w-full bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy">
+              <option value="GROOMING">Grooming Sehat</option>
+              <option value="VET">Konsultasi Dokter</option>
+              <option value="VAKSIN">Suntik Vaksin</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Ruangan Dituju</label>
+            <select id="mRoomSelect" class="w-full bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy">
+              <option value="Grooming Spa & Bath">Grooming Spa</option>
+              <option value="Ruang Vet 01 (Feline)">Ruang Vet 01</option>
+              <option value="Ruang Vet 02 (Umum)">Ruang Vet 02</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Sesi Jam</label>
+            <input type="text" id="mTimeInput" value="11:00 WIB" class="w-full bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy font-mono text-center" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-600 mb-1 font-bold">Catatan Khusus / Riwayat Alergi</label>
+          <input type="text" id="mNotesInput" value="Sensitif sampo beraroma tajam. Alergi makanan ikan tongkol." class="w-full bg-steel-ice border border-steel-border rounded-xl px-3 py-2 text-steel-navy" />
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-3 border-t border-steel-border font-mono">
+        <button onclick="closeRegistrationModal()" class="flex-1 bg-steel-ice hover:bg-steel-border py-2.5 rounded-xl text-slate-600 font-bold">Batal</button>
+        <button onclick="submitNewPatientRegistration()" class="flex-1 bg-steel-navy hover:bg-steel-navyLight text-white font-bold py-2.5 rounded-xl">Terbitkan Paspor & Masuk Antrean</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: PELUNASAN KASIR KLINIK & CETAK PASPOR RESMI (PDF) -->
+  <div id="settleModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-steel-border shadow-2xl space-y-6 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-steel-border pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-steel-navy flex items-center justify-center text-white font-bold">
+            <i data-lucide="receipt" class="w-4 h-4 text-steel-blueMuted"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-steel-navy font-display">Kasir Pelunasan & Paspor Medis Anabul</h3>
+            <span class="text-[10px] text-slate-400" id="settlePassportTitle">PASSPORT-VET-202610-8812</span>
+          </div>
+        </div>
+        <button onclick="closeSettleModal()" class="w-7 h-7 rounded-full bg-steel-ice flex items-center justify-center text-slate-400 hover:text-steel-navy">✕</button>
+      </div>
+
+      <!-- Area Cetak Resmi Paspor Medis Anabul (PDF Ready) -->
+      <div id="printAreaPassport" class="bg-white p-6 rounded-2xl border border-steel-border space-y-4 text-slate-900 font-mono">
+        <div class="flex justify-between items-start border-b border-steel-border pb-3">
+          <div>
+            <span class="font-bold text-base text-steel-navy font-display">PETCARE<span class="text-steel-denim">CLINIC</span> & HOSPITAL</span>
+            <p class="text-[10px] text-slate-500 font-sans">Bintaro Sektor 9, Tangerang Selatan • Emergency: +62 812-9999-8888</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-steel-ice text-steel-navy border border-steel-border">OFFICIAL MEDICAL PASSPORT</span>
+            <p class="text-xs font-bold text-steel-navy mt-1" id="pPassportNumber">PASSPORT-VET-8812</p>
+            <p class="text-[10px] text-slate-400" id="pDateText">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-[11px] bg-steel-ice p-3 rounded-xl border border-steel-border font-sans">
+          <div>
+            <span class="text-[9px] text-slate-500 block uppercase font-mono">Pasien Anabul:</span>
+            <strong class="text-steel-navy text-sm block" id="pPetName">Mochi</strong>
+            <span class="text-slate-600" id="pPetBreed">British Shorthair (Kucing)</span>
+            <p class="text-[10px] text-slate-500 mt-1 font-mono" id="pOwnerContact">Owner: Tedi Mahendra (081299998888)</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] text-slate-500 block uppercase font-mono">Jadwal Sesi:</span>
+            <strong class="text-steel-navy text-xs block" id="pScheduleTime">11:00 - 12:30 WIB</strong>
+            <span class="text-slate-600" id="pRoomAllocated">Grooming Spa & Bath</span>
+            <p class="text-[10px] text-emerald-700 font-bold mt-1 font-mono" id="pPaymentStatusText">DP 30% TERVERIFIKASI</p>
+          </div>
+        </div>
+
+        <div class="p-2.5 bg-slate-50 rounded-xl border border-steel-border text-[10px] font-sans space-y-1">
+          <span class="font-bold text-steel-navy font-mono uppercase block">Status Imunisasi Anabul:</span>
+          <div class="text-slate-600">
+            • Vaksin Tricat: <strong>Lengkap</strong> | • Vaksin Rabies: <strong>Aktif</strong> | • Obat Kutu: <strong>Baru Diaplikasikan</strong>
+          </div>
+          <div class="text-steel-denim italic" id="pNotesText">Catatan: Alergi ikan tongkol.</div>
+        </div>
+
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-steel-border text-slate-500 text-[10px] font-sans">
+            <tr>
+              <th class="py-2">Tindakan / Pelayanan Medis</th>
+              <th class="py-2 text-center">Spesies</th>
+              <th class="py-2 text-right">Tarif</th>
+              <th class="py-2 text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-steel-border font-medium font-sans">
+            <tr>
+              <td class="py-2.5">
+                <strong class="text-steel-navy block" id="pServiceTitle">Grooming Terapi Kutu & Jamur</strong>
+                <span class="text-[10px] text-slate-400">Sampo sulfur medis, blow dry steril & potong kuku</span>
+              </td>
+              <td class="py-2.5 text-center text-slate-600 font-mono" id="pSpeciesText">Kucing (Cat)</td>
+              <td class="py-2.5 text-right text-slate-600 font-mono" id="pUnitRate">Rp 160.000</td>
+              <td class="py-2.5 text-right font-bold text-slate-900 font-mono" id="pItemTotal">Rp 160.000</td>
+            </tr>
+          </tbody>
+          <tfoot class="border-t-2 border-steel-border text-xs font-bold pt-2 font-mono">
+            <tr>
+              <td colspan="3" class="py-1.5 text-right text-slate-500">Total Biaya Rawat:</td>
+              <td class="py-1.5 text-right text-slate-900 font-mono" id="pGrandTotalAmount">Rp 160.000</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="py-1.5 text-right text-emerald-700">DP Terbayar (30%):</td>
+              <td class="py-1.5 text-right text-emerald-700 font-mono" id="pPaidDpAmount">Rp 48.000</td>
+            </tr>
+            <tr class="bg-steel-ice text-steel-navy">
+              <td colspan="3" class="py-2 text-right font-black">Sisa Pelunasan di Kasir:</td>
+              <td class="py-2 text-right font-black font-mono text-sm" id="pDueAmount">Rp 112.000</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Token QR Barcode -->
+        <div class="flex items-center justify-between p-3 bg-steel-ice rounded-xl border border-steel-border text-[10px]">
+          <div>
+            <strong class="text-steel-navy block font-sans">Verifikasi Rekam Medis Sah PBVET</strong>
+            <span class="text-slate-500 font-sans">Barcode identitas anabul & sertifikat riwayat vaksinasi</span>
+          </div>
+          <div class="text-center font-mono">
+            <span class="font-bold text-steel-navy block" id="pTokenCode">PASS-8812-OK</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Settlement Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-2 no-print font-sans">
+        <button onclick="window.print()" class="flex-1 bg-steel-ice hover:bg-steel-border text-steel-navy font-bold py-3 rounded-xl border border-steel-border flex items-center justify-center gap-2">
+          <i data-lucide="printer" class="w-4 h-4 text-steel-denim"></i>
+          <span>Cetak Paspor Medis (PDF)</span>
+        </button>
+        <button id="btnConfirmSettleDue" onclick="executeSettleDue()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-md">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Konfirmasi Pelunasan 100% Selesai</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="hidden fixed bottom-6 right-6 z-50 bg-steel-navy border border-steel-blueMuted text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-mono text-xs">
+    <i data-lucide="info" class="w-4 h-4 text-steel-blueMuted"></i>
+    <span id="toastMsg">Notifikasi Klinik</span>
+  </div>
+
+  <!-- CORE SCRIPT LOGIC -->
+  <script>
+    // 1. DATA DATABASE PASIEN & REKAM MEDIS
+    let masterPatients = [
+      {
+        id: "PASSPORT-VET-202610-8812",
+        petName: "Mochi",
+        breed: "British Shorthair (BSH)",
+        species: "CAT",
+        owner: "Tedi Mahendra",
+        phone: "081299998888",
+        serviceName: "Grooming Terapi Kutu & Jamur",
+        room: "Grooming Spa & Bath",
+        time: "11:00 - 12:30 WIB",
+        vaccineStatus: "Tricat Lengkap, Rabies Aktif",
+        notes: "Sensitif suara hairdryer kencang. Suka treat snack basah.",
+        totalAmount: 160000,
+        paidDp: 48000,
+        due: 112000,
+        stage: "STAGE_2", // 1: Check-in, 2: Action, 3: Recovery, 4: Selesai
+        isCompleted: false,
+        date: "2026-10-28"
+      },
+      {
+        id: "PASSPORT-VET-202610-8813",
+        petName: "Brownie",
+        breed: "Toy Poodle (Cokelat)",
+        species: "DOG",
+        owner: "Christland Simatupang",
+        phone: "081388776655",
+        serviceName: "Suntik Vaksin Booster Tahunan",
+        room: "Ruang Vet 02 (Umum)",
+        time: "13:00 - 14:00 WIB",
+        vaccineStatus: "DHPPiL Terjadwal",
+        notes: "Pemeriksaan fisik rutin & sertifikat vaksin dinas",
+        totalAmount: 180000,
+        paidDp: 54000,
+        due: 126000,
+        stage: "STAGE_1",
+        isCompleted: false,
+        date: "2026-10-28"
+      },
+      {
+        id: "PASSPORT-VET-202610-8814",
+        petName: "Luna",
+        breed: "Kucing Ragdoll",
+        species: "CAT",
+        owner: "David Riyanto",
+        phone: "081122334455",
+        serviceName: "Pembersihan Karang Gigi / Dental",
+        room: "Ruang Isolasi & Dental",
+        time: "09:30 - 11:00 WIB",
+        vaccineStatus: "Vaksin Lengkap",
+        notes: "Sedasi ringan, kontrol plak karang gigi belakang",
+        totalAmount: 250000,
+        paidDp: 75000,
+        due: 175000,
+        stage: "STAGE_3",
+        isCompleted: false,
+        date: "2026-10-28"
+      },
+      {
+        id: "PASSPORT-VET-202610-8811",
+        petName: "Simba",
+        breed: "Golden Retriever",
+        species: "DOG",
+        owner: "Cinthya",
+        phone: "081244556677",
+        serviceName: "Luxury Coat Spa & De-Shedding",
+        room: "Grooming Spa & Bath",
+        time: "08:30 - 10:00 WIB",
+        vaccineStatus: "Lengkap & Sehat",
+        notes: "Bulu rontok musiman, treatment pelembut bulu",
+        totalAmount: 250000,
+        paidDp: 250000,
+        due: 0,
+        stage: "STAGE_4",
+        isCompleted: true,
+        date: "2026-10-28"
+      }
+    ];
+
+    // 2. DATA RUANGAN KLINIK
+    const clinicRooms = [
+      { id: "room-1", name: "Ruang Vet 01 (Feline)", desc: "drh. Anindya Putri, M.Si", occupiedBy: null },
+      { id: "room-2", name: "Ruang Vet 02 (Umum)", desc: "drh. Dimas Pratama", occupiedBy: "Brownie (Poodle)" },
+      { id: "room-3", name: "Grooming Spa & Bath", desc: "Bak Cuci & Meja Hidrolik", occupiedBy: "Mochi (BSH)" },
+      { id: "room-4", name: "Ruang Isolasi & Dental", desc: "Mesin Scaling & O2", occupiedBy: "Luna (Ragdoll)" }
+    ];
+
+    // 3. DATA FARMASI & COLD-CHAIN VAKSIN
+    let pharmacyInventory = {
+      vaksin: [
+        { name: "Nobivac Tricat Trio (Kucing)", stock: 18, unit: "Ampul (+4°C)", alert: false },
+        { name: "Nobivac Rabisin (Rabies Resmi)", stock: 14, unit: "Ampul (+4°C)", alert: false },
+        { name: "Canigen DHPPi/L (Anjing)", stock: 4, unit: "Ampul (+4°C)", alert: true },
+        { name: "Felocell 4 Feline Respiratory", stock: 8, unit: "Ampul (+4°C)", alert: false }
+      ],
+      kutu: [
+        { name: "Bravecto Spot-On Kucing 2.8-6.25kg", stock: 12, unit: "Pipet", alert: false },
+        { name: "Revolution Plus Feline", stock: 16, unit: "Pipet", alert: false },
+        { name: "NexGard Spectra Dog 3.5-7.5kg", stock: 5, unit: "Tablet Kunyah", alert: true },
+        { name: "Drontal Cat Tablet Cacing", stock: 25, unit: "Tablet", alert: false }
+      ],
+      shampoo: [
+        { name: "Sulfur Antifungal Medicated Shampoo", stock: 6, unit: "Galon (5L)", alert: false },
+        { name: "Hypoallergenic Aloe Vera Bath", stock: 9, unit: "Galon (5L)", alert: false },
+        { name: "Chlorhexidine 4% Antiseptic Rinse", stock: 4, unit: "Galon (5L)", alert: true }
+      ]
+    };
+
+    let activeSettlingPatient = null;
+    let visitChart = null;
+    let serviceChart = null;
+
+    // INITIALIZATION
+    window.addEventListener('DOMContentLoaded', () => {
+      initClock();
+      renderOverviewData();
+      initCharts();
+      renderClinicRooms();
+      renderKanbanBoard();
+      renderMasterPatientsTable();
+      renderPharmacyUI();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function initClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClockDisplay').innerText = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('id-ID');
+      }, 1000);
+    }
+
+    // TAB NAVIGATION
+    function switchTab(tabId) {
+      const tabs = ['overview', 'rooms', 'kanban', 'patients', 'pharmacy', 'scanner'];
+      tabs.forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (btn) {
+          btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-steel-blueMuted hover:text-white hover:bg-steel-navyLight transition font-mono";
+        }
+      });
+
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold bg-steel-denim text-white transition shadow-sm font-mono";
+      }
+
+      const titles = {
+        overview: "Dashboard Overview Klinik",
+        rooms: "Monitoring 4 Ruangan Vet & Grooming",
+        kanban: "Papan Alur Rawat Pasien (Kanban)",
+        patients: "Database Rekam Medis Anabul (EMR)",
+        pharmacy: "Farmasi Vet & Cold-Chain Vaksin",
+        scanner: "Optical Barcode Scanner Paspor Medis"
+      };
+      document.getElementById('pageTitleDisplay').innerText = titles[tabId] || "Dashboard";
+      lucide.createIcons();
+    }
+
+    // OVERVIEW & CHARTS
+    function renderOverviewData() {
+      const activeCount = masterPatients.filter(p => !p.isCompleted).length;
+      document.getElementById('kpiActivePatients').innerText = `${activeCount} Pasien`;
+
+      let totalDue = 0;
+      masterPatients.forEach(p => {
+        if (!p.isCompleted) totalDue += p.due;
+      });
+      document.getElementById('kpiDueAmount').innerText = formatRupiah(totalDue);
+
+      const tbody = document.getElementById('recentPatientsTableBody');
+      tbody.innerHTML = '';
+      masterPatients.slice(0, 4).forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-steel-ice/60 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-steel-navy">${p.id}</td>
+          <td class="py-3 px-4">
+            <span class="text-steel-navy font-bold block font-sans">${p.petName}</span>
+            <span class="text-[10px] text-slate-500 font-sans">${p.breed}</span>
+          </td>
+          <td class="py-3 px-4 text-slate-600 font-sans">${p.owner} (${p.phone})</td>
+          <td class="py-3 px-4 text-steel-denim font-sans">${p.serviceName}</td>
+          <td class="py-3 px-3 text-center font-bold text-steel-navy font-sans">${p.room.split(' ')[0]} ${p.room.split(' ')[1]}</td>
+          <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono">${formatRupiah(p.totalAmount)}</td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(p.stage)}">${getStageName(p.stage)}</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openSettleModal('${p.id}')" class="text-steel-navy hover:underline font-bold">Paspor EMR</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function initCharts() {
+      // 1. Bar Chart: Species Breakdown
+      const ctx1 = document.getElementById('speciesVisitChartCanvas').getContext('2d');
+      visitChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
+          datasets: [
+            { label: 'Kucing (Cat)', data: [42, 48, 55, 62], backgroundColor: '#102A43' },
+            { label: 'Anjing (Dog)', data: [25, 28, 30, 35], backgroundColor: '#486581' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#486581', font: { family: 'JetBrains Mono' } } } },
+          scales: {
+            x: { ticks: { color: '#627D98' }, grid: { color: '#D9E2EC' } },
+            y: { ticks: { color: '#627D98' }, grid: { color: '#D9E2EC' } }
+          }
+        }
+      });
+
+      // 2. Doughnut Chart: Service Shares
+      const ctx2 = document.getElementById('serviceShareChartCanvas').getContext('2d');
+      serviceChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['Grooming & Spa', 'Konsultasi Vet', 'Vaksinasi', 'Dental/Lainnya'],
+          datasets: [{
+            data: [45, 25, 20, 10],
+            backgroundColor: ['#102A43', '#486581', '#627D98', '#BCCCDC'],
+            borderColor: '#FFFFFF',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#486581', font: { family: 'JetBrains Mono', size: 10 } } } }
+        }
+      });
+    }
+
+    // LIVE CLINIC ROOMS
+    function renderClinicRooms() {
+      const container = document.getElementById('clinicRoomsContainer');
+      container.innerHTML = clinicRooms.map(room => {
+        const patient = masterPatients.find(p => !p.isCompleted && room.occupiedBy && room.occupiedBy.includes(p.petName));
+        const isOccupied = !!patient;
+
+        return `
+          <div class="p-5 rounded-2xl border-2 transition flex flex-col justify-between ${
+            isOccupied ? 'bg-white border-steel-navy ring-1 ring-steel-navy/20 shadow-md' : 'bg-steel-ice/80 border-steel-border opacity-70'
+          }">
+            <div class="space-y-3">
+              <div class="flex justify-between items-center pb-2 border-b border-steel-border">
+                <span class="font-bold text-steel-navy">${room.name}</span>
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isOccupied ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-500'}">
+                  ${isOccupied ? 'RAWAT AKTIF' : 'STERIL (READY)'}
+                </span>
+              </div>
+
+              ${isOccupied ? `
+                <div class="space-y-1.5 font-sans">
+                  <span class="text-base font-bold text-steel-navy block font-display">${patient.petName}</span>
+                  <p class="text-xs text-slate-600">${patient.breed}</p>
+                  <p class="text-[10px] text-steel-denim font-mono">${patient.serviceName}</p>
+                  <div class="pt-2">
+                    <span class="text-[9px] text-slate-400 font-mono uppercase block">Status Tahap:</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(patient.stage)} inline-block mt-0.5 font-mono">
+                      ${getStageName(patient.stage)}
+                    </span>
+                  </div>
+                </div>
+              ` : `
+                <div class="py-8 text-center text-slate-400 space-y-1 font-sans">
+                  <i data-lucide="shield-check" class="w-8 h-8 mx-auto text-slate-300"></i>
+                  <p class="text-[10px]">Ruang telah disterilkan lampu UV-C</p>
+                </div>
+              `}
+            </div>
+
+            <div class="mt-4 pt-2 border-t border-steel-border flex items-center justify-between text-[10px] font-mono">
+              <span class="text-slate-400">${room.desc}</span>
+              ${isOccupied ? `
+                <button onclick="advancePatientStage('${patient.id}')" class="text-steel-navy hover:underline font-bold">Majukan →</button>
+              ` : `
+                <button onclick="openRegistrationModal()" class="text-steel-denim hover:text-steel-navy font-bold">+ Isi Pasien</button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    // KANBAN BOARD
+    function renderKanbanBoard() {
+      const stages = ['STAGE_1', 'STAGE_2', 'STAGE_3', 'STAGE_4'];
+      const counts = { STAGE_1: 0, STAGE_2: 0, STAGE_3: 0, STAGE_4: 0 };
+
+      stages.forEach((st, idx) => {
+        const col = document.getElementById(`kanban-stage-${idx+1}`);
+        col.innerHTML = '';
+      });
+
+      masterPatients.forEach(p => {
+        if (counts[p.stage] !== undefined) {
+          counts[p.stage]++;
+        }
+        const stageNum = p.stage.replace('STAGE_', '');
+        const col = document.getElementById(`kanban-stage-${stageNum}`);
+        if (!col) return;
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 rounded-xl bg-steel-ice border border-steel-border hover:border-steel-navy transition space-y-2 shadow-sm font-mono";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="font-bold text-steel-navy text-xs">${p.petName}</span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${p.due === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${p.due === 0 ? 'LUNAS' : 'DP 30%'}
+            </span>
+          </div>
+          <div class="font-sans">
+            <strong class="text-slate-700 block text-xs">${p.breed}</strong>
+            <p class="text-[10px] text-steel-denim">${p.serviceName}</p>
+          </div>
+          <div class="flex justify-between items-center text-[10px] text-slate-500 border-t border-steel-border pt-1.5 font-mono">
+            <span>${p.room.split(' ')[0]} ${p.room.split(' ')[1]}</span>
+            <span class="text-steel-navy font-bold">${formatRupiah(p.totalAmount)}</span>
+          </div>
+          <div class="flex gap-1.5 pt-1">
+            <button onclick="advancePatientStage('${p.id}')" class="flex-1 bg-white hover:bg-slate-100 text-steel-navy py-1 rounded text-[10px] font-bold border border-steel-border">
+              Tahap Lanjut →
+            </button>
+            <button onclick="openSettleModal('${p.id}')" class="px-2 py-1 bg-white hover:bg-slate-100 text-steel-denim rounded text-[10px] border border-steel-border font-bold">
+              Paspor
+            </button>
+          </div>
+        `;
+        col.appendChild(card);
+      });
+
+      stages.forEach((st, idx) => {
+        document.getElementById(`badge-stage-${idx+1}`).innerText = counts[st];
+      });
+    }
+
+    function advancePatientStage(id) {
+      const p = masterPatients.find(x => x.id === id);
+      if (!p) return;
+
+      if (p.stage === 'STAGE_1') p.stage = 'STAGE_2';
+      else if (p.stage === 'STAGE_2') p.stage = 'STAGE_3';
+      else if (p.stage === 'STAGE_3') p.stage = 'STAGE_4';
+      else if (p.stage === 'STAGE_4') {
+        openSettleModal(id);
+        return;
+      }
+
+      renderOverviewData();
+      renderClinicRooms();
+      renderKanbanBoard();
+      renderMasterPatientsTable();
+      showToast(`Pasien ${p.petName} dimajukan ke ${getStageName(p.stage)}`);
+    }
+
+    // MASTER PATIENTS TABLE
+    function renderMasterPatientsTable() {
+      const search = (document.getElementById('patientSearchInput')?.value || '').toLowerCase().trim();
+      const filter = document.getElementById('patientStatusFilter')?.value || 'ALL';
+
+      const tbody = document.getElementById('masterPatientsTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = masterPatients.filter(p => {
+        const matchSearch = p.petName.toLowerCase().includes(search) || p.owner.toLowerCase().includes(search) || p.id.toLowerCase().includes(search);
+        let matchFilter = true;
+        if (filter === 'COMPLETED') matchFilter = p.isCompleted;
+        else if (filter !== 'ALL') matchFilter = p.stage === filter;
+        return matchSearch && matchFilter;
+      });
+
+      filtered.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-steel-ice/50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-steel-navy">${p.id}</td>
+          <td class="py-3 px-4">
+            <span class="text-steel-navy font-bold block font-sans">${p.petName}</span>
+            <span class="text-[10px] text-slate-500 font-sans">${p.breed} (${p.species})</span>
+          </td>
+          <td class="py-3 px-4 font-sans text-slate-700">
+            <span>${p.owner}</span>
+            <span class="block text-[10px] text-slate-400 font-mono">${p.phone}</span>
+          </td>
+          <td class="py-3 px-4 font-sans text-steel-denim">${p.serviceName}</td>
+          <td class="py-3 px-4 font-sans text-[11px] text-slate-600">${p.vaccineStatus}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="block text-emerald-700 font-bold">DP: ${formatRupiah(p.paidDp)}</span>
+            <span class="block text-[10px] ${p.due > 0 ? 'text-amber-700 font-bold' : 'text-slate-400'}">Due: ${formatRupiah(p.due)}</span>
+          </td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(p.stage)}">
+              ${p.isCompleted ? 'SELESAI LUNAS' : getStageName(p.stage)}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openSettleModal('${p.id}')" class="px-2.5 py-1 bg-steel-ice hover:bg-steel-border text-steel-navy rounded-lg border border-steel-border text-[11px] font-bold">
+              Paspor Medis
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function getStageName(stage) {
+      if (stage === 'STAGE_1') return "Triage Masuk";
+      if (stage === 'STAGE_2') return "Tindakan Vet";
+      if (stage === 'STAGE_3') return "Recovery & Obat";
+      if (stage === 'STAGE_4') return "Siap Pulang";
+      return "Selesai";
+    }
+
+    function getStageBadgeColor(stage) {
+      if (stage === 'STAGE_1') return "bg-blue-100 text-blue-800 border border-blue-200";
+      if (stage === 'STAGE_2') return "bg-amber-100 text-amber-800 border border-amber-200";
+      if (stage === 'STAGE_3') return "bg-indigo-100 text-indigo-800 border border-indigo-200";
+      if (stage === 'STAGE_4') return "bg-emerald-100 text-emerald-800 border border-emerald-200";
+      return "bg-slate-200 text-slate-700";
+    }
+
+    // PHARMACY INVENTORY UI
+    function renderPharmacyUI() {
+      const vList = document.getElementById('pharmacyVaccineList');
+      vList.innerHTML = pharmacyInventory.vaksin.map(item => `
+        <div class="p-3 bg-steel-ice rounded-xl border border-steel-border flex justify-between items-center">
+          <div>
+            <span class="font-bold text-steel-navy block font-sans">${item.name}</span>
+            <span class="text-[10px] text-slate-500 font-mono">Stok: ${item.stock} ${item.unit}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold ${item.alert ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-emerald-100 text-emerald-800'}">
+            ${item.alert ? 'RESTOCK' : 'TERJAGA'}
+          </span>
+        </div>
+      `).join('');
+
+      const fList = document.getElementById('pharmacyFleaList');
+      fList.innerHTML = pharmacyInventory.kutu.map(item => `
+        <div class="p-3 bg-steel-ice rounded-xl border border-steel-border flex justify-between items-center">
+          <div>
+            <span class="font-bold text-steel-navy block font-sans">${item.name}</span>
+            <span class="text-[10px] text-slate-500 font-mono">Stok: ${item.stock} ${item.unit}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold ${item.alert ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-emerald-100 text-emerald-800'}">
+            ${item.alert ? 'MENIPIS' : 'AMAN'}
+          </span>
+        </div>
+      `).join('');
+
+      const shList = document.getElementById('pharmacyShampooList');
+      shList.innerHTML = pharmacyInventory.shampoo.map(item => `
+        <div class="p-3 bg-steel-ice rounded-xl border border-steel-border flex justify-between items-center">
+          <div>
+            <span class="font-bold text-steel-navy block font-sans">${item.name}</span>
+            <span class="text-[10px] text-slate-500 font-mono">Stok: ${item.stock} ${item.unit}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold ${item.alert ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-emerald-100 text-emerald-800'}">
+            ${item.alert ? 'RESTOCK' : 'TERSEDIA'}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function restockMedicine(type) {
+      if (type === 'vaksin') pharmacyInventory.vaksin.forEach(v => v.stock += 6);
+      if (type === 'kutu') pharmacyInventory.kutu.forEach(k => k.stock += 8);
+      if (type === 'shampoo') pharmacyInventory.shampoo.forEach(s => s.stock += 3);
+      renderPharmacyUI();
+      showToast("Stok vaksin dan farmasi klinik berhasil diperbarui!");
+    }
+
+    // SCANNER QR PASPOR MEDIS
+    function testBarcode(code) {
+      document.getElementById('barcodeScanInput').value = code;
+      processBarcodeScan();
+    }
+
+    function processBarcodeScan() {
+      const code = document.getElementById('barcodeScanInput').value.trim();
+      const p = masterPatients.find(x => x.id === code || x.id.includes(code) || x.petName.toLowerCase() === code.toLowerCase());
+
+      if (!p) {
+        alert("Nomor Paspor Medis Anabul tidak ditemukan dalam sistem klinik!");
+        return;
+      }
+
+      document.getElementById('scanResultBox').classList.remove('hidden');
+      document.getElementById('scanPetTitle').innerText = `${p.petName} (${p.breed})`;
+      document.getElementById('scanPassportCodeTitle').innerText = p.id;
+      document.getElementById('scanStageBadge').innerText = getStageName(p.stage);
+      document.getElementById('scanOwnerName').innerText = p.owner;
+      document.getElementById('scanPhone').innerText = p.phone;
+      document.getElementById('scanServiceName').innerText = p.serviceName;
+      document.getElementById('scanRoomName').innerText = p.room;
+
+      activeSettlingPatient = p;
+      showToast(`Paspor ${p.petName} berhasil divalidasi di Meja Resepsionis!`);
+    }
+
+    function advanceStageFromScanner() {
+      if (!activeSettlingPatient) return;
+      advancePatientStage(activeSettlingPatient.id);
+      document.getElementById('scanStageBadge').innerText = getStageName(activeSettlingPatient.stage);
+    }
+
+    // SETTLEMENT MODAL & PRINT PASPOR
+    function openSettleModal(id) {
+      const p = masterPatients.find(x => x.id === id);
+      if (!p) return;
+      activeSettlingPatient = p;
+
+      document.getElementById('settlePassportTitle').innerText = p.id;
+      document.getElementById('pPassportNumber').innerText = p.id;
+      document.getElementById('pDateText').innerText = p.date;
+      document.getElementById('pPetName').innerText = p.petName;
+      document.getElementById('pPetBreed').innerText = `${p.breed} (${p.species === 'CAT' ? 'Kucing' : 'Anjing'})`;
+      document.getElementById('pOwnerContact').innerText = `Owner: ${p.owner} (${p.phone})`;
+      document.getElementById('pScheduleTime').innerText = p.time;
+      document.getElementById('pRoomAllocated').innerText = p.room;
+      document.getElementById('pNotesText').innerText = `Catatan Anabul: ${p.notes}`;
+
+      document.getElementById('pServiceTitle').innerText = p.serviceName;
+      document.getElementById('pSpeciesText').innerText = p.species === 'CAT' ? 'Kucing (Cat)' : 'Anjing (Dog)';
+      document.getElementById('pUnitRate').innerText = formatRupiah(p.totalAmount);
+      document.getElementById('pItemTotal').innerText = formatRupiah(p.totalAmount);
+      document.getElementById('pGrandTotalAmount').innerText = formatRupiah(p.totalAmount);
+      document.getElementById('pPaidDpAmount').innerText = formatRupiah(p.paidDp);
+      document.getElementById('pDueAmount').innerText = formatRupiah(p.due);
+
+      document.getElementById('pTokenCode').innerText = `PASS-${p.id.split('-').pop()}-OK`;
+
+      const btnSettle = document.getElementById('btnConfirmSettleDue');
+      if (p.due === 0) {
+        document.getElementById('pPaymentStatusText').innerText = "LUNAS 100% (SELESAI)";
+        btnSettle.classList.add('hidden');
+      } else {
+        document.getElementById('pPaymentStatusText').innerText = "DP 30% TERBAYAR (DUE 70%)";
+        btnSettle.classList.remove('hidden');
+      }
+
+      document.getElementById('settleModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settleModal').classList.add('hidden');
+    }
+
+    function executeSettleDue() {
+      if (!activeSettlingPatient) return;
+      activeSettlingPatient.paidDp = activeSettlingPatient.totalAmount;
+      activeSettlingPatient.due = 0;
+      activeSettlingPatient.isCompleted = true;
+      activeSettlingPatient.stage = 'STAGE_4';
+
+      renderOverviewData();
+      renderClinicRooms();
+      renderKanbanBoard();
+      renderMasterPatientsTable();
+      closeSettleModal();
+      showToast(`Pasien ${activeSettlingPatient.petName} resmi LUNAS & siap dijemput pulang!`);
+    }
+
+    // MODAL FORM PENDAFTARAN MANUAL
+    function openRegistrationModal() {
+      document.getElementById('registrationModal').classList.remove('hidden');
+    }
+
+    function closeRegistrationModal() {
+      document.getElementById('registrationModal').classList.add('hidden');
+    }
+
+    function submitNewPatientRegistration() {
+      const pet = document.getElementById('mPetNameInput').value.trim() || 'Anabul';
+      const breed = document.getElementById('mBreedInput').value.trim() || 'Ras Domestik';
+      const owner = document.getElementById('mOwnerNameInput').value.trim() || 'Owner';
+      const phone = document.getElementById('mPhoneInput').value.trim() || '081299998888';
+      const stype = document.getElementById('mServiceTypeSelect').value;
+      const room = document.getElementById('mRoomSelect').value;
+      const time = document.getElementById('mTimeInput').value.trim() || '11:00 WIB';
+      const notes = document.getElementById('mNotesInput').value.trim() || '-';
+
+      let serviceName = "Grooming Sehat & Kutu";
+      let totalAmount = 160000;
+      if (stype === 'VET') {
+        serviceName = "Pemeriksaan Fisik & Konsultasi Vet";
+        totalAmount = 120000;
+      } else if (stype === 'VAKSIN') {
+        serviceName = "Suntik Vaksin Booster & Rabies";
+        totalAmount = 180000;
+      }
+
+      const dp = Math.round(totalAmount * 0.3);
+      const newId = "PASSPORT-VET-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+
+      const newPatient = {
+        id: newId,
+        petName: pet,
+        breed: breed,
+        species: breed.toLowerCase().includes('anjing') ? 'DOG' : 'CAT',
+        owner: owner,
+        phone: phone,
+        serviceName: serviceName,
+        room: room,
+        time: time,
+        vaccineStatus: "Buku Paspor Baru",
+        notes: notes,
+        totalAmount: totalAmount,
+        paidDp: dp,
+        due: totalAmount - dp,
+        stage: "STAGE_1",
+        isCompleted: false,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      masterPatients.unshift(newPatient);
+      renderOverviewData();
+      renderClinicRooms();
+      renderKanbanBoard();
+      renderMasterPatientsTable();
+      closeRegistrationModal();
+      showToast(`Pasien ${pet} berhasil didaftarkan ke ${room}!`);
+    }
+
+    // CSV EXPORT
+    function exportPatientsToCsv() {
+      let csv = "ID Paspor,Nama Anabul,Spesies,Ras,Pemilik,WhatsApp,Layanan,Ruangan,Status Vaksin,Total Biaya,DP Terbayar,Sisa Tagihan,Tahap Status\n";
+      masterPatients.forEach(p => {
+        csv += `"${p.id}","${p.petName}","${p.species}","${p.breed}","${p.owner}","${p.phone}","${p.serviceName}","${p.room}","${p.vaccineStatus}",${p.totalAmount},${p.paidDp},${p.due},"${p.stage}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Rekam_Medis_PetCare_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Data Rekam Medis (EMR) berhasil diekspor ke file CSV!");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMsg').innerText = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+  </script>
+</body>
+</html>

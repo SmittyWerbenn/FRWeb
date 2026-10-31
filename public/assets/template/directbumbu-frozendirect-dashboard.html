@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DirectBumbu & FrozenDirect - D2C Merchant Operations Portal</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            d2c: {
+              purple: '#6d28d9',
+              lightPurple: '#7c3aed',
+              softPurple: '#8b5cf6',
+              purpleBg: '#f5f3ff',
+              gold: '#d4af37',
+              goldLight: '#fef9c3',
+              goldDark: '#b48c28',
+              dark: '#1e1b4b',
+              deepDark: '#131138',
+              softBg: '#FAF8FC',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e1b4b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4c1d95;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d4af37;
+    }
+
+    .glass-nav {
+      background: rgba(30, 27, 75, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .gold-badge {
+      background: linear-gradient(135deg, #d4af37 0%, #b48c28 100%);
+      color: #1e1b4b;
+    }
+
+    .purple-gold-card {
+      background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%);
+    }
+
+    /* Print Styling for Official D2C Invoice & Thermal Dispatch Slip */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableInvoiceModal, #printableInvoiceModal * {
+        visibility: visible !important;
+      }
+      #printableInvoiceModal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-d2c-softBg text-slate-800 antialiased font-sans min-h-screen flex selection:bg-d2c-purpleBg selection:text-d2c-purple overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-d2c-dark border-r border-purple-900/60 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-purple-900/60">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-d2c-purple to-d2c-softPurple flex items-center justify-center text-white shadow-md shadow-purple-500/25 flex-shrink-0 border border-gold-300">
+            <i data-lucide="sparkles" class="w-5 h-5 text-gold-300"></i>
+          </div>
+          <div>
+            <span class="font-black text-lg tracking-tight text-white block leading-tight font-display">
+              DIRECT<span class="text-purple-400">BUMBU</span>
+              <span class="text-[9px] bg-d2c-gold text-slate-950 px-1.5 py-0.2 rounded font-sans uppercase font-bold ml-1">FROZEN</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-purple-950/80 text-d2c-goldLight border border-d2c-gold/40 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">D2C ADMIN</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Cold-Chain Live Sensor Indicator -->
+      <div class="px-5 py-3 border-b border-purple-900/60 bg-d2c-deepDark/50">
+        <div class="flex items-center justify-between text-[11px] font-mono text-purple-200">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="snowflake" class="w-3.5 h-3.5 text-d2c-gold"></i> Freezer Utama
+          </span>
+          <span class="text-emerald-400 font-bold" id="sidebarTempSensor">-18.4°C SAFE</span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-purple-300/80 mt-1 font-mono">
+          <span>Kapasitas Cold Hub:</span>
+          <span class="text-d2c-gold font-bold">88.5% Stored</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-d2c-goldLight bg-d2c-purple border-l-4 border-d2c-gold shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Ringkasan D2C & KPI</span>
+        </button>
+
+        <button onclick="switchTab('orders')" id="tab-orders" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-purple-200 hover:text-white hover:bg-purple-900/50">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span>Database Pesanan</span>
+          <span class="ml-auto bg-d2c-purple text-white text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="badgeActiveOrders">18 Order</span>
+        </button>
+
+        <button onclick="switchTab('whatsapp')" id="tab-whatsapp" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-purple-200 hover:text-white hover:bg-purple-900/50">
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>WA Order Ingestion</span>
+          <span class="ml-auto bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="badgeWaPending">3 Pending</span>
+        </button>
+
+        <button onclick="switchTab('dispatch')" id="tab-dispatch" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-purple-200 hover:text-white hover:bg-purple-900/50">
+          <i data-lucide="truck" class="w-4 h-4"></i>
+          <span>Thermal Dispatch & QR</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 ml-auto animate-ping"></span>
+        </button>
+
+        <button onclick="switchTab('freezer')" id="tab-freezer" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-purple-200 hover:text-white hover:bg-purple-900/50">
+          <i data-lucide="boxes" class="w-4 h-4"></i>
+          <span>Stok Freezer & Batch</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-mono px-1.5 py-0.5 rounded" id="badgeLowStock">2 Kritis</span>
+        </button>
+
+        <button onclick="switchTab('zones')" id="tab-zones" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-purple-200 hover:text-white hover:bg-purple-900/50">
+          <i data-lucide="map-pin" class="w-4 h-4"></i>
+          <span>Zona Ongkir & Tarif</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- User / Admin Profile Widget -->
+    <div class="p-4 border-t border-purple-900/60 bg-d2c-deepDark/60">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-d2c-purple to-d2c-gold flex items-center justify-center text-slate-950 font-bold text-xs font-mono shadow-sm">
+          DB
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-white truncate font-display">Tedi Mahendra</p>
+          <p class="text-[10px] text-purple-300 font-mono truncate">D2C Operations Lead</p>
+        </div>
+        <button onclick="showToast('Sistem D2C Gateway tersinkron')" title="Pengaturan Toko" class="text-purple-300 hover:text-d2c-gold transition">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-d2c-dark text-slate-200 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-purple-900/50 font-mono gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black gold-badge">100% BEBAS FEE OJOL</span>
+        <span>Akumulasi Penghematan Konsumen Hari Ini: <strong class="text-d2c-goldLight" id="topSavingsBanner">Rp 8.750.000</strong></span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-purple-300">
+        <span>Channel: <strong class="text-emerald-400">WhatsApp + QRIS Multi-Bank</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span>Ice Gel Pack: Standby</span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-nav sticky top-0 z-30 border-b border-purple-900/60 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-purple-200 hover:text-white p-1.5 rounded-lg bg-purple-900/50">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
+            <span id="currentViewTitle">Ringkasan D2C & KPI</span>
+          </h1>
+          <p class="text-purple-300 text-xs hidden sm:block font-mono">Real-Time D2C Kitchen Fulfillment, Direct Delivery & Fee Savings Analytics</p>
+        </div>
+      </div>
+
+      <!-- Top Right Quick Actions -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- New Order Ingestion Button -->
+        <button onclick="switchTab('whatsapp')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-emerald-600/20 flex items-center gap-1.5 active:scale-95 font-sans">
+          <i data-lucide="message-square-plus" class="w-4 h-4"></i>
+          <span>+ Ingest Order WA</span>
+        </button>
+
+        <!-- Notification Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-purple-900/50 border border-purple-700 text-purple-200 hover:text-d2c-gold flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-d2c-gold rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-purple-100 p-3 text-slate-800 z-50">
+            <div class="flex items-center justify-between border-b border-purple-50 pb-2 px-1">
+              <span class="font-bold text-xs font-display">Aktivitas Toko D2C Terkini</span>
+              <span class="text-[10px] font-mono text-d2c-purple font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                <p class="font-bold text-slate-900">Pembayaran QRIS Sukses: Rp 183.000</p>
+                <p class="text-slate-500 text-[10px] font-mono">INV-D2C-8812 • Tedi Mahendra (Jaksel)</p>
+                <span class="text-[9px] text-slate-400">3 menit lalu</span>
+              </div>
+              <div class="p-2.5 bg-purple-50 rounded-xl border border-purple-200">
+                <p class="font-bold text-slate-900">Kurir Thermal Bike Berangkat</p>
+                <p class="text-slate-500 text-[10px] font-mono">Resi D2C-OK-8812 • Pengantaran 1-2 Jam</p>
+                <span class="text-[9px] text-d2c-purple font-bold">14 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1">
+
+      <!-- ==================== VIEW 1: D2C OVERVIEW & KPI ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid (4 Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Gross Sales D2C -->
+          <div class="bg-white p-5 rounded-3xl border border-purple-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">OMSET BERSIH D2C HARI INI</span>
+              <div class="w-8 h-8 rounded-xl bg-d2c-purpleBg text-d2c-purple flex items-center justify-center font-bold border border-purple-200">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block" id="kpiGrossRevenue">Rp 34.250.000</span>
+              <p class="text-emerald-600 text-[11px] font-semibold flex items-center gap-1 mt-1 font-mono">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +28.4% vs minggu lalu
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2: Fee Ojol Savings Calculator -->
+          <div class="bg-white p-5 rounded-3xl border border-purple-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">FEE OJOL YANG DIHEMAT KONSUMEN</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-50 text-d2c-goldDark flex items-center justify-center font-bold border border-gold-300">
+                <i data-lucide="piggy-bank" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-d2c-goldDark font-display block" id="kpiOjolSavings">Rp 8.560.000</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">20-25% margin selamat dari potongan app</p>
+            </div>
+          </div>
+
+          <!-- Card 3: Total Unit Frozen & Bumbu Dispatched -->
+          <div class="bg-white p-5 rounded-3xl border border-purple-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">TOTAL PACK BEKU & BUMBU TERKIRIM</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-200">
+                <i data-lucide="snowflake" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block" id="kpiPacksSent">428 Pack</span>
+              <p class="text-emerald-700 text-[11px] font-mono mt-1 font-semibold">100% Cold-Chain Insulated Aman</p>
+            </div>
+          </div>
+
+          <!-- Card 4: Orders Breakdown (WA vs QRIS) -->
+          <div class="bg-white p-5 rounded-3xl border border-purple-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">TOTAL ORDER D2C (HARI INI)</span>
+              <div class="w-8 h-8 rounded-xl bg-d2c-dark text-white flex items-center justify-center font-bold">
+                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block" id="kpiTotalOrders">48 Transaksi</span>
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
+                <div class="bg-d2c-purple h-full rounded-full" style="width: 75%"></div>
+              </div>
+              <p class="text-stone-400 text-[10px] font-mono mt-1">36 via WhatsApp • 12 QRIS Instan</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (2 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Revenue vs Ojol Fee Savings Trend (8 Cols) -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-50 pb-3">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display">Performa Omset D2C vs Akumulasi Penghematan Fee Ojol</h3>
+                <p class="text-xs text-stone-500 font-mono">Perbandingan omset langsung dengan nilai margin komisi aplikasi yang diselamatkan</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-d2c-purple"></span> Omset D2C
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-d2c-gold"></span> Margin Hemat Fee
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="revenueTrendChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Category Share Doughnut Chart (4 Cols) -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-purple-50 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-display">Porsi Kategori Produk D2C</h3>
+              <p class="text-xs text-stone-500 font-mono">Volume penjualan bumbu pasta vs frozen pack</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="categoryShareChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-stone-500 space-y-1 border-t border-purple-50">
+              <div class="flex justify-between">
+                <span>Pasta Bumbu Siap Tumis:</span>
+                <strong class="text-slate-900">46% (196 Pack)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Lauk Frozen Food (Rendang/Dimsum):</span>
+                <strong class="text-d2c-purple">38% (162 Pack)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Sambal Botol Segar:</span>
+                <strong class="text-d2c-goldDark">16% (70 Botol)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Dispatching & Courier Status Strip -->
+        <div class="bg-d2c-dark text-white rounded-3xl p-6 sm:p-7 border border-purple-900/60 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-d2c-gold text-xs font-mono uppercase font-bold tracking-widest">LIVE COLD-CHAIN DISPATCH TRACKER</span>
+              <h3 class="text-lg font-bold font-display mt-0.5">Status Pengantaran Kurir Termal & Safe Delivery</h3>
+            </div>
+            <button onclick="switchTab('dispatch')" class="bg-purple-900/60 hover:bg-purple-800 text-xs text-purple-200 px-3.5 py-2 rounded-xl border border-purple-700 transition flex items-center gap-1.5 font-mono">
+              <span>Buka Scanner Kurir</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-d2c-gold"></i>
+            </button>
+          </div>
+
+          <!-- 4 Courier Pipeline Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="liveCourierStripContainer">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- Recent Orders Fast Access Table -->
+        <div class="bg-white rounded-3xl border border-purple-100 shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-50 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Pesanan D2C Masuk Hari Ini</h3>
+              <p class="text-xs text-stone-500 font-mono">Daftar transaksi checkout via WhatsApp Lead & QRIS Settlement</p>
+            </div>
+            <button onclick="switchTab('orders')" class="text-xs font-bold text-d2c-purple hover:text-d2c-lightPurple transition flex items-center gap-1 font-mono">
+              Kelola Semua Pesanan <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                <tr>
+                  <th class="py-3 px-4">INVOICE</th>
+                  <th class="py-3 px-4">PEMBELI & WHATSAPP</th>
+                  <th class="py-3 px-4">WILAYAH TUJUAN</th>
+                  <th class="py-3 px-4">TOTAL PRODUK</th>
+                  <th class="py-3 px-4">ONGKIR COLD</th>
+                  <th class="py-3 px-4">TOTAL BAYAR</th>
+                  <th class="py-3 px-4">METODE BAYAR</th>
+                  <th class="py-3 px-4 text-center">AKSI DOKUMEN</th>
+                </tr>
+              </thead>
+              <tbody id="overviewOrdersTableBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: MASTER ORDERS & FILTERS ==================== -->
+      <section id="view-orders" class="hidden space-y-6">
+        
+        <!-- Search and Filter Bar -->
+        <div class="bg-white p-5 rounded-3xl border border-purple-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-400"></i>
+            <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="Cari Nama, No. WhatsApp, ID Invoice..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-d2c-purple" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button onclick="filterOrderStatus('ALL')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-d2c-dark text-white transition" data-status="ALL">Semua</button>
+            <button onclick="filterOrderStatus('PAID_QRIS')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="PAID_QRIS">Lunas QRIS</button>
+            <button onclick="filterOrderStatus('WAITING_WA')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="WAITING_WA">Pending Transfer WA</button>
+            <button onclick="filterOrderStatus('SHIPPED')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="SHIPPED">Sedang Dikirim</button>
+            <button onclick="filterOrderStatus('DELIVERED')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="DELIVERED">Selesai</button>
+          </div>
+        </div>
+
+        <!-- Master Orders Table -->
+        <div class="bg-white rounded-3xl border border-purple-100 shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-purple-50 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Database Transaksi D2C & Delivery Tracking</h3>
+              <p class="text-xs text-stone-500 font-mono" id="ordersTableCountText">Menampilkan seluruh pesanan aktif</p>
+            </div>
+            <button onclick="exportOrdersToCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                <tr>
+                  <th class="py-3 px-4">INVOICE</th>
+                  <th class="py-3 px-4">PEMBELI & WHATSAPP</th>
+                  <th class="py-3 px-4">ITEM PESANAN</th>
+                  <th class="py-3 px-4">ZONA & ALAMAT</th>
+                  <th class="py-3 px-4">EKSPEDISI</th>
+                  <th class="py-3 px-4">TOTAL BAYAR</th>
+                  <th class="py-3 px-4">STATUS ORDER</th>
+                  <th class="py-3 px-4 text-center">AKSI OPERASIONAL</th>
+                </tr>
+              </thead>
+              <tbody id="masterOrdersTableBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: WHATSAPP ORDER INGESTION SIMULATOR ==================== -->
+      <section id="view-whatsapp" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: WhatsApp Lead Ingestion & Parser Form (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-purple-100 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-purple-50 pb-4">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+                  <i data-lucide="message-circle" class="w-5 h-5 text-emerald-600"></i>
+                  WhatsApp Order Message Parser & Ingestion
+                </h3>
+                <p class="text-xs text-stone-500 font-mono">Konversi format pesanan WhatsApp dari website checkout menjadi pesanan resmi</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> BOT PARSER READY
+              </span>
+            </div>
+
+            <!-- Preset Quick Parser Buttons -->
+            <div class="space-y-2">
+              <span class="text-xs font-bold text-stone-700 font-sans">Pilih Contoh Pesan WhatsApp Masuk:</span>
+              <div class="flex flex-wrap gap-2 text-xs font-mono">
+                <button onclick="loadSampleWAPremium()" class="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-d2c-purple border border-purple-200 font-bold transition">
+                  Contoh 1: Rendang + Dimsum (Jaksel)
+                </button>
+                <button onclick="loadSampleWAFamily()" class="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-d2c-purple border border-purple-200 font-bold transition">
+                  Contoh 2: Paket Lengkap Opor & Sambal (Tangsel)
+                </button>
+              </div>
+            </div>
+
+            <!-- WhatsApp Raw Text Box -->
+            <div class="space-y-2 font-mono text-xs">
+              <label class="block font-bold text-slate-700">Teks Pesan WhatsApp Masuk:</label>
+              <textarea id="waRawInput" rows="9" class="w-full bg-stone-50 border border-stone-200 rounded-2xl p-3.5 text-slate-800 text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-d2c-purple font-mono"></textarea>
+            </div>
+
+            <!-- Parser Action Buttons -->
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <button onclick="parseAndProcessWAOrder()" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white font-bold text-xs py-3 px-5 rounded-xl transition flex items-center gap-2 shadow-md shadow-purple-600/25 active:scale-95 font-sans">
+                <i data-lucide="check-circle" class="w-4 h-4 text-d2c-gold"></i>
+                <span>Proses Pesanan & Buat Invoice</span>
+              </button>
+              <button onclick="sendFollowUpQRISDirect()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition flex items-center gap-2 font-sans shadow-sm">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span>Kirim Link Tagihan QRIS via WA</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Ingestion Live Preview & Queue (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-purple-50 pb-3">
+              <h3 class="font-bold text-sm text-slate-900 font-display">Hasil Parsing Pesanan Real-Time</h3>
+              <span class="text-[10px] text-d2c-purple font-bold bg-d2c-purpleBg px-2 py-0.5 rounded">STRUCTURED DATA</span>
+            </div>
+
+            <!-- Parsed Card Output -->
+            <div id="parsedOrderPreviewCard" class="p-4 rounded-2xl border border-purple-100 bg-stone-50 space-y-3">
+              <div class="flex justify-between items-center pb-2 border-b border-stone-200">
+                <span class="text-stone-500">Status Parsing:</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">DATA VALID</span>
+              </div>
+              <div class="space-y-1">
+                <p class="text-stone-500">Nama: <strong class="text-slate-900 font-sans" id="parsedCustName">Tedi Mahendra</strong></p>
+                <p class="text-stone-500">WhatsApp: <strong class="text-slate-900 font-mono" id="parsedCustPhone">081299998888</strong></p>
+                <p class="text-stone-500">Zona Kirim: <strong class="text-d2c-purple" id="parsedCustZone">Jakarta Selatan (Instant Cold)</strong></p>
+                <p class="text-stone-500 text-[11px] leading-tight" id="parsedCustAddress">Gedung Wirausaha Lt. 5, Jaksel</p>
+              </div>
+              <div class="pt-2 border-t border-stone-200">
+                <span class="text-[10px] text-stone-400 block mb-1">Rincian Item:</span>
+                <div id="parsedItemsList" class="space-y-1 font-sans text-[11px] text-slate-700">
+                  <div class="flex justify-between"><span>1x Rendang Sapi Meltique</span><strong class="font-mono">Rp 85.000</strong></div>
+                  <div class="flex justify-between"><span>1x Dimsum Mentai Mozzarella</span><strong class="font-mono">Rp 55.000</strong></div>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-stone-200 flex justify-between items-center font-bold">
+                <span>Total Bayar Bersih:</span>
+                <span class="text-sm font-black text-d2c-purple font-mono" id="parsedGrandTotal">Rp 160.000</span>
+              </div>
+            </div>
+
+            <div class="p-3 bg-d2c-purpleBg rounded-xl border border-purple-200 text-[11px] text-purple-900 leading-normal font-sans">
+              <i data-lucide="info" class="w-3.5 h-3.5 inline mr-1 text-d2c-purple"></i>
+              Pesanan otomatis diteruskan ke tim Gudang Beku untuk disiapkan bersama <strong>Ice Gel Pack</strong> kedap udara.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: THERMAL COURIER DISPATCH & SCANNER ==================== -->
+      <section id="view-dispatch" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Barcode Scanner Simulator -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-purple-100 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-purple-50 pb-4">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-d2c-purple"></i>
+                  Thermal Courier Dispatch & Handover Scanner
+                </h3>
+                <p class="text-xs text-stone-500 font-mono">Pindai token resi kurir saat paket bumbu/frozen meninggalkan cold storage</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> DISPATCH ACTIVE
+              </span>
+            </div>
+
+            <!-- Optical Sensor Graphic -->
+            <div class="bg-d2c-dark rounded-3xl p-8 border border-purple-900 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-d2c-gold rounded-2xl relative flex items-center justify-center p-4 bg-purple-950/40">
+                <div class="w-full h-0.5 bg-d2c-gold absolute top-1/2 -translate-y-1/2 shadow-lg shadow-gold-500 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-purple-400 opacity-60"></i>
+              </div>
+              <p class="text-purple-200 text-xs font-mono mt-4">Arahkan Barcode Token Resi (Cth: <strong>D2C-OK-8812</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-slate-700">Input Manual Barcode Token Resi:</label>
+              <div class="flex gap-2">
+                <input type="text" id="dispatchScanInput" value="D2C-OK-8812" placeholder="Masukkan token resi..." class="flex-1 bg-stone-50 px-4 py-2.5 rounded-xl border border-stone-200 font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-d2c-purple" />
+                <button onclick="executeDispatchScan()" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-purple-600/20 active:scale-95 font-sans">
+                  <i data-lucide="check" class="w-4 h-4 text-d2c-gold"></i> Validasi Resi
+                </button>
+              </div>
+              <p class="text-[11px] text-stone-400 font-sans">Preset token pengujian cepat: 
+                <span onclick="setScannerVal('D2C-OK-8812')" class="underline cursor-pointer text-d2c-purple font-mono font-bold">D2C-OK-8812 (Tedi M - Instant Cold)</span> • 
+                <span onclick="setScannerVal('D2C-OK-8813')" class="underline cursor-pointer text-d2c-goldDark font-mono font-bold">D2C-OK-8813 (Nadia - Same Day Frozen)</span> •
+                <span onclick="setScannerVal('INVALID-TOKEN')" class="underline cursor-pointer text-rose-600 font-mono font-bold">INVALID-TOKEN (Tidak Ada)</span>
+              </p>
+            </div>
+
+            <!-- Scanner Result Feedback Card -->
+            <div id="dispatchScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Courier Logs -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-4 font-mono">
+            <div class="flex items-center justify-between border-b border-purple-50 pb-3">
+              <h3 class="font-bold text-sm text-slate-900 font-display">Log Dispatching & Rantai Dingin</h3>
+              <span class="text-[10px] text-stone-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs" id="courierAuditLogs">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: COLD STORAGE & INVENTORY ==================== -->
+      <section id="view-freezer" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-purple-100 shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 font-display">Monitoring Inventori Cold Storage (-18°C) & Batch Bumbu</h3>
+            <p class="text-xs text-stone-500 font-mono">Pantau stok kemasan vakum kedap udara dan masa kedaluwarsa beku (hingga 6 bulan)</p>
+          </div>
+          <button onclick="openRestockModal()" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-purple-600/20">
+            <i data-lucide="plus" class="w-4 h-4 text-d2c-gold"></i> + Input Batch Produksi Baru
+          </button>
+        </div>
+
+        <!-- Inventory Grid Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="inventoryGridContainer">
+          <!-- Populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 6: SHIPPING ZONES & RATES CONFIG ==================== -->
+      <section id="view-zones" class="hidden space-y-6">
+        
+        <div class="bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-50 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Konfigurasi Tarif Ongkir Otomatis Sesuai Wilayah</h3>
+              <p class="text-xs text-stone-500 font-mono">Atur tarif kurir Instant Thermal Bike (1-2 Jam) dan Same Day Frozen Express</p>
+            </div>
+            <button onclick="showToast('Konfigurasi zona pengiriman berhasil disimpan')" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white font-mono font-bold text-xs px-4 py-2 rounded-xl transition shadow-md shadow-purple-600/20">
+              Simpan Perubahan Tarif
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="shippingZonesGridContainer">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: OFFICIAL PRINTABLE INVOICE & DO ==================== -->
+  <div id="invoicePreviewModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full border border-purple-100 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Top Action Bar -->
+      <div class="flex items-center justify-between border-b border-purple-50 pb-4 no-print font-mono">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-d2c-purpleBg text-d2c-purple uppercase tracking-wider">
+            OFFICIAL D2C INVOICE & DISPATCH SLIP
+          </span>
+          <span class="text-xs text-stone-400 font-mono">COLD-CHAIN VERIFIED</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="printOfficialInvoice()" class="bg-d2c-purple hover:bg-d2c-lightPurple text-white font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm font-sans border border-purple-400">
+            <i data-lucide="printer" class="w-4 h-4 text-d2c-gold"></i> Cetak Faktur PDF
+          </button>
+          <button onclick="closeInvoiceModal()" class="p-2 text-stone-400 hover:text-stone-600 rounded-xl bg-stone-100">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Document Container -->
+      <div id="printableInvoiceModal" class="space-y-6">
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-stone-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-d2c-purple flex items-center justify-center text-white">
+                <i data-lucide="sparkles" class="w-4 h-4 text-gold-300"></i>
+              </div>
+              <span class="font-black text-xl tracking-tight text-slate-900 font-display">DIRECT<span class="text-d2c-purple">BUMBU</span> <span class="text-xs font-bold bg-d2c-gold text-slate-900 px-1.5 py-0.5 rounded font-sans uppercase">D2C</span></span>
+            </div>
+            <p class="text-[11px] text-stone-500 font-sans">PT DirectBumbu Kuliner Nusantara • Central Cold Hub Kebayoran, Jakarta Selatan</p>
+            <p class="text-[11px] text-stone-500 font-sans">WhatsApp Customer Care: +62 812-9999-8888 • cs@directbumbu.frel.cloud</p>
+          </div>
+
+          <div class="text-right font-mono">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-d2c-purpleBg text-d2c-purple uppercase" id="modalInvBadge">
+              LUNAS (QRIS SETTLEMENT)
+            </span>
+            <p id="modalInvCode" class="text-xs font-bold text-slate-900 mt-1">INV-D2C-202610-8812</p>
+            <p id="modalInvDate" class="text-[11px] text-stone-400">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Recipient & Dispatch Info -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-stone-50 p-4 rounded-2xl border border-stone-200">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5 font-mono">PENERIMA PAKET D2C:</span>
+            <p id="modalCustName" class="font-bold text-slate-900 text-sm font-sans">Tedi Mahendra</p>
+            <p id="modalCustPhone" class="text-stone-500 font-mono">081299998888</p>
+            <p id="modalCustAddress" class="text-stone-600 mt-1 font-sans">Gedung Wirausaha Lt. 5, Kuningan, Jaksel</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5 font-mono">METODE EKSPEDISI:</span>
+            <p id="modalCourierTitle" class="font-bold text-d2c-purple text-sm font-mono">Instant Thermal Bike</p>
+            <p id="modalZoneText" class="text-slate-600 font-mono">Wilayah: Jakarta Selatan</p>
+            <p class="text-emerald-700 font-bold font-sans mt-0.5">Disegel Insulated Pouch & Ice Gel</p>
+          </div>
+        </div>
+
+        <!-- Table Items -->
+        <div class="border border-stone-200 rounded-2xl overflow-hidden text-xs">
+          <table class="w-full text-left font-mono">
+            <thead class="bg-stone-50 text-stone-600 font-bold border-b border-stone-200">
+              <tr>
+                <th class="py-2.5 px-4 font-sans">Item Bumbu / Frozen Pack</th>
+                <th class="py-2.5 px-3 text-center">Qty</th>
+                <th class="py-2.5 px-4 text-right">Harga D2C</th>
+                <th class="py-2.5 px-4 text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="modalItemsTbody" class="divide-y divide-stone-100 font-medium">
+              <!-- Injected via JS -->
+            </tbody>
+            <tfoot class="bg-stone-50 border-t border-stone-200 text-xs font-mono">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-stone-600 font-bold">Subtotal Produk:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900" id="modalSubtotalVal">Rp 123.000</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-stone-600 font-bold">Ongkos Kirim Cold-Chain:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900" id="modalShippingVal">Rp 20.000</td>
+              </tr>
+              <tr class="bg-emerald-50 text-emerald-800">
+                <td colspan="3" class="py-2 px-4 text-right font-bold">Penghematan Fee Ojol yang Dinikmati:</td>
+                <td class="py-2 px-4 text-right font-black" id="modalSavingsVal">Hemat Rp 35.000</td>
+              </tr>
+              <tr class="bg-d2c-purpleBg border-t border-purple-200">
+                <td colspan="3" class="py-2.5 px-4 text-right text-d2c-purple font-black text-sm">TOTAL BAYAR BERSIH:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-d2c-purple" id="modalGrandTotalVal">Rp 143.000</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Token Barcode Box -->
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider font-mono">COLD-CHAIN DISPATCH TOKEN</span>
+            <p class="text-xs font-bold text-slate-900">Scan Barcode Ini Saat Serah Terima Paket ke Kurir & Konsumen</p>
+            <p class="text-[11px] text-stone-500">Simpan langsung di freezer (-18°C) saat paket tiba di rumah Anda.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-stone-200 inline-block shadow-sm">
+              <img id="modalQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=D2C-OK-8812" alt="QR Dispatch" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-stone-400 mt-1" id="modalTokenText">TOKEN: D2C-OK-8812</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-purple-800 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+    <div class="w-6 h-6 rounded-full bg-d2c-purple flex items-center justify-center text-d2c-goldLight font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Operasi D2C berhasil diperbarui</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT MASTER LOGIC ==================== -->
+  <script>
+    // 1. Data Transaksi Master Orders
+    let masterOrders = [
+      {
+        orderId: "INV-D2C-202610-8812",
+        token: "D2C-OK-8812",
+        customer: "Tedi Mahendra",
+        phone: "0812-9999-8888",
+        zone: "JAKSEL",
+        zoneName: "Jakarta Selatan",
+        address: "Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Kuningan",
+        courier: "Instant Thermal Bike (1-2 Jam)",
+        items: [
+          { name: "Rendang Daging Sapi Meltique (Frozen 400g)", qty: 1, price: 85000 },
+          { name: "Dimsum Mentai Mozzarella (10 Pcs)", qty: 1, price: 55000 },
+          { name: "Sambal Cumi Asin Cabe Ijo Botol", qty: 1, price: 35000 }
+        ],
+        subtotal: 175000,
+        shipping: 20000,
+        grandTotal: 195000,
+        ojolSavings: 42000,
+        paymentMethod: "QRIS Dinamis",
+        status: "PAID_QRIS", // PAID_QRIS, WAITING_WA, SHIPPED, DELIVERED
+        date: "2026-10-31"
+      },
+      {
+        orderId: "INV-D2C-202610-8813",
+        token: "D2C-OK-8813",
+        customer: "Nadia Hutagalung",
+        phone: "0811-3456-7890",
+        zone: "TANGSEL",
+        zoneName: "Tangerang Selatan & BSD",
+        address: "Cluster Greenwich Park, BSD City, Tangerang Selatan",
+        courier: "Same Day Frozen Express (6-8 Jam)",
+        items: [
+          { name: "Pasta Bumbu Rendang Minang (250g)", qty: 2, price: 38000 },
+          { name: "Pasta Bumbu Ayam Bakar Madu (250g)", qty: 2, price: 32000 }
+        ],
+        subtotal: 140000,
+        shipping: 15000,
+        grandTotal: 155000,
+        ojolSavings: 36000,
+        paymentMethod: "WhatsApp Transfer BCA",
+        status: "SHIPPED",
+        date: "2026-10-31"
+      },
+      {
+        orderId: "INV-D2C-202610-8814",
+        token: "D2C-OK-8814",
+        customer: "Bima Santoso",
+        phone: "0813-5566-7788",
+        zone: "JAKPUS",
+        zoneName: "Jakarta Pusat",
+        address: "Apartemen Menteng Park Tower Diamond, Cikini, Jakpus",
+        courier: "Instant Thermal Bike (1-2 Jam)",
+        items: [
+          { name: "Rendang Daging Sapi Meltique (Frozen 400g)", qty: 2, price: 85000 },
+          { name: "Pasta Bumbu Opor Kuning Rempah", qty: 1, price: 30000 }
+        ],
+        subtotal: 200000,
+        shipping: 26000,
+        grandTotal: 226000,
+        ojolSavings: 49000,
+        paymentMethod: "QRIS Dinamis",
+        status: "DELIVERED",
+        date: "2026-10-31"
+      },
+      {
+        orderId: "INV-D2C-202610-8815",
+        token: "D2C-OK-8815",
+        customer: "Jessica Iskandar",
+        phone: "0818-4455-6677",
+        zone: "JAKTIM",
+        zoneName: "Jakarta Timur",
+        address: "Jl. Kayu Putih Tengah No. 18, Rawamangun, Jaktim",
+        courier: "Same Day Frozen Express (6-8 Jam)",
+        items: [
+          { name: "Dimsum Mentai Mozzarella (10 Pcs)", qty: 3, price: 55000 }
+        ],
+        subtotal: 165000,
+        shipping: 18000,
+        grandTotal: 183000,
+        ojolSavings: 51000,
+        paymentMethod: "WhatsApp Transfer Mandiri",
+        status: "WAITING_WA",
+        date: "2026-10-31"
+      }
+    ];
+
+    // 2. Data Inventori Freezer & Bumbu Batch
+    let masterInventory = [
+      { id: "SKU-BMB-01", name: "Pasta Bumbu Rendang Minang (250g)", category: "Bumbu Pasta", stock: 140, minStock: 50, temp: "-18°C", batch: "BATCH-202610-A", exp: "30 Apr 2027", status: "SAFE" },
+      { id: "SKU-FRZ-02", name: "Rendang Sapi Meltique (Frozen 400g)", category: "Lauk Beku", stock: 24, minStock: 40, temp: "-18°C", batch: "BATCH-202610-B", exp: "15 Mei 2027", status: "LOW_STOCK" },
+      { id: "SKU-BMB-03", name: "Pasta Bumbu Ayam Bakar Madu (250g)", category: "Bumbu Pasta", stock: 115, minStock: 40, temp: "-18°C", batch: "BATCH-202610-C", exp: "20 Jun 2027", status: "SAFE" },
+      { id: "SKU-FRZ-04", name: "Dimsum Mentai Mozzarella (10 Pcs)", category: "Lauk Beku", stock: 18, minStock: 35, temp: "-18°C", batch: "BATCH-202610-D", exp: "10 Apr 2027", status: "LOW_STOCK" },
+      { id: "SKU-SMB-05", name: "Sambal Cumi Asin Cabe Ijo Botol", category: "Sambal", stock: 85, minStock: 30, temp: "+4°C Chiller", batch: "BATCH-202610-E", exp: "15 Jan 2027", status: "SAFE" },
+      { id: "SKU-BMB-06", name: "Pasta Bumbu Opor Kuning Rempah", category: "Bumbu Pasta", stock: 95, minStock: 30, temp: "-18°C", batch: "BATCH-202610-F", exp: "12 Mei 2027", status: "SAFE" }
+    ];
+
+    // 3. Data Zona Ongkir
+    let masterZones = [
+      { code: "JAKSEL", name: "Jakarta Selatan", instantRate: 20000, samedayRate: 14000, timeEst: "15-30 Menit", note: "Zona Pusat Dapur Kebayoran" },
+      { code: "JAKPUS", name: "Jakarta Pusat & Jakbar", instantRate: 26000, samedayRate: 16000, timeEst: "30-50 Menit", note: "Rute Koridor Sudirman-Gajah Mada" },
+      { code: "JAKTIM", name: "Jakarta Timur & Jakut", instantRate: 28000, samedayRate: 18000, timeEst: "40-60 Menit", note: "Pengiriman via Tol By-pass" },
+      { code: "TANGSEL", name: "Tangerang Selatan & BSD", instantRate: 25000, samedayRate: 15000, timeEst: "35-50 Menit", note: "Rute Bintaro & Serpong" },
+      { code: "DEPOK", name: "Depok & Sekitarnya", instantRate: 32000, samedayRate: 20000, timeEst: "45-70 Menit", note: "Rute Margonda & Cinere" }
+    ];
+
+    // 4. Courier Audit Logs
+    let courierLogs = [
+      { time: "18:45:10", token: "D2C-OK-8812", cust: "Tedi Mahendra", courier: "Kurir Bagus (Thermal Bike #04)", status: "DISPATCHED (SEAL PACK)" },
+      { time: "17:30:22", token: "D2C-OK-8814", cust: "Bima Santoso", courier: "Kurir Rian (Thermal Bike #02)", status: "DELIVERED (SUKSES DITERIMA)" },
+      { time: "16:15:00", token: "D2C-OK-8813", cust: "Nadia Hutagalung", courier: "Same Day Frozen Hub", status: "ON TRANSIT COLD HUB" }
+    ];
+
+    let revenueChartInstance = null;
+    let categoryShareChartInstance = null;
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Ringkasan D2C & KPI Operasional",
+        orders: "Master Pesanan & Delivery Tracking",
+        whatsapp: "WhatsApp Lead & Order Ingestion Simulator",
+        dispatch: "Thermal Courier Dispatch & Barcode Scanner",
+        freezer: "Monitoring Cold Storage (-18°C) & Stok Batch",
+        zones: "Konfigurasi Zona Pengiriman & Kalkulator Tarif"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "DirectBumbu Admin Suite";
+
+      ['overview', 'orders', 'whatsapp', 'dispatch', 'freezer', 'zones'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-purple-200 hover:text-white hover:bg-purple-900/50 font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-d2c-goldLight bg-d2c-purple border-l-4 border-d2c-gold shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'overview') { renderCourierStrip(); renderOverviewOrders(); }
+      if (tabKey === 'orders') renderMasterOrdersTable();
+      if (tabKey === 'dispatch') renderCourierLogs();
+      if (tabKey === 'freezer') renderInventoryGrid();
+      if (tabKey === 'zones') renderShippingZones();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      renderCourierStrip();
+      renderOverviewOrders();
+      renderMasterOrdersTable();
+      renderCourierLogs();
+      renderInventoryGrid();
+      renderShippingZones();
+      updateDashboardCounters();
+      loadSampleWAPremium();
+      lucide.createIcons();
+    });
+
+    // ==================== 1. KPI & CHARTS ====================
+    function initCharts() {
+      // 1. Revenue vs Ojol Savings Chart
+      const ctxRev = document.getElementById('revenueTrendChart');
+      if (ctxRev) {
+        revenueChartInstance = new Chart(ctxRev, {
+          type: 'bar',
+          data: {
+            labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
+            datasets: [
+              {
+                label: 'Omset Bersih D2C (Rp Jt)',
+                data: [18.5, 22.1, 26.4, 28.9, 32.5, 38.0, 34.2],
+                backgroundColor: '#6d28d9',
+                borderRadius: 6
+              },
+              {
+                label: 'Fee Ojol Terselamatkan (Rp Jt)',
+                data: [4.6, 5.5, 6.6, 7.2, 8.1, 9.5, 8.5],
+                backgroundColor: '#d4af37',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#f5f3ff' }
+              },
+              x: {
+                ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Category Share Doughnut
+      const ctxCat = document.getElementById('categoryShareChart');
+      if (ctxCat) {
+        categoryShareChartInstance = new Chart(ctxCat, {
+          type: 'doughnut',
+          data: {
+            labels: ['Pasta Bumbu Siap Masak', 'Lauk Frozen Food', 'Sambal Botolan'],
+            datasets: [{
+              data: [46, 38, 16],
+              backgroundColor: ['#6d28d9', '#8b5cf6', '#d4af37'],
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            },
+            cutout: '72%'
+          }
+        });
+      }
+    }
+
+    function renderCourierStrip() {
+      const container = document.getElementById('liveCourierStripContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const courierStatuses = [
+        { label: "1. Siap Packing & Ice Gel", count: 4, icon: "snowflake", color: "text-purple-300" },
+        { label: "2. Serah Terima Kurir", count: 2, icon: "package", color: "text-amber-400" },
+        { label: "3. Kurir On The Way (1-2 Jam)", count: 5, icon: "bike", color: "text-emerald-400" },
+        { label: "4. Tiba di Freezer Pembeli", count: 37, icon: "check-circle", color: "text-d2c-gold" }
+      ];
+
+      courierStatuses.forEach(st => {
+        const div = document.createElement('div');
+        div.className = "bg-purple-950/40 border border-purple-900/80 p-4 rounded-2xl space-y-1.5 font-mono";
+        div.innerHTML = `
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-stone-300">${st.label}</span>
+            <i data-lucide="${st.icon}" class="w-4 h-4 ${st.color}"></i>
+          </div>
+          <span class="text-2xl font-black text-white font-display">${st.count} Order</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderOverviewOrders() {
+      const tbody = document.getElementById('overviewOrdersTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterOrders.slice(0, 5).forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-purple-50/40 transition";
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${o.orderId}</td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-800">${o.customer}<br><span class="text-[10px] text-stone-400 font-mono font-normal">${o.phone}</span></td>
+          <td class="py-3 px-4 text-d2c-purple font-semibold font-mono">${o.zoneName}</td>
+          <td class="py-3 px-4 font-bold text-slate-900">${formatRupiah(o.subtotal)}</td>
+          <td class="py-3 px-4 text-emerald-700 font-bold">${formatRupiah(o.shipping)}</td>
+          <td class="py-3 px-4 font-black text-d2c-purple">${formatRupiah(o.grandTotal)}</td>
+          <td class="py-3 px-4 font-sans"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${o.paymentMethod.includes('QRIS') ? 'bg-purple-100 text-d2c-purple' : 'bg-emerald-100 text-emerald-800'}">${o.paymentMethod}</span></td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="previewInvoice('${o.orderId}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-purple-100 text-d2c-purple font-bold text-[10px] transition inline-flex items-center gap-1 font-mono">
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i> Faktur
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // ==================== 2. MASTER ORDERS TABLE ====================
+    function renderMasterOrdersTable(filteredList = null) {
+      const tbody = document.getElementById('masterOrdersTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterOrders;
+      document.getElementById('ordersTableCountText').innerText = `Menampilkan ${list.length} pesanan aktif`;
+
+      list.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-purple-50/40 transition";
+
+        let statusBadge = "";
+        if (o.status === 'PAID_QRIS') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-100 text-d2c-purple font-bold">LUNAS QRIS</span>';
+        else if (o.status === 'WAITING_WA') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-bold">PENDING TRANSFER</span>';
+        else if (o.status === 'SHIPPED') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-800 font-bold">SEDANG DIANTAR</span>';
+        else statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold">DELIVERED</span>';
+
+        const itemsSummary = o.items.map(it => `${it.qty}x ${it.name}`).join(', ');
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${o.orderId}<br><span class="text-[9px] text-stone-400 font-normal">Resi: ${o.token}</span></td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-800">${o.customer}<br><span class="text-[10px] text-stone-500 font-mono font-normal">${o.phone}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700 max-w-[200px] truncate" title="${itemsSummary}">${itemsSummary}</td>
+          <td class="py-3 px-4 font-mono text-slate-600">${o.zoneName}<br><span class="text-[10px] text-stone-400 truncate block max-w-[160px]">${o.address}</span></td>
+          <td class="py-3 px-4 text-slate-700">${o.courier}</td>
+          <td class="py-3 px-4 font-black text-d2c-purple">${formatRupiah(o.grandTotal)}</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center gap-1.5 font-mono">
+              <button onclick="previewInvoice('${o.orderId}')" class="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 transition" title="Lihat Faktur">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              </button>
+              ${o.status === 'WAITING_WA' ? `
+                <button onclick="markOrderPaid('${o.orderId}')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition shadow-sm font-sans">
+                  Konfirmasi Lunas
+                </button>
+              ` : `
+                <span class="text-[10px] text-emerald-600 font-bold flex items-center"><i data-lucide="check" class="w-3.5 h-3.5"></i> Valid</span>
+              `}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterOrdersTable() {
+      const q = document.getElementById('orderSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMasterOrdersTable();
+        return;
+      }
+      const filtered = masterOrders.filter(o => 
+        o.orderId.toLowerCase().includes(q) ||
+        o.customer.toLowerCase().includes(q) ||
+        o.phone.toLowerCase().includes(q) ||
+        o.token.toLowerCase().includes(q)
+      );
+      renderMasterOrdersTable(filtered);
+    }
+
+    function filterOrderStatus(statusKey) {
+      document.querySelectorAll('.order-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-status') === statusKey) {
+          btn.className = "order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-d2c-dark text-white transition";
+        } else {
+          btn.className = "order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition";
+        }
+      });
+
+      if (statusKey === 'ALL') {
+        renderMasterOrdersTable();
+      } else {
+        renderMasterOrdersTable(masterOrders.filter(o => o.status === statusKey));
+      }
+    }
+
+    function markOrderPaid(orderId) {
+      const o = masterOrders.find(x => x.orderId === orderId);
+      if (o) {
+        o.status = "PAID_QRIS";
+        o.paymentMethod = "Transfer Terverifikasi";
+        renderMasterOrdersTable();
+        renderOverviewOrders();
+        updateDashboardCounters();
+        showToast(`Pembayaran pesanan ${o.orderId} terverifikasi lunas`);
+      }
+    }
+
+    function exportOrdersToCSV() {
+      let csv = "data:text/csv;charset=utf-8,ID Order,Resi Token,Pelanggan,WhatsApp,Wilayah,Ekspedisi,Subtotal,Ongkir,Total Bayar,Hemat Fee Ojol,Metode,Status\n";
+      masterOrders.forEach(o => {
+        csv += `"${o.orderId}","${o.token}","${o.customer}","${o.phone}","${o.zoneName}","${o.courier}","${o.subtotal}","${o.shipping}","${o.grandTotal}","${o.ojolSavings}","${o.paymentMethod}","${o.status}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `DirectBumbu_Orders_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 3. WHATSAPP INGESTION & PARSER ====================
+    function loadSampleWAPremium() {
+      const sample = 
+`*ORDER DIRECTBUMBU / FROZENDIRECT (D2C)*
+----------------------------------------
+*Nama Pembeli:* Tedi Mahendra
+*WhatsApp:* 081299998888
+*Alamat:* Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Jaksel
+*Catatan:* Tolong sertakan ice gel ekstra
+
+*RINCIAN PRODUK:*
+1. Rendang Daging Sapi Meltique (Frozen 400g) (1x) = Rp 85.000
+2. Dimsum Mentai Mozzarella (Isi 10 Pcs) (1x) = Rp 55.000
+3. Sambal Cumi Asin Cabe Ijo Botol (180g) (1x) = Rp 35.000
+----------------------------------------
+*Subtotal:* Rp 175.000
+*Ekspedisi:* Instant Thermal Bike (Jakarta Selatan) = Rp 20.000
+*TOTAL BAYAR BERSIH:* Rp 195.000
+*(Hemat Rp 42.000 bebas fee ojol)*`;
+
+      document.getElementById('waRawInput').value = sample;
+      parseWAText(sample);
+    }
+
+    function loadSampleWAFamily() {
+      const sample = 
+`*ORDER DIRECTBUMBU / FROZENDIRECT (D2C)*
+----------------------------------------
+*Nama Pembeli:* Nadia Hutagalung
+*WhatsApp:* 081134567890
+*Alamat:* Cluster Greenwich Park, BSD City, Tangerang Selatan
+*Catatan:* Jangan dibanting paket beku
+
+*RINCIAN PRODUK:*
+1. Pasta Bumbu Rendang Minang (250g) (2x) = Rp 76.000
+2. Pasta Bumbu Ayam Bakar Madu (250g) (2x) = Rp 64.000
+----------------------------------------
+*Subtotal:* Rp 140.000
+*Ekspedisi:* Same Day Frozen Express (Tangerang Selatan & BSD) = Rp 15.000
+*TOTAL BAYAR BERSIH:* Rp 155.000
+*(Hemat Rp 36.000 bebas fee ojol)*`;
+
+      document.getElementById('waRawInput').value = sample;
+      parseWAText(sample);
+    }
+
+    function parseWAText(raw) {
+      try {
+        const nameMatch = raw.match(/\*Nama Pembeli:\*\s*(.+)/i);
+        const phoneMatch = raw.match(/\*WhatsApp:\*\s*(.+)/i);
+        const addressMatch = raw.match(/\*Alamat:\*\s*(.+)/i);
+        const totalMatch = raw.match(/\*TOTAL BAYAR BERSIH:\*\s*Rp\s*([\d\.]+)/i);
+
+        if (nameMatch) document.getElementById('parsedCustName').innerText = nameMatch[1].trim();
+        if (phoneMatch) document.getElementById('parsedCustPhone').innerText = phoneMatch[1].trim();
+        if (addressMatch) document.getElementById('parsedCustAddress').innerText = addressMatch[1].trim();
+        if (totalMatch) document.getElementById('parsedGrandTotal').innerText = `Rp ${totalMatch[1]}`;
+      } catch (e) {
+        console.error("Parse Error", e);
+      }
+    }
+
+    function parseAndProcessWAOrder() {
+      const raw = document.getElementById('waRawInput').value;
+      if (!raw) {
+        alert("Pesan WhatsApp kosong.");
+        return;
+      }
+
+      const nameMatch = raw.match(/\*Nama Pembeli:\*\s*(.+)/i);
+      const phoneMatch = raw.match(/\*WhatsApp:\*\s*(.+)/i);
+      const addressMatch = raw.match(/\*Alamat:\*\s*(.+)/i);
+      const subtotalMatch = raw.match(/\*Subtotal:\*\s*Rp\s*([\d\.]+)/i);
+      const totalMatch = raw.match(/\*TOTAL BAYAR BERSIH:\*\s*Rp\s*([\d\.]+)/i);
+
+      const name = nameMatch ? nameMatch[1].trim() : "Pelanggan WA D2C";
+      const phone = phoneMatch ? phoneMatch[1].trim() : "081299998888";
+      const address = addressMatch ? addressMatch[1].trim() : "Jakarta";
+      const grandTotal = totalMatch ? parseInt(totalMatch[1].replace(/\./g, '')) : 195000;
+      const subtotal = subtotalMatch ? parseInt(subtotalMatch[1].replace(/\./g, '')) : 175000;
+
+      const randomInv = "INV-D2C-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      const randomToken = "D2C-OK-" + Math.floor(1000 + Math.random() * 9000);
+
+      const newOrder = {
+        orderId: randomInv,
+        token: randomToken,
+        customer: name,
+        phone: phone,
+        zone: "JAKSEL",
+        zoneName: "Jakarta Selatan",
+        address: address,
+        courier: "Instant Thermal Bike (1-2 Jam)",
+        items: [
+          { name: "Rendang Daging Sapi Meltique (Frozen 400g)", qty: 1, price: 85000 },
+          { name: "Dimsum Mentai Mozzarella (10 Pcs)", qty: 1, price: 55000 }
+        ],
+        subtotal: subtotal,
+        shipping: 20000,
+        grandTotal: grandTotal,
+        ojolSavings: 42000,
+        paymentMethod: "WhatsApp Transfer BCA",
+        status: "WAITING_WA",
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      masterOrders.unshift(newOrder);
+      renderMasterOrdersTable();
+      renderOverviewOrders();
+      updateDashboardCounters();
+      showToast(`Pesanan WA ${randomInv} (${name}) berhasil dibuat!`);
+      previewInvoice(randomInv);
+    }
+
+    function sendFollowUpQRISDirect() {
+      const phone = document.getElementById('parsedCustPhone').innerText;
+      const name = document.getElementById('parsedCustName').innerText;
+      const total = document.getElementById('parsedGrandTotal').innerText;
+
+      const reply = `Halo Kak ${name}, pesanan DirectBumbu / FrozenDirect sudah masuk ke antrean cold packaging dapur kami. Total pembayaran bersih: ${total}. Silakan selesaikan via QRIS berikut untuk langsung diproses kurir thermal. Terima kasih!`;
+      const url = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(reply)}`;
+      window.open(url, '_blank');
+    }
+
+    // ==================== 4. DISPATCH COURIER & BARCODE SCANNER ====================
+    function setScannerVal(tok) {
+      document.getElementById('dispatchScanInput').value = tok;
+      executeDispatchScan();
+    }
+
+    function executeDispatchScan() {
+      const token = document.getElementById('dispatchScanInput').value.trim().toUpperCase();
+      const card = document.getElementById('dispatchScanFeedbackCard');
+      card.classList.remove('hidden');
+
+      const match = masterOrders.find(o => o.token.toUpperCase() === token || o.orderId.toUpperCase() === token);
+
+      if (!match) {
+        card.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-800">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> RESI DISPATCH TIDAK DITEMUKAN
+          </div>
+          <p class="text-xs font-sans">Token resi <strong>${token}</strong> tidak memiliki catatan di sistem dispatch DirectBumbu.</p>
+        `;
+        recordCourierLog(token, "UNKNOWN", "-", "DITOLAK (INVALID TOKEN)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-purple-200 bg-d2c-purpleBg text-slate-900 space-y-3 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-d2c-purple flex items-center gap-1.5 font-display">
+              <i data-lucide="check-circle" class="w-5 h-5 text-d2c-purple"></i> DISPATCH COLD-CHAIN VALID
+            </span>
+            <span class="text-xs font-bold bg-d2c-gold text-slate-950 px-2 py-0.5 rounded font-mono">SEALED ICE GEL</span>
+          </div>
+          <div class="space-y-1 font-sans text-xs">
+            <p>Penerima: <strong class="text-slate-900 font-bold">${match.customer}</strong> (${match.phone})</p>
+            <p>Alamat Pengantaran: <span class="text-stone-600">${match.address}</span></p>
+            <p>Total Tagihan: <strong class="text-d2c-purple font-mono font-bold">${formatRupiah(match.grandTotal)}</strong> (${match.paymentMethod})</p>
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-purple-200 flex items-center justify-between font-mono text-xs">
+            <span>Status Kurir:</span>
+            <strong class="text-emerald-700">${match.status === 'DELIVERED' ? 'PAKET SELESAI DITERIMA' : 'SIAP BERANGKAT THERMAL BIKE'}</strong>
+          </div>
+          <button onclick="confirmHandoverToCourier('${match.orderId}')" class="w-full bg-d2c-purple hover:bg-d2c-lightPurple text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-sm border border-purple-400">
+            <i data-lucide="truck" class="w-4 h-4 text-d2c-gold"></i> Serahkan ke Kurir & Mulai Pengantaran
+          </button>
+        `;
+        recordCourierLog(token, match.customer, "Kurir Thermal Bike #04", "BERHASIL DISPATCH");
+      }
+
+      lucide.createIcons();
+    }
+
+    function confirmHandoverToCourier(orderId) {
+      const o = masterOrders.find(x => x.orderId === orderId);
+      if (o) {
+        o.status = "SHIPPED";
+        showToast(`Paket ${o.orderId} diserahkan ke kurir thermal bike. Suhu cold-chain terjaga.`);
+        renderMasterOrdersTable();
+        renderOverviewOrders();
+        updateDashboardCounters();
+        switchTab('orders');
+      }
+    }
+
+    function recordCourierLog(token, cust, courier, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      courierLogs.unshift({
+        time: timeStr,
+        token: token,
+        cust: cust,
+        courier: courier,
+        status: status
+      });
+      renderCourierLogs();
+    }
+
+    function renderCourierLogs() {
+      const list = document.getElementById('courierAuditLogs');
+      if (!list) return;
+      list.innerHTML = '';
+
+      courierLogs.slice(0, 7).forEach(l => {
+        const isOk = l.status.includes('BERHASIL') || l.status.includes('DELIVERED');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-purple-50 border-purple-200 text-slate-900" : "bg-rose-50 border-rose-200 text-rose-900");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs font-sans">${l.cust}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold text-d2c-purple border border-purple-100">${l.token}</span>
+            </div>
+            <span class="text-[10px] opacity-75">${l.courier} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold ${isOk ? 'text-d2c-purple' : 'text-rose-600'}">${l.status}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 5. INVENTORY & FREEZER MANAGEMENT ====================
+    function renderInventoryGrid() {
+      const container = document.getElementById('inventoryGridContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterInventory.forEach(item => {
+        const isLow = item.status === 'LOW_STOCK';
+        const percent = Math.min(Math.round((item.stock / (item.minStock * 2)) * 100), 100);
+
+        const card = document.createElement('div');
+        card.className = "bg-white p-5 rounded-3xl border border-purple-100 shadow-sm space-y-3 font-mono text-xs";
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-purple-50 pb-2">
+            <div>
+              <span class="text-[10px] text-stone-400 uppercase font-bold">${item.id} • ${item.category}</span>
+              <h4 class="font-bold text-slate-900 text-sm font-sans">${item.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isLow ? 'bg-rose-100 text-rose-800 border border-rose-200 animate-pulse' : 'bg-emerald-100 text-emerald-800'}">
+              ${isLow ? 'STOK RENDAH' : 'STOK AMAN'}
+            </span>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="text-stone-500 font-sans">Sisa Stok Kemasan:</span>
+              <strong class="text-slate-900">${item.stock} Pack</strong>
+            </div>
+            <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
+              <div class="h-full rounded-full ${isLow ? 'bg-rose-500' : 'bg-d2c-purple'}" style="width: ${percent}%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-stone-400 mt-1">
+              <span>Batas Min: ${item.minStock} Pack</span>
+              <span class="text-d2c-purple font-bold">${item.temp}</span>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-purple-50 flex items-center justify-between text-[10px]">
+            <span class="text-stone-500 font-sans">Exp: ${item.exp}</span>
+            <button onclick="topUpInventory('${item.id}')" class="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-d2c-purple font-bold transition font-sans">
+              + Restock 50 Pack
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function topUpInventory(skuId) {
+      const item = masterInventory.find(x => x.id === skuId);
+      if (item) {
+        item.stock += 50;
+        item.status = "SAFE";
+        renderInventoryGrid();
+        updateDashboardCounters();
+        showToast(`Stok ${item.name} bertambah +50 pack (Batch Diperbarui)`);
+      }
+    }
+
+    function openRestockModal() {
+      const skuName = prompt("Masukkan nama varian bumbu/frozen baru:", "Bumbu Rendang Padang Spesial");
+      if (skuName) {
+        showToast(`Varian ${skuName} berhasil ditambahkan ke antrean dapur`);
+      }
+    }
+
+    // ==================== 6. SHIPPING ZONES CONFIG ====================
+    function renderShippingZones() {
+      const container = document.getElementById('shippingZonesGridContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterZones.forEach(z => {
+        const div = document.createElement('div');
+        div.className = "bg-stone-50 p-5 rounded-2xl border border-stone-200 space-y-3 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start border-b border-stone-200 pb-2">
+            <div>
+              <span class="text-[10px] text-d2c-purple font-bold">${z.code}</span>
+              <h4 class="font-bold text-slate-900 text-sm font-sans">${z.name}</h4>
+            </div>
+            <span class="text-[10px] text-stone-500">${z.timeEst}</span>
+          </div>
+
+          <div class="space-y-2">
+            <div>
+              <label class="block font-bold text-stone-600 mb-1 font-sans">Tarif Instant Thermal Bike:</label>
+              <input type="number" value="${z.instantRate}" id="rate-inst-${z.code}" class="w-full bg-white border border-stone-200 rounded-xl p-2 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-d2c-purple" />
+            </div>
+            <div>
+              <label class="block font-bold text-stone-600 mb-1 font-sans">Tarif Same Day Frozen:</label>
+              <input type="number" value="${z.samedayRate}" id="rate-same-${z.code}" class="w-full bg-white border border-stone-200 rounded-xl p-2 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-d2c-purple" />
+            </div>
+            <p class="text-[10px] text-stone-400 font-sans italic">${z.note}</p>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // ==================== 7. INVOICE PREVIEW & PRINT ====================
+    function previewInvoice(orderId) {
+      const o = masterOrders.find(x => x.orderId === orderId);
+      if (!o) return;
+
+      document.getElementById('modalInvCode').innerText = o.orderId;
+      document.getElementById('modalInvDate').innerText = o.date;
+      document.getElementById('modalCustName').innerText = o.customer;
+      document.getElementById('modalCustPhone').innerText = o.phone;
+      document.getElementById('modalCustAddress').innerText = o.address;
+      document.getElementById('modalCourierTitle').innerText = o.courier;
+      document.getElementById('modalZoneText').innerText = `Wilayah: ${o.zoneName}`;
+
+      const tbody = document.getElementById('modalItemsTbody');
+      tbody.innerHTML = '';
+
+      o.items.forEach(it => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="py-2.5 px-4 font-sans">
+            <span class="font-bold text-slate-900">${it.name}</span>
+            <div class="text-[10px] text-stone-400">Kemasan Vacuum Food-grade (-18°C)</div>
+          </td>
+          <td class="py-2.5 px-3 text-center font-bold text-slate-800">${it.qty}</td>
+          <td class="py-2.5 px-4 text-right text-stone-600 font-mono">${formatRupiah(it.price)}</td>
+          <td class="py-2.5 px-4 text-right font-bold text-slate-900 font-mono">${formatRupiah(it.price * it.qty)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById('modalSubtotalVal').innerText = formatRupiah(o.subtotal);
+      document.getElementById('modalShippingVal').innerText = formatRupiah(o.shipping);
+      document.getElementById('modalSavingsVal').innerText = `Hemat ${formatRupiah(o.ojolSavings)}`;
+      document.getElementById('modalGrandTotalVal').innerText = formatRupiah(o.grandTotal);
+
+      document.getElementById('modalTokenText').innerText = `TOKEN: ${o.token}`;
+      document.getElementById('modalQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${o.token}`;
+
+      if (o.status === 'PAID_QRIS' || o.status === 'DELIVERED') {
+        document.getElementById('modalInvBadge').innerText = "LUNAS (QRIS SETTLEMENT)";
+        document.getElementById('modalInvBadge').className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-d2c-purple uppercase";
+      } else {
+        document.getElementById('modalInvBadge').innerText = "MENUNGGU TRANSFER WA";
+        document.getElementById('modalInvBadge').className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 uppercase";
+      }
+
+      document.getElementById('invoicePreviewModal').classList.remove('hidden');
+    }
+
+    function closeInvoiceModal() {
+      document.getElementById('invoicePreviewModal').classList.add('hidden');
+    }
+
+    function printOfficialInvoice() {
+      window.print();
+    }
+
+    // ==================== 8. DASHBOARD COUNTERS ====================
+    function updateDashboardCounters() {
+      const totalRev = masterOrders.reduce((sum, o) => sum + o.grandTotal, 0);
+      const totalSavings = masterOrders.reduce((sum, o) => sum + o.ojolSavings, 0);
+      const waPendingCount = masterOrders.filter(o => o.status === 'WAITING_WA').length;
+      const lowStockCount = masterInventory.filter(i => i.status === 'LOW_STOCK').length;
+
+      document.getElementById('kpiGrossRevenue').innerText = formatRupiah(totalRev);
+      document.getElementById('kpiOjolSavings').innerText = formatRupiah(totalSavings);
+      document.getElementById('topSavingsBanner').innerText = formatRupiah(totalSavings);
+
+      document.getElementById('badgeActiveOrders').innerText = `${masterOrders.length} Order`;
+      document.getElementById('badgeWaPending').innerText = `${waPendingCount} Pending`;
+      document.getElementById('badgeLowStock').innerText = `${lowStockCount} Kritis`;
+    }
+  </script>
+
+</body>
+</html>

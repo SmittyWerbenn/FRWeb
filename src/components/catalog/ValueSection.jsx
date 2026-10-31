@@ -1,5 +1,29 @@
-import { Check, Gauge, Globe, Server, ShieldCheck, Sparkles, Wallet } from '../../lib/icons'
+import {
+  ArrowRight,
+  Check,
+  Gauge,
+  Globe,
+  LayoutGrid,
+  Server,
+  ShieldCheck,
+  Sparkles,
+  Wallet,
+} from '../../lib/icons'
 import { scrollToSection } from '../../context/OrderContext'
+
+const CUSTOMER_POINTS = [
+  'Landing page & halaman produk/jasa siap jual',
+  'Form booking, jadwal, dan kalkulator harga',
+  'Checkout / order via WhatsApp langsung ke admin',
+  'Galeri, testimoni, dan info kontak bisnis',
+]
+
+const ADMIN_POINTS = [
+  'Pantau pesanan & booking yang masuk',
+  'Kelola jadwal dan ketersediaan slot',
+  'Rekap transaksi serta laporan penjualan',
+  'Ubah konten, harga, dan foto tanpa coding',
+]
 
 const FEATURES = [
   {
@@ -53,6 +77,79 @@ export default function ValueSection() {
             Fokus Anda adalah bisnisnya, bukan urusan teknis. FRWeb menangani setup,
             keamanan, dan performa agar website Anda siap menerima pelanggan sejak menit pertama.
           </p>
+        </div>
+
+        {/* Value proposition utama: paket = 2 antarmuka */}
+        <div className="mt-8 overflow-hidden rounded-2xl border border-indigo-400/25 bg-gradient-to-br from-indigo-500/[0.10] via-violet-500/[0.05] to-transparent p-5 sm:p-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-indigo-200 ring-1 ring-inset ring-indigo-400/30">
+              <LayoutGrid className="h-3 w-3" />
+              2-in-1
+            </span>
+            <h3 className="text-[15.5px] font-extrabold text-white sm:text-[17px]">
+              Satu paket, dua antarmuka: Web Customer + Dashboard Admin
+            </h3>
+          </div>
+          <p className="mt-2 max-w-3xl text-[12.5px] leading-relaxed text-slate-300 sm:text-[13px]">
+            Setiap paket sudah mencakup{' '}
+            <strong className="font-semibold text-white">Web Customer (Landing Page &amp; Booking)</strong>{' '}
+            +{' '}
+            <strong className="font-semibold text-white">
+              Dashboard Admin Pengelola (Pantau Pesanan, Jadwal &amp; Transaksi)
+            </strong>
+            .
+          </p>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-white/10 bg-[#080c14]/60 p-4">
+              <div className="flex items-center gap-2">
+                <span className="grid h-7 w-7 place-items-center rounded-lg bg-emerald-400/12 text-emerald-300 ring-1 ring-inset ring-emerald-400/25">
+                  <Globe className="h-3.5 w-3.5" />
+                </span>
+                <p className="text-[12.5px] font-bold text-white">Customer View</p>
+                <span className="ml-auto text-[9.5px] font-bold uppercase tracking-wide text-emerald-300/80">
+                  Publik
+                </span>
+              </div>
+              <ul className="mt-3 space-y-1.5">
+                {CUSTOMER_POINTS.map((point) => (
+                  <li key={point} className="flex items-start gap-1.5 text-[11.5px] leading-snug text-slate-300">
+                    <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-300" strokeWidth={3} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-[#080c14]/60 p-4">
+              <div className="flex items-center gap-2">
+                <span className="grid h-7 w-7 place-items-center rounded-lg bg-indigo-400/12 text-indigo-300 ring-1 ring-inset ring-indigo-400/25">
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                </span>
+                <p className="text-[12.5px] font-bold text-white">Admin View</p>
+                <span className="ml-auto text-[9.5px] font-bold uppercase tracking-wide text-indigo-300/80">
+                  Pengelola
+                </span>
+              </div>
+              <ul className="mt-3 space-y-1.5">
+                {ADMIN_POINTS.map((point) => (
+                  <li key={point} className="flex items-start gap-1.5 text-[11.5px] leading-snug text-slate-300">
+                    <Check className="mt-0.5 h-3 w-3 shrink-0 text-indigo-300" strokeWidth={3} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => scrollToSection('katalog')}
+            className="mt-4 inline-flex items-center gap-1.5 text-[11.5px] font-bold text-indigo-300 transition hover:text-indigo-200"
+          >
+            Coba kedua antarmuka di Live Demo
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
         </div>
 
         <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

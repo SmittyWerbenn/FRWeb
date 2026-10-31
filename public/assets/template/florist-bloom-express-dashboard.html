@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Florist Bloom Express - Atelier Operations & Surprise Delivery Console</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Cormorant Garamond, Dancing Script, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'serif'],
+            script: ['"Dancing Script"', 'cursive'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            emeraldMin: {
+              white: '#FFFFFF',
+              deep: '#064E3B',       // Deep Emerald
+              mint: '#10B981',       // Mint Green
+              mintLight: '#ECFDF5',  // Mint Tint Soft
+              border: '#D1FAE5',
+              dark: '#022C22'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #022C22;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #064E3B;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10B981;
+    }
+
+    .glass-nav {
+      background: rgba(6, 78, 59, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .floral-pattern {
+      background-color: #F8FAF9;
+      background-image: radial-gradient(rgba(16, 185, 129, 0.12) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .card-parchment {
+      background: linear-gradient(135deg, #FAFDFB 0%, #FFFFFF 100%);
+      box-shadow: 0 10px 25px -5px rgba(6, 78, 59, 0.08);
+    }
+
+    /* Print Styling for Bouquet Ticket & Calligraphy Greeting Card */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableTicketModal, #printableTicketModal * {
+        visibility: visible !important;
+      }
+      #printableTicketModal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #064E3B !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAF9] text-slate-800 antialiased font-sans min-h-screen flex selection:bg-emeraldMin-mintLight selection:text-emeraldMin-deep overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-emeraldMin-dark border-r border-emerald-900/60 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-emerald-900/80 bg-[#011F18]">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-emeraldMin-deep flex items-center justify-center text-emeraldMin-mint shadow-md shadow-emerald-950/40 flex-shrink-0 border border-emerald-600/30">
+            <i data-lucide="flower-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-serif">
+              FLORIST<span class="text-emeraldMin-mint font-sans ml-0.5 font-bold">BLOOM</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-emerald-900/60 text-emerald-200 border border-emerald-500/30 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">ATELIER CONSOLE</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Workshop Status & Flower Chiller Sensor -->
+      <div class="px-5 py-3 border-b border-emerald-900/60 bg-emeraldMin-dark/80">
+        <div class="flex items-center justify-between text-[11px] font-mono text-emerald-100">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="snowflake" class="w-3.5 h-3.5 text-emeraldMin-mint"></i> Chiller Atelier
+          </span>
+          <span class="text-emerald-300 font-bold" id="sidebarChillerTemp">8.4°C SAFE</span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-emerald-300/80 mt-1 font-serif">
+          <span>Kelembapan Bunga:</span>
+          <span class="font-mono text-white font-bold">85% RH (Fresh)</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-white bg-emeraldMin-deep border-l-4 border-emeraldMin-mint shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 text-emeraldMin-mint"></i>
+          <span>Atelier Overview</span>
+        </button>
+
+        <button onclick="switchTab('kanban')" id="tab-kanban" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-emerald-900/50">
+          <i data-lucide="columns-3" class="w-4 h-4"></i>
+          <span>Workshop Kanban</span>
+          <span class="ml-auto bg-emerald-800 text-emerald-200 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgeActiveOrders">12 Buket</span>
+        </button>
+
+        <button onclick="switchTab('builder')" id="tab-builder" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-emerald-900/50">
+          <i data-lucide="palette" class="w-4 h-4"></i>
+          <span>Live Bouquet Builder</span>
+          <span class="w-2 h-2 rounded-full bg-emeraldMin-mint ml-auto animate-pulse"></span>
+        </button>
+
+        <button onclick="switchTab('fleet')" id="tab-fleet" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-emerald-900/50">
+          <i data-lucide="truck" class="w-4 h-4"></i>
+          <span>Cold-Van Telemetry</span>
+          <span class="ml-auto bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgeFleetActive">4 Armada</span>
+        </button>
+
+        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-emerald-900/50">
+          <i data-lucide="scan" class="w-4 h-4"></i>
+          <span>Scanner Kurir Kejutan</span>
+        </button>
+
+        <button onclick="switchTab('inventory')" id="tab-inventory" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-emerald-900/50">
+          <i data-lucide="flower" class="w-4 h-4"></i>
+          <span>Inventori Bunga Segar</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] px-1.5 py-0.5 rounded" id="badgeInventoryAlert">2 Lelang</span>
+        </button>
+
+        <button onclick="switchTab('orders')" id="tab-orders" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-emerald-900/50">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Master Order & Export</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Master Florist Profile Widget -->
+    <div class="p-4 border-t border-emerald-900/70 bg-[#011F18]">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-emeraldMin-deep border border-emerald-500/40 flex items-center justify-center text-emeraldMin-mint font-serif font-bold text-xs shadow-sm">
+          FB
+        </div>
+        <div class="flex-1 min-w-0 font-sans">
+          <p class="text-xs font-bold text-white truncate font-serif" id="profileFloristName">Madame Vivienne Rose</p>
+          <p class="text-[10px] text-emerald-300 font-mono truncate">Lead Artisan Florist & Designer</p>
+        </div>
+        <button onclick="showToast('Sertifikasi Cold-Chain Floral aktif')" title="Status Studio" class="text-slate-400 hover:text-emeraldMin-mint transition">
+          <i data-lucide="heart" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-emeraldMin-deep text-emerald-50 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-emerald-900/50 font-serif gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-emeraldMin-mint text-emeraldMin-deep">ATELIER DISPATCH</span>
+        <span>Armada Van Pendingin AC 12.4°C Siap Meluncur • Garansi Bunga Segar 72 Jam Tegak Anti-Tumpah</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-emerald-200 font-mono">
+        <span>Ketepatan Slot Antar: <strong class="text-white">99.1% On-Time</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emeraldMin-mint animate-pulse"></span>
+        <span>Surprise Shift: <strong class="text-emeraldMin-mint">Siang (12:00 - 14:00)</strong></span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-nav sticky top-0 z-30 border-b border-emerald-900/40 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-emerald-200 hover:text-white p-1.5 rounded-lg bg-emerald-900/60">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-serif">
+            <span id="currentViewTitle">Atelier Overview & KPI</span>
+          </h1>
+          <p class="text-emerald-200/80 text-xs hidden sm:block font-sans">Artisan Floral Workshop, Precision Surprise Hour Scheduler & Cold-Chain Telemetry</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- Live Surprise Shift Tag -->
+        <div class="hidden lg:flex items-center bg-[#011F18] border border-emerald-700/60 px-3 py-1.5 rounded-xl text-emerald-100">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-emeraldMin-mint mr-2"></i>
+          <span>Slot Aktif: <strong class="text-white font-serif">Kejutan Siang (12:00 - 14:00)</strong></span>
+        </div>
+
+        <!-- Quick Create Bouquet Order Button -->
+        <button onclick="switchTab('builder')" class="bg-emeraldMin-mint hover:bg-emerald-400 text-emeraldMin-deep font-bold px-3.5 sm:px-4 py-2 rounded-xl transition shadow-md shadow-emerald-500/20 flex items-center gap-1.5 active:scale-95 font-sans">
+          <i data-lucide="palette" class="w-4 h-4"></i>
+          <span>+ Rancang Buket Baru</span>
+        </button>
+
+        <!-- Notification Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-emerald-900/60 border border-emerald-700 text-emerald-200 hover:text-white flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-emeraldMin-mint rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-emerald-100 p-3 text-slate-800 z-50 font-sans">
+            <div class="flex items-center justify-between border-b border-emerald-50 pb-2 px-1">
+              <span class="font-bold text-xs font-serif text-emeraldMin-deep">Aktivitas Toko & Kurir</span>
+              <span class="text-[10px] font-mono text-emeraldMin-mint font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-emeraldMin-mintLight rounded-xl border border-emerald-200">
+                <p class="font-bold text-emeraldMin-deep">Pesanan Masuk QRIS: Rp 395.000</p>
+                <p class="text-slate-600 text-[10px] font-mono">BLM-9921 • Red Velvet Roses (Clarissa Lovata)</p>
+                <span class="text-[9px] text-slate-400">Baru saja</span>
+              </div>
+              <div class="p-2.5 bg-stone-50 rounded-xl border border-stone-200">
+                <p class="font-bold text-slate-900">Cold-Van 01 Tiba di Lokasi Penerima</p>
+                <p class="text-slate-500 text-[10px] font-mono">Gedung Wirausaha Kuningan • Suhu AC 12.2°C</p>
+                <span class="text-[9px] text-emerald-600 font-bold font-mono">8 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1 floral-pattern">
+
+      <!-- ==================== VIEW 1: OVERVIEW & ANALYTICS ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Cards Grid (4 Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- KPI 1: Total Bouquets Hand-tied -->
+          <div class="bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">BUKET DIRANGKAI HARI INI</span>
+              <div class="w-8 h-8 rounded-xl bg-emeraldMin-mintLight text-emeraldMin-deep flex items-center justify-center font-bold border border-emerald-200">
+                <i data-lucide="flower-2" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-emeraldMin-deep font-serif block" id="kpiBouquetCount">38 Buket</span>
+              <p class="text-emerald-600 text-[11px] font-semibold flex items-center gap-1 mt-1 font-sans">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +14.6% vs rata-rata harian
+              </p>
+            </div>
+          </div>
+
+          <!-- KPI 2: Gross Sales -->
+          <div class="bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">OMSET ATELIER HARI INI</span>
+              <div class="w-8 h-8 rounded-xl bg-emeraldMin-deep text-emeraldMin-mint flex items-center justify-center font-bold">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-mono block" id="kpiGrossRevenue">Rp 14.825.000</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">100% Terverifikasi QRIS Instant</p>
+            </div>
+          </div>
+
+          <!-- KPI 3: Surprise On-Time Rate -->
+          <div class="bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">KETEPATAN SURPRISE SLOT</span>
+              <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold border border-blue-200">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-blue-700 font-mono block">99.1%</span>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mt-2">
+                <div class="bg-emeraldMin-mint h-full rounded-full" style="width: 99.1%"></div>
+              </div>
+              <p class="text-slate-400 text-[10px] font-mono mt-1">Zero-delay pada slot 12:00 & 16:30</p>
+            </div>
+          </div>
+
+          <!-- Card 4: Cold-Van Fleet Active -->
+          <div class="bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">COLD-VAN FLEET ON DUTY</span>
+              <div class="w-8 h-8 rounded-xl bg-[#022C22] text-emeraldMin-mint flex items-center justify-center font-bold">
+                <i data-lucide="truck" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-mono block">4 / 4 Mobil</span>
+              <p class="text-emerald-700 text-[11px] font-mono mt-1">Suhu Kabin: 12.4°C (Stabil)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (2 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Hourly Surprise Delivery Distribution (8 Cols) -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-emeraldMin-border shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emeraldMin-border pb-3">
+              <div>
+                <h3 class="font-bold text-base text-emeraldMin-deep font-serif">Volume Pengiriman per Slot Jam Kejutan (Surprise Hours)</h3>
+                <p class="text-xs text-slate-500 font-sans">Distribusi pesanan Pagi Segar vs Kejutan Siang vs Romantis Senja vs Malam</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emeraldMin-deep"></span> Buket Terkirim
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emeraldMin-mint"></span> Dalam Perjalanan
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="surpriseHourlyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Best Selling Flowers Doughnut (4 Cols) -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-emeraldMin-border shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-emeraldMin-border pb-3 font-serif">
+              <h3 class="font-bold text-base text-emeraldMin-deep">Bunga Utama Paling Favorit</h3>
+              <p class="text-xs text-slate-500 font-sans">Proporsi pilihan bunga potong di studio</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="bestFlowerDoughnutChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-slate-600 space-y-1 border-t border-emeraldMin-border">
+              <div class="flex justify-between">
+                <span>Red Velvet Roses (12 Tangkai):</span>
+                <strong class="text-emeraldMin-deep font-bold">52% (20 Buket)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>White Casablanca Lilies:</span>
+                <strong class="text-slate-800 font-bold">28% (11 Buket)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Pastel Blue Hydrangea:</span>
+                <strong class="text-emeraldMin-mint font-bold">20% (7 Buket)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Atelier Production Kanban Fast Strip -->
+        <div class="bg-emeraldMin-deep text-white rounded-3xl p-6 sm:p-7 border border-emerald-800 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-emeraldMin-mint text-xs font-mono uppercase font-bold tracking-widest">LIVE ATELIER WORKBENCH</span>
+              <h3 class="text-lg font-bold font-serif mt-0.5">Alur Kerja Perangkai Bunga & Kaligrafi Hari Ini</h3>
+            </div>
+            <button onclick="switchTab('kanban')" class="bg-emeraldMin-dark hover:bg-emerald-950 text-xs text-emerald-200 px-3.5 py-2 rounded-xl border border-emerald-700 transition flex items-center gap-1.5 font-mono">
+              <span>Buka Papan Kanban Penuh</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-emeraldMin-mint"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="overviewKanbanStrip">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: ATELIER KANBAN WORKSHOP ==================== -->
+      <section id="view-kanban" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-emeraldMin-deep font-serif">Papan Produksi Atelier Florist (4 Tahap)</h3>
+            <p class="text-xs text-slate-500 font-mono">Klik "Proses Tahap" untuk memajukan pesanan buket dari perakitan tangkai hingga serah terima kurir</p>
+          </div>
+          <button onclick="switchTab('builder')" class="bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-950/20 font-sans">
+            <i data-lucide="plus" class="w-4 h-4 text-emeraldMin-mint"></i> + Rancang Pesanan di Visualizer
+          </button>
+        </div>
+
+        <!-- 4 Columns Kanban Container -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start" id="kanbanBoardColumns">
+          <!-- Populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: LIVE BOUQUET BUILDER & CARD STUDIO ==================== -->
+      <section id="view-builder" class="hidden space-y-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Floral Composer & Calligraphy Studio (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-emeraldMin-border shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-emeraldMin-border pb-3">
+              <div>
+                <h3 class="text-lg font-bold text-emeraldMin-deep font-serif">Studio Perangkai Buket & Kartu Ucapan</h3>
+                <p class="text-xs text-slate-500 font-mono">Pilih komposisi bunga segar, dedaunan, kertas matte, dan ketikkan pesan pribadi</p>
+              </div>
+              <span class="text-[10px] font-mono font-bold bg-emeraldMin-mintLight text-emeraldMin-deep border border-emerald-200 px-2 py-0.5 rounded">STUDIO V4</span>
+            </div>
+
+            <!-- Bunga Utama -->
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-700 font-serif">A. Bunga Utama (Focal Cut Flower):</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="builderMainFlowerGrid">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Filler / Foliage -->
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-700 font-serif">B. Bunga Pelengkap & Dedaunan Aromatik:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="builderFillerGrid">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Wrapping Selection -->
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-700 font-serif">C. Kertas Pembungkus Matte (Korean Style Wrapping):</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs" id="builderWrappingGrid">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Calligraphy Card Studio -->
+            <div class="pt-4 border-t border-emeraldMin-border space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="block text-xs font-bold text-emeraldMin-deep font-serif flex items-center gap-1.5">
+                  <i data-lucide="mail-heart" class="w-4 h-4 text-emeraldMin-mint"></i>
+                  D. Kartu Ucapan Kaligrafi Tulisan Tangan:
+                </label>
+                <div class="flex items-center gap-1.5 text-[10px]">
+                  <span class="text-slate-400">Template Cepat:</span>
+                  <button onclick="applyAdminGreeting('ULTAH')" class="px-2 py-0.5 rounded bg-emeraldMin-mintLight text-emeraldMin-deep font-bold hover:bg-emerald-100">Ultah</button>
+                  <button onclick="applyAdminGreeting('ANNIV')" class="px-2 py-0.5 rounded bg-emeraldMin-mintLight text-emeraldMin-deep font-bold hover:bg-emerald-100">Anniversary</button>
+                  <button onclick="applyAdminGreeting('LOVE')" class="px-2 py-0.5 rounded bg-emeraldMin-mintLight text-emeraldMin-deep font-bold hover:bg-emerald-100">I Love You</button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                <div>
+                  <span class="text-slate-500 text-[10px] block mb-1">Kepada (Penerima):</span>
+                  <input type="text" id="builderCardTo" value="Clarissa Lovata" oninput="updateBuilderLiveCard()" class="w-full bg-[#FAFDFB] border border-emeraldMin-border rounded-xl p-2.5 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint" />
+                </div>
+                <div>
+                  <span class="text-slate-500 text-[10px] block mb-1">Dari (Pengirim):</span>
+                  <input type="text" id="builderCardFrom" value="Tedi Mahendra" oninput="updateBuilderLiveCard()" class="w-full bg-[#FAFDFB] border border-emeraldMin-border rounded-xl p-2.5 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint" />
+                </div>
+              </div>
+
+              <div>
+                <span class="text-slate-500 text-[10px] block mb-1 font-mono">Isi Pesan Kartu Ucapan:</span>
+                <textarea id="builderCardMsg" rows="2" oninput="updateBuilderLiveCard()" class="w-full bg-[#FAFDFB] border border-emeraldMin-border rounded-xl p-2.5 text-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint">Semoga hari-harimu selalu seindah dan sewangi rangkaian bunga ini. Happy Anniversary cintaku!</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Live Canvas Preview & Push to Production (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-emeraldMin-border shadow-lg space-y-5 sticky top-24">
+            <div class="flex items-center justify-between border-b border-emeraldMin-border pb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-emeraldMin-deep font-serif">Visualizer Studio</span>
+              <span class="text-[10px] font-bold text-emeraldMin-deep bg-emeraldMin-mintLight border border-emerald-200 px-2 py-0.5 rounded font-mono">PREVIEW REAL-TIME</span>
+            </div>
+
+            <!-- Bouquet Image Visual -->
+            <div class="relative h-52 rounded-2xl overflow-hidden shadow-sm bg-stone-100">
+              <img id="builderStageImg" src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=700&q=80" alt="Buket" class="w-full h-full object-cover transition-all duration-300" />
+              <div class="absolute bottom-2.5 left-2.5 right-2.5 bg-emeraldMin-deep/90 backdrop-blur p-2 rounded-xl text-white flex justify-between items-center text-xs">
+                <span class="font-serif font-bold truncate" id="builderStageTitle">Red Velvet Roses</span>
+                <span class="text-[10px] text-emeraldMin-mint font-mono font-bold" id="builderStageWrapTag">Sage Green Matte</span>
+              </div>
+            </div>
+
+            <!-- Calligraphy Card Preview -->
+            <div class="card-parchment p-4 rounded-2xl border border-emerald-200/80 space-y-1.5 relative">
+              <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                <span>PARCHMENT KALIGRAFI</span>
+                <i data-lucide="sparkle" class="w-3 h-3 text-emeraldMin-mint"></i>
+              </div>
+              <p class="text-xs font-serif italic text-emeraldMin-deep font-bold" id="builderPreviewTo">Untuk: Clarissa Lovata</p>
+              <p class="text-xs font-script text-slate-700 leading-snug line-clamp-3" id="builderPreviewMsg">
+                Semoga hari-harimu selalu seindah dan sewangi rangkaian bunga ini. Happy Anniversary cintaku!
+              </p>
+              <p class="text-right text-[10px] font-serif text-slate-500 font-bold" id="builderPreviewFrom">- Tedi Mahendra</p>
+            </div>
+
+            <!-- Cost Calculation Box -->
+            <div class="p-3.5 bg-emeraldMin-mintLight rounded-xl border border-emerald-200 flex items-center justify-between font-mono">
+              <div>
+                <span class="text-[10px] font-bold text-emeraldMin-deep uppercase block">Total Nilai Rangkaian</span>
+                <span class="text-xs text-slate-500 font-sans">Fresh Cut A-Grade Flowers</span>
+              </div>
+              <span class="text-xl font-black text-emeraldMin-deep" id="builderTotalCostText">Rp 395.000</span>
+            </div>
+
+            <button onclick="pushBouquetToProduction()" class="w-full bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-bold text-xs py-3.5 px-4 rounded-xl transition shadow-md shadow-emerald-950/15 flex items-center justify-center gap-2 active:scale-95 font-sans">
+              <i data-lucide="package-plus" class="w-4 h-4 text-emeraldMin-mint"></i>
+              <span>Push Order ke Kanban Workshop</span>
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: COLD-VAN FLEET TELEMETRY ==================== -->
+      <section id="view-fleet" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-emeraldMin-deep font-serif">Armada Cold-Van Khusus Berpendingin (Kabin AC 12°C)</h3>
+            <p class="text-xs text-slate-500 font-mono">Dilengkapi stabilizer bucket buket tegak anti-tumpah dan sensor suhu kabin nirkabel</p>
+          </div>
+          <button onclick="showToast('Suhu kabin armada seluruhnya berada pada batas aman')" class="bg-emeraldMin-mintLight text-emeraldMin-deep font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition border border-emerald-200">
+            Cek Kalibrasi Suhu
+          </button>
+        </div>
+
+        <!-- Fleet Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="fleetGridContainer">
+          <!-- Populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: SURPRISE COURIER SCANNER ==================== -->
+      <section id="view-scanner" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Optical QR/Barcode Scanner (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-emeraldMin-border shadow-sm space-y-6 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-emeraldMin-border pb-4">
+              <div>
+                <h3 class="font-bold text-base text-emeraldMin-deep font-serif flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-emeraldMin-mint"></i>
+                  Courier Surprise Dispatch & Proof-of-Delivery Scanner
+                </h3>
+                <p class="text-xs text-slate-500 font-mono">Pindai token tiket saat kurir menyerahkan buket tegak di tangan penerima kejutan</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emeraldMin-mintLight text-emeraldMin-deep text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emeraldMin-mint animate-pulse"></span> DISPATCH ACTIVE
+              </span>
+            </div>
+
+            <!-- Optical Sensor Graphic -->
+            <div class="bg-emeraldMin-dark rounded-3xl p-8 border border-emerald-900 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-emeraldMin-mint/70 rounded-2xl relative flex items-center justify-center p-4 bg-emerald-950/40">
+                <div class="w-full h-0.5 bg-emeraldMin-mint absolute top-1/2 -translate-y-1/2 shadow-lg shadow-emerald-400 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-emerald-800 opacity-60"></i>
+              </div>
+              <p class="text-emerald-100 text-xs font-mono mt-4">Arahkan Barcode Tiket Buket (Cth: <strong>BLM-PASS-9921</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-slate-700">Input Manual Nomor Token Tiket Buket:</label>
+              <div class="flex gap-2">
+                <input type="text" id="scannerTokenInput" value="BLM-PASS-9921" placeholder="Masukkan token pass..." class="flex-1 bg-[#FAFDFB] px-4 py-2.5 rounded-xl border border-emeraldMin-border font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint" />
+                <button onclick="executeCourierScan()" class="bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-emerald-950/20 active:scale-95 font-sans">
+                  <i data-lucide="check" class="w-4 h-4 text-emeraldMin-mint"></i> Validasi Serah Terima
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-400 font-sans">Preset token pengujian cepat: 
+                <span onclick="setScannerVal('BLM-PASS-9921')" class="underline cursor-pointer text-emeraldMin-deep font-mono font-bold">BLM-PASS-9921 (Clarissa L. - Siang)</span> • 
+                <span onclick="setScannerVal('BLM-PASS-9922')" class="underline cursor-pointer text-emeraldMin-mint font-mono font-bold">BLM-PASS-9922 (Nadia H. - Senja)</span> •
+                <span onclick="setScannerVal('INVALID-TOKEN')" class="underline cursor-pointer text-rose-600 font-mono font-bold">INVALID-TOKEN (Ditolak)</span>
+              </p>
+            </div>
+
+            <!-- Feedback Result Container -->
+            <div id="courierScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Live Delivery Audit Logs (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-emeraldMin-border shadow-sm space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-emeraldMin-border pb-3">
+              <h3 class="font-bold text-sm text-emeraldMin-deep font-serif">Log Pengantaran Kurir Surprise</h3>
+              <span class="text-[10px] text-slate-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto" id="courierAuditLogsContainer">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 6: CHILLER INVENTORY ==================== -->
+      <section id="view-inventory" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-emeraldMin-deep font-serif">Monitoring Stok Batang Bunga Segar di Cold Storage (72 Jam)</h3>
+            <p class="text-xs text-slate-500 font-mono">Setiap batang bunga disimpan dengan kapsul hidrasi nutrisi agar mekar sempurna saat diterima</p>
+          </div>
+          <button onclick="openRestockAuctionModal()" class="bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-950/20">
+            <i data-lucide="plus" class="w-4 h-4 text-emeraldMin-mint"></i> + Input Lelang Petani Bunga
+          </button>
+        </div>
+
+        <!-- Flowers Inventory Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="flowerInventoryGridContainer">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 7: MASTER ORDERS TABLE ==================== -->
+      <section id="view-orders" class="hidden space-y-6">
+        
+        <!-- Filter Header -->
+        <div class="bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+            <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="Cari Penerima, Invoice, No. WA..." class="w-full pl-9 pr-3 py-2.5 bg-[#FAFDFB] border border-emeraldMin-border rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emeraldMin-mint" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto font-sans">
+            <button onclick="filterOrderStatus('ALL')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-emeraldMin-deep text-white transition" data-status="ALL">Semua</button>
+            <button onclick="filterOrderStatus('ARRANGING')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="ARRANGING">Dirangkai Florist</button>
+            <button onclick="filterOrderStatus('IN_VAN')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="IN_VAN">Di Cold-Van</button>
+            <button onclick="filterOrderStatus('DELIVERED')" class="order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="DELIVERED">Terkirim</button>
+          </div>
+        </div>
+
+        <!-- Master Orders Table -->
+        <div class="bg-white rounded-3xl border border-emeraldMin-border shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-emeraldMin-border pb-4">
+            <div>
+              <h3 class="font-bold text-base text-emeraldMin-deep font-serif">Database Pesanan Buket & Surat Jalan Kurir</h3>
+              <p class="text-xs text-slate-500 font-mono" id="orderCountLabel">Menampilkan seluruh pesanan aktif</p>
+            </div>
+            <button onclick="exportOrdersToCSV()" class="bg-emeraldMin-mintLight text-emeraldMin-deep font-mono font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-emerald-200">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-emeraldMin-border font-serif">
+                <tr>
+                  <th class="py-3 px-4">INVOICE & TOKEN</th>
+                  <th class="py-3 px-4">PENERIMA KEJUTAN</th>
+                  <th class="py-3 px-4">BUNGA UTAMA & WRAPPING</th>
+                  <th class="py-3 px-4">SLOT JAM ANTAR</th>
+                  <th class="py-3 px-4">TOTAL</th>
+                  <th class="py-3 px-4">STATUS PRODUKSI</th>
+                  <th class="py-3 px-4 text-center">TIKET SURAT JALAN</th>
+                </tr>
+              </thead>
+              <tbody id="masterOrdersTableBody" class="divide-y divide-emeraldMin-border/60 font-medium font-sans">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: PRINTABLE TICKET & GREETING CARD ==================== -->
+  <div id="ticketPrintableModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full border border-emeraldMin-border shadow-2xl p-6 sm:p-9 space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Top Action Bar -->
+      <div class="flex items-center justify-between border-b border-emeraldMin-border pb-4 no-print font-mono">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-emeraldMin-mintLight text-emeraldMin-deep uppercase border border-emerald-200">
+            OFFICIAL DELIVERY ORDER &amp; CALLIGRAPHY CARD
+          </span>
+          <span class="text-xs text-slate-400">COLD-VAN CERTIFIED</span>
+        </div>
+        <div class="flex items-center gap-2 font-sans">
+          <button onclick="window.print()" class="bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-serif font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="printer" class="w-4 h-4 text-emeraldMin-mint"></i> Cetak Tiket Buket (PDF)
+          </button>
+          <button onclick="closeTicketModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-xl bg-stone-100">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Area -->
+      <div id="printableTicketModal" class="space-y-6">
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-emeraldMin-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-emeraldMin-deep flex items-center justify-center text-emeraldMin-mint font-bold">
+                <i data-lucide="flower-2" class="w-4 h-4"></i>
+              </div>
+              <span class="font-extrabold text-xl tracking-tight text-emeraldMin-deep font-serif">FLORIST<span class="text-emeraldMin-mint">BLOOM</span></span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-sans">Atelier Bunga Segar • Jl. Senopati No. 88, Kebayoran Baru, Jakarta Selatan</p>
+            <p class="text-[11px] text-slate-400 font-sans">Hotline Surprise Delivery: +62 812-9999-8888</p>
+          </div>
+
+          <div class="text-right font-mono">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-emeraldMin-mintLight text-emeraldMin-deep uppercase border border-emerald-200" id="modalInvBadge">
+              LUNAS (QRIS 100%)
+            </span>
+            <p id="modalTicketCode" class="text-xs font-bold text-emeraldMin-deep mt-1">BLM-202610-9921</p>
+            <p id="modalTicketDate" class="text-[11px] text-slate-400">31 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Delivery & Surprise Slot Info -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#FAFDFB] p-4 rounded-2xl border border-emeraldMin-border font-sans">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5 font-mono">PENERIMA KEJUTAN:</span>
+            <p id="modalReceiverName" class="font-bold text-emeraldMin-deep text-sm font-serif">Clarissa Lovata</p>
+            <p id="modalReceiverPhone" class="text-slate-500 font-mono">081399887766</p>
+            <p id="modalDeliveryAddress" class="text-slate-600 mt-1 leading-relaxed">Gedung Wirausaha Lt. 5, Kuningan, Jaksel</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5 font-mono">SLOT JAM ANTAR KEJUTAN:</span>
+            <p id="modalDeliverySlot" class="font-bold text-emeraldMin-deep text-sm font-serif">Kejutan Siang (12:00 - 14:00 WIB)</p>
+            <p id="modalDeliveryDate" class="text-slate-600 font-mono">31 Okt 2026</p>
+            <p class="text-emeraldMin-mint font-bold mt-1">Armada: Cold-Van Berpendingin AC</p>
+          </div>
+        </div>
+
+        <!-- Authentic Calligraphy Card Section -->
+        <div class="card-parchment p-4 rounded-2xl border border-emerald-200 space-y-1.5 font-sans">
+          <div class="flex justify-between items-center text-[10px] text-slate-400">
+            <span class="font-serif font-bold text-emeraldMin-deep uppercase">Kartu Ucapan Kaligrafi Hand-tied:</span>
+            <span class="text-emeraldMin-mint font-serif">Dancing Script Signature</span>
+          </div>
+          <p class="text-xs font-serif italic text-emeraldMin-deep font-bold" id="modalCardTo">Kepada: Clarissa Lovata</p>
+          <p class="text-xs font-script text-slate-700 leading-relaxed text-sm" id="modalCardMsg">
+            "Semoga hari-harimu selalu seindah dan sewangi rangkaian bunga ini. Happy Anniversary cintaku!"
+          </p>
+          <p class="text-right text-[11px] font-serif text-slate-600 font-bold" id="modalCardFrom">Dari: Tedi Mahendra</p>
+        </div>
+
+        <!-- Table Items -->
+        <div class="border border-emeraldMin-border rounded-2xl overflow-hidden text-xs">
+          <table class="w-full text-left font-sans">
+            <thead class="bg-[#FAFDFB] text-slate-600 font-bold border-b border-emeraldMin-border">
+              <tr>
+                <th class="py-2.5 px-4 font-serif">Rincian Rangkaian Buket</th>
+                <th class="py-2.5 px-3 text-center font-serif">Grade Mutu</th>
+                <th class="py-2.5 px-4 text-right font-serif">Harga</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-emeraldMin-border font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <span class="font-bold text-emeraldMin-deep text-sm font-serif block" id="modalMainFlowerTitle">Red Velvet Roses (12 Tangkai)</span>
+                  <div class="text-[11px] text-slate-500 mt-0.5" id="modalBouquetSpecs">Filler: Baby's Breath Putih • Wrapping: Sage Green Matte</div>
+                </td>
+                <td class="py-3 px-3 text-center text-slate-600 font-serif">Fresh Cut A-Grade</td>
+                <td class="py-3 px-4 text-right font-bold text-emeraldMin-deep font-mono" id="modalItemRate">Rp 395.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-[#FAFDFB] border-t border-emeraldMin-border text-xs font-mono">
+              <tr>
+                <td colspan="2" class="py-2 px-4 text-right text-slate-600 font-serif font-bold">Total Pembayaran Lunas (QRIS):</td>
+                <td class="py-2 px-4 text-right font-black text-sm text-emeraldMin-deep" id="modalGrandTotal">Rp 395.000</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Token Barcode Box -->
+        <div class="p-4 bg-[#FAFDFB] rounded-2xl border border-emeraldMin-border flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">DELIVERY PROOF TOKEN</span>
+            <p class="text-xs font-bold text-emeraldMin-deep">Scan Barcode untuk Validasi Kurir saat Serah Terima</p>
+            <p class="text-[11px] text-slate-500">Dilengkapi kapas hidrasi di ujung tangkai untuk mempertahankan kelembapan hingga 72 jam.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-emerald-100 inline-block shadow-sm">
+              <img id="modalQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=BLM-PASS-9921" alt="QR Dispatch" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1" id="modalTokenText">TOKEN: BLM-PASS-9921</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-emeraldMin-dark text-white px-4 py-3 rounded-2xl shadow-2xl border border-emerald-700 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+    <div class="w-6 h-6 rounded-full bg-emeraldMin-mint flex items-center justify-center text-emeraldMin-deep font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Operasi studio buket berhasil diperbarui</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT MASTER LOGIC ==================== -->
+  <script>
+    // 1. Data Pilihan Bunga & Kustomisasi
+    const floristData = {
+      mains: [
+        { id: "fl-rose", name: "Red Velvet Roses (12 Tangkai)", price: 350000, desc: "Mawar merah beludru segar grade A", image: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=700&q=80" },
+        { id: "fl-lily", name: "White Casablanca Lilies (5 Stem)", price: 395000, desc: "Bunga lili putih mekar harum semerbak", image: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=700&q=80" },
+        { id: "fl-hydra", name: "Pastel Blue Hydrangea Cloud", price: 320000, desc: "Pancawarna biru lembut ukuran jumbo", image: "https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=700&q=80" }
+      ],
+      fillers: [
+        { id: "fil-baby", name: "Baby's Breath Putih", price: 45000, tag: "Favorit Romantis" },
+        { id: "fil-euca", name: "Silver Dollar Eucalyptus", price: 50000, tag: "Aroma Terapi" },
+        { id: "fil-casp", name: "Caspia Ungu Kering", price: 40000, tag: "Rustic Elegan" }
+      ],
+      wrappings: [
+        { id: "wr-sage", name: "Sage Green Matte", color: "#84A98C" },
+        { id: "wr-blush", name: "Frosted Blush Pink", color: "#F4ACB7" },
+        { id: "wr-emerald", name: "Deep Emerald Paper", color: "#064E3B" },
+        { id: "wr-white", name: "Pure Ivory White", color: "#F8F9FA" }
+      ]
+    };
+
+    // 2. Data Master Pesanan Buket
+    let masterOrders = [
+      {
+        ticketNumber: "BLM-202610-9921",
+        token: "BLM-PASS-9921",
+        receiver: "Clarissa Lovata",
+        phone: "0813-9988-7766",
+        sender: "Tedi Mahendra",
+        address: "Gedung Wirausaha Lt. 5, Kuningan, Jaksel",
+        mainFlower: "Red Velvet Roses (12 Tangkai)",
+        filler: "Baby's Breath Putih",
+        wrapping: "Sage Green Matte",
+        cardTo: "Clarissa Lovata",
+        cardFrom: "Tedi Mahendra",
+        cardMsg: "Semoga hari-harimu selalu seindah dan sewangi rangkaian bunga ini. Happy Anniversary cintaku!",
+        deliveryDate: "2026-10-31",
+        deliverySlot: "Kejutan Siang (12:00 - 14:00 WIB)",
+        price: 395000,
+        status: "IN_VAN", // INCOMING, ARRANGING, IN_VAN, DELIVERED
+        courierVan: "Cold-Van 01 (Senopati - Kuningan)",
+        date: "2026-10-31"
+      },
+      {
+        ticketNumber: "BLM-202610-9922",
+        token: "BLM-PASS-9922",
+        receiver: "Nadia Hutagalung",
+        phone: "0811-3456-7890",
+        sender: "Dimas Anggara",
+        address: "Pacific Century Place Lt. 22, SCBD, Jaksel",
+        mainFlower: "White Casablanca Lilies (5 Stem)",
+        filler: "Silver Dollar Eucalyptus",
+        wrapping: "Pure Ivory White",
+        cardTo: "Nadia Hutagalung",
+        cardFrom: "Dimas Anggara",
+        cardMsg: "Selamat atas promosi jabatan barumu! Kami semua bangga atas pencapaian luar biasamu.",
+        deliveryDate: "2026-10-31",
+        deliverySlot: "Romantis Senja (16:30 - 18:30 WIB)",
+        price: 445000,
+        status: "ARRANGING",
+        courierVan: "Cold-Van 02 (SCBD Corridor)",
+        date: "2026-10-31"
+      },
+      {
+        ticketNumber: "BLM-202610-9923",
+        token: "BLM-PASS-9923",
+        receiver: "Chelsea Islan",
+        phone: "0812-7788-9900",
+        sender: "Rob Clinton",
+        address: "Apartemen Menteng Park Tower Diamond, Cikini",
+        mainFlower: "Pastel Blue Hydrangea Cloud",
+        filler: "Baby's Breath Putih",
+        wrapping: "Frosted Blush Pink",
+        cardTo: "Chelsea",
+        cardFrom: "Rob",
+        cardMsg: "Bunga ini hanya sebagian kecil dari betapa bersyukurnya aku memilikimu setiap hari.",
+        deliveryDate: "2026-10-31",
+        deliverySlot: "Pagi Segar (08:00 - 10:00 WIB)",
+        price: 365000,
+        status: "DELIVERED",
+        courierVan: "Cold-Van 03 (Menteng - Cikini)",
+        date: "2026-10-31"
+      },
+      {
+        ticketNumber: "BLM-202610-9924",
+        token: "BLM-PASS-9924",
+        receiver: "Dian Sastrowardoyo",
+        phone: "0818-3344-5566",
+        sender: "Maulana Indraguna",
+        address: "Jl. Teuku Umar No. 12, Menteng, Jakpus",
+        mainFlower: "Red Velvet Roses (12 Tangkai)",
+        filler: "Silver Dollar Eucalyptus",
+        wrapping: "Deep Emerald Paper",
+        cardTo: "Dian",
+        cardFrom: "Indra",
+        cardMsg: "Happy Birthday my love. Tetaplah menginspirasi dan tersenyum sehangat mentari pagi.",
+        deliveryDate: "2026-10-31",
+        deliverySlot: "Malam Spesial (19:30 - 21:00 WIB)",
+        price: 400000,
+        status: "INCOMING",
+        courierVan: "Standby Hub",
+        date: "2026-10-31"
+      }
+    ];
+
+    // 3. Data Armada Cold-Van
+    let masterFleet = [
+      { id: "VAN-01", name: "Cold-Van 01 (Senopati - Kuningan)", plate: "B 1928 BLM", driver: "Bagus Setiawan", temp: 12.2, rh: "85%", status: "ON_DELIVERY", currentBouquets: "8 Buket", route: "Senopati - Gatot Subroto - Kuningan" },
+      { id: "VAN-02", name: "Cold-Van 02 (SCBD Corridor)", plate: "B 1734 RFS", driver: "Hendra Wijaya", temp: 12.4, rh: "86%", status: "ON_DELIVERY", currentBouquets: "6 Buket", route: "Sudirman - SCBD - Senayan" },
+      { id: "VAN-03", name: "Cold-Van 03 (Menteng - Thamrin)", plate: "B 2049 KLA", driver: "Arief Rahman", temp: 12.1, rh: "84%", status: "ARRIVED_SITE", currentBouquets: "4 Buket", route: "Rasuna Said - Menteng - Cikini" },
+      { id: "VAN-04", name: "Cold-Van 04 (Kemang - Antasari)", plate: "B 9128 UYX", driver: "Dani Saputra", temp: 12.5, rh: "85%", status: "STANDBY_ATELIER", currentBouquets: "0 Buket", route: "Standby Loading Slot Senja" }
+    ];
+
+    // 4. Data Stok Bunga Segar Chiller (72-Jam Fresh)
+    let masterFlowers = [
+      { id: "STK-ROSE-01", name: "Mawar Red Velvet Grade A", origin: "Petani Bunga Bandungan / Lembang", stockStems: 380, minStock: 150, temp: "8.4°C Chiller", ageHour: "18 Jam (Lelang Pagi)", status: "FRESH_SAFE" },
+      { id: "STK-LILY-02", name: "Casablanca Lilies 5-Stem", origin: "Greenhouse Batu Malang", stockStems: 95, minStock: 60, temp: "8.2°C Chiller", ageHour: "22 Jam", status: "FRESH_SAFE" },
+      { id: "STK-HYDRA-03", name: "Pastel Blue Hydrangea Cloud", origin: "Highland Ciwidey", stockStems: 24, minStock: 30, temp: "8.0°C Chiller", ageHour: "14 Jam", status: "REORDER_AUCTION" },
+      { id: "STK-BABY-04", name: "Baby's Breath Million Star", origin: "Imported Kunming", stockStems: 180, minStock: 80, temp: "8.5°C Chiller", ageHour: "20 Jam", status: "FRESH_SAFE" },
+      { id: "STK-EUCA-05", name: "Silver Dollar Eucalyptus", origin: "Perkebunan Lembang", stockStems: 140, minStock: 50, temp: "8.6°C Chiller", ageHour: "24 Jam", status: "FRESH_SAFE" },
+      { id: "STK-WRAP-06", name: "Korean Matte Wrapping Paper", origin: "Seoul Import Stock", stockStems: 420, minStock: 200, temp: "Room Temp", ageHour: "Stock Racking", status: "FRESH_SAFE" }
+    ];
+
+    // 5. Courier Audit Logs
+    let courierLogs = [
+      { time: "11:42:10", token: "BLM-PASS-9923", receiver: "Chelsea Islan", courier: "Kurir Arief (Van 03)", status: "BUKET DITERIMA (TEGAK & SEGAR)" },
+      { time: "10:15:30", token: "BLM-PASS-9919", receiver: "Jessica Mila", courier: "Kurir Hendra (Van 02)", status: "SURPRISE SUKSES (SLOT PAGI)" },
+      { time: "09:40:02", token: "INVALID-TOKEN", receiver: "Unknown", courier: "Kurir Bagus (Van 01)", status: "DITOLAK (INVALID TOKEN)" }
+    ];
+
+    // State Variables
+    let builderSelectedMain = floristData.mains[0];
+    let builderSelectedFiller = floristData.fillers[0];
+    let builderSelectedWrap = floristData.wrappings[0];
+
+    let surpriseHourlyChartInstance = null;
+    let bestFlowerDoughnutChartInstance = null;
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Atelier Overview & KPI",
+        kanban: "Workshop Kanban (Alur Perangkai Bunga)",
+        builder: "Live Bouquet Builder & Calligraphy Studio",
+        fleet: "Telemetri Armada Cold-Van AC (12.4°C)",
+        scanner: "Surprise Courier Dispatch & Barcode Scanner",
+        inventory: "Monitoring Bunga Segar Chiller (72 Jam)",
+        orders: "Database Pesanan Buket & Ekspor CSV"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "Florist Bloom Express Console";
+
+      ['overview', 'kanban', 'builder', 'fleet', 'scanner', 'inventory', 'orders'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-emerald-900/50 font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-white bg-emeraldMin-deep border-l-4 border-emeraldMin-mint shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'overview') renderOverviewKanbanStrip();
+      if (tabKey === 'kanban') renderKanbanBoard();
+      if (tabKey === 'builder') { renderBuilderSelectors(); updateBuilderVisuals(); }
+      if (tabKey === 'fleet') renderFleetGrid();
+      if (tabKey === 'scanner') renderCourierLogs();
+      if (tabKey === 'inventory') renderFlowerInventoryGrid();
+      if (tabKey === 'orders') renderMasterOrdersTable();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      renderOverviewKanbanStrip();
+      renderKanbanBoard();
+      renderBuilderSelectors();
+      updateBuilderVisuals();
+      renderFleetGrid();
+      renderCourierLogs();
+      renderFlowerInventoryGrid();
+      renderMasterOrdersTable();
+      updateDashboardCounters();
+      lucide.createIcons();
+    });
+
+    // ==================== 1. OVERVIEW & CHARTS ====================
+    function renderOverviewKanbanStrip() {
+      const container = document.getElementById('overviewKanbanStrip');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const stages = [
+        { label: "1. Pesanan Masuk (Paid)", count: masterOrders.filter(o => o.status === 'INCOMING').length, icon: "receipt", color: "text-emeraldMin-mint" },
+        { label: "2. Dirangkai Florist", count: masterOrders.filter(o => o.status === 'ARRANGING').length, icon: "flower-2", color: "text-amber-400" },
+        { label: "3. Di Cold-Van AC", count: masterOrders.filter(o => o.status === 'IN_VAN').length, icon: "truck", color: "text-blue-400" },
+        { label: "4. Sukses Terkirim", count: masterOrders.filter(o => o.status === 'DELIVERED').length, icon: "heart-handshake", color: "text-emeraldMin-mint" }
+      ];
+
+      stages.forEach(st => {
+        const div = document.createElement('div');
+        div.className = "bg-emeraldMin-dark border border-emerald-800 p-4 rounded-2xl space-y-1.5 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-center text-slate-300">
+            <span class="truncate">${st.label}</span>
+            <i data-lucide="${st.icon}" class="w-4 h-4 ${st.color}"></i>
+          </div>
+          <span class="text-2xl font-black text-white font-serif">${st.count} Buket</span>
+        `;
+        container.appendChild(div);
+      });
+      lucide.createIcons();
+    }
+
+    function initCharts() {
+      // 1. Hourly Surprise Delivery Distribution Bar Chart
+      const ctxSurprise = document.getElementById('surpriseHourlyChart');
+      if (ctxSurprise) {
+        surpriseHourlyChartInstance = new Chart(ctxSurprise, {
+          type: 'bar',
+          data: {
+            labels: ['Pagi (08:00-10:00)', 'Siang (12:00-14:00)', 'Senja (16:30-18:30)', 'Malam (19:30-21:00)'],
+            datasets: [
+              {
+                label: 'Buket Terkirim Tepat Waktu',
+                data: [8, 18, 11, 4],
+                backgroundColor: '#064E3B',
+                borderRadius: 6
+              },
+              {
+                label: 'Sedang Berjalan di Cold-Van',
+                data: [0, 4, 3, 2],
+                backgroundColor: '#10B981',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 22,
+                ticks: { stepSize: 5, color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#ECFDF5' }
+              },
+              x: {
+                ticks: { color: '#064E3B', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Best Selling Flowers Doughnut Chart
+      const ctxFlower = document.getElementById('bestFlowerDoughnutChart');
+      if (ctxFlower) {
+        bestFlowerDoughnutChartInstance = new Chart(ctxFlower, {
+          type: 'doughnut',
+          data: {
+            labels: ['Red Velvet Roses', 'White Casablanca Lilies', 'Pastel Blue Hydrangea'],
+            datasets: [{
+              data: [52, 28, 20],
+              backgroundColor: ['#064E3B', '#10B981', '#34D399'],
+              borderWidth: 2,
+              borderColor: '#FFFFFF'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            },
+            cutout: '72%'
+          }
+        });
+      }
+    }
+
+    // ==================== 2. ATELIER WORKSHOP KANBAN ====================
+    function renderKanbanBoard() {
+      const container = document.getElementById('kanbanBoardColumns');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const cols = [
+        { key: "INCOMING", title: "1. Pesanan Masuk (Paid)", badgeClass: "bg-emeraldMin-mintLight text-emeraldMin-deep border border-emerald-200" },
+        { key: "ARRANGING", title: "2. Dirangkai Florist", badgeClass: "bg-amber-100 text-amber-800 border border-amber-300" },
+        { key: "IN_VAN", title: "3. Di Cold-Van AC (12°C)", badgeClass: "bg-blue-100 text-blue-800 border border-blue-300" },
+        { key: "DELIVERED", title: "4. Sukses Terkirim", badgeClass: "bg-emerald-100 text-emerald-800 border border-emerald-300" }
+      ];
+
+      cols.forEach(col => {
+        const ordersInCol = masterOrders.filter(o => o.status === col.key);
+
+        let cardsHtml = ordersInCol.map(o => `
+          <div class="bg-[#FAFDFB] p-4 rounded-2xl border border-emerald-100 shadow-sm space-y-2.5 font-mono text-xs">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] text-slate-400 font-bold">${o.ticketNumber}</span>
+                <h4 class="font-bold text-emeraldMin-deep text-sm font-serif truncate max-w-[150px]">${o.receiver}</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold ${col.badgeClass}">${o.deliverySlot.split(' ')[0]}</span>
+            </div>
+
+            <div class="space-y-1 font-sans text-xs">
+              <p class="text-slate-800 font-bold font-serif text-[13px]">${o.mainFlower}</p>
+              <p class="text-[11px] text-slate-500 font-mono">Wrapping: ${o.wrapping}</p>
+              <p class="text-[10px] text-emerald-700 italic font-serif truncate">"${o.cardMsg}"</p>
+            </div>
+
+            <div class="pt-2 border-t border-emerald-50 flex items-center justify-between text-[10px]">
+              <span class="text-slate-400 font-mono">${formatRupiah(o.price)}</span>
+              ${col.key !== 'DELIVERED' ? `
+                <button onclick="advanceKanbanOrder('${o.ticketNumber}')" class="px-2.5 py-1 rounded-lg bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-bold transition flex items-center gap-1 font-sans shadow-sm">
+                  <span>Proses</span> <i data-lucide="arrow-right" class="w-3 h-3 text-emeraldMin-mint"></i>
+                </button>
+              ` : `
+                <button onclick="previewTicketModal('${o.ticketNumber}')" class="px-2.5 py-1 rounded-lg bg-emeraldMin-mintLight text-emeraldMin-deep font-bold transition flex items-center gap-1 font-sans">
+                  <i data-lucide="printer" class="w-3 h-3"></i> DO Buket
+                </button>
+              `}
+            </div>
+          </div>
+        `).join('');
+
+        if (ordersInCol.length === 0) {
+          cardsHtml = `<div class="p-5 text-center text-slate-400 text-xs italic font-serif">Belum ada buket pada antrean ini</div>`;
+        }
+
+        const colDiv = document.createElement('div');
+        colDiv.className = "bg-white p-4 rounded-3xl border border-emeraldMin-border space-y-3";
+        colDiv.innerHTML = `
+          <div class="flex items-center justify-between p-2.5 rounded-2xl bg-emeraldMin-mintLight border border-emerald-200">
+            <span class="font-bold text-xs text-emeraldMin-deep font-serif">${col.title}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-emeraldMin-deep shadow-sm font-mono">${ordersInCol.length}</span>
+          </div>
+          <div class="space-y-3">
+            ${cardsHtml}
+          </div>
+        `;
+        container.appendChild(colDiv);
+      });
+
+      lucide.createIcons();
+    }
+
+    function advanceKanbanOrder(ticketNumber) {
+      const o = masterOrders.find(x => x.ticketNumber === ticketNumber);
+      if (!o) return;
+
+      const flow = ["INCOMING", "ARRANGING", "IN_VAN", "DELIVERED"];
+      const currentIdx = flow.indexOf(o.status);
+
+      if (currentIdx < flow.length - 1) {
+        o.status = flow[currentIdx + 1];
+        showToast(`Pesanan ${o.ticketNumber} untuk ${o.receiver} beralih ke: ${flow[currentIdx + 1]}`);
+        renderKanbanBoard();
+        renderOverviewKanbanStrip();
+        renderMasterOrdersTable();
+        updateDashboardCounters();
+      }
+    }
+
+    // ==================== 3. LIVE BOUQUET BUILDER ====================
+    function renderBuilderSelectors() {
+      // 1. Main Flowers
+      const mainContainer = document.getElementById('builderMainFlowerGrid');
+      mainContainer.innerHTML = floristData.mains.map(m => `
+        <div onclick="selectBuilderMain('${m.id}')" class="p-3.5 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          builderSelectedMain.id === m.id ? 'border-emeraldMin-deep bg-emeraldMin-mintLight ring-2 ring-emeraldMin-mint/20' : 'border-emeraldMin-border bg-[#FAFDFB] hover:bg-white'
+        }">
+          <div>
+            <span class="font-bold text-xs text-emeraldMin-deep font-serif block">${m.name}</span>
+            <p class="text-[10px] text-slate-500 mt-0.5">${m.desc}</p>
+          </div>
+          <span class="text-xs font-black text-emeraldMin-deep font-mono mt-2 block">${formatRupiah(m.price)}</span>
+        </div>
+      `).join('');
+
+      // 2. Fillers
+      const fillerContainer = document.getElementById('builderFillerGrid');
+      fillerContainer.innerHTML = floristData.fillers.map(f => `
+        <div onclick="selectBuilderFiller('${f.id}')" class="p-3 rounded-2xl border-2 transition cursor-pointer flex flex-col justify-between ${
+          builderSelectedFiller.id === f.id ? 'border-emeraldMin-deep bg-emeraldMin-mintLight ring-2 ring-emeraldMin-mint/20' : 'border-emeraldMin-border bg-[#FAFDFB] hover:bg-white'
+        }">
+          <div>
+            <span class="font-bold text-xs text-emeraldMin-deep block">${f.name}</span>
+            <span class="text-[9px] text-emeraldMin-mint font-bold">${f.tag}</span>
+          </div>
+          <span class="text-xs font-bold text-slate-700 font-mono mt-1.5 block">+ ${formatRupiah(f.price)}</span>
+        </div>
+      `).join('');
+
+      // 3. Wrappings
+      const wrapContainer = document.getElementById('builderWrappingGrid');
+      wrapContainer.innerHTML = floristData.wrappings.map(w => `
+        <div onclick="selectBuilderWrap('${w.id}')" class="p-2.5 rounded-xl border-2 transition cursor-pointer flex items-center gap-2 ${
+          builderSelectedWrap.id === w.id ? 'border-emeraldMin-deep bg-emeraldMin-mintLight font-bold' : 'border-emeraldMin-border bg-white hover:bg-stone-50'
+        }">
+          <span class="w-3.5 h-3.5 rounded-full border border-slate-300 flex-shrink-0" style="background-color: ${w.color}"></span>
+          <span class="text-[11px] text-slate-800 truncate">${w.name}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectBuilderMain(id) {
+      builderSelectedMain = floristData.mains.find(m => m.id === id);
+      renderBuilderSelectors();
+      updateBuilderVisuals();
+    }
+
+    function selectBuilderFiller(id) {
+      builderSelectedFiller = floristData.fillers.find(f => f.id === id);
+      renderBuilderSelectors();
+      updateBuilderVisuals();
+    }
+
+    function selectBuilderWrap(id) {
+      builderSelectedWrap = floristData.wrappings.find(w => w.id === id);
+      renderBuilderSelectors();
+      updateBuilderVisuals();
+    }
+
+    function applyAdminGreeting(type) {
+      const msgArea = document.getElementById('builderCardMsg');
+      if (type === 'ULTAH') {
+        msgArea.value = "Selamat bertambah usia! Semoga harimu dipenuhi kebahagiaan, tawa, dan wewangian indah seperti bunga-bunga ini.";
+      } else if (type === 'ANNIV') {
+        msgArea.value = "Happy anniversary cintaku. Terima kasih telah mewarnai setiap hari dalam hidupku dengan kelembutan yang abadi.";
+      } else if (type === 'LOVE') {
+        msgArea.value = "Hanya sebuah kejutan kecil untuk mengingatkanmu betapa dalamnya rasa sayang dan rinduku padamu hari ini.";
+      }
+      updateBuilderLiveCard();
+    }
+
+    function updateBuilderLiveCard() {
+      const toVal = document.getElementById('builderCardTo').value || 'Clarissa Lovata';
+      const fromVal = document.getElementById('builderCardFrom').value || 'Tedi Mahendra';
+      const msgVal = document.getElementById('builderCardMsg').value || 'Pesan cinta yang tulus...';
+
+      document.getElementById('builderPreviewTo').innerText = `Untuk: ${toVal}`;
+      document.getElementById('builderPreviewFrom').innerText = `- ${fromVal}`;
+      document.getElementById('builderPreviewMsg').innerText = msgVal;
+    }
+
+    function updateBuilderVisuals() {
+      document.getElementById('builderStageImg').src = builderSelectedMain.image;
+      document.getElementById('builderStageTitle').innerText = `${builderSelectedMain.name} & ${builderSelectedFiller.name}`;
+      document.getElementById('builderStageWrapTag').innerText = builderSelectedWrap.name;
+
+      const total = builderSelectedMain.price + builderSelectedFiller.price;
+      document.getElementById('builderTotalCostText').innerText = formatRupiah(total);
+      updateBuilderLiveCard();
+      return total;
+    }
+
+    function pushBouquetToProduction() {
+      const toVal = document.getElementById('builderCardTo').value.trim() || 'Penerima Kejutan';
+      const fromVal = document.getElementById('builderCardFrom').value.trim() || 'Pengirim Rahasia';
+      const msgVal = document.getElementById('builderCardMsg').value.trim();
+      const total = updateBuilderVisuals();
+
+      const randomTicket = "BLM-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      const randomToken = "BLM-PASS-" + Math.floor(1000 + Math.random() * 9000);
+
+      const newOrder = {
+        ticketNumber: randomTicket,
+        token: randomToken,
+        receiver: toVal,
+        phone: "0812-3344-5566",
+        sender: fromVal,
+        address: "Alamat Pengiriman Kejutan, Jakarta",
+        mainFlower: builderSelectedMain.name,
+        filler: builderSelectedFiller.name,
+        wrapping: builderSelectedWrap.name,
+        cardTo: toVal,
+        cardFrom: fromVal,
+        cardMsg: msgVal,
+        deliveryDate: new Date().toISOString().split('T')[0],
+        deliverySlot: "Kejutan Siang (12:00 - 14:00 WIB)",
+        price: total,
+        status: "ARRANGING",
+        courierVan: "Cold-Van 01 (Senopati - Kuningan)",
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      masterOrders.unshift(newOrder);
+      renderKanbanBoard();
+      renderOverviewKanbanStrip();
+      renderMasterOrdersTable();
+      updateDashboardCounters();
+
+      showToast(`Pesanan buket ${randomTicket} untuk ${toVal} langsung masuk ke meja florist!`);
+      switchTab('kanban');
+    }
+
+    // ==================== 4. COLD-VAN FLEET TELEMETRY ====================
+    function renderFleetGrid() {
+      const container = document.getElementById('fleetGridContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterFleet.forEach(van => {
+        let statusBadge = "bg-blue-100 text-blue-800";
+        if (van.status === 'ARRIVED_SITE') statusBadge = "bg-emerald-100 text-emerald-800";
+        if (van.status === 'STANDBY_ATELIER') statusBadge = "bg-stone-100 text-stone-700";
+
+        const div = document.createElement('div');
+        div.className = "bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm space-y-3 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start border-b border-emeraldMin-border pb-2.5">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold">${van.plate}</span>
+              <h4 class="font-bold text-emeraldMin-deep text-sm font-serif mt-0.5">${van.name.split(' (')[0]}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusBadge}">${van.status}</span>
+          </div>
+
+          <div class="space-y-1 font-sans text-[11px]">
+            <p class="text-slate-600">Kurir: <strong class="text-slate-900 font-mono">${van.driver}</strong></p>
+            <p class="text-slate-500 truncate">Rute: ${van.route}</p>
+          </div>
+
+          <!-- Cold Storage Temperature & Humidity Reading -->
+          <div class="p-3 bg-emeraldMin-mintLight rounded-2xl border border-emerald-200 flex items-center justify-between font-mono">
+            <div>
+              <span class="text-[9px] text-slate-500 block">SUHU AC KABIN:</span>
+              <span class="text-base font-black text-emeraldMin-deep">${van.temp}°C</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[9px] text-slate-500 block">KELEMBAPAN:</span>
+              <span class="text-xs font-bold text-emerald-700">${van.rh} RH</span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-[10px] text-slate-400 pt-1">
+            <span>Muatan: <strong class="text-slate-800">${van.currentBouquets}</strong></span>
+            <span class="text-emerald-700 font-bold">Stabilizer Tegak OK</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // ==================== 5. SURPRISE COURIER SCANNER ====================
+    function setScannerVal(tok) {
+      document.getElementById('scannerTokenInput').value = tok;
+      executeCourierScan();
+    }
+
+    function executeCourierScan() {
+      const token = document.getElementById('scannerTokenInput').value.trim().toUpperCase();
+      const card = document.getElementById('courierScanFeedbackCard');
+      card.classList.remove('hidden');
+
+      const match = masterOrders.find(o => o.token.toUpperCase() === token || o.ticketNumber.toUpperCase() === token);
+
+      if (!match) {
+        card.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-800 font-sans">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> TOKEN TIKET TIDAK DITEMUKAN
+          </div>
+          <p class="text-xs font-sans">Token barcode <strong>${token}</strong> tidak terdaftar dalam jadwal kurir Florist Bloom Express.</p>
+        `;
+        recordCourierLog(token, "UNKNOWN RECIPIENT", "-", "DITOLAK (INVALID TOKEN)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-emerald-200 bg-emeraldMin-mintLight text-slate-900 space-y-3 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-emeraldMin-deep flex items-center gap-1.5 font-serif">
+              <i data-lucide="check-circle" class="w-5 h-5 text-emeraldMin-mint"></i> SERAH TERIMA KEJUTAN VALID
+            </span>
+            <span class="text-xs font-bold bg-emeraldMin-deep text-white px-2 py-0.5 rounded font-mono">${match.ticketNumber}</span>
+          </div>
+          <div class="space-y-1 font-sans text-xs">
+            <p>Penerima: <strong class="text-emeraldMin-deep font-serif text-sm">${match.receiver}</strong> (${match.phone})</p>
+            <p>Alamat Pengantaran: <span class="text-slate-600">${match.address}</span></p>
+            <p>Rangkaian: <strong class="text-emeraldMin-deep font-serif">${match.mainFlower}</strong> (Wrapping: ${match.wrapping})</p>
+            <p class="text-emerald-800 italic bg-white p-2 rounded-xl border border-emerald-200">Kartu Kaligrafi: "${match.cardMsg}"</p>
+          </div>
+          <button onclick="confirmDeliveredToReceiver('${match.ticketNumber}')" class="w-full bg-emeraldMin-deep hover:bg-emeraldMin-dark text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-md shadow-emerald-950/20">
+            <i data-lucide="heart-handshake" class="w-4 h-4 text-emeraldMin-mint"></i> Konfirmasi Buket Diterima Tersenyum di Lokasi
+          </button>
+        `;
+        recordCourierLog(token, match.receiver, match.courierVan, "TERVALIDASI SURPRISE");
+      }
+
+      lucide.createIcons();
+    }
+
+    function confirmDeliveredToReceiver(ticketNumber) {
+      const o = masterOrders.find(x => x.ticketNumber === ticketNumber);
+      if (o) {
+        o.status = "DELIVERED";
+        showToast(`Buket ${o.ticketNumber} untuk ${o.receiver} sukses diserahkan!`);
+        renderKanbanBoard();
+        renderOverviewKanbanStrip();
+        renderMasterOrdersTable();
+        updateDashboardCounters();
+        switchTab('kanban');
+      }
+    }
+
+    function recordCourierLog(token, receiver, courier, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      courierLogs.unshift({
+        time: timeStr,
+        token: token,
+        receiver: receiver,
+        courier: courier,
+        status: status
+      });
+      renderCourierLogs();
+    }
+
+    function renderCourierLogs() {
+      const list = document.getElementById('courierAuditLogsContainer');
+      if (!list) return;
+      list.innerHTML = '';
+
+      courierLogs.slice(0, 7).forEach(l => {
+        const isOk = l.status.includes('DITERIMA') || l.status.includes('SUKSES') || l.status.includes('TERVALIDASI');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-emeraldMin-mintLight border-emerald-200 text-emeraldMin-deep" : "bg-rose-50 border-rose-200 text-rose-900");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs font-serif">${l.receiver}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold text-emeraldMin-deep border border-emerald-100">${l.token}</span>
+            </div>
+            <span class="text-[10px] opacity-75 font-mono">${l.courier} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold font-mono">${l.status}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 6. CHILLER FLOWER INVENTORY ====================
+    function renderFlowerInventoryGrid() {
+      const container = document.getElementById('flowerInventoryGridContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterFlowers.forEach(item => {
+        const isReorder = item.status === 'REORDER_AUCTION';
+        const percent = Math.min(Math.round((item.stockStems / (item.minStock * 2)) * 100), 100);
+
+        const card = document.createElement('div');
+        card.className = "bg-white p-5 rounded-3xl border border-emeraldMin-border shadow-sm space-y-3 font-mono text-xs";
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-emeraldMin-border pb-2.5">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold">${item.id}</span>
+              <h4 class="font-bold text-emeraldMin-deep text-sm font-serif mt-0.5">${item.name}</h4>
+              <p class="text-[10px] text-slate-400 font-sans">${item.origin}</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isReorder ? 'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse' : 'bg-emeraldMin-mintLight text-emeraldMin-deep'}">
+              ${isReorder ? 'LELANG RESTOCK' : 'SEGAR'}
+            </span>
+          </div>
+
+          <div class="space-y-1.5 font-sans">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-500">Stok Batang di Chiller:</span>
+              <strong class="text-slate-900 font-mono font-bold">${item.stockStems} Tangkai</strong>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+              <div class="h-full rounded-full ${isReorder ? 'bg-amber-500' : 'bg-emeraldMin-mint'}" style="width: ${percent}%"></div>
+            </div>
+            <div class="flex justify-between text-slate-400 text-[10px] font-mono">
+              <span>Umur Petik: ${item.ageHour}</span>
+              <span>Suhu: ${item.temp}</span>
+            </div>
+          </div>
+
+          <button onclick="topUpFlowerStock('${item.id}')" class="w-full bg-[#FAFDFB] hover:bg-emeraldMin-mintLight text-emeraldMin-deep font-bold py-2 rounded-xl transition text-[11px] font-sans border border-emeraldMin-border">
+            + Tambah Pasokan Lelang Petani (+100 Tangkai)
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function topUpFlowerStock(itemId) {
+      const item = masterFlowers.find(x => x.id === itemId);
+      if (item) {
+        item.stockStems += 100;
+        item.status = "FRESH_SAFE";
+        item.ageHour = "Baru Tiba Lelang Pagi";
+        renderFlowerInventoryGrid();
+        updateDashboardCounters();
+        showToast(`Stok ${item.name} bertambah +100 tangkai segar.`);
+      }
+    }
+
+    function openRestockAuctionModal() {
+      const flowerName = prompt("Masukkan jenis bunga segar lelang baru:", "Mawar Peach Avalanche Lembang");
+      if (flowerName) {
+        showToast(`Bunga ${flowerName} dicatat ke antrean chiller penerimaan.`);
+      }
+    }
+
+    // ==================== 7. MASTER ORDERS TABLE & PRINT ====================
+    function renderMasterOrdersTable(filteredList = null) {
+      const tbody = document.getElementById('masterOrdersTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterOrders;
+      document.getElementById('orderCountLabel').innerText = `Menampilkan ${list.length} pesanan aktif`;
+
+      list.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-emerald-50/30 transition";
+
+        let statusBadge = "";
+        if (o.status === 'INCOMING') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 font-bold font-mono">INCOMING</span>';
+        else if (o.status === 'ARRANGING') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-bold font-mono">DIRANGKAI</span>';
+        else if (o.status === 'IN_VAN') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-800 font-bold font-mono">DI COLD-VAN</span>';
+        else statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold font-mono">TERKIRIM</span>';
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-emeraldMin-deep font-mono">${o.ticketNumber}<br><span class="text-[9px] text-slate-400 font-normal">Token: ${o.token}</span></td>
+          <td class="py-3 px-4 font-serif font-bold text-slate-800">${o.receiver}<br><span class="text-[10px] text-slate-400 font-mono font-normal">Dari: ${o.sender} (${o.phone})</span></td>
+          <td class="py-3 px-4 font-serif text-slate-700"><strong>${o.mainFlower}</strong><br><span class="text-[10px] text-slate-400 font-mono">Kertas: ${o.wrapping}</span></td>
+          <td class="py-3 px-4 font-serif text-emeraldMin-deep font-bold">${o.deliverySlot.split(' (')[0]}<br><span class="text-[10px] text-slate-400 font-mono font-normal">${o.deliveryDate}</span></td>
+          <td class="py-3 px-4 font-mono font-bold text-slate-900">${formatRupiah(o.price)}</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="previewTicketModal('${o.ticketNumber}')" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-emeraldMin-mintLight text-emeraldMin-deep font-bold text-[10px] transition inline-flex items-center gap-1 font-sans border border-emeraldMin-border">
+              <i data-lucide="printer" class="w-3.5 h-3.5 text-emeraldMin-mint"></i> Tiket Buket
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterOrdersTable() {
+      const q = document.getElementById('orderSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMasterOrdersTable();
+        return;
+      }
+      const filtered = masterOrders.filter(o => 
+        o.ticketNumber.toLowerCase().includes(q) ||
+        o.receiver.toLowerCase().includes(q) ||
+        o.sender.toLowerCase().includes(q) ||
+        o.token.toLowerCase().includes(q)
+      );
+      renderMasterOrdersTable(filtered);
+    }
+
+    function filterOrderStatus(statusKey) {
+      document.querySelectorAll('.order-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-status') === statusKey) {
+          btn.className = "order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-emeraldMin-deep text-white transition";
+        } else {
+          btn.className = "order-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition";
+        }
+      });
+
+      if (statusKey === 'ALL') {
+        renderMasterOrdersTable();
+      } else {
+        renderMasterOrdersTable(masterOrders.filter(o => o.status === statusKey));
+      }
+    }
+
+    function previewTicketModal(ticketNumber) {
+      const o = masterOrders.find(x => x.ticketNumber === ticketNumber);
+      if (!o) return;
+
+      document.getElementById('modalTicketCode').innerText = o.ticketNumber;
+      document.getElementById('modalTicketDate').innerText = o.date;
+      document.getElementById('modalReceiverName').innerText = o.receiver;
+      document.getElementById('modalReceiverPhone').innerText = o.phone;
+      document.getElementById('modalDeliveryAddress').innerText = o.address;
+      document.getElementById('modalDeliverySlot').innerText = o.deliverySlot;
+      document.getElementById('modalDeliveryDate').innerText = o.deliveryDate;
+
+      document.getElementById('modalCardTo').innerText = `Kepada: ${o.cardTo}`;
+      document.getElementById('modalCardFrom').innerText = `Dari: ${o.cardFrom}`;
+      document.getElementById('modalCardMsg').innerText = `"${o.cardMsg}"`;
+
+      document.getElementById('modalMainFlowerTitle').innerText = o.mainFlower;
+      document.getElementById('modalBouquetSpecs').innerText = `Filler: ${o.filler} • Wrapping: ${o.wrapping} • Cold Van AC Telemetry`;
+      document.getElementById('modalItemRate').innerText = formatRupiah(o.price);
+      document.getElementById('modalGrandTotal').innerText = formatRupiah(o.price);
+
+      document.getElementById('modalTokenText').innerText = `TOKEN: ${o.token}`;
+      document.getElementById('modalQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${o.token}`;
+
+      document.getElementById('ticketPrintableModal').classList.remove('hidden');
+    }
+
+    function closeTicketModal() {
+      document.getElementById('ticketPrintableModal').classList.add('hidden');
+    }
+
+    function exportOrdersToCSV() {
+      let csv = "data:text/csv;charset=utf-8,No Tiket,Token Pass,Penerima,Pengirim,WhatsApp,Bunga Utama,Wrapping,Slot Jam Antar,Harga,Status,Kartu Ucapan\n";
+      masterOrders.forEach(o => {
+        csv += `"${o.ticketNumber}","${o.token}","${o.receiver}","${o.sender}","${o.phone}","${o.mainFlower}","${o.wrapping}","${o.deliverySlot}","${o.price}","${o.status}","${o.cardMsg}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `FloristBloom_Orders_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 8. DASHBOARD COUNTERS ====================
+    function updateDashboardCounters() {
+      const activeCount = masterOrders.length;
+      const totalRev = masterOrders.reduce((sum, o) => sum + o.price, 0);
+      const lowFlowerCount = masterFlowers.filter(f => f.status === 'REORDER_AUCTION').length;
+
+      document.getElementById('kpiBouquetCount').innerText = `${activeCount} Buket`;
+      document.getElementById('kpiGrossRevenue').innerText = formatRupiah(totalRev);
+      document.getElementById('badgeActiveOrders').innerText = `${activeCount} Buket`;
+      document.getElementById('badgeInventoryAlert').innerText = `${lowFlowerCount} Lelang`;
+    }
+  </script>
+
+</body>
+</html>

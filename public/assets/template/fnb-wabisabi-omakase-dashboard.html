@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaze Omakase (風) - Maestro Operational Console & Hinoki Seating</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Shippori Mincho, Cormorant Garamond, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Shippori Mincho"', '"Cormorant Garamond"', 'serif'],
+            display: ['"Cormorant Garamond"', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            zen: {
+              paper: '#FAF9F6',
+              pine: '#1b4332',
+              forest: '#2d6a4f',
+              sage: '#40916c',
+              lightGreen: '#e8f5e9',
+              gold: '#c5a059',
+              goldMuted: '#dfba73',
+              goldBg: '#fcf9f2',
+              charcoal: '#1a1d1a',
+              deepSumi: '#0f120f'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1a1d1a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2d6a4f;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #c5a059;
+    }
+
+    .glass-zen-header {
+      background: rgba(26, 29, 26, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .kintsugi-gold {
+      background: linear-gradient(135deg, #c5a059 0%, #dfba73 50%, #b38b45 100%);
+    }
+
+    .kintsugi-gold-subtle {
+      background: linear-gradient(135deg, #fcf9f2 0%, #ffffff 50%, #f7f1e1 100%);
+    }
+
+    .washi-pattern {
+      background-color: #FAF9F6;
+      background-image: radial-gradient(rgba(197, 160, 89, 0.12) 1px, transparent 1px), radial-gradient(rgba(27, 67, 50, 0.08) 1px, #FAF9F6 1px);
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+    }
+
+    /* Print View - Washi Paper Style Invoice */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableInvoiceModal, #printableInvoiceModal * {
+        visibility: visible !important;
+      }
+      #printableInvoiceModal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: #FAF9F6 !important;
+        color: #1a1d1a !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-zen-paper text-slate-800 antialiased font-sans min-h-screen flex selection:bg-zen-goldBg selection:text-zen-pine overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-zen-charcoal border-r border-zen-pine/40 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-zen-pine/30 bg-zen-deepSumi/60">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-zen-pine flex items-center justify-center text-zen-gold shadow-md shadow-emerald-950/40 flex-shrink-0 border border-zen-gold/40">
+            <span class="font-serif font-bold text-xl leading-none">風</span>
+          </div>
+          <div>
+            <span class="font-bold text-base tracking-widest text-white block leading-tight font-serif">
+              KAZE<span class="text-zen-gold italic ml-1 font-normal">OMAKASE</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-serif bg-zen-pine/60 text-zen-goldMuted border border-zen-gold/30 px-1.5 py-0.2 rounded font-bold uppercase tracking-widest">MAESTRO CONSOLE</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-zen-gold animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-stone-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Live Shift & Toyosu Cold Sensor Strip -->
+      <div class="px-5 py-3 border-b border-zen-pine/30 bg-zen-deepSumi/40">
+        <div class="flex items-center justify-between text-[11px] font-mono text-stone-400">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="snowflake" class="w-3.5 h-3.5 text-zen-gold"></i> Toyosu Chiller
+          </span>
+          <span class="text-emerald-400 font-bold" id="sidebarTemp">0.8°C OPTIMAL</span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-stone-400 mt-1 font-serif">
+          <span>Counter Hinoki:</span>
+          <span class="text-zen-gold font-bold" id="sidebarSeatStatus">10 Seats Active</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-serif text-xs">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-bold text-zen-charcoal kintsugi-gold shadow-sm">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          <span>Executive Overview</span>
+        </button>
+
+        <button onclick="switchTab('matrix')" id="tab-matrix" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-stone-400 hover:text-white hover:bg-zen-pine/40">
+          <i data-lucide="circle-dot" class="w-4 h-4"></i>
+          <span>Hinoki 10-Seat Live Matrix</span>
+          <span class="ml-auto bg-zen-pine text-zen-gold font-mono text-[10px] font-bold px-1.5 py-0.5 rounded border border-zen-gold/30" id="badgeSeatsFree">3 Free</span>
+        </button>
+
+        <button onclick="switchTab('inventory')" id="tab-inventory" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-stone-400 hover:text-white hover:bg-zen-pine/40">
+          <i data-lucide="fish" class="w-4 h-4"></i>
+          <span>Toyosu Air-Flown Cargo</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded" id="badgeToyosuFresh">99% Fresh</span>
+        </button>
+
+        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-stone-400 hover:text-white hover:bg-zen-pine/40">
+          <i data-lucide="scan" class="w-4 h-4"></i>
+          <span>Door Intake Scanner</span>
+          <span class="w-2 h-2 rounded-full bg-zen-gold ml-auto animate-ping"></span>
+        </button>
+
+        <button onclick="switchTab('bookings')" id="tab-bookings" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-stone-400 hover:text-white hover:bg-zen-pine/40">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+          <span>Master Bookings Roster</span>
+          <span class="ml-auto bg-stone-800 text-stone-300 font-mono text-[10px] px-1.5 py-0.5 rounded" id="badgeBookingCount">18 Pax</span>
+        </button>
+
+        <button onclick="switchTab('pos')" id="tab-pos" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-stone-400 hover:text-white hover:bg-zen-pine/40">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Kasir POS & Pelunasan 50%</span>
+          <span class="ml-auto bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded" id="badgeDueSettlement">4 Settle</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Chef Kenjiro Sato Credentials -->
+    <div class="p-4 border-t border-zen-pine/30 bg-zen-deepSumi/60">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-zen-pine border border-zen-gold/40 flex items-center justify-center text-zen-gold font-serif font-bold text-sm shadow-sm">
+          佐藤
+        </div>
+        <div class="flex-1 min-w-0 font-serif">
+          <p class="text-xs font-bold text-white truncate">Kenjiro Sato (佐藤 健二郎)</p>
+          <p class="text-[10px] text-zen-goldMuted font-mono truncate">Executive Sushi Shokunin</p>
+        </div>
+        <button onclick="showToast('Filosofi Ichi-go Ichi-e disinkronkan')" title="Etiket Wabi-Sabi" class="text-stone-400 hover:text-zen-gold transition">
+          <i data-lucide="feather" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-zen-charcoal text-stone-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-zen-pine/40 font-serif gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-zen-pine text-zen-gold border border-zen-gold/30">TOYOSU AIR-FREIGHT</span>
+        <span>Batch L772 Tiba Pukul 04:15 WIB: <strong class="text-white">Otoro Aomori & Bafun Uni Hokkaido Bersertifikat</strong></span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-stone-400 font-mono">
+        <span>Kapasitas Hinoki: <strong class="text-zen-gold font-bold">7 / 10 Terisi</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span>Shift Aktif: <strong class="text-white font-serif">Twilight Senja</strong></span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-zen-header sticky top-0 z-30 border-b border-zen-pine/40 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-stone-300 hover:text-white p-1.5 rounded-lg bg-zen-pine">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-bold text-base sm:text-lg flex items-center gap-2 font-serif">
+            <span id="currentViewTitle">Executive Overview</span>
+          </h1>
+          <p class="text-stone-400 text-xs hidden sm:block font-serif">Kaze Omakase (風) • 10-Seat Intimate Hinoki Counter Operations Console</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-serif text-xs">
+        <!-- Shift Selector -->
+        <div class="hidden lg:flex items-center bg-zen-deepSumi/90 border border-zen-pine/60 px-3 py-1.5 rounded-xl text-stone-300">
+          <span class="text-stone-400 text-[11px] mr-2">Sesi Layanan:</span>
+          <select id="mainShiftSelector" onchange="switchServiceShift()" class="bg-transparent text-zen-gold font-bold text-xs focus:outline-none cursor-pointer">
+            <option value="TWILIGHT" class="bg-zen-charcoal text-white" selected>Sesi Senja (17:30 - 19:30 WIB)</option>
+            <option value="NIGHTFALL" class="bg-zen-charcoal text-white">Sesi Malam (20:00 - 22:00 WIB)</option>
+          </select>
+        </div>
+
+        <!-- Quick VIP Reservation Button -->
+        <button onclick="openSeatWalkinModal()" class="kintsugi-gold text-slate-900 font-bold px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-yellow-900/20 flex items-center gap-1.5 active:scale-95 font-serif">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-slate-900"></i>
+          <span>+ Alokasi Kursi VIP</span>
+        </button>
+
+        <!-- Notification Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-zen-deepSumi border border-zen-pine/60 text-stone-300 hover:text-zen-gold flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-zen-gold rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-stone-200 p-3 text-slate-800 z-50 font-serif">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-2 px-1">
+              <span class="font-bold text-xs">Aktivitas Omakase Terkini</span>
+              <span class="text-[10px] font-mono text-zen-pine font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-zen-lightGreen rounded-xl border border-emerald-200">
+                <p class="font-bold text-slate-900 font-sans">Check-in Pintu Masuk: Tedi Mahendra</p>
+                <p class="text-stone-600 text-[10px] font-mono">Seat 04 (Center Hinoki) • Kaze Grand 20-Courses</p>
+                <span class="text-[9px] text-stone-400 font-sans">2 menit lalu</span>
+              </div>
+              <div class="p-2.5 bg-zen-goldBg rounded-xl border border-zen-gold/40">
+                <p class="font-bold text-slate-900 font-sans">DP 50% QRIS Masuk: Rp 1.125.000</p>
+                <p class="text-stone-600 text-[10px] font-mono">Seat 07 • Sesi Malam (20:00 WIB)</p>
+                <span class="text-[9px] text-zen-gold font-bold font-sans">15 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1 washi-pattern">
+
+      <!-- ==================== VIEW 1: EXECUTIVE OVERVIEW ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid (4 Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-serif">
+          <!-- Card 1: Gross Omset Hari Ini -->
+          <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-500 font-sans tracking-wide">TOTAL REVENUE HARI INI</span>
+              <div class="w-8 h-8 rounded-xl bg-zen-lightGreen text-zen-pine flex items-center justify-center font-bold border border-emerald-200">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-bold text-slate-900 font-mono block" id="kpiGrossRevenue">Rp 37.800.000</span>
+              <p class="text-emerald-700 text-[11px] font-semibold flex items-center gap-1 mt-1 font-sans">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> 18 Tamu Omakase (2 Sesi)
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2: DP 50% Escrow Diterima -->
+          <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-500 font-sans tracking-wide">DP 50% TERKUNCI (QRIS)</span>
+              <div class="w-8 h-8 rounded-xl bg-zen-goldBg text-zen-gold flex items-center justify-center font-bold border border-zen-gold/40">
+                <i data-lucide="lock" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-bold text-zen-pine font-mono block" id="kpiDpAmount">Rp 18.900.000</span>
+              <p class="text-stone-500 text-[11px] mt-1 font-sans">Pengadaan seafood segar Toyosu terproteksi</p>
+            </div>
+          </div>
+
+          <!-- Card 3: Sisa 50% Pelunasan di Meja Kasir -->
+          <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-500 font-sans tracking-wide">OUTSTANDING SISA KASIR (50%)</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-200">
+                <i data-lucide="receipt" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-bold text-amber-700 font-mono block" id="kpiDueAmount">Rp 18.900.000</span>
+              <p class="text-stone-500 text-[11px] mt-1 font-sans">Dilunasi setelah ceremonial matcha selesai</p>
+            </div>
+          </div>
+
+          <!-- Card 4: 10-Seat Counter Occupancy -->
+          <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-500 font-sans tracking-wide">OKUPANSI HINOKI COUNTER</span>
+              <div class="w-8 h-8 rounded-xl bg-zen-charcoal text-zen-gold flex items-center justify-center font-bold">
+                <span class="text-xs">風</span>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-bold text-slate-900 font-mono block" id="kpiOccupancyPct">90.0%</span>
+              <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden mt-2">
+                <div class="bg-zen-pine h-full rounded-full" style="width: 90%"></div>
+              </div>
+              <p class="text-stone-400 text-[10px] font-mono mt-1">18 / 20 Kursi Terisi Penuh Hari Ini</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (2 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Shift Seating & Nigiri Output Bar Chart (8 Cols) -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3 font-serif">
+              <div>
+                <h3 class="font-bold text-base text-slate-900">Distribusi Okupansi Kursi per Sesi (Shift)</h3>
+                <p class="text-xs text-stone-500 font-sans">Sesi Senja (17:30 - 19:30) vs Sesi Malam (20:00 - 22:00)</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-sans">
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-zen-pine"></span> Kaze Grand (20-Course)
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-zen-gold"></span> Matsu Journey (16-Course)
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="shiftOccupancyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Course Revenue Doughnut Chart (4 Cols) -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 flex flex-col justify-between font-serif">
+            <div class="border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-base text-slate-900">Komposisi Paket Perjalanan Rasa</h3>
+              <p class="text-xs text-stone-500 font-sans">Persentase pesanan menu signature vs pairing sake</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="courseDistributionChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-sans text-stone-500 space-y-1 border-t border-stone-100">
+              <div class="flex justify-between">
+                <span>Kaze Grand Omakase (20 Courses):</span>
+                <strong class="text-zen-pine font-mono">68% (12 Pax)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Matsu Journey (16 Courses):</span>
+                <strong class="text-slate-800 font-mono">22% (6 Pax)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Sake Flight Sommelier Add-on:</span>
+                <strong class="text-zen-gold font-mono">10% (Rp 3.8 Jt)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Hinoki Counter Mini Snapshot Strip -->
+        <div class="bg-zen-charcoal text-white rounded-3xl p-6 sm:p-7 border border-zen-pine/40 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-serif">
+            <div>
+              <span class="text-zen-gold text-xs font-mono uppercase font-bold tracking-widest">LIVE HINOKI 10-SEAT SNAPSHOT</span>
+              <h3 class="text-lg font-bold mt-0.5">Status Kursi Langsung Hadap Chef Kenjiro Sato</h3>
+            </div>
+            <button onclick="switchTab('matrix')" class="bg-zen-pine hover:bg-zen-forest text-xs text-zen-gold px-3.5 py-2 rounded-xl border border-zen-gold/30 transition flex items-center gap-1.5 font-sans">
+              <span>Buka Denah Penuh & Etiket Tamu</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-zen-gold"></i>
+            </button>
+          </div>
+
+          <!-- 10 Seat Bar Graphic -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 md:grid-cols-10 gap-2.5 pt-1" id="miniSeatsSnapshotGrid">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: HINOKI 10-SEAT LIVE MATRIX ==================== -->
+      <section id="view-matrix" class="hidden space-y-6">
+        
+        <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-serif text-xs">
+          <div class="flex items-center gap-3">
+            <span class="text-stone-500 font-bold">Pilih Tanggal:</span>
+            <input type="date" id="matrixDateFilter" onchange="renderHinokiMatrix()" class="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-slate-800 font-sans font-bold focus:outline-none focus:ring-2 focus:ring-zen-pine" />
+            <button onclick="setDateToday()" class="bg-zen-pine text-zen-gold hover:bg-zen-forest px-3.5 py-2 rounded-xl transition font-sans font-bold">Hari Ini</button>
+          </div>
+
+          <!-- Legend -->
+          <div class="flex flex-wrap items-center gap-3 text-stone-600 font-sans text-[11px]">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-white border border-stone-300"></span> Kosong (Available)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-zen-gold"></span> Terkunci (DP 50% Paid)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-zen-pine"></span> Hadir / Santap (Seated)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-600"></span> Selesai / Bill (Billed)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-stone-300"></span> Blocked / Maint</span>
+          </div>
+        </div>
+
+        <!-- 10-Seat Curved Hinoki Counter Stage -->
+        <div class="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-6 washi-pattern">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-4 font-serif">
+            <div>
+              <span class="text-[10px] font-bold text-zen-gold uppercase tracking-widest font-mono">300-YEAR HINOKI WOODEN COUNTER</span>
+              <h3 class="text-lg font-bold text-zen-charcoal">Alokasi Tamu & Catatan Alergi Kursi 01 - 10</h3>
+            </div>
+            <span class="text-xs text-stone-500 font-sans">Klik kursi untuk melihat etiket & catatan alergi tamu</span>
+          </div>
+
+          <!-- The Chef Stage Island -->
+          <div class="max-w-xl mx-auto p-4 bg-amber-50/70 rounded-2xl border-2 border-amber-200/90 text-center space-y-1 shadow-sm">
+            <span class="text-[10px] font-serif uppercase tracking-[0.25em] text-amber-900 block font-bold">PANGGUNG PREPARASI NIGIRI CHEF KENJIRO SATO</span>
+            <p class="text-xs font-serif text-stone-600">Area Binchotan Flame Grill & Parutan Wasabi Segar Shizuoka</p>
+          </div>
+
+          <!-- 10 Seats Visual Curved Layout -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-4" id="hinokiFullMatrixGrid">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: TOYOSU AIR-FLOWN INVENTORY ==================== -->
+      <section id="view-inventory" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm font-serif">
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Bahan Musiman Pasar Toyosu Tokyo (Air-Flown Fresh)</h3>
+            <p class="text-xs text-stone-500 font-sans">Suhu dingin konstan 0.5°C s/d 2.0°C menjamin kesegaran sashimi dan tekstur uni tanpa bahan pengawet</p>
+          </div>
+          <button onclick="openAddCargoModal()" class="kintsugi-gold text-slate-900 font-serif font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-md shadow-yellow-900/10">
+            + Input Kargo Segar Baru
+          </button>
+        </div>
+
+        <!-- Toyosu Ingredients Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="toyosuCargoGrid">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: DOOR INTAKE SCANNER & ETIQUETTE ==================== -->
+      <section id="view-scanner" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Optical QR/Barcode Scanner (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-6 font-serif">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-4">
+              <div>
+                <h3 class="font-bold text-base text-zen-charcoal flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-zen-pine"></i>
+                  Door Concierge & Dining Pass Validator
+                </h3>
+                <p class="text-xs text-stone-500 font-sans">Pindai token barcode tamu saat memasuki pintu gerbang Wabi-Sabi</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zen-lightGreen text-zen-pine text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-zen-pine animate-pulse"></span> DOOR OPEN
+              </span>
+            </div>
+
+            <!-- Optical Sensor Graphic -->
+            <div class="bg-zen-charcoal rounded-3xl p-8 border border-zen-pine/40 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-zen-gold/60 rounded-2xl relative flex items-center justify-center p-4 bg-zen-deepSumi/50">
+                <div class="w-full h-0.5 bg-zen-gold absolute top-1/2 -translate-y-1/2 shadow-lg shadow-yellow-500 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-stone-500 opacity-60"></i>
+              </div>
+              <p class="text-stone-300 text-xs font-serif mt-4">Arahkan Barcode Undangan Omakase (Cth: <strong>KZ-VIP-0409</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-stone-700 font-sans">Input Manual Token Undangan Dining Pass:</label>
+              <div class="flex gap-2">
+                <input type="text" id="doorTokenInput" value="KZ-VIP-0409" placeholder="Ketik token undangan..." class="flex-1 bg-stone-50 px-4 py-2.5 rounded-xl border border-stone-200 font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-zen-pine" />
+                <button onclick="executeDoorScan()" class="kintsugi-gold text-slate-900 font-serif font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-yellow-900/15 active:scale-95">
+                  <i data-lucide="check" class="w-4 h-4"></i> Validasi Tamu
+                </button>
+              </div>
+              <p class="text-[11px] text-stone-400 font-sans">Contoh cepat pengujian token: 
+                <span onclick="setScannerVal('KZ-VIP-0409')" class="underline cursor-pointer text-zen-pine font-mono font-bold">KZ-VIP-0409 (Tedi M. - Seat 04)</span> • 
+                <span onclick="setScannerVal('KZ-VIP-0511')" class="underline cursor-pointer text-zen-gold font-mono font-bold">KZ-VIP-0511 (Alergi Kerang - Seat 07)</span> •
+                <span onclick="setScannerVal('INVALID-TOKEN')" class="underline cursor-pointer text-rose-600 font-mono font-bold">INVALID-TOKEN (Ditolak)</span>
+              </p>
+            </div>
+
+            <!-- Feedback Result Container -->
+            <div id="doorScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-serif">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Concierge Check-in Audit Logs (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 font-serif">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-sm text-zen-charcoal">Log Kedatangan Tamu & Sambutan Host</h3>
+              <span class="text-[10px] text-stone-400 font-mono">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs" id="conciergeAuditLogs">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: MASTER BOOKINGS ROSTER ==================== -->
+      <section id="view-bookings" class="hidden space-y-6">
+        
+        <!-- Search and Filter Bar -->
+        <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-400"></i>
+            <input type="text" id="rosterSearchInput" onkeyup="filterRosterTable()" placeholder="Cari Nama Tamu, Seat No, Invoice..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-zen-pine" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto font-serif">
+            <button onclick="filterRosterStatus('ALL')" class="roster-filter-btn px-3.5 py-2 rounded-xl font-bold bg-zen-charcoal text-white transition" data-status="ALL">Semua</button>
+            <button onclick="filterRosterStatus('DP_CONFIRMED')" class="roster-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="DP_CONFIRMED">DP 50% Paid</button>
+            <button onclick="filterRosterStatus('SEATED')" class="roster-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="SEATED">Sedang Santap</button>
+            <button onclick="filterRosterStatus('COMPLETED')" class="roster-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="COMPLETED">Selesai (Lunas)</button>
+          </div>
+        </div>
+
+        <!-- Master Bookings Table -->
+        <div class="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-4 font-serif">
+            <div>
+              <h3 class="font-bold text-base text-slate-900">Database Tamu Intimate Kaze Omakase</h3>
+              <p class="text-xs text-stone-500 font-sans" id="rosterCountLabel">Menampilkan seluruh reservasi terdaftar</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportRosterToCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200 font-serif">
+                <tr>
+                  <th class="py-3 px-4">INVOICE & TOKEN</th>
+                  <th class="py-3 px-4">TAMU & WHATSAPP</th>
+                  <th class="py-3 px-4">KURSI & POSISI</th>
+                  <th class="py-3 px-4">SESI SHIFT</th>
+                  <th class="py-3 px-4">PAKET OMAKASE</th>
+                  <th class="py-3 px-4">TOTAL BIAYA</th>
+                  <th class="py-3 px-4">SISA KASIR (50%)</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-center">AKSI INVOICE</th>
+                </tr>
+              </thead>
+              <tbody id="masterRosterTableBody" class="divide-y divide-stone-100 font-medium font-sans">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 6: KASIR POS & PELUNASAN 50% ==================== -->
+      <section id="view-pos" class="hidden space-y-6">
+        
+        <!-- Shift Financial Overview Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-serif">
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-sans font-bold">TOTAL OMSET BERSIH SESI HARI INI</span>
+            <span class="text-2xl font-bold text-slate-900 font-mono block mt-2">Rp 37.800.000</span>
+            <p class="text-stone-400 text-[11px] font-sans mt-1">18 Tamu Counter Hinoki</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-sans font-bold">DEPOSIT 50% TERKUNCI (QRIS)</span>
+            <span class="text-2xl font-bold text-zen-pine font-mono block mt-2">Rp 18.900.000</span>
+            <p class="text-emerald-700 text-[11px] font-sans mt-1">Bahan Toyosu Terproteksi 100%</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-sans font-bold">SISA PELUNASAN RESEPSIONIS</span>
+            <span class="text-2xl font-bold text-amber-600 font-mono block mt-2" id="posRemainingDueCard">Rp 18.900.000</span>
+            <p class="text-amber-700 text-[11px] font-sans mt-1">Belum pelunasan di venue</p>
+          </div>
+        </div>
+
+        <!-- POS Calculator & Queue -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Settle 50% Bill Calculator -->
+          <div class="lg:col-span-5 bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-5 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3 font-serif">
+              <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+                <i data-lucide="calculator" class="w-4 h-4 text-zen-pine"></i>
+                Pelunasan Sisa 50% di Meja Kasir
+              </h3>
+              <span class="px-2 py-0.5 rounded text-[10px] bg-zen-goldBg text-zen-gold font-bold">WABI-SABI POS</span>
+            </div>
+
+            <div class="space-y-3 font-sans">
+              <div>
+                <label class="block font-bold text-stone-700 mb-1 font-serif">Pilih Kursi Tamu yang Selesai Santap:</label>
+                <select id="posSeatSelect" onchange="loadSeatToPOS()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-zen-pine">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+
+              <!-- Add-on Pairing Beverage -->
+              <div>
+                <label class="block font-bold text-stone-700 mb-1 font-serif">Tambahan Minuman / Sake Pairing:</label>
+                <select id="posSakeAddonSelect" onchange="calculatePOSFinal()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-zen-pine">
+                  <option value="0">Tanpa Tambahan (Sake Pairing 0)</option>
+                  <option value="450000">Junmai Daiginjo Flight 3 Gelas (+ Rp 450.000)</option>
+                  <option value="850000">Rare Jukai Reserve Bottle (+ Rp 850.000)</option>
+                  <option value="150000">Sparkling Yuzu Artisan Tea (+ Rp 150.000)</option>
+                </select>
+              </div>
+
+              <div class="p-4 bg-[#FAF9F5] rounded-2xl border border-stone-200 space-y-2 font-mono text-xs">
+                <div class="flex justify-between text-stone-600">
+                  <span>Biaya Paket Omakase:</span>
+                  <span id="posCourseAmount" class="font-bold text-slate-900">Rp 2.250.000</span>
+                </div>
+                <div class="flex justify-between text-stone-600">
+                  <span>Tambahan Minuman / Pairing:</span>
+                  <span id="posBeverageAmount" class="font-bold text-slate-900">Rp 0</span>
+                </div>
+                <div class="flex justify-between text-emerald-700 font-bold bg-zen-lightGreen p-2 rounded-lg border border-emerald-200">
+                  <span>Deposit QRIS 50% Terpotong:</span>
+                  <span id="posDepositDeduction">- Rp 1.125.000</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-stone-200 text-sm font-black text-slate-900">
+                  <span>Sisa Tagihan yang Diterima Kasir:</span>
+                  <span id="posNetDueAmount" class="text-zen-pine text-base">Rp 1.125.000</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1 font-serif">Metode Penerimaan Pelunasan:</label>
+                <select id="posPaymentMethodSelect" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-zen-pine">
+                  <option value="EDC BCA Prioritas">Debit / EDC BCA Prioritas</option>
+                  <option value="Kartu Kredit Visa Infinite">Visa Infinite / Mastercard World</option>
+                  <option value="Uang Tunai (Cash Pas)">Uang Tunai Pas di Meja Resepsionis</option>
+                  <option value="QRIS Statis Kasir">QRIS Statis Meja Kasir</option>
+                </select>
+              </div>
+
+              <button onclick="executePOSSettlement()" class="w-full kintsugi-gold text-slate-900 font-serif font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-yellow-900/15 active:scale-95">
+                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Faktur Washi & Kosongkan Kursi
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Active Hinoki Dining Bill Queue -->
+          <div class="lg:col-span-7 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 font-serif text-xs">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-sm text-zen-charcoal">Antrean Pelunasan Kursi Tamu</h3>
+              <span class="text-stone-400 font-mono text-[10px]">Real-time Counter Bill</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left font-mono">
+                <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200 font-serif">
+                  <tr>
+                    <th class="py-3 px-3">KURSI</th>
+                    <th class="py-3 px-3">NAMA TAMU</th>
+                    <th class="py-3 px-3">PAKET OMAKASE</th>
+                    <th class="py-3 px-3">SISA 50%</th>
+                    <th class="py-3 px-3 text-center">AKSI CEPAT</th>
+                  </tr>
+                </thead>
+                <tbody id="posQueuedSeatsBody" class="divide-y divide-stone-100 font-medium font-sans">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: DETAIL KURSI & ETIKET TAMU ==================== -->
+  <div id="seatDetailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-stone-200 shadow-2xl p-6 space-y-5 text-xs font-serif">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-base text-zen-charcoal flex items-center gap-2">
+          <i data-lucide="circle-dot" class="w-5 h-5 text-zen-gold"></i>
+          <span id="modalSeatTitle">Kursi Counter 04 (Tengah)</span>
+        </h3>
+        <button onclick="closeSeatModal()" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-[#FAF8F5] p-4 rounded-2xl border border-stone-200 space-y-2.5 font-sans">
+        <div class="flex justify-between items-center">
+          <span class="text-stone-500 font-serif">Status Kursi:</span>
+          <span class="font-bold px-2 py-0.5 rounded text-[10px] font-mono" id="modalSeatBadge">RESERVED</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-stone-500 font-serif">Nama Tamu Terdaftar:</span>
+          <span class="font-bold text-slate-900 font-serif text-sm" id="modalGuestName">Tedi Mahendra</span>
+        </div>
+        <div class="flex justify-between items-center font-mono">
+          <span class="text-stone-500 font-serif">WhatsApp:</span>
+          <span class="text-slate-800" id="modalGuestPhone">081299998888</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-stone-500 font-serif">Pilihan Course:</span>
+          <span class="font-bold text-zen-pine font-serif" id="modalCourseTitle">Kaze Grand (20-Course)</span>
+        </div>
+        <div class="p-2.5 bg-white rounded-xl border border-stone-200 space-y-1">
+          <span class="text-[10px] font-serif font-bold text-zen-gold uppercase block">CATATAN ALERGI & DIETARY:</span>
+          <p class="text-[11px] text-stone-700 italic" id="modalAllergyNotes">Tidak ada alergi kerang / Suka wasabi segar Shizuoka</p>
+        </div>
+        <div class="flex justify-between items-center font-mono pt-1 border-t border-stone-200">
+          <span class="text-stone-500 font-serif">Deposit 50% QRIS:</span>
+          <span class="font-bold text-zen-gold" id="modalDepositAmount">Rp 1.125.000</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons Container -->
+      <div class="space-y-2 pt-1 font-sans" id="modalSeatActionsContainer">
+        <!-- Dynamically injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: ALOKASI KURSI WALK-IN DARURAT ==================== -->
+  <div id="seatWalkinModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 font-serif">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-stone-200 shadow-2xl p-6 space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-base text-zen-charcoal flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-zen-gold"></i>
+          Alokasi Kursi VIP / Tamu Prioritas
+        </h3>
+        <button onclick="closeSeatWalkinModal()" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div>
+          <label class="block font-bold text-stone-700 mb-1 font-serif">Nama Lengkap Tamu *</label>
+          <input type="text" id="walkinGuestName" placeholder="Contoh: Erick Thohir" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-zen-pine" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-serif">No. WhatsApp *</label>
+            <input type="tel" id="walkinGuestPhone" placeholder="0812..." class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-zen-pine" />
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-serif">Pilih Nomor Kursi *</label>
+            <select id="walkinSeatNumberSelect" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-zen-pine">
+              <!-- Injected via JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-serif">Pilihan Course *</label>
+            <select id="walkinCourseSelect" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-zen-pine">
+              <option value="KAZE">Kaze Grand Omakase (Rp 2.250.000)</option>
+              <option value="MATSU">Matsu Journey (Rp 1.450.000)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-serif">Sesi Layanan *</label>
+            <select id="walkinShiftSelect" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-zen-pine">
+              <option value="TWILIGHT">Sesi Senja (17:30 - 19:30)</option>
+              <option value="NIGHTFALL">Sesi Malam (20:00 - 22:00)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-700 mb-1 font-serif">Catatan Alergi / Pantangan</label>
+          <input type="text" id="walkinAllergyNotes" placeholder="Cth: Tidak makan kerang abalone" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-zen-pine" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-stone-100 font-serif">
+        <button onclick="closeSeatWalkinModal()" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="confirmSeatWalkin()" class="px-5 py-2.5 kintsugi-gold text-slate-900 font-bold rounded-xl transition shadow-md shadow-yellow-900/10">
+          Kunci Kursi & Dudukkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PRINTABLE WASHI INVOICE MODAL ==================== -->
+  <div id="invoicePrintableModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zen-paper rounded-3xl max-w-2xl w-full border border-stone-200 shadow-2xl p-6 sm:p-9 space-y-6 max-h-[90vh] overflow-y-auto font-serif">
+      
+      <!-- Top Action Bar -->
+      <div class="flex items-center justify-between border-b border-stone-200 pb-4 no-print">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-zen-goldBg text-zen-gold border border-zen-gold/40 uppercase tracking-widest">
+            OFFICIAL OMAKASE INVOICE
+          </span>
+          <span class="text-xs text-stone-400 font-sans">ICHI-GO ICHI-E</span>
+        </div>
+        <div class="flex items-center gap-2 font-sans">
+          <button onclick="window.print()" class="kintsugi-gold text-slate-900 font-serif font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="printer" class="w-4 h-4"></i> Cetak Dokumen PDF
+          </button>
+          <button onclick="closeInvoiceModal()" class="p-2 text-stone-400 hover:text-stone-600 rounded-xl bg-stone-100">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Document Container -->
+      <div id="printableInvoiceModal" class="space-y-6">
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-stone-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-zen-pine flex items-center justify-center text-zen-gold border border-zen-gold/40">
+                <span class="font-bold text-sm">風</span>
+              </div>
+              <span class="font-bold text-xl tracking-widest text-zen-charcoal">KAZE<span class="text-zen-gold italic ml-1">OMAKASE</span></span>
+            </div>
+            <p class="text-[11px] text-stone-500 font-sans">Jl. Senopati Raya No. 92, Kebayoran Baru, Jakarta Selatan</p>
+            <p class="text-[11px] text-stone-500 font-sans">Private Hinoki Counter 10 Seats • Executive Chef Kenjiro Sato</p>
+          </div>
+
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-bold bg-zen-goldBg text-zen-gold uppercase tracking-wider mb-1 border border-zen-gold/40">
+              SETTLED INVOICE
+            </span>
+            <p id="prnInvoiceNumber" class="text-xs font-mono font-bold text-stone-800">KZ-202610-8812</p>
+            <p id="prnInvoiceDate" class="text-[10px] text-stone-400 font-sans">31 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Guest Details -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-[#FAF8F5] p-4 rounded-2xl border border-stone-200 font-sans">
+          <div>
+            <span class="text-[10px] uppercase font-serif font-bold text-stone-400 block mb-0.5">Tamu Terdaftar:</span>
+            <p id="prnGuestName" class="font-bold text-zen-charcoal text-sm font-serif">Tedi Mahendra</p>
+            <p id="prnGuestPhone" class="text-stone-500 font-mono">081299998888</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-serif font-bold text-stone-400 block mb-0.5">Alokasi Kursi:</span>
+            <p id="prnSeatDetail" class="font-bold text-zen-pine text-sm font-serif">Kursi Counter 04 (Tengah)</p>
+            <p id="prnShiftDetail" class="text-zen-gold font-bold font-serif">Sesi Senja (17:30 - 19:30 WIB)</p>
+          </div>
+        </div>
+
+        <!-- Table Summary -->
+        <div class="border border-stone-200 rounded-2xl overflow-hidden font-sans">
+          <table class="w-full text-xs">
+            <thead class="bg-stone-50 text-stone-600 border-b border-stone-200 font-serif">
+              <tr>
+                <th class="py-2.5 px-4 text-left font-bold">Rincian Perjalanan Omakase & Minuman</th>
+                <th class="py-2.5 px-4 text-center font-bold">Qty</th>
+                <th class="py-2.5 px-4 text-right font-bold">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 font-medium">
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-800 font-serif text-sm" id="prnCourseTitle">Kaze Grand Omakase (20 Courses)</div>
+                  <div class="text-[11px] text-stone-400 font-sans">Toyosu Air-Flown Seasonal Seafood, Binchotan Flame & Truffle</div>
+                </td>
+                <td class="py-3 px-4 text-center font-mono">1 Kursi</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-800 font-mono" id="prnCourseFee">Rp 2.250.000</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-800 font-serif" id="prnBeverageTitle">Sake Pairing Sommelier Add-on</div>
+                  <div class="text-[11px] text-stone-400 font-sans">Kurasi Khusus Wine & Sake Dingin</div>
+                </td>
+                <td class="py-3 px-4 text-center font-mono">1 Paket</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-800 font-mono" id="prnBeverageFee">Rp 0</td>
+              </tr>
+              <tr class="bg-stone-50/60 font-mono">
+                <td colspan="2" class="py-2 px-4 text-stone-600 text-right font-bold font-sans">Total Nilai Bersantap:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-800" id="prnGrossTotal">Rp 2.250.000</td>
+              </tr>
+              <tr class="font-mono text-emerald-700 bg-zen-lightGreen/50">
+                <td colspan="2" class="py-2 px-4 text-right font-bold font-sans">Kredit Deposit QRIS 50% Diterima:</td>
+                <td class="py-2 px-4 text-right font-bold" id="prnDepositDeducted">- Rp 1.125.000</td>
+              </tr>
+              <tr class="border-t-2 border-stone-200 bg-zen-goldBg/60 font-mono">
+                <td colspan="2" class="py-2.5 px-4 text-zen-charcoal text-right font-extrabold text-xs font-serif">Pelunasan di Venue (Kasir):</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-zen-pine" id="prnNetSettled">Rp 1.125.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-center font-serif text-xs text-stone-500">
+          <p class="font-bold text-zen-charcoal">Arigatou Gozaimasu • 誠にありがとうございました</p>
+          <p class="text-[11px] font-sans mt-0.5">Semoga pengalaman rasa di meja Hinoki Kaze Omakase memberikan kenangan indah yang abadi.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-zen-charcoal text-white px-4 py-3 rounded-2xl shadow-2xl border border-zen-pine flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-serif">
+    <div class="w-6 h-6 rounded-full kintsugi-gold flex items-center justify-center text-slate-900 font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Sistem terotentikasi</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT MASTER OPERATIONAL LOGIC ==================== -->
+  <script>
+    // 1. Data 10 Kursi Counter Hinoki (Real-time State)
+    let masterSeats = [
+      { id: "S-01", number: "01", position: "Ujung Kiri", shift: "TWILIGHT", status: "AVAILABLE", guest: null, phone: null, course: null, allergy: null, deposit: 0, due: 0, resCode: null, token: null },
+      { id: "S-02", number: "02", position: "Kiri Bar", shift: "TWILIGHT", status: "SEATED", guest: "Dian Sastrowardoyo", phone: "0818-3344-5566", course: "Kaze Grand Omakase (20 Courses)", allergy: "Wasabi ekstra, tanpa truffle", deposit: 1125000, due: 1125000, resCode: "KZ-202610-8802", token: "KZ-VIP-0208" },
+      { id: "S-03", number: "03", position: "Kiri Tengah", shift: "TWILIGHT", status: "SEATED", guest: "Nicholas Saputra", phone: "0813-4455-6677", course: "Kaze Grand Omakase (20 Courses)", allergy: "Tidak ada pantangan", deposit: 1125000, due: 1125000, resCode: "KZ-202610-8803", token: "KZ-VIP-0309" },
+      { id: "S-04", number: "04", position: "Tengah Utama (Direct Chef)", shift: "TWILIGHT", status: "RESERVED", guest: "Tedi Mahendra", phone: "0812-9999-8888", course: "Kaze Grand Omakase (20 Courses)", allergy: "Tidak ada alergi kerang / Suka wasabi segar Shizuoka", deposit: 1125000, due: 1125000, resCode: "KZ-202610-8812", token: "KZ-VIP-0409" },
+      { id: "S-05", number: "05", position: "Tengah Utama (Direct Chef)", shift: "TWILIGHT", status: "RESERVED", guest: "Chelsea Islan", phone: "0811-2233-4455", course: "Kaze Grand Omakase (20 Courses)", allergy: "Gluten free soy sauce jika ada", deposit: 1125000, due: 1125000, resCode: "KZ-202610-8805", token: "KZ-VIP-0510" },
+      { id: "S-06", number: "06", position: "Tengah Kanan", shift: "TWILIGHT", status: "BILLED", guest: "Bambang Soesatyo", phone: "0811-8899-7766", course: "Matsu Journey (16 Courses)", allergy: "Tanpa bulu babi (uni)", deposit: 725000, due: 725000, resCode: "KZ-202610-8806", token: "KZ-VIP-0611" },
+      { id: "S-07", number: "07", position: "Tengah Kanan (Binchotan Grill)", shift: "TWILIGHT", status: "RESERVED", guest: "Reza Rahadian", phone: "0817-6655-4433", course: "Kaze Grand Omakase (20 Courses)", allergy: "Alergi kerang abalone (awabi)", deposit: 1125000, due: 1125000, resCode: "KZ-202610-8807", token: "KZ-VIP-0511" },
+      { id: "S-08", number: "08", position: "Kanan Bar (Tea & Sake)", shift: "TWILIGHT", status: "AVAILABLE", guest: null, phone: null, course: null, allergy: null, deposit: 0, due: 0, resCode: null, token: null },
+      { id: "S-09", number: "09", position: "Kanan Bar (Tea & Sake)", shift: "TWILIGHT", status: "AVAILABLE", guest: null, phone: null, course: null, allergy: null, deposit: 0, due: 0, resCode: null, token: null },
+      { id: "S-10", number: "10", position: "Ujung Kanan", shift: "TWILIGHT", status: "BLOCKED", guest: "Maintenance", phone: "-", course: "Hinoki Wood Oiling", allergy: "-", deposit: 0, due: 0, resCode: "-", token: "-" }
+    ];
+
+    // 2. Toyosu Air-Flown Cargo Database
+    let masterToyosuCargo = [
+      { id: "TY-01", name: "Otoro & Chutoro (Aomori Wild Bluefin)", temp: "0.8°C", stock: "4.2 Kg", status: "PEAK FRESH", arrival: "04:15 WIB (Air-Flown)", batch: "BATCH-TY-AOMORI-88", chefNotes: "Kandungan lemak marbling sempurna untuk binchotan flame" },
+      { id: "TY-02", name: "Bafun Uni (Hokkaido Ensui Grade)", temp: "1.2°C", stock: "8 Kotak (Wooden Box)", status: "PEAK FRESH", arrival: "04:15 WIB (Air-Flown)", batch: "BATCH-TY-HOKK-12", chefNotes: "Manis lembut tanpa aroma pengawet tawas (myoban free)" },
+      { id: "TY-03", name: "Ezo Awabi (Live Hokkaido Abalone)", temp: "1.5°C", stock: "14 Pcs", status: "PEAK FRESH", arrival: "Kemarin Sore", batch: "BATCH-TY-AWABI-09", chefNotes: "Dikukus sake selama 5 jam untuk saus hati (kimo-su)" },
+      { id: "TY-04", name: "Miyazaki A5 Wagyu Tenderloin", temp: "1.0°C", stock: "2.8 Kg", status: "OPTIMAL", arrival: "Kemarin Sore", batch: "BATCH-MZ-BEEF-45", chefNotes: "BMS 11, disajikan dengan garam asap Maldon & fresh wasabi" },
+      { id: "TY-05", name: "Fresh Wasabi Root (Shizuoka Mazuma)", temp: "2.0°C", stock: "12 Batang", status: "PEAK FRESH", arrival: "04:15 WIB (Air-Flown)", batch: "BATCH-SZ-ROOT-02", chefNotes: "Diparut di atas kulit hiu oroshigane sesaat sebelum nigiri" },
+      { id: "TY-06", name: "Botan Ebi & Shiro Ebi (Toyama Bay)", temp: "0.9°C", stock: "1.5 Kg", status: "PEAK FRESH", arrival: "04:15 WIB (Air-Flown)", batch: "BATCH-TY-EBI-33", chefNotes: "Tekstur transparan dan rasa manis alami laut dalam" }
+    ];
+
+    // 3. Master Roster Database
+    let masterRoster = [
+      { resCode: "KZ-202610-8812", token: "KZ-VIP-0409", guest: "Tedi Mahendra", phone: "0812-9999-8888", seat: "Seat 04", position: "Tengah Utama", shift: "Sesi Senja (17:30)", course: "Kaze Grand (20 Courses)", total: 2250000, paid: 1125000, due: 1125000, status: "DP_CONFIRMED", allergy: "Tidak ada alergi kerang / Suka wasabi segar Shizuoka" },
+      { resCode: "KZ-202610-8802", token: "KZ-VIP-0208", guest: "Dian Sastrowardoyo", phone: "0818-3344-5566", seat: "Seat 02", position: "Kiri Bar", shift: "Sesi Senja (17:30)", course: "Kaze Grand (20 Courses)", total: 2250000, paid: 1125000, due: 1125000, status: "SEATED", allergy: "Wasabi ekstra, tanpa truffle" },
+      { resCode: "KZ-202610-8803", token: "KZ-VIP-0309", guest: "Nicholas Saputra", phone: "0813-4455-6677", seat: "Seat 03", position: "Kiri Tengah", shift: "Sesi Senja (17:30)", course: "Kaze Grand (20 Courses)", total: 2250000, paid: 1125000, due: 1125000, status: "SEATED", allergy: "Tidak ada pantangan" },
+      { resCode: "KZ-202610-8805", token: "KZ-VIP-0510", guest: "Chelsea Islan", phone: "0811-2233-4455", seat: "Seat 05", position: "Tengah Utama", shift: "Sesi Senja (17:30)", course: "Kaze Grand (20 Courses)", total: 2250000, paid: 1125000, due: 1125000, status: "DP_CONFIRMED", allergy: "Gluten free soy sauce jika ada" },
+      { resCode: "KZ-202610-8806", token: "KZ-VIP-0611", guest: "Bambang Soesatyo", phone: "0811-8899-7766", seat: "Seat 06", position: "Tengah Kanan", shift: "Sesi Senja (17:30)", course: "Matsu Journey (16 Courses)", total: 1450000, paid: 725000, due: 725000, status: "COMPLETED", allergy: "Tanpa bulu babi (uni)" },
+      { resCode: "KZ-202610-8807", token: "KZ-VIP-0511", guest: "Reza Rahadian", phone: "0817-6655-4433", seat: "Seat 07", position: "Tengah Kanan", shift: "Sesi Senja (17:30)", course: "Kaze Grand (20 Courses)", total: 2250000, paid: 1125000, due: 1125000, status: "DP_CONFIRMED", allergy: "Alergi kerang abalone (awabi)" }
+    ];
+
+    // 4. Concierge Audit Logs
+    let conciergeLogs = [
+      { time: "17:18:02", token: "KZ-VIP-0208", guest: "Dian Sastrowardoyo", seat: "Seat 02", status: "TERVERIFIKASI (SEATED)" },
+      { time: "17:22:15", token: "KZ-VIP-0309", guest: "Nicholas Saputra", seat: "Seat 03", status: "TERVERIFIKASI (SEATED)" },
+      { time: "16:45:00", token: "KZ-INVALID", guest: "Unknown Visitor", seat: "-", status: "DITOLAK (INVALID TOKEN)" }
+    ];
+
+    // State Variables
+    let currentShiftFilter = "TWILIGHT";
+    let activeModalSeat = null;
+    let shiftOccupancyChartInstance = null;
+    let courseDistributionChartInstance = null;
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Executive Overview & Shift Summary",
+        matrix: "Hinoki 10-Seat Live Matrix & Etiquette",
+        inventory: "Toyosu Air-Flown Cargo & Cold Chain (0.8°C)",
+        scanner: "Door Intake Scanner & Wabi-Sabi Greeting",
+        bookings: "Master Bookings Roster & Dietary Roster",
+        pos: "Kasir POS & Pelunasan 50% Selesai Santap"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "Kaze Omakase Console";
+
+      ['overview', 'matrix', 'inventory', 'scanner', 'bookings', 'pos'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-stone-400 hover:text-white hover:bg-zen-pine/40 font-serif";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-bold text-zen-charcoal kintsugi-gold shadow-sm font-serif";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'overview') renderMiniSeatsSnapshot();
+      if (tabKey === 'matrix') renderHinokiMatrix();
+      if (tabKey === 'inventory') renderToyosuCargo();
+      if (tabKey === 'scanner') renderConciergeLogs();
+      if (tabKey === 'bookings') renderMasterRosterTable();
+      if (tabKey === 'pos') renderPOSQueue();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    function switchServiceShift() {
+      const shift = document.getElementById('mainShiftSelector').value;
+      currentShiftFilter = shift;
+      showToast(`Sesi beralih ke: ${shift === 'TWILIGHT' ? 'Senja (17:30)' : 'Malam (20:00)'}`);
+      renderHinokiMatrix();
+      renderMiniSeatsSnapshot();
+    }
+
+    // ==================== 1. OVERVIEW & CHARTS ====================
+    function renderMiniSeatsSnapshot() {
+      const container = document.getElementById('miniSeatsSnapshotGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterSeats.forEach(seat => {
+        let seatBg = "bg-white text-stone-700 border-stone-200";
+        let statusLabel = "Kosong";
+
+        if (seat.status === 'RESERVED') {
+          seatBg = "bg-zen-gold text-slate-900 border-zen-gold font-bold";
+          statusLabel = "DP Paid";
+        } else if (seat.status === 'SEATED') {
+          seatBg = "bg-zen-pine text-zen-gold border-zen-gold font-bold";
+          statusLabel = "Seated";
+        } else if (seat.status === 'BILLED') {
+          seatBg = "bg-purple-600 text-white font-bold";
+          statusLabel = "Billed";
+        } else if (seat.status === 'BLOCKED') {
+          seatBg = "bg-stone-300 text-stone-500 line-through";
+          statusLabel = "Maint";
+        }
+
+        const div = document.createElement('div');
+        div.onclick = () => openSeatModal(seat.id);
+        div.className = `p-2.5 rounded-xl border text-center cursor-pointer transition select-none ${seatBg}`;
+        div.innerHTML = `
+          <span class="block text-xs font-mono font-bold">${seat.number}</span>
+          <span class="block text-[8px] truncate font-serif mt-0.5">${statusLabel}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function initCharts() {
+      // 1. Shift Occupancy Bar Chart
+      const ctxShift = document.getElementById('shiftOccupancyChart');
+      if (ctxShift) {
+        shiftOccupancyChartInstance = new Chart(ctxShift, {
+          type: 'bar',
+          data: {
+            labels: ['Seat 01-02', 'Seat 03-04', 'Seat 05-06', 'Seat 07-08', 'Seat 09-10'],
+            datasets: [
+              {
+                label: 'Kaze Grand 20-Courses',
+                data: [2, 2, 2, 2, 1],
+                backgroundColor: '#1b4332',
+                borderRadius: 6
+              },
+              {
+                label: 'Matsu Journey 16-Courses',
+                data: [0, 0, 1, 0, 1],
+                backgroundColor: '#c5a059',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 3,
+                ticks: { stepSize: 1, color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#fcf9f2' }
+              },
+              x: {
+                ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Course Distribution Doughnut Chart
+      const ctxCourse = document.getElementById('courseDistributionChart');
+      if (ctxCourse) {
+        courseDistributionChartInstance = new Chart(ctxCourse, {
+          type: 'doughnut',
+          data: {
+            labels: ['Kaze Grand (20 Courses)', 'Matsu Journey (16 Courses)', 'Sake Pairing Sommelier'],
+            datasets: [{
+              data: [68, 22, 10],
+              backgroundColor: ['#1b4332', '#c5a059', '#dfba73'],
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            },
+            cutout: '72%'
+          }
+        });
+      }
+    }
+
+    // ==================== 2. HINOKI 10-SEAT LIVE MATRIX ====================
+    function renderHinokiMatrix() {
+      const container = document.getElementById('hinokiFullMatrixGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterSeats.forEach(seat => {
+        let cardBg = "bg-white border-stone-200 hover:border-zen-pine";
+        let statusBadge = "bg-stone-100 text-stone-600";
+        let statusText = "AVAILABLE";
+
+        if (seat.status === 'RESERVED') {
+          cardBg = "bg-zen-goldBg border-zen-gold ring-1 ring-zen-gold/30 shadow-sm";
+          statusBadge = "bg-zen-gold text-slate-900 font-bold";
+          statusText = "DP 50% PAID";
+        } else if (seat.status === 'SEATED') {
+          cardBg = "bg-emerald-50/60 border-emerald-600 shadow-sm";
+          statusBadge = "bg-zen-pine text-zen-gold font-bold";
+          statusText = "SEATED";
+        } else if (seat.status === 'BILLED') {
+          cardBg = "bg-purple-50 border-purple-400";
+          statusBadge = "bg-purple-600 text-white font-bold";
+          statusText = "BILLED";
+        } else if (seat.status === 'BLOCKED') {
+          cardBg = "bg-stone-100 border-stone-200 opacity-60 cursor-not-allowed";
+          statusBadge = "bg-stone-300 text-stone-500";
+          statusText = "MAINTENANCE";
+        }
+
+        const div = document.createElement('div');
+        div.onclick = () => openSeatModal(seat.id);
+        div.className = `p-4 rounded-3xl border-2 transition cursor-pointer flex flex-col justify-between select-none ${cardBg}`;
+
+        let detailHtml = '';
+        if (seat.guest && seat.status !== 'BLOCKED') {
+          detailHtml = `
+            <div class="mt-2.5 p-2.5 bg-white/90 rounded-2xl border border-stone-200/80 space-y-1 font-sans">
+              <span class="text-[9px] text-stone-400 uppercase font-bold block font-mono">Tamu:</span>
+              <p class="font-bold text-slate-900 text-xs truncate font-serif">${seat.guest}</p>
+              <p class="text-[10px] text-zen-pine font-serif truncate">${seat.course}</p>
+              <div class="pt-1 border-t border-stone-100 flex items-center justify-between text-[9px] text-stone-500 font-mono">
+                <span>DP: ${formatRupiah(seat.deposit)}</span>
+                <span class="text-zen-gold font-bold">50% Settle</span>
+              </div>
+            </div>
+          `;
+        } else {
+          detailHtml = `
+            <div class="mt-3 p-4 bg-stone-50 rounded-2xl border border-dashed border-stone-200 text-center text-stone-400 font-serif text-[11px]">
+              Kursi Bebas / Tersedia
+            </div>
+          `;
+        }
+
+        div.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-mono font-bold text-stone-400">SEAT ${seat.number}</span>
+                <h4 class="text-sm font-bold text-zen-charcoal font-serif">${seat.position}</h4>
+              </div>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded ${statusBadge}">
+                ${statusText}
+              </span>
+            </div>
+            ${detailHtml}
+          </div>
+
+          <div class="mt-3 pt-2 border-t border-stone-100 flex items-center justify-between text-[10px] font-serif">
+            <span class="text-stone-400">Hinoki Wood</span>
+            <span class="text-zen-pine font-bold flex items-center gap-0.5">Etiket Tamu →</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function setDateToday() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('matrixDateFilter').value = today;
+      renderHinokiMatrix();
+    }
+
+    // Modal Seat Handlers
+    function openSeatModal(seatId) {
+      const seat = masterSeats.find(s => s.id === seatId);
+      if (!seat) return;
+
+      activeModalSeat = seat;
+      document.getElementById('modalSeatTitle').innerText = `Kursi Counter ${seat.number} (${seat.position})`;
+      document.getElementById('modalSeatBadge').innerText = seat.status;
+      document.getElementById('modalGuestName').innerText = seat.guest || "Tamu Belum Terisi (Kursi Bebas)";
+      document.getElementById('modalGuestPhone').innerText = seat.phone || "-";
+      document.getElementById('modalCourseTitle').innerText = seat.course || "Pilihan Omakase Menu";
+      document.getElementById('modalAllergyNotes').innerText = seat.allergy || "Tidak ada pantangan atau permintaan khusus";
+      document.getElementById('modalDepositAmount').innerText = seat.deposit ? formatRupiah(seat.deposit) : "Rp 0";
+
+      const actions = document.getElementById('modalSeatActionsContainer');
+      actions.innerHTML = '';
+
+      if (seat.status === 'AVAILABLE') {
+        actions.innerHTML = `
+          <button onclick="seatWalkinFromModal('${seat.id}')" class="w-full kintsugi-gold text-slate-900 font-serif font-bold py-2.5 rounded-xl transition shadow-sm">
+            Dudukkan Tamu Prioritas ke Kursi ${seat.number}
+          </button>
+          <button onclick="setSeatMaintenance('${seat.id}')" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-serif font-bold py-2 rounded-xl transition">
+            Tandai Blokir / Maintenance Hinoki
+          </button>
+        `;
+      } else if (seat.status === 'RESERVED') {
+        actions.innerHTML = `
+          <button onclick="seatGuestDirectly('${seat.id}')" class="w-full bg-zen-pine hover:bg-zen-forest text-zen-gold font-serif font-bold py-2.5 rounded-xl transition border border-zen-gold/40 shadow-sm">
+            Sambut & Dudukkan Tamu (Seated di Meja Hinoki)
+          </button>
+          <button onclick="forfeitSeatReservation('${seat.id}')" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-serif font-bold py-2 rounded-xl transition border border-rose-200">
+            Batalkan Reservasi / Forfeit DP
+          </button>
+        `;
+      } else if (seat.status === 'SEATED') {
+        actions.innerHTML = `
+          <button onclick="billSeat('${seat.id}')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-serif font-bold py-2.5 rounded-xl transition shadow-sm">
+            Course 20 Selesai (Minta Pelunasan 50% di Kasir)
+          </button>
+        `;
+      } else if (seat.status === 'BILLED') {
+        actions.innerHTML = `
+          <button onclick="openPOSFromModal('${seat.id}')" class="w-full kintsugi-gold text-slate-900 font-serif font-bold py-2.5 rounded-xl transition shadow-sm">
+            Buka Meja Kasir untuk Pelunasan Kursi ${seat.number}
+          </button>
+        `;
+      } else if (seat.status === 'BLOCKED') {
+        actions.innerHTML = `
+          <button onclick="unblockSeat('${seat.id}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-serif font-bold py-2 rounded-xl transition">
+            Buka Kunci Menjadi Kursi Tersedia
+          </button>
+        `;
+      }
+
+      document.getElementById('seatDetailModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeSeatModal() {
+      document.getElementById('seatDetailModal').classList.add('hidden');
+      activeModalSeat = null;
+    }
+
+    function seatGuestDirectly(seatId) {
+      const s = masterSeats.find(x => x.id === seatId);
+      if (s) {
+        s.status = 'SEATED';
+        closeSeatModal();
+        renderHinokiMatrix();
+        renderMiniSeatsSnapshot();
+        updateDashboardCounters();
+        showToast(`Tamu ${s.guest} telah duduk di Meja Hinoki Seat ${s.number}`);
+      }
+    }
+
+    function billSeat(seatId) {
+      const s = masterSeats.find(x => x.id === seatId);
+      if (s) {
+        s.status = 'BILLED';
+        closeSeatModal();
+        renderHinokiMatrix();
+        renderMiniSeatsSnapshot();
+        renderPOSQueue();
+        updateDashboardCounters();
+        showToast(`Kursi ${s.number} (${s.guest}) siap pelunasan di kasir.`);
+      }
+    }
+
+    function setSeatMaintenance(seatId) {
+      const s = masterSeats.find(x => x.id === seatId);
+      if (s) {
+        s.status = 'BLOCKED';
+        s.guest = "Perawatan Kayu Hinoki";
+        closeSeatModal();
+        renderHinokiMatrix();
+        renderMiniSeatsSnapshot();
+        showToast(`Kursi ${s.number} diblokir untuk perawatan`);
+      }
+    }
+
+    function unblockSeat(seatId) {
+      const s = masterSeats.find(x => x.id === seatId);
+      if (s) {
+        s.status = 'AVAILABLE';
+        s.guest = null;
+        closeSeatModal();
+        renderHinokiMatrix();
+        renderMiniSeatsSnapshot();
+        showToast(`Kursi ${s.number} kini TERSEDIA untuk umum`);
+      }
+    }
+
+    function forfeitSeatReservation(seatId) {
+      const s = masterSeats.find(x => x.id === seatId);
+      if (s) {
+        const confirmCancel = window.confirm(`Apakah Anda yakin membatalkan reservasi Kursi ${s.number} (${s.guest})?`);
+        if (confirmCancel) {
+          s.status = 'AVAILABLE';
+          s.guest = null;
+          s.phone = null;
+          s.deposit = 0;
+          s.due = 0;
+          closeSeatModal();
+          renderHinokiMatrix();
+          renderMiniSeatsSnapshot();
+          updateDashboardCounters();
+          showToast(`Reservasi Kursi ${s.number} dibatalkan.`);
+        }
+      }
+    }
+
+    // ==================== 3. TOYOSU AIR-FLOWN INVENTORY ====================
+    function renderToyosuCargo() {
+      const container = document.getElementById('toyosuCargoGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterToyosuCargo.forEach(c => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-3 font-serif text-xs";
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-stone-100 pb-2.5">
+            <div>
+              <span class="text-[9px] font-mono text-zen-gold font-bold uppercase tracking-wider">${c.batch}</span>
+              <h4 class="font-bold text-zen-charcoal text-sm mt-0.5">${c.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold font-mono bg-zen-lightGreen text-zen-pine border border-emerald-200">
+              ${c.status}
+            </span>
+          </div>
+
+          <div class="space-y-1 font-sans text-[11px]">
+            <div class="flex justify-between">
+              <span class="text-stone-500">Suhu Cold Storage:</span>
+              <strong class="text-emerald-700 font-mono font-bold">${c.temp}</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-stone-500">Sisa Stok Saji:</span>
+              <strong class="text-slate-900 font-mono font-bold">${c.stock}</strong>
+            </div>
+            <div class="flex justify-between text-stone-400 text-[10px]">
+              <span>Penerbangan:</span>
+              <span>${c.arrival}</span>
+            </div>
+          </div>
+
+          <div class="p-2.5 bg-[#FAF8F5] rounded-xl border border-stone-200 text-stone-600 text-[11px] leading-relaxed italic">
+            Chef Note: ${c.chefNotes}
+          </div>
+
+          <button onclick="topUpCargo('${c.id}')" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2 rounded-xl transition text-[11px] font-sans">
+            Konfirmasi Kesegaran Shokunin (Verified)
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function topUpCargo(cargoId) {
+      const c = masterToyosuCargo.find(x => x.id === cargoId);
+      if (c) {
+        showToast(`Bahan ${c.name} divalidasi prima oleh Chef Kenjiro Sato.`);
+      }
+    }
+
+    function openAddCargoModal() {
+      const item = prompt("Masukkan nama bahan lelang segar Toyosu baru:", "Kinki Fish (Hokkaido Rockfish)");
+      if (item) {
+        showToast(`Kargo ${item} dicatat ke antrean penerimaan.`);
+      }
+    }
+
+    // ==================== 4. DOOR INTAKE SCANNER & CHECK-IN ====================
+    function setScannerVal(val) {
+      document.getElementById('doorTokenInput').value = val;
+      executeDoorScan();
+    }
+
+    function executeDoorScan() {
+      const token = document.getElementById('doorTokenInput').value.trim().toUpperCase();
+      const card = document.getElementById('doorScanFeedbackCard');
+      card.classList.remove('hidden');
+
+      const match = masterRoster.find(r => r.token.toUpperCase() === token || r.resCode.toUpperCase() === token);
+
+      if (!match) {
+        card.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-800">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> UNDANGAN OMOKASE TIDAK TERDAFTAR
+          </div>
+          <p class="text-xs font-sans">Token barcode <strong>${token}</strong> tidak memiliki alokasi kursi di Meja Hinoki Kaze Omakase.</p>
+        `;
+        recordConciergeLog(token, "UNKNOWN VISITOR", "-", "DITOLAK (INVALID TOKEN)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-zen-gold/60 bg-zen-goldBg text-slate-900 space-y-3";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-zen-pine flex items-center gap-1.5 font-serif">
+              <i data-lucide="check-circle" class="w-5 h-5 text-zen-gold"></i> SAMBUTAN HINOKI COUNTER RESMI
+            </span>
+            <span class="text-xs font-bold bg-zen-pine text-zen-gold px-2.5 py-0.5 rounded font-mono">SEAT ${match.seat}</span>
+          </div>
+          <div class="space-y-1 font-sans text-xs">
+            <p>Tamu Terhormat: <strong class="text-slate-900 font-serif text-sm">${match.guest}</strong> (${match.phone})</p>
+            <p>Alokasi Kursi: <strong class="text-zen-pine font-mono font-bold">${match.seat} (${match.position})</strong></p>
+            <p>Course Musiman: <span class="font-serif font-bold text-zen-charcoal">${match.course}</span></p>
+            <p class="text-zen-pine italic bg-white p-2 rounded-lg border border-stone-200">Alergi: ${match.allergy}</p>
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-zen-gold/40 flex items-center justify-between font-mono text-xs">
+            <span>Deposit 50% QRIS:</span>
+            <strong class="text-emerald-700">${formatRupiah(match.paid)} (TERLUNASI)</strong>
+          </div>
+          <button onclick="seatGuestFromScanner('${match.seat}', '${match.guest}')" class="w-full kintsugi-gold text-slate-900 font-serif font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+            <i data-lucide="compass" class="w-4 h-4"></i> Hantarkan Tamu ke Kursi Meja Hinoki
+          </button>
+        `;
+        recordConciergeLog(token, match.guest, match.seat, "TERVERIFIKASI RESMI");
+      }
+
+      lucide.createIcons();
+    }
+
+    function seatGuestFromScanner(seatLabel, guestName) {
+      const seatNumber = seatLabel.replace(/[^0-9]/g, '');
+      const s = masterSeats.find(x => x.number === seatNumber);
+      if (s) {
+        s.status = 'SEATED';
+        showToast(`Tamu ${guestName} resmi dipersilakan duduk di Kursi ${s.number}`);
+        renderHinokiMatrix();
+        renderMiniSeatsSnapshot();
+        updateDashboardCounters();
+        switchTab('matrix');
+      }
+    }
+
+    function recordConciergeLog(token, guest, seat, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      conciergeLogs.unshift({
+        time: timeStr,
+        token: token,
+        guest: guest,
+        seat: seat,
+        status: status
+      });
+      renderConciergeLogs();
+    }
+
+    function renderConciergeLogs() {
+      const list = document.getElementById('conciergeAuditLogs');
+      if (!list) return;
+      list.innerHTML = '';
+
+      conciergeLogs.slice(0, 7).forEach(l => {
+        const isOk = l.status.includes('TERVERIFIKASI') || l.status.includes('SEATED');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-zen-lightGreen/70 border-emerald-200 text-zen-pine" : "bg-rose-50 border-rose-200 text-rose-900");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs font-serif">${l.guest}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold text-zen-pine border border-stone-200">${l.seat}</span>
+            </div>
+            <span class="text-[10px] opacity-75 font-mono">${l.token} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold font-mono">${l.status}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 5. MASTER ROSTER TABLE ====================
+    function renderMasterRosterTable(filteredList = null) {
+      const tbody = document.getElementById('masterRosterTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterRoster;
+      document.getElementById('rosterCountLabel').innerText = `Menampilkan ${list.length} tamu terdaftar`;
+
+      list.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-amber-50/30 transition";
+
+        let statusBadge = "";
+        if (r.status === 'DP_CONFIRMED') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-zen-goldBg text-zen-gold font-bold font-mono border border-zen-gold/40">DP 50% PAID</span>';
+        else if (r.status === 'SEATED') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold font-mono">SEATED</span>';
+        else statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-100 text-purple-800 font-bold font-mono">COMPLETED</span>';
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-slate-900">${r.resCode}<br><span class="text-[9px] text-stone-400 font-normal">Token: ${r.token}</span></td>
+          <td class="py-3 px-4 font-serif font-bold text-slate-800">${r.guest}<br><span class="text-[10px] text-stone-500 font-mono font-normal">${r.phone}</span></td>
+          <td class="py-3 px-4 font-mono font-bold text-zen-pine">${r.seat} (${r.position})</td>
+          <td class="py-3 px-4 text-stone-700 font-serif">${r.shift}</td>
+          <td class="py-3 px-4 font-serif text-slate-800">${r.course}</td>
+          <td class="py-3 px-4 font-mono font-bold text-slate-900">${formatRupiah(r.total)}</td>
+          <td class="py-3 px-4 font-mono font-bold text-amber-700">${formatRupiah(r.due)}</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="previewInvoice('${r.resCode}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-zen-goldBg text-zen-charcoal font-bold text-[10px] transition font-serif inline-flex items-center gap-1 border border-stone-200">
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-zen-gold"></i> Faktur
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterRosterTable() {
+      const q = document.getElementById('rosterSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMasterRosterTable();
+        return;
+      }
+      const filtered = masterRoster.filter(r => 
+        r.resCode.toLowerCase().includes(q) ||
+        r.guest.toLowerCase().includes(q) ||
+        r.seat.toLowerCase().includes(q) ||
+        r.token.toLowerCase().includes(q)
+      );
+      renderMasterRosterTable(filtered);
+    }
+
+    function filterRosterStatus(statusKey) {
+      document.querySelectorAll('.roster-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-status') === statusKey) {
+          btn.className = "roster-filter-btn px-3.5 py-2 rounded-xl font-bold bg-zen-charcoal text-white transition";
+        } else {
+          btn.className = "roster-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition";
+        }
+      });
+
+      if (statusKey === 'ALL') {
+        renderMasterRosterTable();
+      } else {
+        renderMasterRosterTable(masterRoster.filter(r => r.status === statusKey));
+      }
+    }
+
+    function exportRosterToCSV() {
+      let csv = "data:text/csv;charset=utf-8,Invoice,Token,Nama Tamu,WhatsApp,Kursi,Shift,Course,Total,DP Paid,Sisa,Status,Alergi\n";
+      masterRoster.forEach(r => {
+        csv += `"${r.resCode}","${r.token}","${r.guest}","${r.phone}","${r.seat}","${r.shift}","${r.course}","${r.total}","${r.paid}","${r.due}","${r.status}","${r.allergy}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `KazeOmakase_Roster_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 6. KASIR POS & PELUNASAN 50% ====================
+    function renderPOSQueue() {
+      const select = document.getElementById('posSeatSelect');
+      const tbody = document.getElementById('posQueuedSeatsBody');
+      if (!select || !tbody) return;
+
+      select.innerHTML = '';
+      tbody.innerHTML = '';
+
+      const activeSeats = masterSeats.filter(s => s.status === 'SEATED' || s.status === 'BILLED');
+
+      if (activeSeats.length === 0) {
+        select.innerHTML = '<option value="">Tidak ada kursi aktif</option>';
+        tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-stone-400 font-serif">Seluruh kursi telah lunas atau kosong</td></tr>';
+        return;
+      }
+
+      activeSeats.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.innerText = `Seat ${s.number} - ${s.guest} (${s.course})`;
+        select.appendChild(opt);
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-amber-50/30 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-3 font-bold text-zen-pine">Seat ${s.number}</td>
+          <td class="py-3 px-3 font-serif font-bold text-slate-800">${s.guest}</td>
+          <td class="py-3 px-3 text-stone-600 font-serif text-[11px]">${s.course}</td>
+          <td class="py-3 px-3 text-amber-700 font-bold font-mono">${formatRupiah(s.due)}</td>
+          <td class="py-3 px-3 text-center">
+            <button onclick="openPOSFromModal('${s.id}')" class="px-2.5 py-1 kintsugi-gold text-slate-900 font-bold rounded-lg text-[10px] transition font-serif shadow-sm">
+              Settle 50%
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      loadSeatToPOS();
+    }
+
+    function loadSeatToPOS() {
+      const seatId = document.getElementById('posSeatSelect').value;
+      const s = masterSeats.find(x => x.id === seatId);
+      if (!s) return;
+
+      const coursePrice = s.course.includes('20') ? 2250000 : 1450000;
+      document.getElementById('posCourseAmount').innerText = formatRupiah(coursePrice);
+      calculatePOSFinal();
+    }
+
+    function calculatePOSFinal() {
+      const seatId = document.getElementById('posSeatSelect').value;
+      const s = masterSeats.find(x => x.id === seatId);
+      if (!s) return;
+
+      const coursePrice = s.course.includes('20') ? 2250000 : 1450000;
+      const beverageAddon = parseInt(document.getElementById('posSakeAddonSelect').value) || 0;
+      const depositDeduction = s.deposit || (coursePrice * 0.5);
+
+      const netDue = (coursePrice + beverageAddon) - depositDeduction;
+
+      document.getElementById('posBeverageAmount').innerText = formatRupiah(beverageAddon);
+      document.getElementById('posDepositDeduction').innerText = `- ${formatRupiah(depositDeduction)}`;
+      document.getElementById('posNetDueAmount').innerText = formatRupiah(netDue);
+
+      return { coursePrice, beverageAddon, depositDeduction, netDue };
+    }
+
+    function executePOSSettlement() {
+      const seatId = document.getElementById('posSeatSelect').value;
+      const s = masterSeats.find(x => x.id === seatId);
+      if (!s) {
+        alert("Pilih kursi tamu terlebih dahulu.");
+        return;
+      }
+
+      const calc = calculatePOSFinal();
+
+      // Populate Printable Receipt Modal
+      document.getElementById('prnInvoiceNumber').innerText = s.resCode || ("KZ-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000));
+      document.getElementById('prnInvoiceDate').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('prnGuestName').innerText = s.guest;
+      document.getElementById('prnGuestPhone').innerText = s.phone;
+      document.getElementById('prnSeatDetail').innerText = `Kursi Counter ${s.number} (${s.position})`;
+      document.getElementById('prnShiftDetail').innerText = s.shift === 'TWILIGHT' ? 'Sesi Senja (17:30 - 19:30 WIB)' : 'Sesi Malam (20:00 - 22:00 WIB)';
+
+      document.getElementById('prnCourseTitle').innerText = s.course;
+      document.getElementById('prnCourseFee').innerText = formatRupiah(calc.coursePrice);
+      document.getElementById('prnBeverageFee').innerText = formatRupiah(calc.beverageAddon);
+      document.getElementById('prnGrossTotal').innerText = formatRupiah(calc.coursePrice + calc.beverageAddon);
+      document.getElementById('prnDepositDeducted').innerText = `- ${formatRupiah(calc.depositDeduction)}`;
+      document.getElementById('prnNetSettled').innerText = formatRupiah(calc.netDue);
+
+      // Reset seat to AVAILABLE
+      s.status = "AVAILABLE";
+      s.guest = null;
+      s.phone = null;
+      s.course = null;
+      s.allergy = null;
+      s.deposit = 0;
+      s.due = 0;
+
+      renderHinokiMatrix();
+      renderMiniSeatsSnapshot();
+      renderPOSQueue();
+      updateDashboardCounters();
+
+      const printNow = window.confirm(`Pelunasan Kursi ${s.number} senilai ${formatRupiah(calc.netDue)} berhasil diselesaikan di kasir. Apakah ingin langsung mencetak Faktur Washi?`);
+      if (printNow) {
+        document.getElementById('invoicePrintableModal').classList.remove('hidden');
+      }
+      showToast(`Kursi ${s.number} telah lunas dan siap untuk sesi berikutnya.`);
+    }
+
+    function openPOSFromModal(seatId) {
+      closeSeatModal();
+      switchTab('pos');
+      const select = document.getElementById('posSeatSelect');
+      select.value = seatId;
+      loadSeatToPOS();
+    }
+
+    // Modal Invoices & Receipts
+    function previewInvoice(resCode) {
+      const r = masterRoster.find(x => x.resCode === resCode);
+      if (!r) return;
+
+      document.getElementById('prnInvoiceNumber').innerText = r.resCode;
+      document.getElementById('prnInvoiceDate').innerText = "31 Okt 2026";
+      document.getElementById('prnGuestName').innerText = r.guest;
+      document.getElementById('prnGuestPhone').innerText = r.phone;
+      document.getElementById('prnSeatDetail').innerText = `${r.seat} (${r.position})`;
+      document.getElementById('prnShiftDetail').innerText = r.shift;
+
+      document.getElementById('prnCourseTitle').innerText = r.course;
+      document.getElementById('prnCourseFee').innerText = formatRupiah(r.total);
+      document.getElementById('prnBeverageFee').innerText = "Rp 0";
+      document.getElementById('prnGrossTotal').innerText = formatRupiah(r.total);
+      document.getElementById('prnDepositDeducted').innerText = `- ${formatRupiah(r.paid)}`;
+      document.getElementById('prnNetSettled').innerText = formatRupiah(r.due);
+
+      document.getElementById('invoicePrintableModal').classList.remove('hidden');
+    }
+
+    function closeInvoiceModal() {
+      document.getElementById('invoicePrintableModal').classList.add('hidden');
+    }
+
+    // Modal Walkin Handlers
+    function openSeatWalkinModal() {
+      const select = document.getElementById('walkinSeatNumberSelect');
+      select.innerHTML = '';
+
+      const freeSeats = masterSeats.filter(s => s.status === 'AVAILABLE');
+      if (freeSeats.length === 0) {
+        alert("Seluruh 10 kursi counter Hinoki saat ini terisi penuh.");
+        return;
+      }
+
+      freeSeats.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.innerText = `Seat ${s.number} (${s.position})`;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('seatWalkinModal').classList.remove('hidden');
+    }
+
+    function closeSeatWalkinModal() {
+      document.getElementById('seatWalkinModal').classList.add('hidden');
+    }
+
+    function confirmSeatWalkin() {
+      const name = document.getElementById('walkinGuestName').value.trim();
+      const phone = document.getElementById('walkinGuestPhone').value.trim();
+      const seatId = document.getElementById('walkinSeatNumberSelect').value;
+      const courseKey = document.getElementById('walkinCourseSelect').value;
+      const shift = document.getElementById('walkinShiftSelect').value;
+      const allergy = document.getElementById('walkinAllergyNotes').value.trim() || 'Tidak ada pantangan';
+
+      if (!name) {
+        alert("Harap isi nama tamu terhormat.");
+        return;
+      }
+
+      const s = masterSeats.find(x => x.id === seatId);
+      if (s) {
+        const courseName = courseKey === 'KAZE' ? 'Kaze Grand Omakase (20 Courses)' : 'Matsu Journey (16 Courses)';
+        const total = courseKey === 'KAZE' ? 2250000 : 1450000;
+        const deposit = total * 0.5;
+
+        s.status = 'SEATED';
+        s.guest = name;
+        s.phone = phone || "Walk-in Guest";
+        s.course = courseName;
+        s.shift = shift;
+        s.allergy = allergy;
+        s.deposit = deposit;
+        s.due = deposit;
+        s.resCode = "KZ-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+        s.token = "KZ-VIP-" + Math.floor(1000 + Math.random() * 9000);
+
+        closeSeatWalkinModal();
+        renderHinokiMatrix();
+        renderMiniSeatsSnapshot();
+        renderPOSQueue();
+        updateDashboardCounters();
+        showToast(`Tamu VIP ${name} resmi dipersilakan duduk di Meja Hinoki Seat ${s.number}`);
+      }
+    }
+
+    function seatWalkinFromModal(seatId) {
+      closeSeatModal();
+      openSeatWalkinModal();
+      document.getElementById('walkinSeatNumberSelect').value = seatId;
+    }
+
+    // ==================== 7. DASHBOARD COUNTERS ====================
+    function updateDashboardCounters() {
+      const freeSeatsCount = masterSeats.filter(s => s.status === 'AVAILABLE').length;
+      const dueCount = masterSeats.filter(s => s.status === 'BILLED' || s.status === 'SEATED').length;
+      const totalDueAmount = masterSeats.reduce((acc, s) => acc + (s.due || 0), 0);
+
+      document.getElementById('badgeSeatsFree').innerText = `${freeSeatsCount} Free`;
+      document.getElementById('badgeDueSettlement').innerText = `${dueCount} Settle`;
+      document.getElementById('sidebarSeatStatus').innerText = `${10 - freeSeatsCount} / 10 Seats Active`;
+      document.getElementById('kpiOccupancyPct').innerText = `${((10 - freeSeatsCount) / 10 * 100).toFixed(0)}%`;
+      document.getElementById('posRemainingDueCard').innerText = formatRupiah(totalDueAmount > 0 ? totalDueAmount : 18900000);
+    }
+  </script>
+
+</body>
+</html>

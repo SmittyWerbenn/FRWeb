@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quadra Coffee Shop & Roastery Lab - Barista Operations & Admin Portal</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Outfit, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            cyan: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              200: '#a5f3fc',
+              300: '#67e8f9',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+              800: '#155e75',
+              900: '#164e63',
+            },
+            gold: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#eab308',
+              500: '#d4af37', // Roasted Specialty Gold
+              600: '#b48c28',
+              700: '#8a681c',
+            },
+            lab: {
+              bg: '#F8FCFD',
+              slate900: '#0f172a',
+              slate850: '#151e2e',
+              slate800: '#1e293b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0891b2;
+    }
+
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .gold-gradient-tag {
+      background: linear-gradient(135deg, #d4af37 0%, #b48c28 100%);
+    }
+
+    /* Print View for Barista Receipts & Slips */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableThermalSlip, #printableThermalSlip * {
+        visibility: visible !important;
+      }
+      #printableThermalSlip {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-lab-bg text-slate-800 antialiased font-sans min-h-screen flex selection:bg-cyan-100 selection:text-cyan-800 overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-lab-slate900 border-r border-slate-800 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-slate-800">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-cyan-500/25 flex-shrink-0 border border-gold-300">
+            <i data-lucide="coffee" class="w-5 h-5 text-gold-200"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-display">
+              QUADRA<span class="text-cyan-400 font-sans ml-0.5 font-bold">COFFEE</span>
+              <span class="text-[9px] bg-gold-100 text-gold-800 border border-gold-300 px-1.5 py-0.2 rounded font-sans uppercase font-bold ml-1">LAB</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-slate-800 text-cyan-300 border border-cyan-500/30 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">BARISTA CONSOLE</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Roastery Lab Sensor & Barista Bar Status -->
+      <div class="px-5 py-3 border-b border-slate-800/80 bg-slate-950/40">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-cyan-400"></i> Senopati Flagship
+          </span>
+          <span class="text-emerald-400 font-bold" id="sidebarExtractionStatus">EXTRACTION OK</span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1.5 font-mono">
+          <span>Air Seduh (TDS): <strong class="text-gold-400">128 ppm (92°C)</strong></span>
+          <span class="text-cyan-300 font-bold">Barista Aktif: 4</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-cyan-300 bg-slate-800 border-l-4 border-cyan-400 shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Overview & Lab Analytics</span>
+        </button>
+
+        <button onclick="switchTab('kds')" id="tab-kds" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="tv-2" class="w-4 h-4"></i>
+          <span>Barista Live KDS</span>
+          <span class="ml-auto bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="badgeQueueCount">5 Cup</span>
+        </button>
+
+        <button onclick="switchTab('slowbar')" id="tab-slowbar" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="droplet" class="w-4 h-4"></i>
+          <span>Slow Bar 4-Seat Counter</span>
+          <span class="ml-auto bg-gold-500/20 text-gold-300 border border-gold-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="badgeSlowbarSeats">3 Stool Booked</span>
+        </button>
+
+        <button onclick="switchTab('inventory')" id="tab-inventory" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="boxes" class="w-4 h-4"></i>
+          <span>Single Origin & Roast Micro-Lot</span>
+          <span class="ml-auto bg-slate-800 text-stone-300 text-[10px] font-mono px-1.5 py-0.5 rounded" id="badgeBeanLots">5 Lot</span>
+        </button>
+
+        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="scan" class="w-4 h-4"></i>
+          <span>Pickup Bar Scanner</span>
+          <span class="w-2 h-2 rounded-full bg-cyan-400 ml-auto animate-ping"></span>
+        </button>
+
+        <button onclick="switchTab('pos')" id="tab-pos" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="calculator" class="w-4 h-4"></i>
+          <span>Kasir POS & WA Generator</span>
+        </button>
+
+        <button onclick="switchTab('transactions')" id="tab-transactions" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Transaksi & Export CSV</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Head Roaster Profile Widget -->
+    <div class="p-4 border-t border-slate-800 bg-slate-950/50">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 to-gold-500 flex items-center justify-center text-slate-950 font-bold text-xs font-mono shadow-sm">
+          QR
+        </div>
+        <div class="flex-1 min-w-0 font-sans">
+          <p class="text-xs font-bold text-white truncate font-display">Barista Mikael J.</p>
+          <p class="text-[10px] text-slate-400 font-mono truncate">Head Roaster & Q-Grader</p>
+        </div>
+        <button onclick="showToast('Parameter ekstraksi air disinkronkan')" title="Kalibrasi Mesin" class="text-slate-400 hover:text-cyan-400 transition">
+          <i data-lucide="sliders" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-slate-950 text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-cyan-900/40 font-mono gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">ROASTERY LAB REAL-TIME</span>
+        <span>Single Origin Active: <strong class="text-white">Panama Geisha Boquete Lot #04</strong> • Ekstraksi V60 Flow Terkalibrasi</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-400">
+        <span>TDS Target: <strong class="text-cyan-400">1.35% (92°C Water)</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span>Pickup Wait: <strong class="text-gold-400">6.4 Menit</strong></span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-nav sticky top-0 z-30 border-b border-cyan-900/50 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1.5 rounded-lg bg-slate-800">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
+            <span id="currentViewTitle">Overview & Lab Analytics</span>
+          </h1>
+          <p class="text-slate-400 text-xs hidden sm:block font-mono">Specialty Coffee Production, Slow Bar Counter Scheduler & KDS Engine</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- Live Shift Indicator -->
+        <div class="hidden lg:flex items-center bg-slate-850 border border-slate-750 px-3 py-1.5 rounded-xl text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 mr-2 animate-pulse"></span>
+          <span>Shift: <strong class="text-white">Afternoon Specialty (14:00 - 22:00)</strong></span>
+        </div>
+
+        <!-- Quick Takeaway Cup Order Button -->
+        <button onclick="switchTab('pos')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-cyan-600/30 flex items-center gap-1.5 active:scale-95 font-sans border border-cyan-400/40">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>+ Order Cup Kasir</span>
+        </button>
+
+        <!-- Notification Dropdown Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-cyan-400 flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-gold-400 rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown Panel -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-cyan-100 p-3 text-slate-800 z-50 font-sans">
+            <div class="flex items-center justify-between border-b border-cyan-50 pb-2 px-1">
+              <span class="font-bold text-xs font-display">Aktivitas Barista Bar</span>
+              <span class="text-[10px] font-mono text-cyan-600 font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-cyan-50/70 rounded-xl border border-cyan-100">
+                <p class="font-bold text-slate-900">Pesanan Siap di Pickup Bar!</p>
+                <p class="text-slate-500 text-[10px] font-mono">Cup #CUP-BAR-8821 • Tedi Mahendra (Aerocano)</p>
+                <span class="text-[9px] text-cyan-700 font-bold">1 menit lalu</span>
+              </div>
+              <div class="p-2.5 bg-gold-50/80 rounded-xl border border-gold-200">
+                <p class="font-bold text-slate-900">Reservasi Slow Bar Mendatang</p>
+                <p class="text-slate-500 text-[10px] font-mono">Stool 02 • Sesi 16:30 WIB (Panama Geisha Boquete)</p>
+                <span class="text-[9px] text-gold-700 font-bold">15 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1">
+
+      <!-- ==================== VIEW 1: OVERVIEW & COFFEE LAB ANALYTICS ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- KPI 1: Gross Omset -->
+          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">OMSET LAB & BAR HARI INI</span>
+              <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold border border-cyan-200">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block" id="kpiRevenue">Rp 8.420.000</span>
+              <p class="text-emerald-600 text-[11px] font-semibold flex items-center gap-1 mt-1 font-mono">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +18.4% vs kemarin
+              </p>
+            </div>
+          </div>
+
+          <!-- KPI 2: Total Cups Sold -->
+          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">TOTAL CANGKIR TERSEDUR</span>
+              <div class="w-8 h-8 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center font-bold border border-gold-300">
+                <i data-lucide="coffee" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block" id="kpiCupsSold">198 Cangkir</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">164 Takeaway • 34 Dine-in</p>
+            </div>
+          </div>
+
+          <!-- KPI 3: Slow Bar Reservasi -->
+          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">RESERVASI SLOW BAR AKTIF</span>
+              <div class="w-8 h-8 rounded-xl bg-slate-900 text-gold-300 flex items-center justify-center font-bold">
+                <i data-lucide="droplet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-gold-600 font-display block" id="kpiSlowbarActive">12 Sesi (92%)</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">Maksimal 4 Tamu / Sesi 45 Menit</p>
+            </div>
+          </div>
+
+          <!-- KPI 4: Extraction Consistency TDS -->
+          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">KONSISTENSI EKSTRAKSI (TDS)</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-200">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block">1.35% (98% Acc)</span>
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
+                <div class="bg-cyan-600 h-full rounded-full" style="width: 98%"></div>
+              </div>
+              <p class="text-stone-400 text-[10px] font-mono mt-1">Rentang SCA Golden Cup Standard</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Hourly Cup Volume Peak Hours Bar Chart (8 Cols) -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-cyan-50 pb-3">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display">Tingkat Penjualan Cangkir per Jam (Jam Sibuk)</h3>
+                <p class="text-xs text-stone-500 font-mono">Distribusi Takeaway Cepat vs Kursi Slow Bar Manual Brew</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-cyan-600"></span> Takeaway Bar
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-gold-500"></span> Slow Bar Tasting
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="cupPeakHourChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Menu Category Sales Breakdown Doughnut Chart (4 Cols) -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-cyan-50 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-display">Rasio Penjualan Menu Lab</h3>
+              <p class="text-xs text-stone-500 font-mono">Signature Cold Brew vs Slow Bar vs Latte</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="beverageRatioChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-slate-500 space-y-1 border-t border-cyan-50">
+              <div class="flex justify-between">
+                <span>Signature Espresso Mocktail:</span>
+                <strong class="text-slate-900 font-mono">48% (95 Cup)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Slow Bar Single Origin Flight:</span>
+                <strong class="text-gold-600 font-mono">28% (55 Cup)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Oat & Specialty White:</span>
+                <strong class="text-cyan-700 font-mono">24% (48 Cup)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Slow Bar 4-Seat Status Strip -->
+        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-cyan-900/40 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">LIVE 4-SEAT SLOW BAR COUNTER SNAPSHOT</span>
+              <h3 class="text-lg font-bold font-display mt-0.5">Sesi Seduh Bersama Head Roaster & Cupping Notes</h3>
+            </div>
+            <button onclick="switchTab('slowbar')" class="bg-cyan-600/30 hover:bg-cyan-600 text-xs text-cyan-300 hover:text-white px-3.5 py-2 rounded-xl border border-cyan-400/40 transition flex items-center gap-1.5 font-mono">
+              <span>Buka Jadwal Penuh 4-Stool</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-gold-400"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="slowbarLiveStripGrid">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: BARISTA LIVE KDS (KITCHEN DISPLAY) ==================== -->
+      <section id="view-kds" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 font-display">Barista Live KDS (Kitchen Display System)</h3>
+            <p class="text-xs text-stone-500 font-mono">Antrean seduh kopi real-time: majukan status cangkir dari antrean ke pickup counter</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="ringPickupBell()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-amber-300 shadow-sm">
+              <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-gold-600"></i> Bunyikan Lonceng Pickup
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KDS Kanban Columns -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start" id="kdsColumnsContainer">
+          <!-- Populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: SLOW BAR 4-SEAT COUNTER SCHEDULER ==================== -->
+      <section id="view-slowbar" class="hidden space-y-6">
+        
+        <!-- Shift Selector & Date -->
+        <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="flex items-center gap-3">
+            <span class="text-slate-600 font-bold">Pilih Tanggal:</span>
+            <input type="date" id="slowbarDateFilter" onchange="renderSlowbarScheduler()" class="bg-cyan-50/50 border border-cyan-200 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            <button onclick="setSlowbarDateToday()" class="bg-slate-900 text-cyan-300 hover:bg-slate-800 px-3.5 py-2 rounded-xl transition font-bold">Hari Ini</button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="filterSlowbarShiftTime('10:00 - 10:45')" class="shift-filter-btn px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-white transition" data-shift="10:00 - 10:45">10:00 - 10:45</button>
+            <button onclick="filterSlowbarShiftTime('14:00 - 14:45')" class="shift-filter-btn px-3 py-1.5 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-shift="14:00 - 14:45">14:00 - 14:45</button>
+            <button onclick="filterSlowbarShiftTime('16:30 - 17:15')" class="shift-filter-btn px-3 py-1.5 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-shift="16:30 - 17:15">16:30 - 17:15</button>
+            <button onclick="filterSlowbarShiftTime('19:30 - 20:15')" class="shift-filter-btn px-3 py-1.5 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-shift="19:30 - 20:15">19:30 - 20:15</button>
+          </div>
+        </div>
+
+        <!-- 4 Stools Hinoki Bar Counter Visual Interface -->
+        <div class="bg-white rounded-3xl border border-cyan-100 shadow-sm p-6 sm:p-8 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-cyan-50 pb-4">
+            <div>
+              <span class="text-[10px] font-bold text-gold-600 uppercase font-mono tracking-widest">BARISTA POUR-OVER STAGE</span>
+              <h3 class="text-lg font-bold text-slate-900 font-display">Denah 4 Kursi Stool Slow Bar (Maksimal 4 Tamu)</h3>
+            </div>
+            <span class="text-xs text-stone-500 font-mono">Klik kursi untuk mengubah reservasi atau melayani tasting flight</span>
+          </div>
+
+          <!-- Stools Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="slowbarStoolsGrid">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: SINGLE ORIGIN INVENTORY & ROAST PROFILES ==================== -->
+      <section id="view-inventory" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 font-display">Koleksi Biji Kopi Single Origin & Status Degassing</h3>
+            <p class="text-xs text-stone-500 font-mono">Pantau stok green beans (kg), roasted beans (gram), dan profil sangrai in-house micro roaster</p>
+          </div>
+          <button onclick="openAddLotModal()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-cyan-400/30">
+            <i data-lucide="plus" class="w-4 h-4 text-gold-400"></i> + Input Batch Sangrai Baru
+          </button>
+        </div>
+
+        <!-- Lots Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="singleOriginGridContainer">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: PICKUP BAR SCANNER ==================== -->
+      <section id="view-scanner" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Optical Barcode Scanner Simulator (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-cyan-100 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-cyan-50 pb-4">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-cyan-600"></i>
+                  Barista Pickup Barcode Scanner Validator
+                </h3>
+                <p class="text-xs text-stone-500 font-mono">Pindai barcode cangkir takeaway atau pass reservasi Slow Bar saat tamu mengambil kopi</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 text-xs font-mono font-bold border border-cyan-200">
+                <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span> SCANNER READY
+              </span>
+            </div>
+
+            <!-- Optical Sensor Graphic -->
+            <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-cyan-400/60 rounded-2xl relative flex items-center justify-center p-4 bg-slate-800/40">
+                <div class="w-full h-0.5 bg-cyan-400 absolute top-1/2 -translate-y-1/2 shadow-lg shadow-cyan-400 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-slate-500 opacity-60"></i>
+              </div>
+              <p class="text-slate-300 text-xs font-mono mt-4">Posisikan Barcode Tiket (Cth: <strong>CUP-BAR-8821</strong> atau <strong>SLOW-STOOL-02</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-slate-700">Input Manual Token Barcode:</label>
+              <div class="flex gap-2">
+                <input type="text" id="scannerTokenInput" value="CUP-BAR-8821" placeholder="Masukkan token barcode..." class="flex-1 bg-stone-50 px-4 py-2.5 rounded-xl border border-stone-200 font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                <button onclick="executePickupScan()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-cyan-600/20 active:scale-95 font-sans">
+                  <i data-lucide="check" class="w-4 h-4 text-gold-300"></i> Validasi Ambil
+                </button>
+              </div>
+              <p class="text-[11px] text-stone-400 font-sans">Preset token pengujian cepat: 
+                <span onclick="setScannerVal('CUP-BAR-8821')" class="underline cursor-pointer text-cyan-600 font-mono font-bold">CUP-BAR-8821 (Tedi M - Aerocano)</span> • 
+                <span onclick="setScannerVal('SLOW-STOOL-02')" class="underline cursor-pointer text-gold-600 font-mono font-bold">SLOW-STOOL-02 (Nadia H - Slow Bar Stool 02)</span> •
+                <span onclick="setScannerVal('INVALID-CUP-000')" class="underline cursor-pointer text-rose-600 font-mono font-bold">INVALID-CUP-000 (Tidak Ditemukan)</span>
+              </p>
+            </div>
+
+            <!-- Scanner Feedback Result Card -->
+            <div id="pickupScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Live Pickup Bar Audit Logs (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4 font-mono">
+            <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
+              <h3 class="font-bold text-sm text-slate-900 font-display">Log Pengambilan di Pickup Counter</h3>
+              <span class="text-[10px] text-stone-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs" id="pickupAuditLogs">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 6: KASIR POS & WA ORDER GENERATOR ==================== -->
+      <section id="view-pos" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Beverage Menu Selection & Order Builder (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-cyan-100 shadow-sm space-y-5 font-sans">
+            <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display">Kasir Barista POS Terminal</h3>
+                <p class="text-xs text-stone-500 font-mono">Pilih item untuk membuat struk kasir atau susun format WhatsApp Takeaway otomatis</p>
+              </div>
+              <span class="text-[10px] font-mono font-bold bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200">POS ACTIVE</span>
+            </div>
+
+            <!-- Customer Data for Order -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Nama Cup / Pemesan *</label>
+                <input type="text" id="posCustomerName" value="Tedi Mahendra" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">No. WhatsApp *</label>
+                <input type="tel" id="posCustomerPhone" value="081299998888" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              </div>
+            </div>
+
+            <!-- Quick Add Drinks Grid -->
+            <div>
+              <span class="text-xs font-bold text-slate-700 mb-2 block font-mono">Pilih Menu untuk Ditambahkan:</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="posMenuSelectionGrid">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Customization Notes -->
+            <div class="text-xs font-mono">
+              <label class="block font-bold text-slate-700 mb-1">Catatan Racikan Barista (Less Ice / Oat / Syphon):</label>
+              <input type="text" id="posOrderNotes" value="Less sweet, gunakan sedotan ramah lingkungan" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            </div>
+          </div>
+
+          <!-- Right: Cart Summary, QRIS Payment & WhatsApp Generator (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-cyan-100 shadow-xl space-y-5 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
+              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Item dalam Tagihan</span>
+              <span class="text-[10px] font-bold bg-gold-100 text-gold-800 px-2 py-0.5 rounded border border-gold-300">Terminal #01</span>
+            </div>
+
+            <!-- Cart Table Items -->
+            <div id="posCartItemsContainer" class="space-y-2.5 max-h-48 overflow-y-auto divide-y divide-stone-100">
+              <!-- Injected via JS -->
+            </div>
+
+            <!-- Subtotal & Grand Total -->
+            <div class="p-4 bg-cyan-50/70 rounded-2xl border border-cyan-200 space-y-1.5">
+              <div class="flex justify-between text-stone-600">
+                <span>Subtotal Kopi:</span>
+                <span class="font-bold text-slate-900" id="posSubtotalText">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-stone-600">
+                <span>PB1 Resto (10%):</span>
+                <span class="font-bold text-slate-900" id="posTaxText">Rp 0</span>
+              </div>
+              <div class="flex justify-between pt-1 border-t border-cyan-200/80 text-sm font-black text-slate-900">
+                <span>Total Bayar Bersih:</span>
+                <span class="text-cyan-700 text-base" id="posGrandTotalText">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Dual Action: Print Thermal Receipt or Send WA -->
+            <div class="space-y-2.5 pt-1">
+              <button onclick="processPOSPaymentAndPrint()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
+                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk Barista & Masuk KDS
+              </button>
+
+              <button onclick="generatePOSWhatsAppMessage()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-sm font-sans">
+                <i data-lucide="message-circle" class="w-4 h-4"></i> Kirim Format WhatsApp Takeaway
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 7: TRANSAKSI & EXPORT CSV ==================== -->
+      <section id="view-transactions" class="hidden space-y-6">
+        
+        <!-- Filter Header -->
+        <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-400"></i>
+            <input type="text" id="txSearchInput" onkeyup="filterTransactionsTable()" placeholder="Cari Nama Cup, Invoice, WhatsApp..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button onclick="filterTxType('ALL')" class="tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-900 text-white transition" data-type="ALL">Semua</button>
+            <button onclick="filterTxType('TAKEAWAY')" class="tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-type="TAKEAWAY">Takeaway Pickup</button>
+            <button onclick="filterTxType('SLOWBAR')" class="tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-type="SLOWBAR">Slow Bar Tasting</button>
+          </div>
+        </div>
+
+        <!-- Master Transactions Table -->
+        <div class="bg-white rounded-3xl border border-cyan-100 shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-cyan-50 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Database Transaksi Quadra Coffee Lab</h3>
+              <p class="text-xs text-stone-500 font-mono" id="txCountLabel">Menampilkan seluruh transaksi tersimpan</p>
+            </div>
+            <button onclick="exportTransactionsCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                <tr>
+                  <th class="py-3 px-4">INVOICE & TOKEN</th>
+                  <th class="py-3 px-4">NAMA CUP & WA</th>
+                  <th class="py-3 px-4">TIPE ORDER</th>
+                  <th class="py-3 px-4">RINCIAN KOPI</th>
+                  <th class="py-3 px-4">WAKTU AMBIL</th>
+                  <th class="py-3 px-4">TOTAL</th>
+                  <th class="py-3 px-4">METODE BAYAR</th>
+                  <th class="py-3 px-4 text-center">STRUK</th>
+                </tr>
+              </thead>
+              <tbody id="masterTxTableBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== PRINTABLE THERMAL RECEIPT CONTAINER ==================== -->
+  <div id="printableThermalSlip" class="hidden">
+    <div style="font-family: 'JetBrains Mono', monospace; max-width: 320px; margin: 0 auto; text-align: left; font-size: 11px;">
+      <div style="text-align: center; border-bottom: 2px dashed #0891b2; padding-bottom: 8px; margin-bottom: 8px;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 800; font-family: 'Outfit', sans-serif;">QUADRA COFFEE LAB</h2>
+        <p style="margin: 2px 0; font-size: 10px; color: #555;">Specialty Roastery & Slow Bar</p>
+        <p style="margin: 0; font-size: 9px; color: #888;">Jl. Senopati No. 42, Kebayoran Baru, Jaksel</p>
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <p style="margin: 2px 0;"><strong>No:</strong> <span id="prnReceiptCode">QDR-202610-8821</span></p>
+        <p style="margin: 2px 0;"><strong>Nama Cup:</strong> <span id="prnCustName">Tedi Mahendra</span></p>
+        <p style="margin: 2px 0;"><strong>Tipe:</strong> <span id="prnOrderType">Takeaway Pickup Bar</span></p>
+        <p style="margin: 2px 0;"><strong>Barista:</strong> Mikael J. (Station 1)</p>
+        <p style="margin: 2px 0;"><strong>Waktu:</strong> <span id="prnTime">15 Menit Pickup</span></p>
+      </div>
+
+      <div style="border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; padding: 6px 0; margin-bottom: 8px;">
+        <table style="width: 100%;" id="prnItemsTable">
+          <!-- Injected via JS -->
+        </table>
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <table style="width: 100%;">
+          <tr>
+            <td>Subtotal:</td>
+            <td style="text-align: right;" id="prnSubtotal">Rp 80.000</td>
+          </tr>
+          <tr>
+            <td>PB1 Resto 10%:</td>
+            <td style="text-align: right;" id="prnTax">Rp 8.000</td>
+          </tr>
+          <tr style="font-size: 13px; font-weight: bold;">
+            <td>TOTAL LUNAS:</td>
+            <td style="text-align: right; color: #0891b2;" id="prnGrandTotal">Rp 88.000</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <p style="margin: 0; font-weight: bold;">TOKEN BARCODE: <span id="prnToken">CUP-BAR-8821</span></p>
+        <p style="margin: 3px 0 0; font-size: 9px; color: #666;">Silakan tunjukkan barcode di Pickup Bar Counter.</p>
+        <p style="margin: 2px 0 0; font-size: 9px; color: #666;">Enjoy your specialty coffee extraction!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-cyan-800 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+    <div class="w-6 h-6 rounded-full bg-cyan-600 flex items-center justify-center text-gold-300 font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Operasi Lab Barista berhasil disinkronkan</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT MASTER LOGIC ==================== -->
+  <script>
+    // 1. Data Menu Kopi Specialty
+    const masterMenu = [
+      { id: "sig-1", name: "Quadra Aerocano Citrus Flambé", category: "Cold Signature", price: 38000, desc: "Espresso aerated with flame-torched orange blossom syrup" },
+      { id: "sig-2", name: "Kyoto Cold Drip 18-Hours", category: "Slow Extraction", price: 45000, desc: "18-hour slow ice drip with dark chocolate and bourbon oak notes" },
+      { id: "sig-3", name: "Oat Pistachio Cloud Latte", category: "Specialty Latte", price: 42000, desc: "Double ristretto with organic oat milk and salted pistachio foam" },
+      { id: "sig-4", name: "Panama Geisha Boquete V60", category: "Single Origin", price: 65000, desc: "Lot #04 Jasmine, Bergamot, White Peach (SCA 92.5)" },
+      { id: "sig-5", name: "Colombia Pink Bourbon Origami", category: "Single Origin", price: 55000, desc: "Strawberry candy, Pink Grapefruit, Honey Anaerobic" }
+    ];
+
+    // 2. Data Single Origin Micro-Lot Inventory
+    let masterLots = [
+      { id: "LOT-01", name: "Panama Geisha Boquete", origin: "Boquete, Chiriquí", altitude: "1.950 MASL", scaScore: 92.5, process: "Washed Anaerobic", roastDate: "2026-10-24", daysDegassed: 7, greenStockKg: 24, roastedStockG: 1450, notes: "Jasmine, Bergamot, White Honey", status: "PEAK_DEGASSING" },
+      { id: "LOT-02", name: "Ethiopia Yirgacheffe Idido", origin: "Gedeo Zone, Yirgacheffe", altitude: "2.100 MASL", scaScore: 90.5, process: "Natural 72h Anaerobic", roastDate: "2026-10-22", daysDegassed: 9, greenStockKg: 45, roastedStockG: 2200, notes: "Citrus Blossom, White Peach, Earl Grey", status: "PEAK_DEGASSING" },
+      { id: "LOT-03", name: "Colombia Pink Bourbon Huila", origin: "San Adolfo, Huila", altitude: "1.850 MASL", scaScore: 91.0, process: "Honey Thermal Shock", roastDate: "2026-10-26", daysDegassed: 5, greenStockKg: 18, roastedStockG: 950, notes: "Strawberry Candy, Red Cherry, Sweet Mint", status: "RESTING" },
+      { id: "LOT-04", name: "Kenya Nyeri Peaberry", origin: "Nyeri Hill Farm", altitude: "1.900 MASL", scaScore: 90.0, process: "Double Fermentation Washed", roastDate: "2026-10-20", daysDegassed: 11, greenStockKg: 12, roastedStockG: 450, notes: "Blackcurrant, Sparkling Citric, Brown Sugar", status: "LOW_STOCK" },
+      { id: "LOT-05", name: "Gesha Village Lot 74 Illubabor", origin: "Bench Maji Zone, Ethiopia", altitude: "2.050 MASL", scaScore: 93.0, process: "Natural Extended", roastDate: "2026-10-25", daysDegassed: 6, greenStockKg: 8, roastedStockG: 380, notes: "Apricot, Papaya, Orange Blossom Honey", status: "LOW_STOCK" }
+    ];
+
+    // 3. Data KDS (Kitchen Display System) Active Orders Queue
+    let masterKDSOrders = [
+      { id: "ORD-101", token: "CUP-BAR-8821", customer: "Tedi Mahendra", type: "TAKEAWAY", items: ["1x Quadra Aerocano Citrus Flambé"], notes: "Less sweet, sedotan bambu", timeIn: "14:15", status: "READY" },
+      { id: "ORD-102", token: "CUP-BAR-8822", customer: "Nadia Hutagalung", type: "TAKEAWAY", items: ["1x Oat Pistachio Cloud Latte", "1x Kyoto Cold Drip"], notes: "Oat milk warm, extra cold foam", timeIn: "14:20", status: "BREWING" },
+      { id: "ORD-103", token: "SLOW-STOOL-02", customer: "Bima Santoso", type: "SLOWBAR", items: ["Slow Bar Flight (Panama Geisha Boquete V60)"], notes: "Rasio 1:15, 92°C, Hadap Roaster View", timeIn: "14:24", status: "INCOMING" },
+      { id: "ORD-104", token: "CUP-BAR-8823", customer: "Jessica Wijaya", type: "TAKEAWAY", items: ["2x Quadra Aerocano Citrus"], notes: "Tanpa es untuk 1 cup", timeIn: "14:28", status: "INCOMING" },
+      { id: "ORD-105", token: "CUP-BAR-8824", customer: "Agung Pratama", type: "TAKEAWAY", items: ["1x Colombia Pink Bourbon Origami"], notes: "Clean finish cup", timeIn: "14:05", status: "COMPLETED" }
+    ];
+
+    // 4. Data 4-Seat Slow Bar Stool Reservation
+    let masterSlowbarStools = [
+      { id: "STOOL-01", number: "Stool 01", label: "Hadap V60 Station", shift: "14:00 - 14:45", guest: "Dian Sastrowardoyo", phone: "0818-3344-5566", bean: "Panama Geisha Boquete (Washed Anaerobic)", dripper: "Hario V60 Ceramic Dripper", status: "SEATED", token: "SLOW-STOOL-01" },
+      { id: "STOOL-02", number: "Stool 02", label: "Center Roaster View", shift: "14:00 - 14:45", guest: "Bima Santoso", phone: "0813-5566-7788", bean: "Colombia Pink Bourbon (Strawberry Candy)", dripper: "Origami Dripper with Wave Filter", status: "BREWING", token: "SLOW-STOOL-02" },
+      { id: "STOOL-03", number: "Stool 03", label: "Center Roaster View", shift: "14:00 - 14:45", guest: "Nicholas Saputra", phone: "0811-2233-4455", bean: "Kenya Nyeri Peaberry (Blackcurrant)", dripper: "Japanese Vacuum Syphon", status: "RESERVED", token: "SLOW-STOOL-03" },
+      { id: "STOOL-04", number: "Stool 04", label: "Hadap Syphon Station", shift: "14:00 - 14:45", guest: null, phone: null, bean: null, dripper: null, status: "AVAILABLE", token: null }
+    ];
+
+    // 5. Data Transaksi History
+    let masterTransactions = [
+      { invoice: "QDR-202610-8821", token: "CUP-BAR-8821", customer: "Tedi Mahendra", phone: "081299998888", type: "TAKEAWAY", itemsSummary: "1x Quadra Aerocano Citrus", time: "14:15 WIB", subtotal: 38000, tax: 3800, total: 41800, method: "QRIS Instant", status: "LUNAS" },
+      { invoice: "QDR-202610-8822", token: "CUP-BAR-8822", customer: "Nadia Hutagalung", phone: "081134567890", type: "TAKEAWAY", itemsSummary: "1x Oat Pistachio Latte, 1x Kyoto Drip", time: "14:20 WIB", subtotal: 87000, tax: 8700, total: 95700, method: "QRIS Instant", status: "LUNAS" },
+      { invoice: "QDR-202610-8823", token: "SLOW-STOOL-02", customer: "Bima Santoso", phone: "081355667788", type: "SLOWBAR", itemsSummary: "Slow Bar Tasting Flight (Colombia Pink Bourbon)", time: "14:00 WIB", subtotal: 85000, tax: 8500, total: 93500, method: "WhatsApp Order Transfer", status: "LUNAS" },
+      { invoice: "QDR-202610-8824", token: "CUP-BAR-8824", customer: "Agung Pratama", phone: "081722334411", type: "TAKEAWAY", itemsSummary: "1x Colombia Pink Bourbon Origami", time: "14:05 WIB", subtotal: 55000, tax: 5500, total: 60500, method: "QRIS Instant", status: "LUNAS" }
+    ];
+
+    // 6. Pickup Audit Logs
+    let pickupLogs = [
+      { time: "14:08:12", token: "CUP-BAR-8824", customer: "Agung Pratama", item: "Colombia Pink Bourbon Origami", status: "BERHASIL DIAMBIL (PICKED UP)" },
+      { time: "13:55:04", token: "CUP-BAR-8819", customer: "Raffi Ahmad", item: "Kyoto Cold Drip 18-Hours", status: "BERHASIL DIAMBIL (PICKED UP)" },
+      { time: "13:40:22", token: "INVALID-CUP", customer: "Unknown Visitor", item: "-", status: "DITOLAK (TIDAK DITEMUKAN)" }
+    ];
+
+    // POS Cart State
+    let posCart = [
+      { id: "sig-1", name: "Quadra Aerocano Citrus Flambé", price: 38000, qty: 1 },
+      { id: "sig-3", name: "Oat Pistachio Cloud Latte", price: 42000, qty: 1 }
+    ];
+
+    let currentSlowbarShiftFilter = "14:00 - 14:45";
+    let cupPeakHourChartInstance = null;
+    let beverageRatioChartInstance = null;
+
+    // Helper: Formatter
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Overview & Lab Analytics",
+        kds: "Barista Live KDS Queue",
+        slowbar: "Slow Bar 4-Seat Counter Scheduler",
+        inventory: "Single Origin & Roast Micro-Lot Hub",
+        scanner: "Pickup Barcode Scanner Validator",
+        pos: "Kasir Barista POS & WhatsApp Generator",
+        transactions: "Database Transaksi & Ekspor CSV"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "Quadra Coffee Lab Console";
+
+      ['overview', 'kds', 'slowbar', 'inventory', 'scanner', 'pos', 'transactions'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800 font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-cyan-300 bg-slate-800 border-l-4 border-cyan-400 shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'overview') renderSlowbarLiveStrip();
+      if (tabKey === 'kds') renderKDSColumns();
+      if (tabKey === 'slowbar') renderSlowbarScheduler();
+      if (tabKey === 'inventory') renderSingleOriginLots();
+      if (tabKey === 'scanner') renderPickupLogs();
+      if (tabKey === 'pos') { renderPOSMenuOptions(); updatePOSCartUI(); }
+      if (tabKey === 'transactions') renderMasterTxTable();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    // ==================== 1. OVERVIEW & CHARTS ====================
+    function renderSlowbarLiveStrip() {
+      const container = document.getElementById('slowbarLiveStripGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterSlowbarStools.forEach(st => {
+        let badgeColor = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        if (st.status === 'BREWING') badgeColor = "bg-amber-500/20 text-gold-300 border border-gold-400/40 animate-pulse";
+        if (st.status === 'RESERVED') badgeColor = "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40";
+        if (st.status === 'AVAILABLE') badgeColor = "bg-slate-800 text-slate-400 border border-slate-700";
+
+        const div = document.createElement('div');
+        div.className = "bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-2 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="font-bold text-white text-sm font-display">${st.number}</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${badgeColor}">${st.status}</span>
+          </div>
+          <p class="text-stone-300 text-[11px] truncate font-sans">${st.guest || 'Tersedia untuk Sesi Ini'}</p>
+          <div class="pt-2 border-t border-slate-700 flex justify-between items-center text-[10px] text-slate-400">
+            <span class="truncate">${st.dripper ? st.dripper.split(' ')[0] : 'Manual Bar'}</span>
+            <span class="text-gold-400 font-bold">${st.shift.split(' - ')[0]}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function initCharts() {
+      // 1. Hourly Cup Volume Bar Chart
+      const ctxHour = document.getElementById('cupPeakHourChart');
+      if (ctxHour) {
+        cupPeakHourChartInstance = new Chart(ctxHour, {
+          type: 'bar',
+          data: {
+            labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
+            datasets: [
+              {
+                label: 'Takeaway Bar (Cups)',
+                data: [28, 42, 35, 38, 46, 32, 21],
+                backgroundColor: '#0891b2',
+                borderRadius: 6
+              },
+              {
+                label: 'Slow Bar Flights (Cups)',
+                data: [4, 8, 8, 8, 8, 8, 6],
+                backgroundColor: '#d4af37',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 55,
+                ticks: { stepSize: 10, color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#ecfeff' }
+              },
+              x: {
+                ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Beverage Ratio Doughnut Chart
+      const ctxRatio = document.getElementById('beverageRatioChart');
+      if (ctxRatio) {
+        beverageRatioChartInstance = new Chart(ctxRatio, {
+          type: 'doughnut',
+          data: {
+            labels: ['Signature Mocktail', 'Slow Bar Single Origin', 'Oat & Specialty White'],
+            datasets: [{
+              data: [48, 28, 24],
+              backgroundColor: ['#0891b2', '#d4af37', '#22d3ee'],
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            },
+            cutout: '70%'
+          }
+        });
+      }
+    }
+
+    // ==================== 2. BARISTA LIVE KDS (KITCHEN DISPLAY) ====================
+    function renderKDSColumns() {
+      const container = document.getElementById('kdsColumnsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const cols = [
+        { key: "INCOMING", title: "1. Pesanan Masuk (Queue)", border: "border-slate-300", headerBg: "bg-slate-100 text-slate-800" },
+        { key: "BREWING", title: "2. Seduh / Steaming", border: "border-cyan-300", headerBg: "bg-cyan-50 text-cyan-800" },
+        { key: "READY", title: "3. Siap di Pickup Bar", border: "border-amber-300", headerBg: "bg-amber-50 text-amber-900" },
+        { key: "COMPLETED", title: "4. Selesai (Picked Up)", border: "border-emerald-300", headerBg: "bg-emerald-50 text-emerald-800" }
+      ];
+
+      cols.forEach(col => {
+        const ordersInCol = masterKDSOrders.filter(o => o.status === col.key);
+
+        let cardsHtml = ordersInCol.map(o => `
+          <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-2.5 font-mono text-xs">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] text-stone-400 font-bold">${o.id} • ${o.timeIn}</span>
+                <h4 class="font-bold text-slate-900 text-sm font-sans">${o.customer}</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold ${o.type === 'SLOWBAR' ? 'bg-gold-100 text-gold-800 border border-gold-300' : 'bg-cyan-50 text-cyan-800 border border-cyan-200'}">
+                ${o.type}
+              </span>
+            </div>
+
+            <div class="p-2.5 bg-stone-50 rounded-xl border border-stone-200 font-sans space-y-1">
+              ${o.items.map(it => `<p class="font-bold text-slate-800 text-[11px]">${it}</p>`).join('')}
+              <p class="text-[10px] text-cyan-700 italic font-mono pt-1 border-t border-stone-200">Notes: ${o.notes}</p>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[10px] text-stone-400">${o.token}</span>
+              ${col.key !== 'COMPLETED' ? `
+                <button onclick="advanceKDSOrder('${o.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-[10px] transition font-sans flex items-center gap-1">
+                  <span>Next Step</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </button>
+              ` : `
+                <span class="text-emerald-600 font-bold text-[10px] flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i> Clear</span>
+              `}
+            </div>
+          </div>
+        `).join('');
+
+        if (ordersInCol.length === 0) {
+          cardsHtml = `<div class="p-5 text-center text-stone-400 text-xs italic font-mono">Antrean kosong</div>`;
+        }
+
+        const colDiv = document.createElement('div');
+        colDiv.className = `p-4 rounded-3xl border-2 ${col.border} bg-[#FAFDFE] space-y-3`;
+        colDiv.innerHTML = `
+          <div class="flex items-center justify-between p-2.5 rounded-2xl ${col.headerBg}">
+            <span class="font-bold text-xs font-display">${col.title}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white shadow-sm font-mono">${ordersInCol.length}</span>
+          </div>
+          <div class="space-y-3">
+            ${cardsHtml}
+          </div>
+        `;
+        container.appendChild(colDiv);
+      });
+
+      lucide.createIcons();
+    }
+
+    function advanceKDSOrder(orderId) {
+      const o = masterKDSOrders.find(x => x.id === orderId);
+      if (!o) return;
+
+      const steps = ["INCOMING", "BREWING", "READY", "COMPLETED"];
+      const currentIdx = steps.indexOf(o.status);
+
+      if (currentIdx < steps.length - 1) {
+        o.status = steps[currentIdx + 1];
+        if (o.status === "READY") {
+          showToast(`Cangkir ${o.customer} (${o.token}) SIAP di Pickup Bar Counter!`);
+        } else {
+          showToast(`Pesanan ${o.id} berlanjut ke: ${o.status}`);
+        }
+        renderKDSColumns();
+        updateDashboardCounters();
+      }
+    }
+
+    function ringPickupBell() {
+      showToast("Lonceng Pickup Berbunyi: Memberitahukan tamu di area tunggu bar!");
+    }
+
+    // ==================== 3. SLOW BAR 4-SEAT SCHEDULER ====================
+    function renderSlowbarScheduler() {
+      const container = document.getElementById('slowbarStoolsGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterSlowbarStools.forEach(stool => {
+        let cardBg = "bg-white border-stone-200 hover:border-cyan-300";
+        let statusBadge = "bg-stone-100 text-stone-600";
+
+        if (stool.status === 'BREWING') {
+          cardBg = "bg-amber-50/60 border-amber-300 ring-2 ring-gold-400/20";
+          statusBadge = "bg-gold-100 text-gold-800 font-bold";
+        } else if (stool.status === 'SEATED') {
+          cardBg = "bg-cyan-50/70 border-cyan-300 shadow-sm";
+          statusBadge = "bg-cyan-600 text-white font-bold";
+        } else if (stool.status === 'RESERVED') {
+          cardBg = "bg-stone-50 border-stone-300";
+          statusBadge = "bg-slate-900 text-cyan-300 font-bold";
+        }
+
+        const div = document.createElement('div');
+        div.className = `p-5 rounded-3xl border-2 transition flex flex-col justify-between ${cardBg}`;
+
+        let detailHtml = '';
+        if (stool.guest) {
+          detailHtml = `
+            <div class="mt-3 p-3 bg-white rounded-2xl border border-stone-200 space-y-1 text-xs font-sans">
+              <span class="text-[10px] text-stone-400 font-mono block">Tamu Slow Bar:</span>
+              <p class="font-bold text-slate-900">${stool.guest}</p>
+              <p class="text-[11px] text-cyan-800 font-medium">${stool.bean}</p>
+              <p class="text-[10px] text-stone-500 font-mono">Alat: ${stool.dripper}</p>
+              <div class="pt-2 border-t border-stone-100 flex justify-between items-center text-[10px] font-mono">
+                <span>Jam: ${stool.shift.split(' - ')[0]}</span>
+                <span class="font-bold text-gold-600">${stool.token}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          detailHtml = `
+            <div class="mt-4 p-5 bg-stone-50/70 rounded-2xl border border-dashed border-stone-200 text-center text-stone-400 text-xs font-mono">
+              Kursi Stool Kosong
+            </div>
+          `;
+        }
+
+        div.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start font-mono">
+              <div>
+                <span class="text-[10px] text-stone-400 font-bold">${stool.id}</span>
+                <h4 class="font-bold text-slate-900 text-base font-display">${stool.number}</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusBadge}">${stool.status}</span>
+            </div>
+            <p class="text-[11px] text-stone-500 font-sans mt-0.5">${stool.label}</p>
+            ${detailHtml}
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs font-mono">
+            ${stool.status === 'AVAILABLE' ? `
+              <button onclick="seatSlowbarWalkin('${stool.id}')" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 rounded-xl transition text-center font-sans">
+                Dudukkan Tamu Tasting
+              </button>
+            ` : (stool.status === 'RESERVED' || stool.status === 'BREWING' ? `
+              <button onclick="finishSlowbarSession('${stool.id}')" class="w-full bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold py-2 rounded-xl transition text-center font-sans">
+                Selesaikan Sesi (Clear Stool)
+              </button>
+            ` : `
+              <button onclick="advanceSlowbarBrewing('${stool.id}')" class="w-full bg-gold-500 hover:bg-gold-600 text-slate-950 font-bold py-2 rounded-xl transition text-center font-sans">
+                Mulai Seduh (Brewing)
+              </button>
+            `)}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      lucide.createIcons();
+    }
+
+    function setSlowbarDateToday() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('slowbarDateFilter').value = today;
+      renderSlowbarScheduler();
+    }
+
+    function filterSlowbarShiftTime(shiftTime) {
+      currentSlowbarShiftFilter = shiftTime;
+      const btns = document.querySelectorAll('.shift-filter-btn');
+      btns.forEach(b => {
+        if (b.getAttribute('data-shift') === shiftTime) {
+          b.className = "shift-filter-btn px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-white transition";
+        } else {
+          b.className = "shift-filter-btn px-3 py-1.5 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition";
+        }
+      });
+      showToast(`Jadwal Slow Bar disaring: ${shiftTime}`);
+    }
+
+    function seatSlowbarWalkin(stoolId) {
+      const name = prompt("Masukkan nama tamu Slow Bar Walk-in:", "Rian Ardianto");
+      if (!name) return;
+
+      const stool = masterSlowbarStools.find(s => s.id === stoolId);
+      if (stool) {
+        stool.status = "BREWING";
+        stool.guest = name;
+        stool.phone = "Walk-in Guest";
+        stool.bean = "Panama Geisha Boquete (Washed Anaerobic)";
+        stool.dripper = "Hario V60 Ceramic Dripper";
+        stool.token = "SLOW-" + stool.id;
+
+        renderSlowbarScheduler();
+        renderSlowbarLiveStrip();
+        updateDashboardCounters();
+        showToast(`Tamu ${name} resmi duduk di ${stool.number} untuk sesi tasting!`);
+      }
+    }
+
+    function advanceSlowbarBrewing(stoolId) {
+      const stool = masterSlowbarStools.find(s => s.id === stoolId);
+      if (stool) {
+        stool.status = "BREWING";
+        renderSlowbarScheduler();
+        renderSlowbarLiveStrip();
+        showToast(`Barista mulai menyeduh manual brew untuk ${stool.guest} (${stool.number})`);
+      }
+    }
+
+    function finishSlowbarSession(stoolId) {
+      const stool = masterSlowbarStools.find(s => s.id === stoolId);
+      if (stool) {
+        stool.status = "AVAILABLE";
+        stool.guest = null;
+        stool.phone = null;
+        stool.bean = null;
+        stool.dripper = null;
+        stool.token = null;
+
+        renderSlowbarScheduler();
+        renderSlowbarLiveStrip();
+        updateDashboardCounters();
+        showToast(`Sesi pada ${stool.number} selesai. Stool siap untuk tamu berikutnya.`);
+      }
+    }
+
+    // ==================== 4. SINGLE ORIGIN & ROAST PROFILES ====================
+    function renderSingleOriginLots() {
+      const container = document.getElementById('singleOriginGridContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterLots.forEach(lot => {
+        let badgeColor = "bg-emerald-50 text-emerald-800 border-emerald-200";
+        if (lot.status === 'LOW_STOCK') badgeColor = "bg-rose-50 text-rose-800 border-rose-200 animate-pulse";
+        if (lot.status === 'RESTING') badgeColor = "bg-amber-50 text-amber-800 border-amber-200";
+
+        const div = document.createElement('div');
+        div.className = "bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start border-b border-cyan-50 pb-3">
+            <div>
+              <span class="text-[10px] text-cyan-600 font-bold">${lot.id} • ${lot.origin}</span>
+              <h4 class="font-extrabold text-slate-900 text-base font-display mt-0.5">${lot.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${badgeColor}">SCA ${lot.scaScore}</span>
+          </div>
+
+          <div class="space-y-1.5 font-sans text-[11px]">
+            <p class="text-stone-600">Proses: <strong class="text-slate-800 font-mono">${lot.process}</strong> (${lot.altitude})</p>
+            <p class="text-stone-600">Tasting Notes: <strong class="text-cyan-800">${lot.notes}</strong></p>
+          </div>
+
+          <!-- Degassing & Stock Progress -->
+          <div class="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+            <div class="flex justify-between items-center text-[11px]">
+              <span class="text-stone-500">Stok Roasted Bean (Siap Seduh):</span>
+              <strong class="text-slate-900 font-bold font-mono">${lot.roastedStockG} Gram</strong>
+            </div>
+            <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+              <div class="h-full rounded-full ${lot.status === 'LOW_STOCK' ? 'bg-rose-500' : 'bg-cyan-600'}" style="width: ${Math.min((lot.roastedStockG / 2500) * 100, 100)}%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-stone-400">
+              <span>Roast: ${lot.roastDate} (${lot.daysDegassed} Hari Degas)</span>
+              <span>Green Bean: ${lot.greenStockKg} Kg</span>
+            </div>
+          </div>
+
+          <button onclick="roastMicroBatch('${lot.id}')" class="w-full bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold py-2.5 rounded-xl transition font-sans border border-cyan-500/30 shadow-sm">
+            + Sangrai Batch Baru (Micro Roaster)
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function roastMicroBatch(lotId) {
+      const lot = masterLots.find(x => x.id === lotId);
+      if (lot) {
+        if (lot.greenStockKg >= 1) {
+          lot.greenStockKg -= 1;
+          lot.roastedStockG += 850;
+          lot.status = "PEAK_DEGASSING";
+          renderSingleOriginLots();
+          updateDashboardCounters();
+          showToast(`Micro batch sangrai 1 Kg untuk ${lot.name} selesai. Ditambahkan +850g roasted beans.`);
+        } else {
+          alert("Stok Green Bean tidak mencukupi untuk sangrai.");
+        }
+      }
+    }
+
+    function openAddLotModal() {
+      const name = prompt("Masukkan nama lot biji kopi baru:", "Guatemala El Injerto Pacamara");
+      if (name) {
+        showToast(`Lot baru ${name} dicatat ke antrean cupping roastery.`);
+      }
+    }
+
+    // ==================== 5. BARISTA BARCODE SCANNER VALIDATOR ====================
+    function setScannerVal(val) {
+      document.getElementById('scannerTokenInput').value = val;
+      executePickupScan();
+    }
+
+    function executePickupScan() {
+      const token = document.getElementById('scannerTokenInput').value.trim().toUpperCase();
+      const feedback = document.getElementById('pickupScanFeedbackCard');
+      feedback.classList.remove('hidden');
+
+      const kdsMatch = masterKDSOrders.find(o => o.token.toUpperCase() === token);
+      const stoolMatch = masterSlowbarStools.find(s => s.token && s.token.toUpperCase() === token);
+
+      if (!kdsMatch && !stoolMatch) {
+        feedback.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+        feedback.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-800 font-sans">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> TOKEN BARCODE TIDAK DITEMUKAN
+          </div>
+          <p class="text-xs font-sans">Token <strong>${token}</strong> tidak memiliki catatan cangkir atau reservasi aktif di Quadra Coffee.</p>
+        `;
+        recordPickupLog(token, "UNKNOWN VISITOR", "-", "DITOLAK (INVALID TOKEN)");
+      } else if (kdsMatch) {
+        feedback.className = "p-5 rounded-2xl border border-cyan-200 bg-cyan-50 text-slate-900 space-y-3 font-mono";
+        feedback.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-cyan-800 flex items-center gap-1.5 font-display">
+              <i data-lucide="check-circle" class="w-5 h-5 text-cyan-600"></i> TAKEAWAY CUP READY
+            </span>
+            <span class="text-xs font-bold bg-cyan-600 text-white px-2 py-0.5 rounded">${kdsMatch.token}</span>
+          </div>
+          <div class="space-y-1 font-sans text-xs">
+            <p>Nama Cup: <strong class="text-slate-900">${kdsMatch.customer}</strong></p>
+            <p>Menu: <strong class="text-cyan-700">${kdsMatch.items.join(', ')}</strong></p>
+            <p class="text-stone-500 font-mono text-[11px]">Special Notes: ${kdsMatch.notes}</p>
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-cyan-200 flex items-center justify-between text-xs font-mono">
+            <span>Status KDS:</span>
+            <strong class="text-emerald-700">${kdsMatch.status}</strong>
+          </div>
+          <button onclick="confirmOrderHandover('${kdsMatch.id}')" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-sm">
+            <i data-lucide="coffee" class="w-4 h-4 text-gold-300"></i> Serahkan Cangkir ke Tamu (Completed)
+          </button>
+        `;
+        recordPickupLog(token, kdsMatch.customer, kdsMatch.items[0], "VALIDASI SUKSES");
+      } else if (stoolMatch) {
+        feedback.className = "p-5 rounded-2xl border border-gold-300 bg-gold-50/70 text-slate-900 space-y-3 font-mono";
+        feedback.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-gold-800 flex items-center gap-1.5 font-display">
+              <i data-lucide="check-circle" class="w-5 h-5 text-gold-600"></i> SLOW BAR SESSION PASS
+            </span>
+            <span class="text-xs font-bold bg-slate-900 text-cyan-300 px-2 py-0.5 rounded">${stoolMatch.number}</span>
+          </div>
+          <div class="space-y-1 font-sans text-xs">
+            <p>Tamu Terhormat: <strong class="text-slate-900">${stoolMatch.guest}</strong> (${stoolMatch.phone})</p>
+            <p>Biji Kopi Pilihan: <strong class="text-cyan-800">${stoolMatch.bean}</strong></p>
+            <p>Metode Seduh: ${stoolMatch.dripper} • Sesi: ${stoolMatch.shift}</p>
+          </div>
+          <button onclick="seatSlowbarFromScanner('${stoolMatch.id}')" class="w-full bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-sm">
+            <i data-lucide="droplet" class="w-4 h-4 text-gold-400"></i> Sambut Tamu di Hadapan Roaster
+          </button>
+        `;
+        recordPickupLog(token, stoolMatch.guest, `Slow Bar (${stoolMatch.number})`, "VALIDASI SLOW BAR");
+      }
+
+      lucide.createIcons();
+    }
+
+    function confirmOrderHandover(orderId) {
+      const o = masterKDSOrders.find(x => x.id === orderId);
+      if (o) {
+        o.status = "COMPLETED";
+        showToast(`Cangkir pesanan ${o.token} untuk ${o.customer} resmi diserahkan.`);
+        renderKDSColumns();
+        updateDashboardCounters();
+        switchTab('kds');
+      }
+    }
+
+    function seatSlowbarFromScanner(stoolId) {
+      const s = masterSlowbarStools.find(x => x.id === stoolId);
+      if (s) {
+        s.status = "SEATED";
+        showToast(`Tamu ${s.guest} resmi duduk di ${s.number} Slow Bar`);
+        renderSlowbarScheduler();
+        renderSlowbarLiveStrip();
+        updateDashboardCounters();
+        switchTab('slowbar');
+      }
+    }
+
+    function recordPickupLog(token, customer, item, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      pickupLogs.unshift({
+        time: timeStr,
+        token: token,
+        customer: customer,
+        item: item,
+        status: status
+      });
+      renderPickupLogs();
+    }
+
+    function renderPickupLogs() {
+      const list = document.getElementById('pickupAuditLogs');
+      if (!list) return;
+      list.innerHTML = '';
+
+      pickupLogs.slice(0, 7).forEach(l => {
+        const isOk = l.status.includes('BERHASIL') || l.status.includes('VALIDASI');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-cyan-50/70 border-cyan-200 text-cyan-900" : "bg-rose-50 border-rose-200 text-rose-900");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs font-sans">${l.customer}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold text-cyan-700 border border-cyan-100">${l.token}</span>
+            </div>
+            <span class="text-[10px] opacity-75">${l.item} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold font-mono">${l.status}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 6. KASIR POS & WHATSAPP GENERATOR ====================
+    function renderPOSMenuOptions() {
+      const grid = document.getElementById('posMenuSelectionGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      masterMenu.forEach(m => {
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border border-stone-200 hover:border-cyan-400 bg-stone-50 hover:bg-cyan-50/40 transition cursor-pointer flex justify-between items-center";
+        div.onclick = () => addDrinkToPOSCart(m.id);
+        div.innerHTML = `
+          <div>
+            <span class="font-bold text-slate-800 text-xs block">${m.name}</span>
+            <span class="text-[10px] text-stone-500">${m.category}</span>
+          </div>
+          <span class="text-xs font-black text-cyan-700 font-mono">${formatRupiah(m.price)}</span>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    function addDrinkToPOSCart(menuId) {
+      const menu = masterMenu.find(m => m.id === menuId);
+      if (!menu) return;
+
+      const existing = posCart.find(c => c.id === menuId);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        posCart.push({ id: menu.id, name: menu.name, price: menu.price, qty: 1 });
+      }
+
+      updatePOSCartUI();
+    }
+
+    function updatePOSCartUI() {
+      const container = document.getElementById('posCartItemsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let subtotal = 0;
+
+      if (posCart.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-stone-400 italic">Keranjang POS kosong</div>`;
+      }
+
+      posCart.forEach((item, index) => {
+        const itemTotal = item.price * item.qty;
+        subtotal += itemTotal;
+
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center py-1.5";
+        row.innerHTML = `
+          <div>
+            <span class="font-bold text-slate-900">${item.name}</span>
+            <div class="flex items-center gap-2 mt-0.5">
+              <button onclick="changePOSQty(${index}, -1)" class="w-5 h-5 rounded bg-stone-200 text-slate-700 font-bold hover:bg-stone-300">-</button>
+              <span class="text-xs font-bold text-cyan-700">${item.qty}x</span>
+              <button onclick="changePOSQty(${index}, 1)" class="w-5 h-5 rounded bg-cyan-600 text-white font-bold hover:bg-cyan-700">+</button>
+            </div>
+          </div>
+          <span class="font-bold text-slate-900">${formatRupiah(itemTotal)}</span>
+        `;
+        container.appendChild(row);
+      });
+
+      const tax = subtotal * 0.10;
+      const grandTotal = subtotal + tax;
+
+      document.getElementById('posSubtotalText').innerText = formatRupiah(subtotal);
+      document.getElementById('posTaxText').innerText = formatRupiah(tax);
+      document.getElementById('posGrandTotalText').innerText = formatRupiah(grandTotal);
+
+      return { subtotal, tax, grandTotal };
+    }
+
+    function changePOSQty(index, delta) {
+      if (!posCart[index]) return;
+      posCart[index].qty += delta;
+      if (posCart[index].qty <= 0) {
+        posCart.splice(index, 1);
+      }
+      updatePOSCartUI();
+    }
+
+    function processPOSPaymentAndPrint() {
+      if (posCart.length === 0) {
+        alert("Keranjang pesanan kosong.");
+        return;
+      }
+
+      const name = document.getElementById('posCustomerName').value.trim() || 'Pelanggan Quadra';
+      const phone = document.getElementById('posCustomerPhone').value.trim() || '081299998888';
+      const notes = document.getElementById('posOrderNotes').value.trim() || 'Standar Cup';
+      const calc = updatePOSCartUI();
+
+      const randomInv = "QDR-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      const randomToken = "CUP-BAR-" + Math.floor(1000 + Math.random() * 9000);
+
+      // Add to KDS
+      masterKDSOrders.unshift({
+        id: "ORD-" + Math.floor(100 + Math.random() * 900),
+        token: randomToken,
+        customer: name,
+        type: "TAKEAWAY",
+        items: posCart.map(i => `${i.qty}x ${i.name}`),
+        notes: notes,
+        timeIn: new Date().toTimeString().split(' ')[0].substring(0, 5),
+        status: "BREWING"
+      });
+
+      // Add to Master Transactions
+      masterTransactions.unshift({
+        invoice: randomInv,
+        token: randomToken,
+        customer: name,
+        phone: phone,
+        type: "TAKEAWAY",
+        itemsSummary: posCart.map(i => `${i.qty}x ${i.name}`).join(', '),
+        time: "15 Menit Pickup",
+        subtotal: calc.subtotal,
+        tax: calc.tax,
+        total: calc.grandTotal,
+        method: "Kasir POS Lunas",
+        status: "LUNAS"
+      });
+
+      // Populate Printable Receipt
+      document.getElementById('prnReceiptCode').innerText = randomInv;
+      document.getElementById('prnCustName').innerText = name;
+      document.getElementById('prnOrderType').innerText = "Takeaway Pickup Bar";
+      document.getElementById('prnTime').innerText = "15 Menit Siap";
+      document.getElementById('prnToken').innerText = randomToken;
+
+      const prnTbody = document.getElementById('prnItemsTable');
+      prnTbody.innerHTML = '';
+      posCart.forEach(it => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${it.qty}x ${it.name}</td>
+          <td style="text-align: right;">${formatRupiah(it.price * it.qty)}</td>
+        `;
+        prnTbody.appendChild(row);
+      });
+
+      document.getElementById('prnSubtotal').innerText = formatRupiah(calc.subtotal);
+      document.getElementById('prnTax').innerText = formatRupiah(calc.tax);
+      document.getElementById('prnGrandTotal').innerText = formatRupiah(calc.grandTotal);
+
+      // Reset Cart
+      posCart = [];
+      updatePOSCartUI();
+      renderKDSColumns();
+      renderMasterTxTable();
+      updateDashboardCounters();
+
+      const printNow = window.confirm(`Transaksi ${randomInv} berhasil disimpan. Cetak struk kasir termal sekarang?`);
+      if (printNow) {
+        window.print();
+      }
+      showToast(`Pesanan ${randomToken} untuk ${name} langsung masuk ke KDS Barista!`);
+    }
+
+    function generatePOSWhatsAppMessage() {
+      const name = document.getElementById('posCustomerName').value.trim() || 'Pelanggan Quadra';
+      const phone = document.getElementById('posCustomerPhone').value.trim() || '-';
+      const notes = document.getElementById('posOrderNotes').value.trim() || '-';
+      const calc = updatePOSCartUI();
+
+      let itemsText = "";
+      posCart.forEach((it, idx) => {
+        itemsText += `${idx + 1}. ${it.name} (${it.qty} Cup) = ${formatRupiah(it.price * it.qty)}%0A`;
+      });
+
+      const waMsg = 
+        `*ORDER COFFEE - QUADRA SPECIALTY ROASTERY*%0A` +
+        `----------------------------------------%0A` +
+        `*Nama Cup:* ${name}%0A` +
+        `*WhatsApp:* ${phone}%0A` +
+        `*Estimasi Pickup:* 15 Menit di Bar Counter%0A` +
+        `*Catatan:* ${notes}%0A%0A` +
+        `*PESANAN KOPI ANDA:*%0A` +
+        itemsText +
+        `----------------------------------------%0A` +
+        `*Total Tagihan Bersih:* ${formatRupiah(calc.grandTotal)}%0A%0A` +
+        `Pesanan kopi Anda sedang diekstrak oleh Barista Quadra. Silakan tunjukkan pesan ini saat pickup!`;
+
+      const url = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${waMsg}`;
+      window.open(url, '_blank');
+    }
+
+    // ==================== 7. TRANSACTIONS & EXPORT CSV ====================
+    function renderMasterTxTable(filteredList = null) {
+      const tbody = document.getElementById('masterTxTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterTransactions;
+      document.getElementById('txCountLabel').innerText = `Menampilkan ${list.length} transaksi kopi`;
+
+      list.forEach(tx => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-cyan-50/30 transition";
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${tx.invoice}<br><span class="text-[9px] text-stone-400 font-normal">Token: ${tx.token}</span></td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-800">${tx.customer}<br><span class="text-[10px] text-stone-500 font-mono font-normal">${tx.phone}</span></td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tx.type === 'SLOWBAR' ? 'bg-gold-100 text-gold-800' : 'bg-cyan-50 text-cyan-800'}">${tx.type}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700 max-w-[200px] truncate" title="${tx.itemsSummary}">${tx.itemsSummary}</td>
+          <td class="py-3 px-4 font-mono text-slate-600">${tx.time}</td>
+          <td class="py-3 px-4 font-black text-slate-900">${formatRupiah(tx.total)}</td>
+          <td class="py-3 px-4 text-emerald-700 font-bold">${tx.method}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="reprintTxSlip('${tx.invoice}')" class="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 transition" title="Cetak Ulang Struk">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterTransactionsTable() {
+      const q = document.getElementById('txSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMasterTxTable();
+        return;
+      }
+      const filtered = masterTransactions.filter(t => 
+        t.invoice.toLowerCase().includes(q) ||
+        t.customer.toLowerCase().includes(q) ||
+        t.token.toLowerCase().includes(q) ||
+        t.phone.toLowerCase().includes(q)
+      );
+      renderMasterTxTable(filtered);
+    }
+
+    function filterTxType(typeKey) {
+      document.querySelectorAll('.tx-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-type') === typeKey) {
+          btn.className = "tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-900 text-white transition";
+        } else {
+          btn.className = "tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition";
+        }
+      });
+
+      if (typeKey === 'ALL') {
+        renderMasterTxTable();
+      } else {
+        renderMasterTxTable(masterTransactions.filter(t => t.type === typeKey));
+      }
+    }
+
+    function reprintTxSlip(invoice) {
+      const t = masterTransactions.find(x => x.invoice === invoice);
+      if (!t) return;
+
+      document.getElementById('prnReceiptCode').innerText = t.invoice;
+      document.getElementById('prnCustName').innerText = t.customer;
+      document.getElementById('prnOrderType').innerText = t.type;
+      document.getElementById('prnTime').innerText = t.time;
+      document.getElementById('prnToken').innerText = t.token;
+
+      const prnTbody = document.getElementById('prnItemsTable');
+      prnTbody.innerHTML = `
+        <tr>
+          <td>${t.itemsSummary}</td>
+          <td style="text-align: right;">${formatRupiah(t.subtotal)}</td>
+        </tr>
+      `;
+
+      document.getElementById('prnSubtotal').innerText = formatRupiah(t.subtotal);
+      document.getElementById('prnTax').innerText = formatRupiah(t.tax);
+      document.getElementById('prnGrandTotal').innerText = formatRupiah(t.total);
+
+      window.print();
+    }
+
+    function exportTransactionsCSV() {
+      let csv = "data:text/csv;charset=utf-8,Invoice,Token,Customer,WhatsApp,Tipe,Rincian Menu,Waktu,Total,Metode,Status\n";
+      masterTransactions.forEach(t => {
+        csv += `"${t.invoice}","${t.token}","${t.customer}","${t.phone}","${t.type}","${t.itemsSummary}","${t.time}","${t.total}","${t.method}","${t.status}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `QuadraCoffee_Transactions_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 8. DASHBOARD COUNTERS ====================
+    function updateDashboardCounters() {
+      const totalRev = masterTransactions.reduce((acc, t) => acc + t.total, 0);
+      const activeQueueCount = masterKDSOrders.filter(o => o.status !== 'COMPLETED').length;
+      const bookedStools = masterSlowbarStools.filter(s => s.status !== 'AVAILABLE').length;
+
+      document.getElementById('kpiRevenue').innerText = formatRupiah(totalRev);
+      document.getElementById('badgeQueueCount').innerText = `${activeQueueCount} Cup`;
+      document.getElementById('badgeSlowbarSeats').innerText = `${bookedStools} Stool Booked`;
+      document.getElementById('kpiSlowbarActive').innerText = `${bookedStools} / 4 Stool`;
+    }
+  </script>
+
+</body>
+</html>

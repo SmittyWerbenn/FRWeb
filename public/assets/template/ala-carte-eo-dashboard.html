@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ala Carte EO - Production Dispatch & Executive Admin Dashboard</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            sage: {
+              white: '#F4F6F4',       // Sage White Canvas
+              pine: '#24332C',        // Deep Pine Utama
+              pineDeep: '#18241E',    // Darker Pine
+              leaf: '#588157',        // Leaf Green Accent
+              leafDark: '#3A5A40',    // Darker Leaf Green
+              leafLight: '#E3EBE3',   // Soft Leaf Tint
+              border: '#DCE4DC',      // Soft Border
+              surface: '#FFFFFF',     // Clean Surface
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .sage-dot-pattern {
+      background-color: #F4F6F4;
+      background-image: radial-gradient(#24332C12 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .pine-shadow {
+      box-shadow: 4px 4px 0px #24332C;
+    }
+    .leaf-shadow {
+      box-shadow: 4px 4px 0px #588157;
+    }
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F4F6F4;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #588157;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #24332C !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="sage-dot-pattern text-slate-800 antialiased font-sans min-h-screen flex selection:bg-sage-leaf selection:text-white">
+
+  <!-- Mobile Sidebar Overlay Backdrop -->
+  <div id="mobileSidebarBackdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-sage-pineDeep/60 z-40 lg:hidden hidden backdrop-blur-sm transition-opacity"></div>
+
+  <!-- Left Sidebar Navigation -->
+  <aside id="sidebar" class="fixed lg:sticky top-0 left-0 h-screen w-72 bg-sage-pineDeep text-slate-300 z-50 flex flex-col justify-between border-r border-sage-pine transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-2xl">
+    
+    <!-- Sidebar Top / Brand -->
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="p-5 border-b border-sage-pine flex items-center justify-between">
+        <div class="flex items-center gap-3 select-none">
+          <div class="w-10 h-10 rounded-xl bg-sage-pine border border-sage-leaf/40 flex items-center justify-center text-white shadow-md shadow-emerald-950/20 flex-shrink-0">
+            <i data-lucide="layers-3" class="w-5 h-5 text-sage-leafLight"></i>
+          </div>
+          <div>
+            <div class="font-extrabold text-lg tracking-tight text-white font-display flex items-center gap-1.5 leading-tight">
+              ALA CARTE<span class="text-sage-leaf">EO</span>
+              <span class="text-[9px] font-mono bg-sage-leaf text-white px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">OPS</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono tracking-wider block">PRODUCTION DISPATCH HUB</span>
+          </div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Live Dispatch Status Banner -->
+      <div class="px-5 py-3 border-b border-sage-pine/70 bg-black/20">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span class="flex items-center gap-2 text-slate-300">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Production Hub
+          </span>
+          <span class="text-[10px] bg-sage-leaf/20 text-emerald-300 px-2 py-0.5 rounded font-bold border border-emerald-500/30">DISPATCH LIVE</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <p class="px-3 pt-3 pb-1 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">Workspace Inti</p>
+        
+        <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition bg-sage-leaf text-white shadow-md shadow-emerald-950/20 font-medium">
+          <span class="flex items-center gap-3">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span>Overview & KPI Acara</span>
+          </span>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 opacity-70"></i>
+        </button>
+
+        <button onclick="switchView('pipeline')" id="nav-pipeline" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition text-slate-300 hover:text-white hover:bg-white/10 font-medium">
+          <span class="flex items-center gap-3">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-sage-leafLight"></i>
+            <span>Pipeline SPK & Klien</span>
+          </span>
+          <span id="badgeActiveSPK" class="text-[10px] font-mono bg-sage-pine text-emerald-300 border border-emerald-500/40 font-bold px-2 py-0.5 rounded-full">6</span>
+        </button>
+
+        <button onclick="switchView('modules')" id="nav-modules" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition text-slate-300 hover:text-white hover:bg-white/10 font-medium">
+          <span class="flex items-center gap-3">
+            <i data-lucide="package-check" class="w-4 h-4"></i>
+            <span>Katalog Modul & Tarif</span>
+          </span>
+          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800">6 Modul</span>
+        </button>
+
+        <p class="px-3 pt-4 pb-1 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">Produksi & Lapangan</p>
+
+        <button onclick="switchView('schedule')" id="nav-schedule" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition text-slate-300 hover:text-white hover:bg-white/10 font-medium">
+          <span class="flex items-center gap-3">
+            <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+            <span>Jadwal Loading & Hari H</span>
+          </span>
+          <span class="text-[10px] font-mono text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800">3 Siaga</span>
+        </button>
+
+        <button onclick="switchView('crews')" id="nav-crews" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition text-slate-300 hover:text-white hover:bg-white/10 font-medium">
+          <span class="flex items-center gap-3">
+            <i data-lucide="radio" class="w-4 h-4"></i>
+            <span>Kru & Intercom Radio</span>
+          </span>
+          <span class="text-[10px] font-mono text-slate-300">CH 01 - 04</span>
+        </button>
+
+        <button onclick="switchView('finance')" id="nav-finance" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition text-slate-300 hover:text-white hover:bg-white/10 font-medium">
+          <span class="flex items-center gap-3">
+            <i data-lucide="receipt" class="w-4 h-4"></i>
+            <span>Ledger Pajak & Finansial</span>
+          </span>
+          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800">PPh / PPN</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Sidebar Bottom (User Info & System Specs) -->
+    <div class="p-4 border-t border-sage-pine bg-black/30">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-sage-pine border border-sage-leaf/40 flex items-center justify-center font-bold text-white text-xs">
+          BP
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-white truncate font-sans">Bambang Pratama</p>
+          <p class="text-[10px] text-sage-leafLight font-mono truncate">Executive Show Director</p>
+        </div>
+        <button onclick="showQuickToast('Pengaturan dispatch dan hak akses aman.', 'info')" class="text-slate-400 hover:text-white" title="Pengaturan">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="mt-3 pt-2 border-t border-sage-pine/60 flex items-center justify-between text-[10px] font-mono text-slate-400">
+        <span>ALC-CORE v3.8</span>
+        <span>JKT (WIB)</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="flex-1 flex flex-col min-w-0 min-h-screen">
+    
+    <!-- Top Dispatch Bar -->
+    <div class="bg-sage-pineDeep text-slate-300 text-xs py-2 px-4 sm:px-8 flex flex-wrap justify-between items-center gap-2 border-b border-sage-pine font-mono">
+      <div class="flex items-center gap-2 text-[11px]">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-sage-leaf text-white font-sans">SAGE CALMNESS ATELIER</span>
+        <span class="hidden sm:inline">Sistem Estimasi Anggaran Event Berbasis Modul Terukur • Izin Loading Gedung & E-Faktur Sinkron</span>
+      </div>
+      <div class="flex items-center gap-4 text-[11px] text-slate-300">
+        <span id="currentLiveClock" class="font-bold text-sage-leafLight">2026-10-31 16:20:00 WIB</span>
+        <span class="hidden md:inline bg-white/10 px-2 py-0.5 rounded text-white font-medium border border-white/10">Show Director: Siaga</span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-nav sticky top-0 z-30 border-b border-sage-border px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      
+      <!-- Mobile Toggle & Title -->
+      <div class="flex items-center gap-3">
+        <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-white border border-sage-border text-slate-700 shadow-sm">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 id="pageMainHeading" class="text-lg sm:text-xl font-extrabold text-sage-pine font-display leading-tight">
+            Dashboard Produksi & Anggaran Event
+          </h1>
+          <p class="text-[11px] text-slate-500 font-sans hidden sm:block">
+            Monitoring kontrak SPK korporat, status verifikasi DP 30%, kuota kapasitas pax, dan alokasi vendor.
+          </p>
+        </div>
+      </div>
+
+      <!-- Header Action Group -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Search Input -->
+        <div class="relative hidden md:block w-56 lg:w-64">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="globalSearchInput" onkeyup="filterSPKTable()" placeholder="Cari SPK, perusahaan, PIC..." class="w-full bg-sage-white pl-9 pr-3 py-2 text-xs rounded-xl border border-sage-border focus:outline-none focus:ring-2 focus:ring-sage-leaf font-sans text-slate-900 placeholder:text-slate-400 shadow-sm" />
+        </div>
+
+        <!-- Notification Bell -->
+        <div class="relative">
+          <button onclick="toggleNotificationPopup()" class="p-2.5 rounded-xl bg-white border border-sage-border text-slate-700 hover:border-sage-leaf transition shadow-sm relative">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-sage-leaf animate-ping"></span>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-sage-leaf"></span>
+          </button>
+          
+          <!-- Notification Dropdown -->
+          <div id="notificationPopup" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-sage-border shadow-2xl p-4 z-50 font-sans text-xs space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <span class="font-bold text-sage-pine font-display">Notifikasi Masuk (3)</span>
+              <button onclick="clearNotifications()" class="text-[10px] text-sage-leaf font-mono hover:underline">Tandai Dibaca</button>
+            </div>
+            <div class="space-y-2 max-h-60 overflow-y-auto font-sans">
+              <div class="p-2.5 rounded-xl bg-sage-white border border-sage-border space-y-1">
+                <span class="text-[10px] font-mono font-bold text-sage-pine bg-sage-leafLight px-1.5 py-0.5 rounded border border-sage-border">DP QRIS MASUK</span>
+                <p class="text-slate-800 text-xs">PT Reliantradha Solusi menyetor DP Rp 29.860.500 (SPK-ALC-8825).</p>
+                <span class="text-[10px] text-slate-400 block font-mono">12 menit lalu</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-white border border-sage-border space-y-1">
+                <span class="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">SURAT IZIN LOADING</span>
+                <p class="text-slate-800 text-xs">Izin loading panggung Hotel Fairmont Jakarta telah disetujui pengelola.</p>
+                <span class="text-[10px] text-slate-400 block font-mono">45 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Booking Button (CTA) -->
+        <button onclick="openNewEventModal()" class="bg-sage-pine hover:bg-sage-pineDeep text-white font-bold text-xs px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-emerald-950/20 flex items-center gap-2 active:scale-95 font-display whitespace-nowrap">
+          <i data-lucide="plus" class="w-4 h-4 text-sage-leaf"></i>
+          <span>+ Buat SPK Event Baru</span>
+        </button>
+      </div>
+
+    </header>
+
+    <!-- Main Dynamic Body Area -->
+    <main class="flex-1 p-4 sm:p-8 space-y-8">
+      
+      <!-- Top Metrics Strip (5 Cards Corporate Event Scope) -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        
+        <!-- Metric 1: Nilai Kontrak Pipeline -->
+        <div class="p-5 rounded-2xl bg-white border border-sage-border shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-500 font-semibold">Total Nilai Kontrak</span>
+            <div class="w-8 h-8 rounded-lg bg-sage-leafLight text-sage-pine flex items-center justify-center border border-sage-border">
+              <i data-lucide="briefcase" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div>
+            <span class="text-xl lg:text-2xl font-black text-sage-pine font-display block" id="metricGrossRevenue">Rp 487.650.000</span>
+            <div class="flex items-center gap-1.5 mt-1 text-[11px] font-mono text-emerald-700 font-bold">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+              <span>+21.4% vs Q3</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-sage-leaf h-full rounded-full" style="width: 84%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 2: Total Pax Peserta Terkelola -->
+        <div class="p-5 rounded-2xl bg-white border border-sage-border shadow-sm flex flex-col justify-between space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-500 font-semibold">Total Pax Terjadwal</span>
+            <div class="w-8 h-8 rounded-lg bg-sage-white text-slate-700 flex items-center justify-center border border-sage-border">
+              <i data-lucide="users" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div>
+            <span class="text-xl lg:text-2xl font-black text-sage-pine font-display block" id="metricTotalPax">2.350 Pax</span>
+            <div class="flex items-center gap-1.5 mt-1 text-[11px] font-mono text-slate-500">
+              <span class="text-sage-leaf font-bold">6 Perusahaan B2B</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-sage-pine h-full rounded-full" style="width: 72%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 3: Verifikasi DP 30% -->
+        <div class="p-5 rounded-2xl bg-white border border-sage-border shadow-sm flex flex-col justify-between space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-500 font-semibold">DP 30% Terkunci</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-200">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div>
+            <span class="text-xl lg:text-2xl font-black text-emerald-800 font-display block" id="metricDpCollected">Rp 146.295.000</span>
+            <div class="flex items-center gap-1.5 mt-1 text-[11px] font-mono text-emerald-700">
+              <span>Zero-Cancellation Guarantee</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-emerald-600 h-full rounded-full" style="width: 90%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 4: Kepatuhan Pajak & E-Faktur -->
+        <div class="p-5 rounded-2xl bg-white border border-sage-border shadow-sm flex flex-col justify-between space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-500 font-semibold">Faktur Pajak Terbit</span>
+            <div class="w-8 h-8 rounded-lg bg-sage-leafLight text-sage-pine flex items-center justify-center border border-sage-border">
+              <i data-lucide="file-check" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div>
+            <span class="text-xl lg:text-2xl font-black text-sage-pine font-display block">100% Sah</span>
+            <div class="flex items-center gap-1.5 mt-1 text-[11px] font-mono text-slate-500">
+              <span>PPN 11% & PPh 23 Terlapor</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-sage-leafDark h-full rounded-full" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 5: Kesiapan Showrunner Hari H -->
+        <div class="p-5 rounded-2xl bg-white border border-sage-border shadow-sm flex flex-col justify-between space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-500 font-semibold">Kru & Vendor Standby</span>
+            <div class="w-8 h-8 rounded-lg bg-sage-white text-slate-700 flex items-center justify-center border border-sage-border">
+              <i data-lucide="radio" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div>
+            <span class="text-xl lg:text-2xl font-black text-sage-pine font-display block">48 Personil</span>
+            <div class="flex items-center gap-1.5 mt-1 text-[11px] font-mono text-sage-leaf font-bold">
+              <span>Wireless Headset Ready</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-sage-pineDeep h-full rounded-full" style="width: 95%;"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- VIEW 1: Dashboard Overview & Pipeline Manifest Table -->
+      <section id="viewDashboard" class="space-y-6">
+        
+        <!-- Controls & Filter Strip -->
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-sage-border shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4">
+          
+          <!-- Status Tabs -->
+          <div class="flex items-center gap-1.5 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0 text-xs font-mono">
+            <button onclick="setFilterStatus('ALL')" id="filterBtnAll" class="px-3.5 py-2 rounded-xl font-bold bg-sage-pine text-white shadow-sm transition">
+              Semua Proyek (<span id="countAll">6</span>)
+            </button>
+            <button onclick="setFilterStatus('DP_CONFIRMED')" id="filterBtnDp" class="px-3.5 py-2 rounded-xl font-bold bg-sage-white text-slate-700 hover:bg-slate-200 transition">
+              DP 30% Terkunci (<span id="countDp">3</span>)
+            </button>
+            <button onclick="setFilterStatus('FULL_PAID')" id="filterBtnFull" class="px-3.5 py-2 rounded-xl font-bold bg-sage-white text-slate-700 hover:bg-slate-200 transition">
+              Lunas 100% (<span id="countFull">1</span>)
+            </button>
+            <button onclick="setFilterStatus('PROPOSAL_REVIEW')" id="filterBtnReview" class="px-3.5 py-2 rounded-xl font-bold bg-sage-white text-slate-700 hover:bg-slate-200 transition">
+              Review Proposal (<span id="countReview">1</span>)
+            </button>
+            <button onclick="setFilterStatus('COMPLETED')" id="filterBtnCompleted" class="px-3.5 py-2 rounded-xl font-bold bg-sage-white text-slate-700 hover:bg-slate-200 transition">
+              Selesai (<span id="countCompleted">1</span>)
+            </button>
+          </div>
+
+          <!-- Quick Filters: Format Acara & Refresh -->
+          <div class="flex items-center gap-2.5 w-full lg:w-auto justify-end text-xs font-mono">
+            <div class="flex items-center gap-1 bg-sage-white px-3 py-2 rounded-xl border border-sage-border text-slate-700">
+              <i data-lucide="filter" class="w-3.5 h-3.5 text-sage-leaf"></i>
+              <span>Format:</span>
+              <select id="filterFormatSelect" onchange="filterSPKTable()" class="bg-transparent font-bold focus:outline-none text-slate-900">
+                <option value="ALL">Semua Format</option>
+                <option value="Gathering">Corporate Gathering</option>
+                <option value="Gala">Annual Gala Dinner</option>
+                <option value="Launch">Product Launching</option>
+                <option value="Townhall">Outbound Townhall</option>
+              </select>
+            </div>
+            
+            <button onclick="refreshDataMock()" class="p-2.5 rounded-xl bg-sage-white border border-sage-border text-slate-700 hover:bg-slate-200 transition" title="Refresh Data Live">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Master Manifest Table -->
+        <div class="bg-white rounded-2xl border border-sage-border shadow-sm overflow-hidden">
+          <div class="p-4 sm:p-5 border-b border-sage-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-sage-pine font-display">Daftar Kontrak SPK & Manifest Produksi Event</h3>
+              <p class="text-xs text-slate-500 font-sans mt-0.5">Tracking modul terpilih, kapasitas pax peserta, jatuh tempo pelunasan H-7, dan izin loading venue.</p>
+            </div>
+            <span class="text-xs font-mono bg-sage-leafLight text-sage-pine px-3 py-1 rounded-lg border border-sage-border font-bold">
+              Realtime Production Ledger
+            </span>
+          </div>
+
+          <!-- Table Responsive -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-sans">
+              <thead class="bg-sage-white text-sage-pine font-mono uppercase tracking-wider text-[11px] border-b border-sage-border">
+                <tr>
+                  <th class="py-3 px-4 font-bold">Nomor SPK & Jadwal</th>
+                  <th class="py-3 px-4 font-bold">Perusahaan Klien & PIC</th>
+                  <th class="py-3 px-4 font-bold">Format & Kapasitas</th>
+                  <th class="py-3 px-4 font-bold">Lokasi Venue</th>
+                  <th class="py-3 px-4 font-bold text-right">Nilai Kontrak (All-In)</th>
+                  <th class="py-3 px-4 font-bold text-center">Status Produksi</th>
+                  <th class="py-3 px-4 font-bold text-center">Aksi Operasional</th>
+                </tr>
+              </thead>
+              <tbody id="spkTableBody" class="divide-y divide-sage-border/70 font-medium">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer Pagination -->
+          <div class="p-4 border-t border-sage-border bg-sage-white/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-slate-500">
+            <div>
+              Menampilkan <span id="showingCountText" class="font-bold text-slate-900">6</span> dari <span class="font-bold text-slate-900">6</span> SPK aktif
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button class="px-3 py-1 rounded bg-white border border-sage-border text-slate-500 hover:text-slate-800 transition text-xs">Prev</button>
+              <button class="px-3 py-1 rounded bg-sage-pine text-white font-bold text-xs">1</button>
+              <button class="px-3 py-1 rounded bg-white border border-sage-border text-slate-500 hover:text-slate-800 transition text-xs">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-Column Quick Split: Upcoming Production Runs & Intercom Status -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Left: Agenda Loading & Eksekusi Terdekat (7 cols) -->
+          <div class="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-sage-border shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="calendar" class="w-4 h-4 text-sage-leaf"></i>
+                <h4 class="font-bold text-sage-pine font-display text-sm">Timeline Eksekusi Terdekat (H-7 s/d Hari H)</h4>
+              </div>
+              <button onclick="switchView('schedule')" class="text-xs font-mono text-sage-leaf font-bold hover:underline">Lihat Kalender Lengkap →</button>
+            </div>
+
+            <!-- Item 1 -->
+            <div class="p-3.5 bg-sage-white rounded-xl border border-sage-border space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="font-mono text-[10px] font-bold bg-sage-pine text-white px-2 py-0.5 rounded">06 DES 2026 • HARI H</span>
+                  <h5 class="font-bold text-sm text-slate-900 font-display mt-1">PT Reliantradha Solusi Digital (Corporate Gathering)</h5>
+                  <p class="text-xs text-slate-600 font-sans">Grand Ballroom Hotel Mulia Senayan • 250 Pax</p>
+                </div>
+                <span class="text-xs font-mono font-bold text-sage-leaf">Panggung 12x4m + LED P3.9</span>
+              </div>
+              <div class="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-600">
+                <span>Director: <strong>Bambang Pratama</strong></span>
+                <span>Stage Lead: <strong>Doni Kuncoro</strong></span>
+                <span class="text-emerald-700 font-bold">✓ Izin Loading 05 Des 22:00 Terbit</span>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="p-3.5 bg-sage-white rounded-xl border border-sage-border space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="font-mono text-[10px] font-bold bg-sage-leafDark text-white px-2 py-0.5 rounded">12 DES 2026 • GALA DINNER</span>
+                  <h5 class="font-bold text-sm text-slate-900 font-display mt-1">PT Bank Neo Digital Tbk (Annual Awarding Night)</h5>
+                  <p class="text-xs text-slate-600 font-sans">Grand Ballroom Fairmont Jakarta • 650 Pax</p>
+                </div>
+                <span class="text-xs font-mono font-bold text-sage-pine">Full Rigging + Orchestra</span>
+              </div>
+              <div class="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-600">
+                <span>Director: <strong>Hendrik Setiawan</strong></span>
+                <span>Sound Eng: <strong>Rendy Audio</strong></span>
+                <span class="text-amber-700 font-bold">⏳ Pelunasan H-7 Menunggu Verifikasi</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Saluran Komunikasi Intercom Kru & Showrunner (5 cols) -->
+          <div class="lg:col-span-5 bg-white p-5 sm:p-6 rounded-2xl border border-sage-border shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="radio" class="w-4 h-4 text-sage-leaf"></i>
+                  <h4 class="font-bold text-sage-pine font-display text-sm">Alokasi Intercom Headset Kru Lapangan</h4>
+                </div>
+                <span class="text-[10px] font-mono bg-sage-leafLight text-sage-pine border border-sage-border px-2 py-0.5 rounded font-bold">LIVE FREQUENCY</span>
+              </div>
+
+              <div class="space-y-2 text-xs font-mono">
+                <div class="flex justify-between p-2 bg-sage-white rounded-lg border border-sage-border">
+                  <span class="text-slate-600">CH 01 (FOH Show Director & MC):</span>
+                  <span class="font-bold text-slate-900">462.5625 MHz • OK</span>
+                </div>
+                <div class="flex justify-between p-2 bg-sage-white rounded-lg border border-sage-border">
+                  <span class="text-slate-600">CH 02 (Stage Manager & Talent):</span>
+                  <span class="font-bold text-slate-900">462.5875 MHz • OK</span>
+                </div>
+                <div class="flex justify-between p-2 bg-sage-white rounded-lg border border-sage-border">
+                  <span class="text-slate-600">CH 03 (Katering & Hospitality VIP):</span>
+                  <span class="font-bold text-slate-900">462.6125 MHz • OK</span>
+                </div>
+                <div class="flex justify-between p-2 bg-sage-white rounded-lg border border-sage-border">
+                  <span class="text-slate-600">CH 04 (Sound, LED & Runner Cepat):</span>
+                  <span class="font-bold text-sage-leaf">462.6375 MHz • PRIORITY</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3.5 bg-sage-pine text-white rounded-xl text-xs space-y-1 font-mono">
+              <div class="flex items-center gap-2 text-sage-leafLight font-bold text-[11px]">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                <span>SOP Zero-Delay Rundown</span>
+              </div>
+              <p class="text-slate-300 font-sans text-[11px] leading-relaxed">
+                Seluruh rundown menit ke menit diselaraskan otomatis dengan timer digital di panggung monitor pembicara dan FOH mixer.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- VIEW 2: Katalog Modul & Unit Cost Management View -->
+      <section id="viewModules" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-sage-border shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 class="text-base font-bold text-sage-pine font-display">Katalog Modul À La Carte & Pengaturan Tarif</h3>
+            <p class="text-xs text-slate-500 font-sans mt-0.5">Kelola modul spesifikasi panggung, katering, MC/talent, dokumentasi 4K, dan showrunner.</p>
+          </div>
+          <button onclick="showQuickToast('Formulir tambah modul baru siap diintegrasikan.', 'info')" class="bg-sage-pine hover:bg-sage-pineDeep text-white px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-4 h-4 text-sage-leaf"></i>
+            <span>Tambah Modul Layanan Baru</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans" id="modulesListContainer">
+          <!-- Dynamically Injected -->
+        </div>
+      </section>
+
+      <!-- VIEW 3: Jadwal Hari H & Loading Permit Timeline -->
+      <section id="viewSchedule" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-sage-border shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 class="text-base font-bold text-sage-pine font-display">Kalender Produksi Event, Loading In & Soundcheck</h3>
+            <p class="text-xs text-slate-500 font-sans mt-0.5">Penjadwalan izin akses rigging panggung, gladi resik direksi, dan eksekusi hari H.</p>
+          </div>
+          <button onclick="showQuickToast('Sinkronisasi Google Calendar Kru dan Vendor selesai.', 'success')" class="bg-sage-leaf hover:bg-sage-leafDark text-white px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2">
+            <i data-lucide="calendar-check" class="w-4 h-4"></i>
+            <span>Sinkronkan Kalender Lapangan</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="schedulesGridContainer">
+          <!-- Dynamically Injected -->
+        </div>
+      </section>
+
+      <!-- VIEW 4: Kru Lapangan & Intercom Dispatch -->
+      <section id="viewCrews" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-sage-border shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 class="text-base font-bold text-sage-pine font-display">Struktur Showrunner & Pembagian Radio Intercom</h3>
+            <p class="text-xs text-slate-500 font-sans mt-0.5">Penugasan personil lapangan, operator FOH, liaison officer katering, dan keamanan panggung.</p>
+          </div>
+          <span class="text-xs font-mono bg-sage-leafLight text-sage-pine border border-sage-border px-3 py-1.5 rounded-xl font-bold">
+            Headset Interkom Terisolasi
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="crewsGridContainer">
+          <!-- Dynamically Injected -->
+        </div>
+      </section>
+
+      <!-- VIEW 5: Ledger Keuangan & E-Faktur PPh/PPN -->
+      <section id="viewFinance" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-sage-border shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 class="text-base font-bold text-sage-pine font-display">Ledger Finansial, E-Faktur PPN 11% & Bukti Potong PPh 23</h3>
+            <p class="text-xs text-slate-500 font-sans mt-0.5">Audit akuntabilitas keuangan standar B2B korporat, tracking DP 30%, dan pelunasan termin H-7.</p>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <button onclick="showQuickToast('Laporan ledger dan faktur pajak berhasil diekspor ke Excel/CSV.', 'success')" class="bg-sage-pine hover:bg-sage-pineDeep text-white px-3.5 py-2 rounded-xl font-bold flex items-center gap-2">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Export Rekap Keuangan</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
+          <div class="p-5 bg-white rounded-2xl border border-sage-border space-y-1">
+            <span class="text-xs text-slate-500 font-sans">Total Kontrak SPK Berjalan:</span>
+            <span class="text-2xl font-black text-sage-pine block" id="finTotalContract">Rp 487.650.000</span>
+            <span class="text-[10px] text-emerald-700 font-sans">✓ Terikat SPK Resmi & Bermaterai</span>
+          </div>
+          <div class="p-5 bg-white rounded-2xl border border-sage-border space-y-1">
+            <span class="text-xs text-slate-500 font-sans">Total DP 30% Terkumpul:</span>
+            <span class="text-2xl font-black text-sage-leaf block" id="finTotalDp">Rp 146.295.000</span>
+            <span class="text-[10px] text-slate-500 font-sans">Alokasi Vendor Panggung Terkunci</span>
+          </div>
+          <div class="p-5 bg-white rounded-2xl border border-sage-border space-y-1">
+            <span class="text-xs text-slate-500 font-sans">Piutang Pelunasan Termin H-7:</span>
+            <span class="text-2xl font-black text-amber-700 block">Rp 341.355.000</span>
+            <span class="text-[10px] text-amber-800 font-sans">Jatuh tempo bertahap pekan depan</span>
+          </div>
+        </div>
+
+        <!-- Finance Table -->
+        <div class="bg-white rounded-2xl border border-sage-border overflow-hidden">
+          <div class="p-4 border-b border-sage-border font-display font-bold text-sage-pine text-sm">
+            Rincian Status Tagihan & Pajak Faktur Klien
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-sans">
+              <thead class="bg-sage-white font-mono uppercase text-[10px] text-sage-pine border-b border-sage-border">
+                <tr>
+                  <th class="py-2.5 px-4 font-bold">No. SPK</th>
+                  <th class="py-2.5 px-4 font-bold">Klien Perusahaan</th>
+                  <th class="py-2.5 px-4 font-bold">Total Proyek</th>
+                  <th class="py-2.5 px-4 font-bold">DP Masuk (30%)</th>
+                  <th class="py-2.5 px-4 font-bold">Sisa Pelunasan</th>
+                  <th class="py-2.5 px-4 font-bold">Faktur Pajak (PPN/PPh)</th>
+                  <th class="py-2.5 px-4 font-bold text-center">Verifikasi</th>
+                </tr>
+              </thead>
+              <tbody id="financeTableBody" class="divide-y divide-slate-100 font-mono">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL 1: Detail SPK Event & Approval Workflow -->
+  <div id="spkDetailModal" class="fixed inset-0 bg-sage-pineDeep/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl border border-sage-border max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-5 p-6 font-mono text-xs">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-sage-border pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-sage-pine text-white flex items-center justify-center font-bold">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-sage-leaf"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-sage-pine font-display" id="modalSpkIdText">SPK-ALC-202610-8825</h3>
+            <span class="text-[10px] text-slate-400 font-mono">Surat Perintah Kerja & Dokumen Penawaran Final</span>
+          </div>
+        </div>
+        <button onclick="closeSpkDetailModal()" class="text-slate-400 hover:text-slate-800 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Detail Client Metadata -->
+      <div class="grid grid-cols-2 gap-4 bg-sage-white p-4 rounded-xl border border-sage-border font-sans">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-400 font-mono block">PERUSAHAAN KLIEN:</span>
+          <p id="modalClientCompany" class="font-bold text-sage-pine text-sm">PT Reliantradha Solusi Digital</p>
+          <p id="modalClientPic" class="text-slate-600 font-mono text-xs">PIC: Tedi Mahendra (081299998888)</p>
+          <p id="modalClientEmail" class="text-slate-500 text-xs">procurement@reliansolusi.co.id</p>
+        </div>
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-400 font-mono block">JADWAL & LOKASI VENUE:</span>
+          <p id="modalEventDate" class="font-bold text-sage-leaf text-sm">06 Des 2026</p>
+          <p id="modalEventVenue" class="text-slate-700 font-medium text-xs">Grand Ballroom Hotel Mulia Senayan</p>
+          <p id="modalPaxCount" class="text-slate-500 text-xs font-mono">Volume: 250 Pax</p>
+        </div>
+      </div>
+
+      <!-- Modul Scope Breakdown -->
+      <div class="space-y-2 font-sans">
+        <label class="block font-bold text-slate-800 text-xs">Rincian Modul Layanan yang Dipilih:</label>
+        <div id="modalModulesListContainer" class="space-y-1 text-xs text-slate-700 font-mono">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Financial Status Breakdown -->
+      <div class="border border-sage-border rounded-xl p-4 space-y-2 bg-white font-sans text-xs">
+        <div class="flex justify-between items-center text-slate-600">
+          <span>Total Nilai Kontrak (All-In):</span>
+          <span class="font-bold text-slate-900 font-mono" id="modalContractValue">Rp 99.535.000</span>
+        </div>
+        <div class="flex justify-between items-center text-slate-600">
+          <span>Uang Muka Kunci Jadwal (DP 30%):</span>
+          <span class="font-bold text-sage-leaf font-mono" id="modalDpAmount">Rp 29.860.500</span>
+        </div>
+        <div class="flex justify-between items-center text-slate-600">
+          <span>Sisa Tagihan Pelunasan (H-7):</span>
+          <span class="font-bold text-slate-900 font-mono" id="modalDueAmount">Rp 69.674.500</span>
+        </div>
+        <div class="pt-2 border-t border-slate-100 flex justify-between items-center font-bold">
+          <span class="text-sage-pine">Status Saat Ini:</span>
+          <span id="modalStatusBadge" class="px-2.5 py-0.5 rounded text-[11px] font-mono bg-sage-leafLight text-sage-pine border border-sage-border font-bold">
+            DP 30% TERVERIFIKASI
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Buttons inside Modal -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 font-sans border-t border-slate-100">
+        <button onclick="printProposalFromModal()" class="bg-sage-white hover:bg-slate-200 text-slate-700 px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition border border-sage-border">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Cetak Dokumen SPK & Proposal</span>
+        </button>
+
+        <div class="flex items-center gap-2" id="modalActionButtonsContainer">
+          <!-- Dynamic Action Buttons -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 2: Buat SPK / Proyek Event Baru -->
+  <div id="newEventModal" class="fixed inset-0 bg-sage-pineDeep/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl border border-sage-border max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-4 p-6 text-xs font-sans">
+      
+      <div class="flex items-center justify-between border-b border-sage-border pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-sage-pine text-white flex items-center justify-center font-bold">
+            <i data-lucide="plus" class="w-4 h-4 text-sage-leaf"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-sage-pine font-display">Input Kontrak SPK Event Baru</h3>
+            <span class="text-[10px] text-slate-400 font-mono">Rakit estimasi modul secara otomatis ke dalam sistem</span>
+          </div>
+        </div>
+        <button onclick="closeNewEventModal()" class="text-slate-400 hover:text-slate-800 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="newEventForm" onsubmit="handleCreateNewEvent(event)" class="space-y-3.5">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nama Perusahaan Klien *</label>
+            <input type="text" id="newCompanyName" placeholder="PT Contoh Solusi Global" class="w-full bg-sage-white px-3 py-2 rounded-xl border border-sage-border font-medium" required />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nama PIC & Jabatan *</label>
+            <input type="text" id="newPicName" placeholder="Nama Lengkap (Procurement Lead)" class="w-full bg-sage-white px-3 py-2 rounded-xl border border-sage-border font-medium" required />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp PIC *</label>
+            <input type="tel" id="newPhone" placeholder="0812XXXXXXXX" class="w-full bg-sage-white px-3 py-2 rounded-xl border border-sage-border font-mono" required />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Format Acara *</label>
+            <select id="newFormatSelect" class="w-full bg-sage-white px-3 py-2 rounded-xl border border-sage-border font-bold">
+              <option value="Corporate Gathering">Corporate Gathering</option>
+              <option value="Annual Gala Dinner">Annual Gala Dinner</option>
+              <option value="Product Launching">Product Launching</option>
+              <option value="Outbound Townhall">Outbound Townhall</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Kapasitas Peserta (Pax) *</label>
+            <input type="number" id="newPaxCount" value="250" min="50" max="2000" onchange="updateNewEventBudgetPreview()" class="w-full bg-sage-white px-3 py-2 rounded-xl border border-sage-border font-mono font-bold" required />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tanggal Pelaksanaan Acara *</label>
+            <input type="date" id="newEventDate" class="w-full bg-sage-white px-3 py-2 rounded-xl border border-sage-border font-mono font-bold" required />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nama Lokasi Ballroom / Venue *</label>
+          <input type="text" id="newVenue" placeholder="Nama Gedung / Hotel / Convention Center" class="w-full bg-sage-white px-3 py-2 rounded-xl border border-sage-border font-medium" required />
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Status Awal Kontrak SPK</label>
+          <select id="newStatusSelect" class="w-full bg-sage-white px-3 py-2 rounded-xl border border-sage-border font-bold">
+            <option value="DP_CONFIRMED">DP 30% Terverifikasi (Kunci Jadwal)</option>
+            <option value="PROPOSAL_REVIEW">Review Proposal Klien</option>
+            <option value="FULL_PAID">Lunas 100%</option>
+          </select>
+        </div>
+
+        <!-- Calculated Summary Box -->
+        <div class="p-3.5 bg-sage-white rounded-xl border border-sage-border font-mono text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-600">Estimasi Total Proyek (+ PPN 11% & Fee):</span>
+            <span class="font-bold text-sage-pine" id="newCalcGrandTotalText">Rp 99.535.000</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-600">Uang Muka Kunci Jadwal (DP 30%):</span>
+            <span class="font-bold text-sage-leaf" id="newCalcDpText">Rp 29.860.500</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closeNewEventModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-sage-pine hover:bg-sage-pineDeep text-white font-bold font-display shadow-md shadow-emerald-950/20">
+            Terbitkan SPK ke Pipeline
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Floater -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition duration-300 pointer-events-none flex items-center gap-3 bg-sage-pineDeep text-white px-4 py-3 rounded-2xl shadow-2xl border border-sage-pine font-sans text-xs">
+    <div id="toastIconContainer" class="w-7 h-7 rounded-lg bg-sage-leaf flex items-center justify-center text-white flex-shrink-0">
+      <i data-lucide="check" class="w-4 h-4"></i>
+    </div>
+    <span id="toastMessageText" class="font-medium">Data berhasil diperbarui.</span>
+  </div>
+
+  <!-- Hidden Printable Container for Direct Print -->
+  <div id="printArea" class="hidden"></div>
+
+  <!-- Main JavaScript Engine -->
+  <script>
+    // 1. Data Store Dummy Ala Carte EO
+    let spkPipelineData = [
+      {
+        id: "SPK-ALC-202610-8825",
+        company: "PT Reliantradha Solusi Digital",
+        pic: "Tedi Mahendra (Procurement Lead)",
+        phone: "081299998888",
+        email: "procurement@reliansolusi.co.id",
+        format: "Corporate Gathering",
+        pax: 250,
+        eventDate: "2026-12-06",
+        eventDateDisplay: "06 Des 2026",
+        venue: "Grand Ballroom Hotel Mulia Senayan, Jakarta",
+        modules: [
+          "Stage Rigging, Sound System 15k Watt & LED Videotron P3.9",
+          "F&B Buffet Prasmanan 5 Menu + 2x Coffee Break",
+          "Bilingual MC & Live Acoustic Top-40 Band",
+          "Dokumentasi Multi-Camera 4K Sony FX3 & Drone",
+          "Show Director, Stage Manager & LO Hospitality"
+        ],
+        rawSubtotal: 85000000,
+        mgmtFee: 8500000,
+        taxAmount: 10285000,
+        grandTotal: 99535000,
+        dpAmount: 29860500,
+        status: "DP_CONFIRMED", // 'DP_CONFIRMED', 'FULL_PAID', 'PROPOSAL_REVIEW', 'COMPLETED'
+        director: "Bambang Pratama",
+        loadingPermit: "Disetujui (05 Des 22:00)",
+        notes: "Ulang tahun ke-5 perusahaan, awarding best employee, dan doorprize utama motor listrik."
+      },
+      {
+        id: "SPK-ALC-202610-8831",
+        company: "PT Bank Neo Digital Tbk",
+        pic: "Sarah Novita (Corporate Secretary)",
+        phone: "081122334455",
+        email: "corsec@bankneodigital.co.id",
+        format: "Annual Gala Dinner",
+        pax: 650,
+        eventDate: "2026-12-12",
+        eventDateDisplay: "12 Des 2026",
+        venue: "Grand Ballroom Fairmont Hotel Jakarta",
+        modules: [
+          "Stage Rigging, Sound Line Array 20k Watt & Giant Curved LED",
+          "VIP Fine Dining Course Set & Canape Welcome Drink",
+          "Bilingual MC, Symphony String Ensemble & Guest Star Singer",
+          "Live Streaming Multi-Kamera Broadcast 4K",
+          "Lead Director, Protocol Pejabat & 12 LO Kru Lapangan"
+        ],
+        rawSubtotal: 148000000,
+        mgmtFee: 14800000,
+        taxAmount: 17908000,
+        grandTotal: 173308000,
+        dpAmount: 51992400,
+        status: "DP_CONFIRMED",
+        director: "Hendrik Setiawan",
+        loadingPermit: "Disetujui (11 Des 23:00)",
+        notes: "Kehadiran jajaran direksi & regulator OJK. Protokol panggung formal 100% on-time."
+      },
+      {
+        id: "SPK-ALC-202610-8838",
+        company: "Astra International Group",
+        pic: "Dharmawan Kusuma (Head of HR & Culture)",
+        phone: "081377889900",
+        email: "dharmawan.k@astra.co.id",
+        format: "Outbound Townhall",
+        pax: 400,
+        eventDate: "2026-12-19",
+        eventDateDisplay: "19 Des 2026",
+        venue: "Royal Tulip Gunung Geulis Resort, Bogor",
+        modules: [
+          "Outdoor Ground Rigging & Sound Touring",
+          "Prasmanan Tradisional Sunda & Kambing Guling BBQ",
+          "Fasilitator Outbound Experiential Learning",
+          "Dokumentasi Foto Drone & Video Klip Hari H"
+        ],
+        rawSubtotal: 78000000,
+        mgmtFee: 7800000,
+        taxAmount: 9438000,
+        grandTotal: 91438000,
+        dpAmount: 27431400,
+        status: "DP_CONFIRMED",
+        director: "Bambang Pratama",
+        loadingPermit: "Disetujui",
+        notes: "Kegiatan team bonding 2 hari 1 malam untuk pimpinan regional Jawa bagian barat."
+      },
+      {
+        id: "SPK-ALC-202610-8842",
+        company: "ByteCloud Solutions Indonesia",
+        pic: "Kevin Sanjaya (Head of Marketing)",
+        phone: "081987654321",
+        email: "kevin.sanjaya@bytecloud.id",
+        format: "Product Launching",
+        pax: 300,
+        eventDate: "2027-01-15",
+        eventDateDisplay: "15 Jan 2027",
+        venue: "The Dome Senayan Park, Jakarta Pusat",
+        modules: [
+          "Interactive LED Tunnel & Stage Mapping",
+          "Modern Coffee Bar & Bento Box Catering",
+          "Tech Influencer MC & Keynote Speaker",
+          "Media Conference Room Management"
+        ],
+        rawSubtotal: 62000000,
+        mgmtFee: 6200000,
+        taxAmount: 7502000,
+        grandTotal: 72702000,
+        dpAmount: 0,
+        status: "PROPOSAL_REVIEW",
+        director: "Hendrik Setiawan",
+        loadingPermit: "Menunggu Approval Venue",
+        notes: "Peluncuran data center enterprise baru, mengundang 50 jurnalis teknologi."
+      },
+      {
+        id: "SPK-ALC-202610-8848",
+        company: "IndoLogistics Global Tbk",
+        pic: "Rina Marlina (Procurement Manager)",
+        phone: "085612347890",
+        email: "procurement@indologistics.com",
+        format: "Corporate Gathering",
+        pax: 500,
+        eventDate: "2027-01-22",
+        eventDateDisplay: "22 Jan 2027",
+        venue: "Convention Hall Grand City Surabaya",
+        modules: [
+          "Modular Stage 14x5m & LED Wall Center",
+          "Buffet Katering Jawa Timur & Nusantara",
+          "Komika Stand-Up Comedy & Band Top 40",
+          "Custom Tumbler & RFID Badge Souvenir"
+        ],
+        rawSubtotal: 82000000,
+        mgmtFee: 8200000,
+        taxAmount: 9922000,
+        grandTotal: 96122000,
+        dpAmount: 96122000,
+        status: "FULL_PAID",
+        director: "Bambang Pratama",
+        loadingPermit: "Disetujui",
+        notes: "Pembayaran 100% lunas di awal via transfer korporat untuk fasilitas drone 4K free."
+      },
+      {
+        id: "SPK-ALC-202609-7715",
+        company: "Fintech Nusantara Raya",
+        pic: "Dewi Lestari (HR Director)",
+        phone: "081288776655",
+        email: "dewi.lestari@fintechnusantara.com",
+        format: "Annual Gala Dinner",
+        pax: 250,
+        eventDate: "2026-10-24",
+        eventDateDisplay: "24 Okt 2026",
+        venue: "Ritz Carlton Mega Kuningan Ballroom",
+        modules: [
+          "Panggung Elegan & Lighting Warm Amber",
+          "Set Menu Banquet Mulia",
+          "Bilingual Host & Solo Saxophone",
+          "Kru EO & LO Tamu VIP"
+        ],
+        rawSubtotal: 48000000,
+        mgmtFee: 4800000,
+        taxAmount: 5808000,
+        grandTotal: 56208000,
+        dpAmount: 56208000,
+        status: "COMPLETED",
+        director: "Hendrik Setiawan",
+        loadingPermit: "Selesai",
+        notes: "Acara telah terlaksana sukses tanpa kendala kelistrikan. BAST & Faktur PPh terlampir."
+      }
+    ];
+
+    let currentFilterStatus = 'ALL';
+    let currentSelectedSPK = null;
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // App Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSPKTable();
+      renderModulesCatalog();
+      renderScheduleView();
+      renderCrewsView();
+      renderFinanceTable();
+      updateMetricCounters();
+      initLiveClock();
+      lucide.createIcons();
+    });
+
+    // Realtime Clock
+    function initLiveClock() {
+      const clockEl = document.getElementById('currentLiveClock');
+      setInterval(() => {
+        const now = new Date();
+        clockEl.innerText = now.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }) + " WIB";
+      }, 1000);
+    }
+
+    // Toggle Mobile Sidebar
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('mobileSidebarBackdrop');
+      const isClosed = sidebar.classList.contains('-translate-x-full');
+
+      if (isClosed) {
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    // Navigation Switcher
+    function switchView(viewName) {
+      const views = ['dashboard', 'pipeline', 'modules', 'schedule', 'crews', 'finance'];
+      const pageTitle = document.getElementById('pageMainHeading');
+
+      // Hide all views
+      document.getElementById('viewDashboard').classList.add('hidden');
+      document.getElementById('viewModules').classList.add('hidden');
+      document.getElementById('viewSchedule').classList.add('hidden');
+      document.getElementById('viewCrews').classList.add('hidden');
+      document.getElementById('viewFinance').classList.add('hidden');
+
+      // Reset nav classes
+      views.forEach(v => {
+        const navBtn = document.getElementById(`nav-${v}`);
+        if (navBtn) {
+          navBtn.className = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition text-slate-300 hover:text-white hover:bg-white/10 font-medium";
+        }
+      });
+
+      // Activate selected nav button
+      const activeBtn = document.getElementById(`nav-${viewName}`);
+      if (activeBtn) {
+        activeBtn.className = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition bg-sage-leaf text-white shadow-md shadow-emerald-950/20 font-medium";
+      }
+
+      if (viewName === 'dashboard' || viewName === 'pipeline') {
+        document.getElementById('viewDashboard').classList.remove('hidden');
+        pageTitle.innerText = "Dashboard Produksi & Anggaran Event";
+      } else if (viewName === 'modules') {
+        document.getElementById('viewModules').classList.remove('hidden');
+        pageTitle.innerText = "Katalog Modul À La Carte & Pengaturan Tarif";
+      } else if (viewName === 'schedule') {
+        document.getElementById('viewSchedule').classList.remove('hidden');
+        pageTitle.innerText = "Kalender Produksi Event, Loading In & Soundcheck";
+      } else if (viewName === 'crews') {
+        document.getElementById('viewCrews').classList.remove('hidden');
+        pageTitle.innerText = "Struktur Showrunner & Pembagian Radio Intercom";
+      } else if (viewName === 'finance') {
+        document.getElementById('viewFinance').classList.remove('hidden');
+        pageTitle.innerText = "Ledger Finansial, E-Faktur PPN 11% & Bukti Potong PPh 23";
+      }
+
+      // Close mobile sidebar if open
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar.classList.contains('-translate-x-full')) {
+        toggleMobileSidebar();
+      }
+
+      lucide.createIcons();
+    }
+
+    // Filter Logic
+    function setFilterStatus(status) {
+      currentFilterStatus = status;
+
+      const buttons = {
+        ALL: document.getElementById('filterBtnAll'),
+        DP_CONFIRMED: document.getElementById('filterBtnDp'),
+        FULL_PAID: document.getElementById('filterBtnFull'),
+        PROPOSAL_REVIEW: document.getElementById('filterBtnReview'),
+        COMPLETED: document.getElementById('filterBtnCompleted')
+      };
+
+      const defaultClass = "px-3.5 py-2 rounded-xl font-bold bg-sage-white text-slate-700 hover:bg-slate-200 transition";
+      const activeClass = "px-3.5 py-2 rounded-xl font-bold bg-sage-pine text-white shadow-sm transition";
+
+      for (let k in buttons) {
+        if (buttons[k]) buttons[k].className = defaultClass;
+      }
+      if (buttons[status]) buttons[status].className = activeClass;
+
+      renderSPKTable();
+    }
+
+    function filterSPKTable() {
+      renderSPKTable();
+    }
+
+    // Render Master SPK Table
+    function renderSPKTable() {
+      const tbody = document.getElementById('spkTableBody');
+      const query = (document.getElementById('globalSearchInput').value || '').toLowerCase();
+      const formatFilter = document.getElementById('filterFormatSelect').value;
+
+      let filtered = spkPipelineData.filter(item => {
+        // Status filter
+        if (currentFilterStatus !== 'ALL' && item.status !== currentFilterStatus) {
+          return false;
+        }
+        // Format filter
+        if (formatFilter !== 'ALL' && !item.format.toLowerCase().includes(formatFilter.toLowerCase())) {
+          return false;
+        }
+        // Search query
+        if (query) {
+          const matchId = item.id.toLowerCase().includes(query);
+          const matchComp = item.company.toLowerCase().includes(query);
+          const matchPic = item.pic.toLowerCase().includes(query);
+          const matchVenue = item.venue.toLowerCase().includes(query);
+          if (!matchId && !matchComp && !matchPic && !matchVenue) return false;
+        }
+        return true;
+      });
+
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center py-8 text-slate-400">
+              <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+              Tidak ada SPK kontrak yang cocok dengan kriteria pencarian.
+            </td>
+          </tr>
+        `;
+        document.getElementById('showingCountText').innerText = '0';
+        lucide.createIcons();
+        return;
+      }
+
+      filtered.forEach(item => {
+        let badgeHtml = '';
+        if (item.status === 'DP_CONFIRMED') {
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-sage-leafLight text-sage-pine border border-sage-border font-mono">
+            <span class="w-1.5 h-1.5 rounded-full bg-sage-leaf"></span> DP 30% TERVERIFIKASI
+          </span>`;
+        } else if (item.status === 'FULL_PAID') {
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> LUNAS 100%
+          </span>`;
+        } else if (item.status === 'PROPOSAL_REVIEW') {
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 font-mono">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> REVIEW PROPOSAL
+          </span>`;
+        } else if (item.status === 'COMPLETED') {
+          badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300 font-mono">
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> SELESAI
+          </span>`;
+        }
+
+        const row = document.createElement('tr');
+        row.className = "hover:bg-sage-white/70 transition";
+        row.innerHTML = `
+          <td class="py-3.5 px-4 font-mono">
+            <span class="font-bold text-sage-pine block">${item.id}</span>
+            <span class="text-[10px] text-sage-leaf font-bold">${item.eventDateDisplay}</span>
+          </td>
+          <td class="py-3.5 px-4 font-sans">
+            <span class="font-bold text-slate-900 block">${item.company}</span>
+            <span class="text-[11px] text-slate-500 font-mono">${item.pic}</span>
+          </td>
+          <td class="py-3.5 px-4 font-sans">
+            <span class="font-bold text-slate-800 block line-clamp-1">${item.format}</span>
+            <span class="text-[10px] font-mono text-sage-leafDark font-bold">${item.pax} Pax Peserta</span>
+          </td>
+          <td class="py-3.5 px-4 font-sans">
+            <span class="text-slate-700 block line-clamp-1 font-medium">${item.venue}</span>
+            <span class="text-[10px] text-emerald-700 font-mono">Loading: ${item.loadingPermit}</span>
+          </td>
+          <td class="py-3.5 px-4 text-right font-mono">
+            <span class="font-bold text-slate-900 block">${formatRupiah(item.grandTotal)}</span>
+            <span class="text-[10px] text-sage-leaf block">DP: ${formatRupiah(item.dpAmount)}</span>
+          </td>
+          <td class="py-3.5 px-4 text-center">
+            ${badgeHtml}
+          </td>
+          <td class="py-3.5 px-4 text-center">
+            <div class="flex items-center justify-center gap-1.5 font-mono">
+              <button onclick="viewSPKDetails('${item.id}')" class="p-1.5 rounded-lg bg-sage-white hover:bg-slate-200 text-sage-pine transition" title="Lihat SPK & Modul">
+                <i data-lucide="eye" class="w-4 h-4 text-sage-leaf"></i>
+              </button>
+              <button onclick="printDirectSPK('${item.id}')" class="p-1.5 rounded-lg bg-sage-white hover:bg-slate-200 text-slate-600 transition" title="Cetak SPK Proposal">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById('showingCountText').innerText = filtered.length;
+      lucide.createIcons();
+    }
+
+    // Metric Calculations
+    function updateMetricCounters() {
+      const allCount = spkPipelineData.length;
+      const dpCount = spkPipelineData.filter(b => b.status === 'DP_CONFIRMED').length;
+      const fullCount = spkPipelineData.filter(b => b.status === 'FULL_PAID').length;
+      const reviewCount = spkPipelineData.filter(b => b.status === 'PROPOSAL_REVIEW').length;
+      const completedCount = spkPipelineData.filter(b => b.status === 'COMPLETED').length;
+
+      document.getElementById('countAll').innerText = allCount;
+      document.getElementById('countDp').innerText = dpCount;
+      document.getElementById('countFull').innerText = fullCount;
+      document.getElementById('countReview').innerText = reviewCount;
+      document.getElementById('countCompleted').innerText = completedCount;
+      document.getElementById('badgeActiveSPK').innerText = allCount;
+
+      const totalPax = spkPipelineData.reduce((sum, b) => sum + b.pax, 0);
+      document.getElementById('metricTotalPax').innerText = `${totalPax.toLocaleString('id-ID')} Pax`;
+
+      const grossVal = spkPipelineData.reduce((sum, b) => sum + b.grandTotal, 0);
+      document.getElementById('metricGrossRevenue').innerText = formatRupiah(grossVal);
+      document.getElementById('finTotalContract').innerText = formatRupiah(grossVal);
+
+      const dpTotal = spkPipelineData.reduce((sum, b) => sum + b.dpAmount, 0);
+      document.getElementById('metricDpCollected').innerText = formatRupiah(dpTotal);
+      document.getElementById('finTotalDp').innerText = formatRupiah(dpTotal);
+    }
+
+    // Modal Details Engine
+    function viewSPKDetails(spkId) {
+      const item = spkPipelineData.find(b => b.id === spkId);
+      if (!item) return;
+
+      currentSelectedSPK = item;
+
+      document.getElementById('modalSpkIdText').innerText = item.id;
+      document.getElementById('modalClientCompany').innerText = item.company;
+      document.getElementById('modalClientPic').innerText = `PIC: ${item.pic} (${item.phone})`;
+      document.getElementById('modalClientEmail').innerText = item.email;
+
+      document.getElementById('modalEventDate').innerText = item.eventDateDisplay;
+      document.getElementById('modalEventVenue').innerText = item.venue;
+      document.getElementById('modalPaxCount').innerText = `Volume: ${item.pax} Pax • Director: ${item.director}`;
+
+      document.getElementById('modalContractValue').innerText = formatRupiah(item.grandTotal);
+      document.getElementById('modalDpAmount').innerText = formatRupiah(item.dpAmount);
+      document.getElementById('modalDueAmount').innerText = formatRupiah(item.grandTotal - item.dpAmount);
+
+      const modulesContainer = document.getElementById('modalModulesListContainer');
+      modulesContainer.innerHTML = item.modules.map((m, idx) => `
+        <div class="flex items-center gap-2 p-2 bg-sage-white rounded-lg border border-sage-border">
+          <span class="w-4 h-4 rounded-full bg-sage-leaf text-white flex items-center justify-center text-[10px] font-bold">${idx + 1}</span>
+          <span class="text-slate-800 text-xs font-sans">${m}</span>
+        </div>
+      `).join('');
+
+      const statusBadge = document.getElementById('modalStatusBadge');
+      const actionContainer = document.getElementById('modalActionButtonsContainer');
+
+      if (item.status === 'DP_CONFIRMED') {
+        statusBadge.className = "px-2.5 py-0.5 rounded text-[11px] font-mono bg-sage-leafLight text-sage-pine border border-sage-border font-bold";
+        statusBadge.innerText = "DP 30% TERVERIFIKASI";
+
+        actionContainer.innerHTML = `
+          <button onclick="markSPKAsFullPaid('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="check-check" class="w-4 h-4"></i>
+            <span>Verifikasi Pelunasan Termin H-7</span>
+          </button>
+        `;
+      } else if (item.status === 'PROPOSAL_REVIEW') {
+        statusBadge.className = "px-2.5 py-0.5 rounded text-[11px] font-mono bg-amber-50 text-amber-800 border border-amber-300 font-bold";
+        statusBadge.innerText = "MENUNGGU DP / APPROVAL KLIEN";
+
+        actionContainer.innerHTML = `
+          <button onclick="approveSPKDeposit('${item.id}')" class="bg-sage-pine hover:bg-sage-pineDeep text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="check" class="w-4 h-4 text-sage-leaf"></i>
+            <span>Sahkan DP 30% Kunci Jadwal</span>
+          </button>
+        `;
+      } else if (item.status === 'FULL_PAID') {
+        statusBadge.className = "px-2.5 py-0.5 rounded text-[11px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold";
+        statusBadge.innerText = "LUNAS 100% (SIAP PRODUKSI)";
+
+        actionContainer.innerHTML = `
+          <button onclick="markSPKCompleted('${item.id}')" class="bg-sage-pine hover:bg-sage-pineDeep text-white px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="flag" class="w-4 h-4 text-sage-leaf"></i>
+            <span>Tandai Acara Selesai Sukses</span>
+          </button>
+        `;
+      } else {
+        statusBadge.className = "px-2.5 py-0.5 rounded text-[11px] font-mono bg-slate-100 text-slate-700 border border-slate-300 font-bold";
+        statusBadge.innerText = "ACARA SELESAI & BAST SAH";
+        actionContainer.innerHTML = `<span class="text-xs text-emerald-700 font-bold font-mono">✓ Faktur & BAST Telah Terbit</span>`;
+      }
+
+      document.getElementById('spkDetailModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeSpkDetailModal() {
+      document.getElementById('spkDetailModal').classList.add('hidden');
+      currentSelectedSPK = null;
+    }
+
+    // Modal Actions
+    function approveSPKDeposit(spkId) {
+      const item = spkPipelineData.find(b => b.id === spkId);
+      if (item) {
+        item.status = 'DP_CONFIRMED';
+        item.dpAmount = Math.round(item.grandTotal * 0.3);
+        renderSPKTable();
+        renderFinanceTable();
+        updateMetricCounters();
+        showQuickToast(`DP 30% untuk ${item.company} berhasil diverifikasi! Jadwal & tim terkunci.`, 'success');
+        closeSpkDetailModal();
+      }
+    }
+
+    function markSPKAsFullPaid(spkId) {
+      const item = spkPipelineData.find(b => b.id === spkId);
+      if (item) {
+        item.status = 'FULL_PAID';
+        item.dpAmount = item.grandTotal;
+        renderSPKTable();
+        renderFinanceTable();
+        updateMetricCounters();
+        showQuickToast(`Pelunasan H-7 ${item.id} (${item.company}) resmi disahkan!`, 'success');
+        closeSpkDetailModal();
+      }
+    }
+
+    function markSPKCompleted(spkId) {
+      const item = spkPipelineData.find(b => b.id === spkId);
+      if (item) {
+        item.status = 'COMPLETED';
+        renderSPKTable();
+        renderFinanceTable();
+        updateMetricCounters();
+        showQuickToast(`Proyek event ${item.company} telah selesai diselenggarakan!`, 'success');
+        closeSpkDetailModal();
+      }
+    }
+
+    function printProposalFromModal() {
+      if (!currentSelectedSPK) return;
+      showQuickToast(`Mencetak Proposal & SPK Resmi: ${currentSelectedSPK.id}`, 'info');
+      window.print();
+    }
+
+    function printDirectSPK(id) {
+      showQuickToast(`Mencetak Dokumen SPK: ${id}`, 'info');
+      window.print();
+    }
+
+    // New Event Modal Engine
+    function openNewEventModal() {
+      document.getElementById('newEventModal').classList.remove('hidden');
+      // Set default date 45 days ahead
+      const d = new Date();
+      d.setDate(d.getDate() + 45);
+      document.getElementById('newEventDate').value = d.toISOString().split('T')[0];
+      updateNewEventBudgetPreview();
+    }
+
+    function closeNewEventModal() {
+      document.getElementById('newEventModal').classList.add('hidden');
+    }
+
+    function updateNewEventBudgetPreview() {
+      const pax = parseInt(document.getElementById('newPaxCount').value) || 250;
+      
+      // Standard Modular Benchmark:
+      // Stage Rigging (28m) + Talent (15m) + Docs (9.5m) + Crew (8.5m) = 61m fixed base
+      // Catering (185k/pax)
+      const baseFixed = 61000000;
+      const fnbTotal = pax * 185000;
+      const rawSubtotal = baseFixed + fnbTotal;
+      const mgmtFee = Math.round(rawSubtotal * 0.10);
+      const tax = Math.round((rawSubtotal + mgmtFee) * 0.11);
+      const grandTotal = rawSubtotal + mgmtFee + tax;
+      const dp = Math.round(grandTotal * 0.3);
+
+      document.getElementById('newCalcGrandTotalText').innerText = formatRupiah(grandTotal);
+      document.getElementById('newCalcDpText').innerText = formatRupiah(dp);
+    }
+
+    function handleCreateNewEvent(e) {
+      e.preventDefault();
+
+      const company = document.getElementById('newCompanyName').value.trim();
+      const pic = document.getElementById('newPicName').value.trim();
+      const phone = document.getElementById('newPhone').value.trim();
+      const format = document.getElementById('newFormatSelect').value;
+      const pax = parseInt(document.getElementById('newPaxCount').value) || 250;
+      const dateVal = document.getElementById('newEventDate').value;
+      const venue = document.getElementById('newVenue').value.trim();
+      const status = document.getElementById('newStatusSelect').value;
+
+      const dateObj = new Date(dateVal);
+      const displayDate = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      // Calculations
+      const baseFixed = 61000000;
+      const fnbTotal = pax * 185000;
+      const rawSubtotal = baseFixed + fnbTotal;
+      const mgmtFee = Math.round(rawSubtotal * 0.10);
+      const tax = Math.round((rawSubtotal + mgmtFee) * 0.11);
+      const grandTotal = rawSubtotal + mgmtFee + tax;
+      const dpAmount = status === 'FULL_PAID' ? grandTotal : (status === 'DP_CONFIRMED' ? Math.round(grandTotal * 0.3) : 0);
+
+      const newId = "SPK-ALC-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+
+      const newObj = {
+        id: newId,
+        company: company,
+        pic: `${pic}`,
+        phone: phone,
+        email: `procurement@${company.toLowerCase().replace(/[^a-z0-9]/g, '')}.co.id`,
+        format: format,
+        pax: pax,
+        eventDate: dateVal,
+        eventDateDisplay: displayDate,
+        venue: venue,
+        modules: [
+          "Stage Rigging, Sound Line Array & Videotron LED P3.9",
+          "F&B Buffet & Executive Coffee Break Prasmanan",
+          "Bilingual MC & Live Acoustic Band",
+          "Show Director & Tim Hospitality Lapangan"
+        ],
+        rawSubtotal: rawSubtotal,
+        mgmtFee: mgmtFee,
+        taxAmount: tax,
+        grandTotal: grandTotal,
+        dpAmount: dpAmount,
+        status: status,
+        director: "Bambang Pratama",
+        loadingPermit: "Diajukan ke Venue",
+        notes: "Didaftarkan melalui Executive Input Portal Ala Carte EO."
+      };
+
+      spkPipelineData.unshift(newObj);
+      renderSPKTable();
+      renderFinanceTable();
+      updateMetricCounters();
+      closeNewEventModal();
+      document.getElementById('newEventForm').reset();
+
+      showQuickToast(`Kontrak baru ${newId} (${company}) berhasil ditambahkan ke pipeline!`, 'success');
+    }
+
+    // View 2: Render Modules Catalog
+    function renderModulesCatalog() {
+      const container = document.getElementById('modulesListContainer');
+      const catalog = [
+        {
+          title: "Stage Rigging, Sound & LED Videotron",
+          code: "MOD-STAGE-AV",
+          rate: "Rp 28.000.000",
+          unit: "Per Event Set",
+          desc: "Panggung modular 12x4m, Line Array Sound 15.000W, Videotron P3.9 & Lighting Moving Beam",
+          status: "Tersedia (Ready Stock)"
+        },
+        {
+          title: "F&B Buffet & Executive Coffee Break",
+          code: "MOD-CATERING",
+          rate: "Rp 185.000",
+          unit: "Per Pax Peserta",
+          desc: "Prasmanan menu Nusantara/Western 5 varian, 2x Coffee Break & Flow Mineral Water",
+          status: "Dapur Rekanan Aktif"
+        },
+        {
+          title: "Bilingual MC & Live Acoustic Band",
+          code: "MOD-MC-TALENT",
+          rate: "Rp 15.000.000",
+          unit: "Per Show (4 Jam)",
+          desc: "Master of Ceremony profesional bersertifikasi B2B & full band pengiring 5 personil",
+          status: "Audisi Terkurasi"
+        },
+        {
+          title: "Dokumentasi Multi-Kamera 4K & Drone",
+          code: "MOD-DOCS",
+          rate: "Rp 9.500.000",
+          unit: "Full Day Coverage",
+          desc: "3 Kamera Sony FX3, Drone 4K, video teaser 1 menit & album foto Google Drive instan",
+          status: "Pilot Drone Berlisensi"
+        },
+        {
+          title: "Show Director, Stage Manager & LO",
+          code: "MOD-CREW",
+          rate: "Rp 8.500.000",
+          unit: "8 Kru Berseragam",
+          desc: "Kru lapangan berseragam rapi, headset interkom wireless, registrasi barcode & usher",
+          status: "Siaga Standby"
+        },
+        {
+          title: "Custom Souvenir Kit & Lanyard Badge",
+          code: "MOD-SOUVENIR",
+          rate: "Rp 65.000",
+          unit: "Per Pax",
+          desc: "Tumbler stainless grafir laser nama, agenda eksklusif, pouch & ID card RFID lanyard",
+          status: "Workshop Cetak On"
+        }
+      ];
+
+      container.innerHTML = catalog.map(m => `
+        <div class="bg-white p-5 rounded-2xl border border-sage-border shadow-sm space-y-3 font-mono text-xs">
+          <div class="flex justify-between items-start">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-sage-leafLight text-sage-pine border border-sage-border">
+              ${m.code}
+            </span>
+            <span class="text-xs font-bold text-emerald-700">${m.status}</span>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-sm text-sage-pine font-display">${m.title}</h4>
+            <p class="text-xs text-slate-500 font-sans mt-1 leading-relaxed">${m.desc}</p>
+          </div>
+
+          <div class="pt-3 border-t border-sage-border flex items-center justify-between">
+            <div>
+              <span class="text-base font-black text-sage-pine font-display">${m.rate}</span>
+              <span class="text-[10px] text-slate-400 block font-sans">${m.unit}</span>
+            </div>
+            <button onclick="showQuickToast('Pengaturan spesifikasi modul ${m.code} dibuka.', 'info')" class="text-xs font-bold text-sage-leaf hover:underline">
+              Ubah Tarif →
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // View 3: Render Schedule & Loading Permit
+    function renderScheduleView() {
+      const container = document.getElementById('schedulesGridContainer');
+      const schedules = [
+        {
+          date: "06 Des 2026",
+          type: "HARI H EVENT",
+          company: "PT Reliantradha Solusi",
+          venue: "Hotel Mulia Senayan",
+          loading: "05 Des 22:00 WIB",
+          soundcheck: "06 Des 06:30 WIB",
+          director: "Bambang Pratama",
+          badgeColor: "bg-sage-pine text-white"
+        },
+        {
+          date: "12 Des 2026",
+          type: "GALA DINNER",
+          company: "PT Bank Neo Digital Tbk",
+          venue: "Fairmont Hotel Jakarta",
+          loading: "11 Des 23:00 WIB",
+          soundcheck: "12 Des 13:00 WIB",
+          director: "Hendrik Setiawan",
+          badgeColor: "bg-sage-leafDark text-white"
+        },
+        {
+          date: "19 Des 2026",
+          type: "OUTBOUND TOWNHALL",
+          company: "Astra International Group",
+          venue: "Royal Tulip Bogor",
+          loading: "18 Des 14:00 WIB",
+          soundcheck: "19 Des 07:00 WIB",
+          director: "Bambang Pratama",
+          badgeColor: "bg-sage-leaf text-white"
+        },
+        {
+          date: "10 Jan 2027",
+          type: "TECHNICAL MEETING VENUE",
+          company: "ByteCloud Solutions",
+          venue: "The Dome Senayan Park",
+          loading: "Rapat Teknis",
+          soundcheck: "Inspeksi Rigging",
+          director: "Hendrik Setiawan",
+          badgeColor: "bg-slate-200 text-slate-800"
+        },
+        {
+          date: "22 Jan 2027",
+          type: "HARI H EVENT",
+          company: "IndoLogistics Global Tbk",
+          venue: "Grand City Surabaya",
+          loading: "21 Jan 20:00 WIB",
+          soundcheck: "22 Jan 08:00 WIB",
+          director: "Bambang Pratama",
+          badgeColor: "bg-sage-pine text-white"
+        }
+      ];
+
+      container.innerHTML = schedules.map(s => `
+        <div class="bg-white p-5 rounded-2xl border border-sage-border shadow-sm space-y-3 font-mono text-xs">
+          <div class="flex justify-between items-start">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${s.badgeColor}">
+              ${s.type}
+            </span>
+            <span class="text-xs font-bold text-slate-800">${s.date}</span>
+          </div>
+
+          <div>
+            <h4 class="font-extrabold text-base text-sage-pine font-display">${s.company}</h4>
+            <p class="text-xs text-slate-600 font-sans mt-0.5">${s.venue}</p>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 space-y-1 text-[11px] text-slate-600 font-sans">
+            <div class="flex justify-between">
+              <span>Izin Loading-In:</span>
+              <strong class="font-mono text-slate-900">${s.loading}</strong>
+            </div>
+            <div class="flex justify-between">
+              <span>Gladi & Soundcheck:</span>
+              <strong class="font-mono text-slate-900">${s.soundcheck}</strong>
+            </div>
+            <div class="flex justify-between pt-1 border-t border-slate-100">
+              <span>Lead Director:</span>
+              <strong class="text-sage-leaf">${s.director}</strong>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // View 4: Render Crews & Radio
+    function renderCrewsView() {
+      const container = document.getElementById('crewsGridContainer');
+      const crews = [
+        { role: "Executive Show Director", name: "Bambang Pratama", ch: "CH 01 (Master)", status: "Active Lead" },
+        { role: "Stage & Rigging Lead", name: "Doni Kuncoro", ch: "CH 02 (Stage)", status: "Standby FOH" },
+        { role: "AV & Sound Engineer", name: "Rendy Audio", ch: "CH 04 (Audio/LED)", status: "Control Booth" },
+        { role: "Liaison Officer VIP", name: "Nadya Amanda", ch: "CH 03 (Hospitality)", status: "Holding Room" },
+        { role: "Buffet & Katering PIC", name: "Bagus Setiadi", ch: "CH 03 (Food)", status: "Banquet Hall" },
+        { role: "Registration & Usher", name: "Siti & Rina", ch: "CH 01 (Foyer)", status: "Front Gate" },
+        { role: "Runner & Logistik Cepat", name: "Bayu Perkasa", ch: "CH 04 (Fast)", status: "All Access" },
+        { role: "Lead Drone Operator", name: "Dimas Aerial", ch: "CH 04 (Docs)", status: "Fly Zone" }
+      ];
+
+      container.innerHTML = crews.map(c => `
+        <div class="bg-white p-4 rounded-xl border border-sage-border space-y-2 font-mono text-xs shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-sage-pine font-bold bg-sage-leafLight px-1.5 py-0.5 rounded">${c.ch}</span>
+            <span class="text-[10px] text-emerald-700 font-bold">${c.status}</span>
+          </div>
+          <div>
+            <h5 class="font-bold text-slate-900 font-sans text-sm">${c.name}</h5>
+            <span class="text-[11px] text-slate-500 font-sans block">${c.role}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // View 5: Finance Ledger Table
+    function renderFinanceTable() {
+      const tbody = document.getElementById('financeTableBody');
+      tbody.innerHTML = spkPipelineData.map(b => {
+        const remaining = b.grandTotal - b.dpAmount;
+        return `
+          <tr class="hover:bg-sage-white/50">
+            <td class="py-3 px-4 font-bold text-sage-pine">${b.id}</td>
+            <td class="py-3 px-4 font-sans font-medium">${b.company}</td>
+            <td class="py-3 px-4 font-bold text-slate-800">${formatRupiah(b.grandTotal)}</td>
+            <td class="py-3 px-4 font-bold ${b.dpAmount > 0 ? 'text-emerald-700' : 'text-slate-400'}">
+              ${formatRupiah(b.dpAmount)}
+            </td>
+            <td class="py-3 px-4 text-slate-700">${b.status === 'FULL_PAID' || b.status === 'COMPLETED' ? 'Rp 0 (Lunas)' : formatRupiah(remaining)}</td>
+            <td class="py-3 px-4 text-[11px] font-sans">
+              <span class="inline-flex items-center gap-1 text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                ✓ PPN 11% & PPh 23
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="viewSPKDetails('${b.id}')" class="px-2.5 py-1 rounded bg-sage-white hover:bg-slate-200 text-sage-pine font-bold text-[10px]">
+                Periksa
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Notification dropdown toggle
+    function toggleNotificationPopup() {
+      const p = document.getElementById('notificationPopup');
+      p.classList.toggle('hidden');
+    }
+
+    function clearNotifications() {
+      document.getElementById('notificationPopup').classList.add('hidden');
+      showQuickToast('Semua notifikasi ditandai telah dibaca.', 'info');
+    }
+
+    function refreshDataMock() {
+      renderSPKTable();
+      renderFinanceTable();
+      updateMetricCounters();
+      showQuickToast('Data pipeline dan anggaran tersinkronisasi secara live!', 'success');
+    }
+
+    // Quick Toast Message Utility
+    function showQuickToast(msg, type = 'success') {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastMessageText');
+      const iconBox = document.getElementById('toastIconContainer');
+
+      text.innerText = msg;
+
+      if (type === 'success') {
+        iconBox.className = "w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white flex-shrink-0";
+      } else if (type === 'info') {
+        iconBox.className = "w-7 h-7 rounded-lg bg-sage-pine flex items-center justify-center text-white flex-shrink-0";
+      } else {
+        iconBox.className = "w-7 h-7 rounded-lg bg-amber-600 flex items-center justify-center text-white flex-shrink-0";
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

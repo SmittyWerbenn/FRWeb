@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowRight, ChevronDown, Search, Sparkles, X } from '../../lib/icons'
+import { ArrowRight, ChevronDown, LayoutGrid, Search, Sparkles, X } from '../../lib/icons'
 import { CATEGORIES, TEMPLATES, SEARCH_INDEX, countByCategory } from '../../data'
 import TemplateCard from './TemplateCard'
 
@@ -113,7 +113,13 @@ export default function CatalogSection({
       </div>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
-        <p className="text-[12px] text-slate-500">{CATEGORY_NOTES[category]}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[12px] text-slate-500">{CATEGORY_NOTES[category]}</p>
+          <span className="inline-flex items-center gap-1 rounded-md border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-1 text-[10px] font-semibold text-emerald-200/90">
+            <LayoutGrid className="h-2.5 w-2.5" />
+            2-in-1: Customer + Admin
+          </span>
+        </div>
         <p className="text-[12px] font-medium text-slate-400">
           Menampilkan <span className="font-bold text-white">{visible.length}</span> dari{' '}
           {filtered.length} template

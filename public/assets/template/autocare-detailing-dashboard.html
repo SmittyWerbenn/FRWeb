@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoCare Detailing & Wash - Admin Workshop & Coating Operations Console</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            bronzeTheme: {
+              black: '#1C1917',       // Stone Black Utama
+              stoneSurface: '#292524',// Stone Surface Dark
+              stoneMuted: '#44403C',  // Border Stone
+              warmGray: '#E7E5E4',    // Warm Gray
+              bronze: '#D97706',      // Warm Bronze Accent
+              bronzeDark: '#B45309',  // Darker Bronze
+              bronzeGlow: '#FEF3C7',  // Light Bronze Tint
+              canvas: '#141210'       // Deep Canvas
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(28, 25, 23, 0.94);
+      backdrop-filter: blur(14px);
+    }
+    .bronze-glow {
+      box-shadow: 0 0 25px rgba(217, 119, 6, 0.22);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printAreaSPK, #printAreaSPK * {
+        visibility: visible;
+      }
+      #printAreaSPK {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #1C1917 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-bronzeTheme-canvas text-slate-100 antialiased font-sans min-h-screen flex selection:bg-bronzeTheme-bronze selection:text-white">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="w-64 bg-bronzeTheme-black border-r border-bronzeTheme-stoneMuted flex-shrink-0 hidden md:flex flex-col justify-between z-30 font-mono">
+    <div>
+      <!-- Brand Header -->
+      <div class="p-5 border-b border-bronzeTheme-stoneMuted flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-bronzeTheme-stoneSurface border border-bronzeTheme-bronze flex items-center justify-center text-bronzeTheme-bronze shadow-md">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-display">
+            AUTOCARE<span class="text-bronzeTheme-bronze">PRO</span>
+          </span>
+          <span class="text-[9px] text-slate-400 font-mono tracking-wider uppercase block">EXECUTIVE WORKSHOP ERP</span>
+        </div>
+      </div>
+
+      <!-- Nav Menu Items -->
+      <nav class="p-4 space-y-1.5 text-xs">
+        <button onclick="switchTab('overview')" id="tabBtn-overview" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold bg-bronzeTheme-bronze text-white transition shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard Overview</span>
+        </button>
+        <button onclick="switchTab('bays')" id="tabBtn-bays" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-bronzeTheme-stoneSurface transition">
+          <i data-lucide="layout-grid" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+          <span>Live Bay Allocation</span>
+        </button>
+        <button onclick="switchTab('kanban')" id="tabBtn-kanban" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-bronzeTheme-stoneSurface transition">
+          <i data-lucide="kanban" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+          <span>Alur Servis Pengerjaan</span>
+        </button>
+        <button onclick="switchTab('orders')" id="tabBtn-orders" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-bronzeTheme-stoneSurface transition">
+          <i data-lucide="clipboard-list" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+          <span>Master SPK & Servis</span>
+        </button>
+        <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-bronzeTheme-stoneSurface transition">
+          <i data-lucide="package" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+          <span>Stok Obat & Ceramic 9H</span>
+        </button>
+        <button onclick="switchTab('scanner')" id="tabBtn-scanner" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-bronzeTheme-stoneSurface transition">
+          <i data-lucide="scan-barcode" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+          <span>Scanner Valet Gate</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Workshop Facility Quick Info -->
+    <div class="p-4 border-t border-bronzeTheme-stoneMuted">
+      <div class="p-3 bg-bronzeTheme-stoneSurface rounded-xl border border-bronzeTheme-stoneMuted text-xs space-y-1.5 font-mono">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">Dust-Free Bay</span>
+          <span class="flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> BER-AC 22°C
+          </span>
+        </div>
+        <div class="text-[11px] text-slate-300">Cilandak Studio, Jaksel</div>
+        <div class="w-full bg-[#12100E] h-1.5 rounded-full overflow-hidden mt-1">
+          <div class="bg-bronzeTheme-bronze h-full rounded-full" style="width: 75%"></div>
+        </div>
+        <div class="text-[9px] text-slate-400 flex justify-between">
+          <span>Terisi: 3/4 Bay</span>
+          <span>TDS Air: 0 ppm</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Header -->
+    <header class="glass-header sticky top-0 z-20 border-b border-bronzeTheme-stoneMuted px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button class="md:hidden text-white" onclick="alert('Gunakan tampilan desktop/tablet untuk operasional bengkel terlengkap')">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display" id="pageTitleDisplay">Dashboard Overview Bengkel</h1>
+          <p class="text-xs text-slate-400 font-mono">Manajemen Servis Detailing, Coating & Antrean Valet</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3.5 font-mono text-xs">
+        <div class="hidden sm:flex items-center gap-2 bg-bronzeTheme-stoneSurface px-3 py-1.5 rounded-xl border border-bronzeTheme-stoneMuted text-slate-300">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-bronzeTheme-bronze"></i>
+          <span id="liveClockDisplay">Live Time</span>
+        </div>
+        <button onclick="openBookingModal()" class="bg-bronzeTheme-bronze hover:bg-bronzeTheme-bronzeDark text-white font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Entri Servis Baru</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="p-6 sm:p-8 space-y-8 flex-1">
+      
+      <!-- TAB 1: OVERVIEW -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
+          <div class="p-5 rounded-2xl bg-bronzeTheme-black border border-bronzeTheme-stoneMuted shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-400 text-xs">
+              <span>Mobil Dikerjakan Hari Ini</span>
+              <i data-lucide="car" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+            </div>
+            <div class="text-2xl font-black text-white font-display" id="kpiActiveCars">8 Unit</div>
+            <div class="text-[10px] text-emerald-400 font-bold">3 Selesai QC & Curing Oven</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-bronzeTheme-black border border-bronzeTheme-stoneMuted shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-400 text-xs">
+              <span>Pendapatan Servis Bulan Ini</span>
+              <i data-lucide="banknote" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            <div class="text-2xl font-black text-white font-display" id="kpiRevenue">Rp 128.500.000</div>
+            <div class="text-[10px] text-slate-400">Paket Coating 9H: 64%</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-bronzeTheme-black border border-bronzeTheme-stoneMuted shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-400 text-xs">
+              <span>Sisa Tagihan Pelunasan (70%)</span>
+              <i data-lucide="wallet" class="w-4 h-4 text-amber-400"></i>
+            </div>
+            <div class="text-2xl font-black text-bronzeTheme-bronze font-display" id="kpiDueAmount">Rp 19.650.000</div>
+            <div class="text-[10px] text-amber-400">Menunggu Serah Terima Unit</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-bronzeTheme-black border border-bronzeTheme-stoneMuted shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-400 text-xs">
+              <span>Rata-rata Waktu Pengerjaan</span>
+              <i data-lucide="timer" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+            </div>
+            <div class="text-2xl font-black text-white font-display">4.5 Jam</div>
+            <div class="text-[10px] text-emerald-400">Sesuai SLA Booking Bay</div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (Chart.js) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-8 bg-bronzeTheme-black p-6 rounded-2xl border border-bronzeTheme-stoneMuted shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-white font-display">Volume Servis & Coating Mingguan (Unit)</h3>
+                <p class="text-xs text-slate-400 font-mono">Berdasarkan kategori ukuran Small, Medium SUV, dan Large MPV</p>
+              </div>
+              <span class="text-xs font-mono text-bronzeTheme-bronze bg-bronzeTheme-stoneSurface px-2.5 py-1 rounded border border-bronzeTheme-stoneMuted">Oktober 2026</span>
+            </div>
+            <div class="h-64">
+              <canvas id="weeklyVolumeChartCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 bg-bronzeTheme-black p-6 rounded-2xl border border-bronzeTheme-stoneMuted shadow-sm space-y-4">
+            <div>
+              <h3 class="text-sm font-bold text-white font-display">Distribusi Paket Servis</h3>
+              <p class="text-xs text-slate-400 font-mono">Proporsi Coating vs Detailing vs Wash</p>
+            </div>
+            <div class="h-64 flex items-center justify-center">
+              <canvas id="serviceShareChartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Antrean Servis Terkini Table -->
+        <div class="bg-bronzeTheme-black rounded-2xl border border-bronzeTheme-stoneMuted shadow-sm overflow-hidden">
+          <div class="p-5 border-b border-bronzeTheme-stoneMuted flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white font-display">Antrean Servis Sedang Dikerjakan</h3>
+            <button onclick="switchTab('orders')" class="text-xs font-mono font-bold text-bronzeTheme-bronze hover:underline">Lihat Semua Data SPK →</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-[#12100E] text-slate-400 border-b border-bronzeTheme-stoneMuted">
+                <tr>
+                  <th class="py-3 px-4">No. SPK</th>
+                  <th class="py-3 px-4">Pelat Nomor & Mobil</th>
+                  <th class="py-3 px-4">Paket Pengerjaan</th>
+                  <th class="py-3 px-3 text-center">Bay Alokasi</th>
+                  <th class="py-3 px-4 text-right">Nilai Servis</th>
+                  <th class="py-3 px-3 text-center">Status Tahap</th>
+                  <th class="py-3 px-4 text-center">Aksi Cepat</th>
+                </tr>
+              </thead>
+              <tbody id="recentServiceTableBody" class="divide-y divide-bronzeTheme-stoneMuted font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TAB 2: LIVE BAY ALLOCATION (4 BAYS) -->
+      <section id="view-bays" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white font-display">Monitoring 4 Bay Workshop & Curing Oven</h3>
+            <p class="text-xs text-slate-400 font-mono">Visualisasi alur pengerjaan fisik unit mobil di dalam bengkel</p>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <span class="flex items-center gap-1.5 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Aktif</span>
+            <span class="flex items-center gap-1.5 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span> Kosong</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 font-mono text-xs" id="bayCardsContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- TAB 3: PAPAN ALUR SERVIS KANBAN (4 TAHAP) -->
+      <section id="view-kanban" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white font-display">Papan Alur Pengerjaan Servis Detailing (Kanban)</h3>
+            <p class="text-xs text-slate-400 font-mono">Pantau pergerakan mobil dari tahap cuci dekontaminasi hingga serah terima</p>
+          </div>
+          <button onclick="openBookingModal()" class="text-xs font-mono font-bold text-bronzeTheme-bronze bg-bronzeTheme-stoneSurface px-3 py-1.5 rounded-xl border border-bronzeTheme-stoneMuted hover:bg-[#201d1b]">
+            + Entri Booking Servis
+          </button>
+        </div>
+
+        <!-- 4 Kolom Kanban -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start font-mono text-xs">
+          <!-- Tahap 1: Cuci & Dekontaminasi -->
+          <div class="bg-bronzeTheme-black rounded-2xl border border-bronzeTheme-stoneMuted p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-bronzeTheme-stoneMuted">
+              <span class="font-bold text-white flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> 1. Wash & Clay
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#12100E] text-blue-400 border border-blue-500/30" id="badge-stage-1">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-1"></div>
+          </div>
+
+          <!-- Tahap 2: Paint Correction 3-Step -->
+          <div class="bg-bronzeTheme-black rounded-2xl border border-bronzeTheme-stoneMuted p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-bronzeTheme-stoneMuted">
+              <span class="font-bold text-white flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 2. Polish & Correction
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#12100E] text-amber-400 border border-amber-500/30" id="badge-stage-2">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-2"></div>
+          </div>
+
+          <!-- Tahap 3: Nano Coating 9H & Curing -->
+          <div class="bg-bronzeTheme-black rounded-2xl border border-bronzeTheme-stoneMuted p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-bronzeTheme-stoneMuted">
+              <span class="font-bold text-white flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span> 3. Coating 9H & Oven
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#12100E] text-indigo-300 border border-indigo-400/30" id="badge-stage-3">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-3"></div>
+          </div>
+
+          <!-- Tahap 4: QC 21-Titik & Handover -->
+          <div class="bg-bronzeTheme-black rounded-2xl border border-bronzeTheme-stoneMuted p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-bronzeTheme-stoneMuted">
+              <span class="font-bold text-white flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 4. QC & Serah Terima
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#12100E] text-emerald-400 border border-emerald-500/30" id="badge-stage-4">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-4"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: MASTER SPK & ORDERS -->
+      <section id="view-orders" class="hidden space-y-6">
+        <div class="bg-bronzeTheme-black p-6 rounded-2xl border border-bronzeTheme-stoneMuted shadow-sm space-y-4 font-mono text-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-white font-display">Database Master SPK & Servis Mobil</h3>
+              <p class="text-slate-400">Pencarian pelat nomor, penanggung jawab, dan rekonsiliasi pelunasan kasir</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportOrdersToCsv()" class="bg-bronzeTheme-stoneSurface hover:bg-[#201d1b] text-white px-3.5 py-2 rounded-xl border border-bronzeTheme-stoneMuted flex items-center gap-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-bronzeTheme-bronze"></i>
+                <span>Ekspor CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="relative sm:col-span-2">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5"></i>
+              <input type="text" id="orderSearchInput" oninput="renderMasterOrdersTable()" placeholder="Cari pelat nomor (B 1928 RYD), pemilik, nomor SPK..." class="w-full pl-9 pr-4 py-2 bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-bronzeTheme-bronze font-mono" />
+            </div>
+            <select id="orderStatusFilter" onchange="renderMasterOrdersTable()" class="bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:ring-1 focus:ring-bronzeTheme-bronze">
+              <option value="ALL">Semua Tahap Pengerjaan</option>
+              <option value="STAGE_1">1. Wash & Clay Decon</option>
+              <option value="STAGE_2">2. Polish & Correction</option>
+              <option value="STAGE_3">3. Coating 9H & Curing</option>
+              <option value="STAGE_4">4. QC 21-Titik & Siap Ambil</option>
+              <option value="COMPLETED">Selesai & Lunas 100%</option>
+            </select>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto rounded-xl border border-bronzeTheme-stoneMuted">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-[#12100E] text-slate-400 border-b border-bronzeTheme-stoneMuted">
+                <tr>
+                  <th class="py-3 px-4">No. SPK</th>
+                  <th class="py-3 px-4">Pelat & Kendaraan</th>
+                  <th class="py-3 px-4">Paket Pengerjaan</th>
+                  <th class="py-3 px-3 text-center">Jadwal Bay</th>
+                  <th class="py-3 px-4 text-right">Nilai Total</th>
+                  <th class="py-3 px-4 text-right">DP 30% / Sisa</th>
+                  <th class="py-3 px-3 text-center">Status</th>
+                  <th class="py-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="masterOrdersTableBody" class="divide-y divide-bronzeTheme-stoneMuted font-medium">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: INVENTORI OBAT & CERAMIC 9H -->
+      <section id="view-inventory" class="hidden space-y-6 font-mono text-xs">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-bronzeTheme-black p-6 rounded-2xl border border-bronzeTheme-stoneMuted space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-white text-sm">Cairan Nano Ceramic 9H</h4>
+              <button onclick="restockItem('coating')" class="text-bronzeTheme-bronze text-[10px] font-bold border border-bronzeTheme-bronze/40 px-2 py-1 rounded hover:bg-bronzeTheme-stoneSurface">+ Restock Botol</button>
+            </div>
+            <div class="space-y-3" id="invCoatingList"></div>
+          </div>
+
+          <div class="bg-bronzeTheme-black p-6 rounded-2xl border border-bronzeTheme-stoneMuted space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-white text-sm">Obat Poles & Pad Polish</h4>
+              <button onclick="restockItem('polish')" class="text-bronzeTheme-bronze text-[10px] font-bold border border-bronzeTheme-bronze/40 px-2 py-1 rounded hover:bg-bronzeTheme-stoneSurface">+ Restock Kompon</button>
+            </div>
+            <div class="space-y-3" id="invPolishList"></div>
+          </div>
+
+          <div class="bg-bronzeTheme-black p-6 rounded-2xl border border-bronzeTheme-stoneMuted space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-white text-sm">Chemical Detailing & Wash</h4>
+              <button onclick="restockItem('chem')" class="text-bronzeTheme-bronze text-[10px] font-bold border border-bronzeTheme-bronze/40 px-2 py-1 rounded hover:bg-bronzeTheme-stoneSurface">+ Restock Galon</button>
+            </div>
+            <div class="space-y-3" id="invChemList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: SCANNER VALET GATE PASS & CHECKLIST 21-TITIK -->
+      <section id="view-scanner" class="hidden space-y-6 font-mono text-xs max-w-2xl mx-auto">
+        <div class="bg-bronzeTheme-black p-7 rounded-3xl border border-bronzeTheme-stoneMuted shadow-xl space-y-6 text-center">
+          <div class="space-y-1">
+            <div class="w-12 h-12 rounded-2xl bg-bronzeTheme-stoneSurface border border-bronzeTheme-bronze text-bronzeTheme-bronze flex items-center justify-center mx-auto mb-2">
+              <i data-lucide="scan-barcode" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-base font-bold text-white font-display">Simulator Pemindai Barcode Valet Masuk Bay</h3>
+            <p class="text-slate-400">Verifikasi kedatangan mobil di pintu gerbang valet untuk aktivasi SPK pengerjaan.</p>
+          </div>
+
+          <!-- Scanner Simulation Box -->
+          <div class="p-6 bg-[#12100E] rounded-2xl border-2 border-dashed border-bronzeTheme-bronze/40 space-y-4">
+            <div class="relative w-48 h-32 mx-auto border-2 border-bronzeTheme-bronze rounded-xl flex items-center justify-center bg-bronzeTheme-black/60 overflow-hidden">
+              <div class="w-full h-0.5 bg-rose-500 shadow-lg shadow-rose-500 animate-pulse"></div>
+              <span class="absolute bottom-2 text-[9px] text-slate-400">AREA SCAN OPTIK</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="barcodeScanInput" placeholder="Masukkan token SPK (cth: SPK-ACD-202610-8812)" class="w-full bg-bronzeTheme-black border border-bronzeTheme-stoneMuted rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-bronzeTheme-bronze text-center font-mono" />
+              <button onclick="processBarcodeScan()" class="bg-bronzeTheme-bronze hover:bg-bronzeTheme-bronzeDark text-white font-bold px-4 py-2.5 rounded-xl transition">
+                Validasi
+              </button>
+            </div>
+            <div class="text-[10px] text-slate-500">
+              Preset Quick Test: 
+              <button onclick="testBarcode('SPK-ACD-202610-8812')" class="underline text-bronzeTheme-bronze">SPK-8812 (CR-V)</button> • 
+              <button onclick="testBarcode('SPK-ACD-202610-8813')" class="underline text-bronzeTheme-bronze">SPK-8813 (Camry)</button>
+            </div>
+          </div>
+
+          <!-- Scan Result Box -->
+          <div id="scanResultBox" class="hidden p-5 bg-bronzeTheme-stoneSurface rounded-2xl border border-bronzeTheme-bronze text-left space-y-3">
+            <div class="flex items-center justify-between border-b border-bronzeTheme-stoneMuted pb-2">
+              <div>
+                <span class="font-bold text-bronzeTheme-bronze text-sm font-mono tracking-wider block" id="scanPlateTitle">B 1928 RYD</span>
+                <span class="text-[10px] text-slate-300" id="scanSpkCodeTitle">SPK-ACD-202610-8812</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-bronzeTheme-bronze text-white" id="scanStageBadge">STAGE 01</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+              <div>Mobil: <strong class="text-white" id="scanCarModel">-</strong></div>
+              <div>Pemilik: <strong class="text-white" id="scanOwner">-</strong></div>
+              <div>Paket: <strong class="text-bronzeTheme-bronze" id="scanPkgName">-</strong></div>
+              <div>Alokasi: <strong class="text-white" id="scanBayName">-</strong></div>
+            </div>
+
+            <!-- Checklist 21-Titik -->
+            <div class="pt-2 border-t border-bronzeTheme-stoneMuted space-y-2">
+              <span class="text-[10px] text-slate-400 block uppercase font-bold">Checklist Masuk Valet Bay (21-Titik):</span>
+              <label class="flex items-center gap-2 text-slate-300">
+                <input type="checkbox" id="qcCheck1" checked class="accent-bronzeTheme-bronze" />
+                <span>1. Cek ketebalan cat kap mesin & cat bodi menggunakan gauge mikron</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-300">
+                <input type="checkbox" id="qcCheck2" checked class="accent-bronzeTheme-bronze" />
+                <span>2. Dokumentasi foto goresan/dent sebelum mobil masuk area cuci</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-300">
+                <input type="checkbox" id="qcCheck3" checked class="accent-bronzeTheme-bronze" />
+                <span>3. Cek barang berharga di dalam kabin & kunci mobil diserahkan ke kasir</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-300">
+                <input type="checkbox" id="qcCheck4" checked class="accent-bronzeTheme-bronze" />
+                <span>4. Pengukuran kelembapan kabin & aroma sirkulasi AC</span>
+              </label>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+              <button onclick="advanceStageFromScanner()" class="flex-1 bg-bronzeTheme-bronze text-white font-bold py-2 rounded-xl hover:bg-bronzeTheme-bronzeDark">
+                Mulai Tahap Pengerjaan Berikutnya →
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- MODAL 1: FORM BOOKING SERVIS BARU -->
+  <div id="bookingModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-bronzeTheme-black rounded-3xl max-w-xl w-full p-6 border border-bronzeTheme-stoneMuted shadow-2xl space-y-4 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-bronzeTheme-stoneMuted pb-3">
+        <h3 class="text-base font-bold text-white font-display">Entri Servis & Alokasi Bay Baru</h3>
+        <button onclick="closeBookingModal()" class="w-7 h-7 rounded-full bg-[#12100E] flex items-center justify-center text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Pelat Nomor Mobil *</label>
+            <input type="text" id="mPlateInput" value="B 2045 KOP" class="w-full bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white font-mono uppercase font-bold tracking-wider" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Merk & Model Mobil *</label>
+            <input type="text" id="mModelInput" value="BMW 320i M-Sport (Putih)" class="w-full bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Nama Pemilik *</label>
+            <input type="text" id="mOwnerInput" value="Tedi Mahendra" class="w-full bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Nomor WhatsApp *</label>
+            <input type="tel" id="mPhoneInput" value="081299998888" class="w-full bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Ukuran Mobil</label>
+            <select id="mSizeSelect" class="w-full bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white">
+              <option value="SMALL">Small / Sedan</option>
+              <option value="MEDIUM" selected>Medium SUV</option>
+              <option value="LARGE">Large MPV</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Pilihan Paket</label>
+            <select id="mPkgSelect" class="w-full bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white">
+              <option value="PKG-COAT-3Y">Nano Ceramic 9H</option>
+              <option value="PKG-DETAIL-INT">Interior & Engine</option>
+              <option value="PKG-SIGNATURE-WASH">Wash & Wax</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Alokasi Bay</label>
+            <select id="mBaySelect" class="w-full bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white">
+              <option value="Bay 01 (Wet Wash)">Bay 01 (Wash)</option>
+              <option value="Bay 02 (Detailing Lab)" selected>Bay 02 (Detail)</option>
+              <option value="Bay 03 (Coating Lab)">Bay 03 (Coating)</option>
+              <option value="Bay 04 (Curing Oven)">Bay 04 (Oven)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Catatan Khusus Baret / Noda</label>
+          <input type="text" id="mNotesInput" value="Jamur kaca spion dan swirl baret halus kap mesin" class="w-full bg-[#12100E] border border-bronzeTheme-stoneMuted rounded-xl px-3 py-2 text-white" />
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-3 border-t border-bronzeTheme-stoneMuted">
+        <button onclick="closeBookingModal()" class="flex-1 bg-[#12100E] hover:bg-bronzeTheme-stoneSurface py-2.5 rounded-xl text-slate-300">Batal</button>
+        <button onclick="submitNewBookingForm()" class="flex-1 bg-bronzeTheme-bronze hover:bg-bronzeTheme-bronzeDark text-white font-bold py-2.5 rounded-xl">Terbitkan SPK & Kunci Bay</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: PELUNASAN KASIR 70% & CETAK SPK / KARTU GARANSI FISIK -->
+  <div id="settleModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-bronzeTheme-black rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-bronzeTheme-stoneMuted shadow-2xl space-y-6 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-bronzeTheme-stoneMuted pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-bronzeTheme-stoneSurface border border-bronzeTheme-bronze flex items-center justify-center text-bronzeTheme-bronze font-bold">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white font-display">Kasir Pelunasan & Sertifikat Garansi Resmi</h3>
+            <span class="text-[10px] text-slate-400" id="settleSpkNumberTitle">SPK-ACD-202610-8812</span>
+          </div>
+        </div>
+        <button onclick="closeSettleModal()" class="w-7 h-7 rounded-full bg-[#12100E] flex items-center justify-center text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <!-- Area Cetak Resmi SPK/Faktur (PDF Ready) -->
+      <div id="printAreaSPK" class="bg-[#12100E] p-6 rounded-2xl border border-bronzeTheme-stoneMuted space-y-4 text-white">
+        <div class="flex justify-between items-start border-b border-bronzeTheme-stoneMuted pb-3">
+          <div>
+            <span class="font-bold text-base text-white font-display">AUTOCARE<span class="text-bronzeTheme-bronze">DETAIL</span> STUDIO</span>
+            <p class="text-[10px] text-slate-400">Jl. TB Simatupang No. 88, Cilandak, Jaksel • Hotline: +62 812-9999-8888</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-bronzeTheme-bronze text-white uppercase">OFFICIAL SPK & WARRANTY</span>
+            <p class="text-xs font-bold text-bronzeTheme-bronze mt-1" id="pSpkNumber">SPK-ACD-8812</p>
+            <p class="text-[10px] text-slate-400" id="pSpkDate">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-[11px] bg-bronzeTheme-black p-3 rounded-xl border border-bronzeTheme-stoneMuted">
+          <div>
+            <span class="text-[9px] text-slate-500 block uppercase">Kendaraan & Pemilik:</span>
+            <strong class="text-bronzeTheme-bronze text-sm block tracking-wider" id="pPlateNumber">B 1928 RYD</strong>
+            <span class="text-white block font-semibold" id="pCarModel">Honda CR-V Turbo</span>
+            <span class="text-slate-400 text-[10px]" id="pOwnerContact">Tedi Mahendra (081299998888)</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] text-slate-500 block uppercase">Jadwal & Bay Pengerjaan:</span>
+            <strong class="text-white text-xs block" id="pScheduleTime">08:30 WIB (Pagi)</strong>
+            <span class="text-slate-300" id="pBayAllocated">Bay 02 (Detailing Lab)</span>
+            <p class="text-[10px] text-emerald-400 font-bold mt-1" id="pPaymentStatusText">DP 30% TERVERIFIKASI</p>
+          </div>
+        </div>
+
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-bronzeTheme-stoneMuted text-slate-400 text-[10px]">
+            <tr>
+              <th class="py-2">Rincian Paket & Spesifikasi Pengerjaan</th>
+              <th class="py-2 text-center">Kelas</th>
+              <th class="py-2 text-right">Tarif Servis</th>
+              <th class="py-2 text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-bronzeTheme-stoneMuted font-medium">
+            <tr>
+              <td class="py-2.5">
+                <strong class="text-white block" id="pPackageTitle">Nano Ceramic Coating 9H (Double Layer)</strong>
+                <span class="text-[10px] text-slate-400" id="pPackageDetail">Paint correction 3-step, nano coating 2 layer, velg & glass</span>
+                <span class="text-[10px] text-bronzeTheme-bronze block mt-0.5" id="pWarrantyDetail">Garansi 3 Tahun Kartu Fisik</span>
+              </td>
+              <td class="py-2.5 text-center text-slate-300" id="pVehicleSize">Medium SUV</td>
+              <td class="py-2.5 text-right text-slate-300 font-mono" id="pUnitRate">Rp 3.500.000</td>
+              <td class="py-2.5 text-right font-bold text-white font-mono" id="pItemTotal">Rp 3.500.000</td>
+            </tr>
+          </tbody>
+          <tfoot class="border-t-2 border-bronzeTheme-stoneMuted text-xs font-bold pt-2">
+            <tr>
+              <td colspan="3" class="py-1.5 text-right text-slate-400">Total Nilai Pengerjaan:</td>
+              <td class="py-1.5 text-right text-white font-mono" id="pGrandTotalAmount">Rp 3.500.000</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="py-1.5 text-right text-emerald-400">Uang Muka Diterima (DP 30%):</td>
+              <td class="py-1.5 text-right text-emerald-400 font-mono" id="pPaidDpAmount">Rp 1.050.000</td>
+            </tr>
+            <tr class="bg-bronzeTheme-stoneSurface text-bronzeTheme-bronze">
+              <td colspan="3" class="py-2 text-right font-black">Sisa Pelunasan di Kasir:</td>
+              <td class="py-2 text-right font-black font-mono text-sm" id="pDueAmount">Rp 2.450.000</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Token QR Barcode -->
+        <div class="flex items-center justify-between p-3 bg-bronzeTheme-black rounded-xl border border-bronzeTheme-stoneMuted text-[10px]">
+          <div>
+            <strong class="text-white block">Sertifikat Verifikasi QC & Kartu Garansi Studio</strong>
+            <span class="text-slate-400">Tunjukkan barcode saat mobil keluar gerbang valet</span>
+          </div>
+          <div class="text-center">
+            <span class="font-bold text-bronzeTheme-bronze block font-mono" id="pTokenCode">PASS-8812-VALET</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Settlement Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-2 no-print">
+        <button onclick="window.print()" class="flex-1 bg-bronzeTheme-stoneSurface hover:bg-[#201d1b] text-white py-3 rounded-xl border border-bronzeTheme-stoneMuted flex items-center justify-center gap-2">
+          <i data-lucide="printer" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+          <span>Cetak SPK & Kartu Garansi (PDF)</span>
+        </button>
+        <button id="btnConfirmSettleDue" onclick="executeSettleDue()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-md">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Konfirmasi Pelunasan 100% Selesai</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="hidden fixed bottom-6 right-6 z-50 bg-bronzeTheme-stoneSurface border border-bronzeTheme-bronze text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-mono text-xs">
+    <i data-lucide="info" class="w-4 h-4 text-bronzeTheme-bronze"></i>
+    <span id="toastMsg">Notifikasi Bengkel</span>
+  </div>
+
+  <!-- CORE SCRIPT LOGIC -->
+  <script>
+    // 1. DATA MASTER SPK SERVIS
+    let masterOrders = [
+      {
+        id: "SPK-ACD-202610-8812",
+        plate: "B 1928 RYD",
+        model: "Honda CR-V Turbo (Hitam)",
+        owner: "Tedi Mahendra",
+        phone: "081299998888",
+        size: "MEDIUM",
+        packageId: "PKG-COAT-3Y",
+        packageName: "Nano Ceramic Coating 9H (Double Layer)",
+        packageDetail: "Paint correction 3-step, nano coating 2 layer, velg & glass",
+        warranty: "3 Tahun (Kartu Garansi Fisik)",
+        bay: "Bay 02 (Detailing Lab)",
+        scheduleTime: "08:30 WIB (Pagi)",
+        totalAmount: 3500000,
+        paidDp: 1050000,
+        due: 2450000,
+        stage: "STAGE_2", // 1: Wash, 2: Polish, 3: Coating, 4: QC
+        isCompleted: false,
+        date: "2026-10-28"
+      },
+      {
+        id: "SPK-ACD-202610-8813",
+        plate: "B 1024 CAM",
+        model: "Toyota Camry 2.5V (Silver)",
+        owner: "Christland Simatupang",
+        phone: "081388776655",
+        size: "SMALL",
+        packageId: "PKG-DETAIL-INT",
+        packageName: "Full Interior & Engine Bay Detailing",
+        packageDetail: "Deep cleaning jok kulit, plafon, karpet, ozonisasi & engine bay",
+        warranty: "6 Bulan Maintenance",
+        bay: "Bay 01 (Wet Wash)",
+        scheduleTime: "11:00 WIB (Siang)",
+        totalAmount: 950000,
+        paidDp: 285000,
+        due: 665000,
+        stage: "STAGE_1",
+        isCompleted: false,
+        date: "2026-10-28"
+      },
+      {
+        id: "SPK-ACD-202610-8814",
+        plate: "B 8888 REX",
+        model: "Toyota Alphard SC (Hitam)",
+        owner: "David Riyanto",
+        phone: "081122334455",
+        size: "LARGE",
+        packageId: "PKG-COAT-3Y",
+        packageName: "Nano Ceramic Coating 9H (Double Layer)",
+        packageDetail: "Paint correction 3-step, nano coating 2 layer, velg & glass",
+        warranty: "3 Tahun (Kartu Garansi Fisik)",
+        bay: "Bay 03 (Coating Lab)",
+        scheduleTime: "09:00 WIB (Pagi)",
+        totalAmount: 4200000,
+        paidDp: 1260000,
+        due: 2940000,
+        stage: "STAGE_3",
+        isCompleted: false,
+        date: "2026-10-28"
+      },
+      {
+        id: "SPK-ACD-202610-8811",
+        plate: "B 1234 MER",
+        model: "Mercedes-Benz C200 (Putih)",
+        owner: "Cinthya",
+        phone: "081244556677",
+        size: "SMALL",
+        packageId: "PKG-SIGNATURE-WASH",
+        packageName: "Signature Hydrophobic Wash & Wax",
+        packageDetail: "Cuci salju deionisasi TDS 0, underbody, wax carnauba",
+        warranty: "Garansi Bersih 24 Jam",
+        bay: "Bay 04 (Curing Oven)",
+        scheduleTime: "08:00 WIB (Pagi)",
+        totalAmount: 180000,
+        paidDp: 180000,
+        due: 0,
+        stage: "STAGE_4",
+        isCompleted: true,
+        date: "2026-10-28"
+      }
+    ];
+
+    // 2. DATA INVENTORI CHEMICAL WORKSHOP
+    let workshopInventory = {
+      coating: [
+        { name: "Gyeon Q² Syncro Ceramic 9H (50ml)", stock: 12, unit: "Botol", alert: false },
+        { name: "Ceramic Pro 9H Multi-Layer (50ml)", stock: 8, unit: "Botol", alert: false },
+        { name: "Hydrophobic Glass Shield Coating (30ml)", stock: 4, unit: "Botol", alert: true },
+        { name: "Rim & Caliper Heat Resistant Coating", stock: 6, unit: "Botol", alert: false }
+      ],
+      polish: [
+        { name: "Menzerna Heavy Cut Compound 400", stock: 14, unit: "Botol (1L)", alert: false },
+        { name: "Menzerna Medium Cut Polish 2500", stock: 11, unit: "Botol (1L)", alert: false },
+        { name: "Menzerna Super Finish Plus 3800", stock: 9, unit: "Botol (1L)", alert: false },
+        { name: "Lake Country Foam Pad 5-Inch (Cutting/Finishing)", stock: 24, unit: "Pcs", alert: false }
+      ],
+      chem: [
+        { name: "Shampoo Snow pH Neutral Deionisasi", stock: 18, unit: "Galon (5L)", alert: false },
+        { name: "Iron & Fall-out Rust Remover Spray", stock: 8, unit: "Galon (5L)", alert: false },
+        { name: "Tire Dressing Silicone Water-Repellent", stock: 12, unit: "Galon (5L)", alert: false },
+        { name: "Leather Conditioner & Cleaner", stock: 5, unit: "Galon (5L)", alert: true }
+      ]
+    };
+
+    // 3. BAY LIST CONFIGURATION
+    const bayRooms = [
+      { id: "bay-1", name: "Bay 01 (Wet Wash)", type: "Wash & Decon", occupiedBy: "B 1024 CAM" },
+      { id: "bay-2", name: "Bay 02 (Detailing Lab)", type: "Paint Correction", occupiedBy: "B 1928 RYD" },
+      { id: "bay-3", name: "Bay 03 (Coating Lab)", type: "Nano Ceramic 9H", occupiedBy: "B 8888 REX" },
+      { id: "bay-4", name: "Bay 04 (Curing Oven)", type: "Infrared Curing", occupiedBy: null }
+    ];
+
+    let activeSettlingOrder = null;
+    let volumeChart = null;
+    let shareChart = null;
+
+    // INITIALIZATION
+    window.addEventListener('DOMContentLoaded', () => {
+      initClock();
+      renderOverviewData();
+      initCharts();
+      renderBayCards();
+      renderKanbanBoard();
+      renderMasterOrdersTable();
+      renderInventoryUI();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function initClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClockDisplay').innerText = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('id-ID');
+      }, 1000);
+    }
+
+    // TAB SWITCHER
+    function switchTab(tabId) {
+      const tabs = ['overview', 'bays', 'kanban', 'orders', 'inventory', 'scanner'];
+      tabs.forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (btn) {
+          btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-bronzeTheme-stoneSurface transition font-mono";
+        }
+      });
+
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold bg-bronzeTheme-bronze text-white transition shadow-sm font-mono";
+      }
+
+      const titles = {
+        overview: "Dashboard Overview Bengkel",
+        bays: "Monitoring Alokasi 4 Bay & Curing Oven",
+        kanban: "Papan Alur Servis Detailing (Kanban)",
+        orders: "Master SPK & Pembayaran Servis",
+        inventory: "Gudang Cairan Nano Ceramic 9H & Kompon",
+        scanner: "Optical Barcode Scanner Valet Gate"
+      };
+      document.getElementById('pageTitleDisplay').innerText = titles[tabId] || "Dashboard";
+      lucide.createIcons();
+    }
+
+    // OVERVIEW & CHARTS
+    function renderOverviewData() {
+      const activeCount = masterOrders.filter(o => !o.isCompleted).length;
+      document.getElementById('kpiActiveCars').innerText = `${activeCount} Unit`;
+
+      let totalDue = 0;
+      masterOrders.forEach(o => {
+        if (!o.isCompleted) totalDue += o.due;
+      });
+      document.getElementById('kpiDueAmount').innerText = formatRupiah(totalDue);
+
+      const tbody = document.getElementById('recentServiceTableBody');
+      tbody.innerHTML = '';
+      masterOrders.slice(0, 4).forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-bronzeTheme-stoneSurface/40 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-bronzeTheme-bronze">${o.id}</td>
+          <td class="py-3 px-4">
+            <span class="text-white font-bold block">${o.plate}</span>
+            <span class="text-[10px] text-slate-400">${o.model}</span>
+          </td>
+          <td class="py-3 px-4 text-slate-300">${o.packageName}</td>
+          <td class="py-3 px-3 text-center font-bold text-white">${o.bay}</td>
+          <td class="py-3 px-4 text-right font-bold text-white font-mono">${formatRupiah(o.totalAmount)}</td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(o.stage)}">${getStageName(o.stage)}</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openSettleModal('${o.id}')" class="text-bronzeTheme-bronze hover:underline font-bold">Faktur SPK</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function initCharts() {
+      // 1. Bar Chart: Weekly Volume
+      const ctx1 = document.getElementById('weeklyVolumeChartCanvas').getContext('2d');
+      volumeChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
+          datasets: [
+            { label: 'Medium SUV', data: [18, 22, 19, 26], backgroundColor: '#D97706' },
+            { label: 'Small/Sedan', data: [12, 14, 15, 17], backgroundColor: '#44403C' },
+            { label: 'Large MPV', data: [8, 11, 10, 14], backgroundColor: '#78716C' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#E7E5E4', font: { family: 'JetBrains Mono' } } } },
+          scales: {
+            x: { ticks: { color: '#A8A29E' }, grid: { color: 'rgba(68, 64, 60, 0.4)' } },
+            y: { ticks: { color: '#A8A29E' }, grid: { color: 'rgba(68, 64, 60, 0.4)' } }
+          }
+        }
+      });
+
+      // 2. Doughnut Chart: Service Shares
+      const ctx2 = document.getElementById('serviceShareChartCanvas').getContext('2d');
+      shareChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['Nano Ceramic 9H', 'Interior & Engine', 'Wash & Wax'],
+          datasets: [{
+            data: [64, 24, 12],
+            backgroundColor: ['#D97706', '#B45309', '#44403C'],
+            borderColor: '#1C1917',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#E7E5E4', font: { family: 'JetBrains Mono', size: 10 } } } }
+        }
+      });
+    }
+
+    // LIVE BAY ALLOCATION CARDS
+    function renderBayCards() {
+      const container = document.getElementById('bayCardsContainer');
+      container.innerHTML = bayRooms.map(bay => {
+        const order = masterOrders.find(o => o.plate === bay.occupiedBy && !o.isCompleted);
+        const isOccupied = !!order;
+
+        return `
+          <div class="p-5 rounded-2xl border-2 transition flex flex-col justify-between ${
+            isOccupied ? 'bg-bronzeTheme-black border-bronzeTheme-bronze ring-1 ring-amber-500/30' : 'bg-[#12100E] border-bronzeTheme-stoneMuted opacity-70'
+          }">
+            <div class="space-y-3">
+              <div class="flex justify-between items-center pb-2 border-b border-bronzeTheme-stoneMuted">
+                <span class="font-bold text-white">${bay.name}</span>
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isOccupied ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-slate-800 text-slate-400'}">
+                  ${isOccupied ? 'PENGERJAAN AKTIF' : 'KOSONG (READY)'}
+                </span>
+              </div>
+
+              ${isOccupied ? `
+                <div class="space-y-1.5">
+                  <span class="text-base font-bold text-bronzeTheme-bronze tracking-wider block">${order.plate}</span>
+                  <p class="text-xs text-white font-sans">${order.model}</p>
+                  <p class="text-[10px] text-slate-400 font-sans">${order.packageName}</p>
+                  <div class="pt-2">
+                    <span class="text-[9px] text-slate-500 uppercase block">Tahap Saat Ini:</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(order.stage)} inline-block mt-0.5">
+                      ${getStageName(order.stage)}
+                    </span>
+                  </div>
+                </div>
+              ` : `
+                <div class="py-8 text-center text-slate-500 space-y-1">
+                  <i data-lucide="shield-check" class="w-8 h-8 mx-auto text-slate-600"></i>
+                  <p class="text-[10px]">Bay siap menerima mobil berikutnya</p>
+                </div>
+              `}
+            </div>
+
+            <div class="mt-4 pt-2 border-t border-bronzeTheme-stoneMuted flex items-center justify-between text-[10px]">
+              <span class="text-slate-500">${bay.type}</span>
+              ${isOccupied ? `
+                <button onclick="advanceOrderStage('${order.id}')" class="text-bronzeTheme-bronze hover:underline font-bold">Majukan Tahap →</button>
+              ` : `
+                <button onclick="openBookingModal()" class="text-slate-400 hover:text-white font-bold">+ Isi Bay</button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    // KANBAN BOARD
+    function renderKanbanBoard() {
+      const stages = ['STAGE_1', 'STAGE_2', 'STAGE_3', 'STAGE_4'];
+      const counts = { STAGE_1: 0, STAGE_2: 0, STAGE_3: 0, STAGE_4: 0 };
+
+      stages.forEach((st, idx) => {
+        const col = document.getElementById(`kanban-stage-${idx+1}`);
+        col.innerHTML = '';
+      });
+
+      masterOrders.forEach(o => {
+        if (counts[o.stage] !== undefined) {
+          counts[o.stage]++;
+        }
+        const stageNum = o.stage.replace('STAGE_', '');
+        const col = document.getElementById(`kanban-stage-${stageNum}`);
+        if (!col) return;
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 rounded-xl bg-[#12100E] border border-bronzeTheme-stoneMuted hover:border-bronzeTheme-bronze transition space-y-2 shadow-sm";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="font-bold text-bronzeTheme-bronze tracking-wider">${o.plate}</span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${o.due === 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">
+              ${o.due === 0 ? 'LUNAS' : 'DP 30%'}
+            </span>
+          </div>
+          <div>
+            <strong class="text-white block text-xs">${o.model}</strong>
+            <p class="text-[10px] text-slate-400">${o.packageName}</p>
+          </div>
+          <div class="flex justify-between items-center text-[10px] text-slate-400 border-t border-bronzeTheme-stoneMuted pt-1.5">
+            <span>${o.bay.split(' ')[0]} ${o.bay.split(' ')[1]}</span>
+            <span class="text-white font-bold font-mono">${formatRupiah(o.totalAmount)}</span>
+          </div>
+          <div class="flex gap-1.5 pt-1">
+            <button onclick="advanceOrderStage('${o.id}')" class="flex-1 bg-bronzeTheme-stoneSurface hover:bg-[#201d1b] text-bronzeTheme-bronze py-1 rounded text-[10px] font-bold border border-bronzeTheme-stoneMuted">
+              Geser Tahap →
+            </button>
+            <button onclick="openSettleModal('${o.id}')" class="px-2 py-1 bg-[#12100E] hover:bg-bronzeTheme-stoneSurface text-slate-300 rounded text-[10px] border border-bronzeTheme-stoneMuted">
+              Faktur
+            </button>
+          </div>
+        `;
+        col.appendChild(card);
+      });
+
+      stages.forEach((st, idx) => {
+        document.getElementById(`badge-stage-${idx+1}`).innerText = counts[st];
+      });
+    }
+
+    function advanceOrderStage(id) {
+      const order = masterOrders.find(o => o.id === id);
+      if (!order) return;
+
+      if (order.stage === 'STAGE_1') order.stage = 'STAGE_2';
+      else if (order.stage === 'STAGE_2') order.stage = 'STAGE_3';
+      else if (order.stage === 'STAGE_3') order.stage = 'STAGE_4';
+      else if (order.stage === 'STAGE_4') {
+        openSettleModal(id);
+        return;
+      }
+
+      renderOverviewData();
+      renderBayCards();
+      renderKanbanBoard();
+      renderMasterOrdersTable();
+      showToast(`Unit ${order.plate} dimajukan ke ${getStageName(order.stage)}`);
+    }
+
+    // MASTER ORDERS TABLE
+    function renderMasterOrdersTable() {
+      const search = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+      const filter = document.getElementById('orderStatusFilter')?.value || 'ALL';
+
+      const tbody = document.getElementById('masterOrdersTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = masterOrders.filter(o => {
+        const matchSearch = o.plate.toLowerCase().includes(search) || o.owner.toLowerCase().includes(search) || o.id.toLowerCase().includes(search);
+        let matchFilter = true;
+        if (filter === 'COMPLETED') matchFilter = o.isCompleted;
+        else if (filter !== 'ALL') matchFilter = o.stage === filter;
+        return matchSearch && matchFilter;
+      });
+
+      filtered.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-bronzeTheme-stoneSurface/30 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-bronzeTheme-bronze">${o.id}</td>
+          <td class="py-3 px-4">
+            <span class="text-white font-bold block tracking-wider">${o.plate}</span>
+            <span class="text-[10px] text-slate-400">${o.model} (${o.owner})</span>
+          </td>
+          <td class="py-3 px-4">
+            <span class="text-slate-200 block">${o.packageName}</span>
+            <span class="text-[10px] text-slate-400">${o.warranty}</span>
+          </td>
+          <td class="py-3 px-3 text-center text-white font-bold">${o.scheduleTime}</td>
+          <td class="py-3 px-4 text-right font-bold text-white font-mono">${formatRupiah(o.totalAmount)}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="block text-emerald-400 font-bold">DP: ${formatRupiah(o.paidDp)}</span>
+            <span class="block text-[10px] ${o.due > 0 ? 'text-amber-400' : 'text-slate-500'}">Due: ${formatRupiah(o.due)}</span>
+          </td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(o.stage)}">
+              ${o.isCompleted ? 'SELESAI LUNAS' : getStageName(o.stage)}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openSettleModal('${o.id}')" class="px-2.5 py-1 bg-bronzeTheme-stoneSurface hover:bg-[#201d1b] text-bronzeTheme-bronze rounded-lg border border-bronzeTheme-stoneMuted text-[11px] font-bold">
+              Buka SPK
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function getStageName(stage) {
+      if (stage === 'STAGE_1') return "Wash & Decon";
+      if (stage === 'STAGE_2') return "Paint Correction";
+      if (stage === 'STAGE_3') return "Coating 9H & Oven";
+      if (stage === 'STAGE_4') return "QC 21-Titik";
+      return "Selesai";
+    }
+
+    function getStageBadgeColor(stage) {
+      if (stage === 'STAGE_1') return "bg-blue-500/20 text-blue-400 border border-blue-500/30";
+      if (stage === 'STAGE_2') return "bg-amber-500/20 text-amber-400 border border-amber-500/30";
+      if (stage === 'STAGE_3') return "bg-indigo-500/20 text-indigo-300 border border-indigo-400/30";
+      if (stage === 'STAGE_4') return "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+      return "bg-slate-700 text-slate-300";
+    }
+
+    // INVENTORY UI
+    function renderInventoryUI() {
+      const cList = document.getElementById('invCoatingList');
+      cList.innerHTML = workshopInventory.coating.map(item => `
+        <div class="p-3 bg-[#12100E] rounded-xl border border-bronzeTheme-stoneMuted flex justify-between items-center">
+          <div>
+            <span class="font-bold text-white block">${item.name}</span>
+            <span class="text-[10px] text-slate-400">Stok: ${item.stock} ${item.unit}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold ${item.alert ? 'bg-rose-500/20 text-rose-400 border border-rose-500' : 'bg-emerald-500/20 text-emerald-400'}">
+            ${item.alert ? 'RESTOCK' : 'AMAN'}
+          </span>
+        </div>
+      `).join('');
+
+      const pList = document.getElementById('invPolishList');
+      pList.innerHTML = workshopInventory.polish.map(item => `
+        <div class="p-3 bg-[#12100E] rounded-xl border border-bronzeTheme-stoneMuted flex justify-between items-center">
+          <div>
+            <span class="font-bold text-white block">${item.name}</span>
+            <span class="text-[10px] text-slate-400">Stok: ${item.stock} ${item.unit}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-400">TERSEDIA</span>
+        </div>
+      `).join('');
+
+      const chList = document.getElementById('invChemList');
+      chList.innerHTML = workshopInventory.chem.map(item => `
+        <div class="p-3 bg-[#12100E] rounded-xl border border-bronzeTheme-stoneMuted flex justify-between items-center">
+          <div>
+            <span class="font-bold text-white block">${item.name}</span>
+            <span class="text-[10px] text-slate-400">Stok: ${item.stock} ${item.unit}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold ${item.alert ? 'bg-rose-500/20 text-rose-400 border border-rose-500' : 'bg-emerald-500/20 text-emerald-400'}">
+            ${item.alert ? 'MENIPIS' : 'AMAN'}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function restockItem(type) {
+      if (type === 'coating') workshopInventory.coating.forEach(c => c.stock += 4);
+      if (type === 'polish') workshopInventory.polish.forEach(p => p.stock += 5);
+      if (type === 'chem') workshopInventory.chem.forEach(ch => ch.stock += 5);
+      renderInventoryUI();
+      showToast("Stok bahan chemical studio berhasil ditambahkan!");
+    }
+
+    // SCANNER VALET GATE PASS
+    function testBarcode(code) {
+      document.getElementById('barcodeScanInput').value = code;
+      processBarcodeScan();
+    }
+
+    function processBarcodeScan() {
+      const code = document.getElementById('barcodeScanInput').value.trim();
+      const order = masterOrders.find(o => o.id === code || o.id.includes(code) || o.plate.includes(code));
+
+      if (!order) {
+        alert("Nomor SPK atau pelat mobil tidak ditemukan dalam antrean booking hari ini!");
+        return;
+      }
+
+      document.getElementById('scanResultBox').classList.remove('hidden');
+      document.getElementById('scanPlateTitle').innerText = order.plate;
+      document.getElementById('scanSpkCodeTitle').innerText = order.id;
+      document.getElementById('scanStageBadge').innerText = getStageName(order.stage);
+      document.getElementById('scanCarModel').innerText = order.model;
+      document.getElementById('scanOwner').innerText = `${order.owner} (${order.phone})`;
+      document.getElementById('scanPkgName').innerText = order.packageName;
+      document.getElementById('scanBayName').innerText = order.bay;
+
+      activeSettlingOrder = order;
+      showToast(`Mobil ${order.plate} terdeteksi di Gate Valet!`);
+    }
+
+    function advanceStageFromScanner() {
+      if (!activeSettlingOrder) return;
+      advanceOrderStage(activeSettlingOrder.id);
+      document.getElementById('scanStageBadge').innerText = getStageName(activeSettlingOrder.stage);
+    }
+
+    // SETTLEMENT MODAL & PRINT SPK / GARANSI RESMI
+    function openSettleModal(id) {
+      const order = masterOrders.find(o => o.id === id);
+      if (!order) return;
+      activeSettlingOrder = order;
+
+      document.getElementById('settleSpkNumberTitle').innerText = order.id;
+      document.getElementById('pSpkNumber').innerText = order.id;
+      document.getElementById('pSpkDate').innerText = order.date;
+      document.getElementById('pPlateNumber').innerText = order.plate;
+      document.getElementById('pCarModel').innerText = order.model;
+      document.getElementById('pOwnerContact').innerText = `Pemilik: ${order.owner} (${order.phone})`;
+      document.getElementById('pScheduleTime').innerText = order.scheduleTime;
+      document.getElementById('pBayAllocated').innerText = order.bay;
+
+      document.getElementById('pPackageTitle').innerText = order.packageName;
+      document.getElementById('pPackageDetail').innerText = order.packageDetail;
+      document.getElementById('pWarrantyDetail').innerText = `Masa Garansi: ${order.warranty}`;
+      document.getElementById('pVehicleSize').innerText = order.size;
+
+      document.getElementById('pUnitRate').innerText = formatRupiah(order.totalAmount);
+      document.getElementById('pItemTotal').innerText = formatRupiah(order.totalAmount);
+      document.getElementById('pGrandTotalAmount').innerText = formatRupiah(order.totalAmount);
+      document.getElementById('pPaidDpAmount').innerText = formatRupiah(order.paidDp);
+      document.getElementById('pDueAmount').innerText = formatRupiah(order.due);
+
+      document.getElementById('pTokenCode').innerText = `CERT: ${order.plate}-PASS-VALET`;
+
+      const btnSettle = document.getElementById('btnConfirmSettleDue');
+      if (order.due === 0) {
+        document.getElementById('pPaymentStatusText').innerText = "LUNAS 100% (SELESAI)";
+        btnSettle.classList.add('hidden');
+      } else {
+        document.getElementById('pPaymentStatusText').innerText = "DP 30% TERBAYAR (DUE 70%)";
+        btnSettle.classList.remove('hidden');
+      }
+
+      document.getElementById('settleModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settleModal').classList.add('hidden');
+    }
+
+    function executeSettleDue() {
+      if (!activeSettlingOrder) return;
+      activeSettlingOrder.paidDp = activeSettlingOrder.totalAmount;
+      activeSettlingOrder.due = 0;
+      activeSettlingOrder.isCompleted = true;
+      activeSettlingOrder.stage = 'STAGE_4';
+
+      renderOverviewData();
+      renderBayCards();
+      renderKanbanBoard();
+      renderMasterOrdersTable();
+      closeSettleModal();
+      showToast(`Pelunasan unit ${activeSettlingOrder.plate} sukses diverifikasi!`);
+    }
+
+    // MODAL FORM BOOKING MANUAL
+    function openBookingModal() {
+      document.getElementById('bookingModal').classList.remove('hidden');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('bookingModal').classList.add('hidden');
+    }
+
+    function submitNewBookingForm() {
+      const plate = document.getElementById('mPlateInput').value.trim() || 'B 1234 XYZ';
+      const model = document.getElementById('mModelInput').value.trim() || 'Mobil Klien';
+      const owner = document.getElementById('mOwnerInput').value.trim() || 'Pemilik Mobil';
+      const phone = document.getElementById('mPhoneInput').value.trim() || '081299998888';
+      const size = document.getElementById('mSizeSelect').value;
+      const pkg = document.getElementById('mPkgSelect').value;
+      const bay = document.getElementById('mBaySelect').value;
+
+      let pkgName = "Nano Ceramic Coating 9H (Double Layer)";
+      let totalAmount = 3500000;
+      let warranty = "3 Tahun (Kartu Garansi Fisik)";
+
+      if (pkg === 'PKG-DETAIL-INT') {
+        pkgName = "Full Interior & Engine Bay Detailing";
+        totalAmount = 1250000;
+        warranty = "6 Bulan Maintenance";
+      } else if (pkg === 'PKG-SIGNATURE-WASH') {
+        pkgName = "Signature Hydrophobic Wash & Wax";
+        totalAmount = 220000;
+        warranty = "Garansi Bersih 24 Jam";
+      }
+
+      const dp = Math.round(totalAmount * 0.3);
+      const newId = "SPK-ACD-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+
+      const newOrder = {
+        id: newId,
+        plate: plate.toUpperCase(),
+        model: model,
+        owner: owner,
+        phone: phone,
+        size: size,
+        packageId: pkg,
+        packageName: pkgName,
+        packageDetail: "Pengerjaan sesuai standar SOP certified studio",
+        warranty: warranty,
+        bay: bay,
+        scheduleTime: "08:30 WIB (Pagi)",
+        totalAmount: totalAmount,
+        paidDp: dp,
+        due: totalAmount - dp,
+        stage: "STAGE_1",
+        isCompleted: false,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      masterOrders.unshift(newOrder);
+      renderOverviewData();
+      renderBayCards();
+      renderKanbanBoard();
+      renderMasterOrdersTable();
+      closeBookingModal();
+      showToast(`SPK Servis ${plate} berhasil didaftarkan ke ${bay}!`);
+    }
+
+    // CSV EXPORT
+    function exportOrdersToCsv() {
+      let csv = "Nomor SPK,Pelat Nomor,Model Kendaraan,Nama Pemilik,WhatsApp,Paket Servis,Alokasi Bay,Total Biaya,DP Terbayar,Sisa Tagihan,Tahap Servis\n";
+      masterOrders.forEach(o => {
+        csv += `"${o.id}","${o.plate}","${o.model}","${o.owner}","${o.phone}","${o.packageName}","${o.bay}",${o.totalAmount},${o.paidDp},${o.due},"${o.stage}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Master_SPK_AutoCare_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Data SPK AutoCare berhasil diekspor ke file CSV!");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMsg').innerText = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+  </script>
+</body>
+</html>

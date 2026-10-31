@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CateringPro Box - Central Kitchen Production & Logistics Portal</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk (Cabinet Display fallback), JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            bento: {
+              green: '#059669',
+              lightGreen: '#10b981',
+              darkGreen: '#047857',
+              greenBg: '#ecfdf5',
+              orange: '#f97316',
+              deepOrange: '#ea580c',
+              orangeBg: '#fff7ed',
+              dark: '#1e293b',
+              deepDark: '#0f172a',
+              softBg: '#FBFBFA',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #059669;
+    }
+
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .checkered-pattern {
+      background-color: #fafaf9;
+      background-image: linear-gradient(45deg, #f5f5f4 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f5f5f4 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f5f5f4 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f5f5f4 75%);
+      background-size: 18px 18px;
+      background-position: 0 0, 0 9px, 9px -9px, -9px 0px;
+    }
+
+    /* Print Styling for Official Delivery Order & Thermal Invoice */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableInvoiceModal, #printableInvoiceModal * {
+        visibility: visible !important;
+      }
+      #printableInvoiceModal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-bento-softBg text-slate-800 antialiased font-sans min-h-screen flex selection:bg-bento-orangeBg selection:text-bento-deepOrange overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-slate-900 border-r border-slate-800 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-slate-800">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-bento-green to-bento-lightGreen flex items-center justify-center text-white shadow-md shadow-emerald-500/25 flex-shrink-0">
+            <i data-lucide="package-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="font-black text-lg tracking-tight text-white block leading-tight font-display">
+              CATERING<span class="text-bento-orange ml-0.5">PRO</span>
+              <span class="text-[9px] bg-bento-orange text-white px-1.5 py-0.2 rounded font-sans uppercase font-bold ml-1">BOX</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-slate-800 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">CENTRAL OPS</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Kitchen Capacity Badge -->
+      <div class="px-5 py-3 border-b border-slate-800/80 bg-slate-950/40">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="flame" class="w-3.5 h-3.5 text-bento-orange"></i> Kitchen Senopati Hub
+          </span>
+          <span class="text-emerald-400 font-bold" id="sidebarCapacityStatus">81.6% LOAD</span>
+        </div>
+        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-2">
+          <div class="bg-gradient-to-r from-bento-green to-bento-lightGreen h-full rounded-full" style="width: 81.6%"></div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-emerald-400 bg-slate-800 border-l-4 border-bento-lightGreen shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Ringkasan Dapur & KPI</span>
+        </button>
+
+        <button onclick="switchTab('orders')" id="tab-orders" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+          <span>Master Order & Pax</span>
+          <span class="ml-auto bg-bento-orange text-white text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="badgeActiveOrders">18 PO</span>
+        </button>
+
+        <button onclick="switchTab('fleet')" id="tab-fleet" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="truck" class="w-4 h-4"></i>
+          <span>Armada Thermo & Scanner</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 ml-auto animate-ping"></span>
+        </button>
+
+        <button onclick="switchTab('inventory')" id="tab-inventory" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="boxes" class="w-4 h-4"></i>
+          <span>Inventori & Bahan Baku</span>
+          <span class="ml-auto bg-slate-800 text-stone-300 text-[10px] font-mono px-1.5 py-0.5 rounded" id="badgeLowStock">2 Reorder</span>
+        </button>
+
+        <button onclick="switchTab('finance')" id="tab-finance" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Kasir Pelunasan & Faktur</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgePendingDP">4 DP 50%</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Kitchen Operations Profile -->
+    <div class="p-4 border-t border-slate-800 bg-slate-950/50">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-bento-green to-bento-orange flex items-center justify-center text-white font-bold text-xs font-mono shadow-sm">
+          TM
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-white truncate font-display">Chef Tedi M., M.Sc.</p>
+          <p class="text-[10px] text-slate-400 font-mono truncate">Head of Culinary & Logistics</p>
+        </div>
+        <button onclick="showToast('Sertifikasi Halal & HACCP aktif')" title="Verifikasi HACCP" class="text-slate-400 hover:text-bento-lightGreen transition">
+          <i data-lucide="badge-check" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-slate-950 text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 font-mono gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-bento-green text-white">CENTRAL KITCHEN DISPATCH</span>
+        <span>Produksi Aktif: <strong class="text-white">2.450 / 3.000 Pax Hari Ini</strong> • Box Insulator Thermo Siap Jalan</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-400">
+        <span>Suhu Rata-rata Box: <strong class="text-emerald-400">61.5°C (Warm Safe)</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span class="text-bento-orange font-bold">On-Time Dispatch: 99.4%</span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-nav sticky top-0 z-30 border-b border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1.5 rounded-lg bg-slate-800">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
+            <span id="currentViewTitle">Ringkasan Dapur & KPI</span>
+          </h1>
+          <p class="text-slate-400 text-xs hidden sm:block font-mono">B2B Event Catering Engine, Automated Production Kanban & Fleet Dispatcher</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- Date Switcher -->
+        <div class="hidden lg:flex items-center bg-slate-850 border border-slate-750 px-2.5 py-1.5 rounded-xl text-slate-300">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-bento-green mr-2"></i>
+          <input type="date" id="topDateSelector" onchange="changeFilterDate()" class="bg-transparent text-white text-xs font-mono font-bold focus:outline-none cursor-pointer" />
+        </div>
+
+        <!-- Shift Filter -->
+        <div class="hidden lg:flex items-center bg-slate-850 border border-slate-750 px-2.5 py-1.5 rounded-xl text-slate-300">
+          <span class="text-slate-400 text-[11px] mr-2">Shift:</span>
+          <select id="topShiftSelector" onchange="changeFilterShift()" class="bg-transparent text-white font-bold text-xs focus:outline-none cursor-pointer">
+            <option value="ALL" class="bg-slate-900">Semua Shift (Hari Ini)</option>
+            <option value="LUNCH" class="bg-slate-900" selected>Makan Siang (11:00 - 12:30)</option>
+            <option value="BREAK" class="bg-slate-900">Coffee Break (15:30 - 17:00)</option>
+            <option value="DINNER" class="bg-slate-900">Makan Malam (18:00 - 19:30)</option>
+          </select>
+        </div>
+
+        <!-- New Manual Order Button -->
+        <button onclick="openNewOrderModal()" class="bg-bento-orange hover:bg-bento-deepOrange text-white font-bold px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-orange-500/20 flex items-center gap-1.5 active:scale-95 font-sans">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>+ Buat Pesanan Baru</span>
+        </button>
+
+        <!-- Notification Panel Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-bento-orange flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-bento-orange rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-stone-200 p-3 text-slate-800 z-50">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-2 px-1">
+              <span class="font-bold text-xs font-display">Aktivitas Dapur & Armada</span>
+              <span class="text-[10px] font-mono text-bento-green font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                <p class="font-bold text-slate-900">DP 50% QRIS Masuk: Rp 4.250.000</p>
+                <p class="text-slate-500 text-[10px] font-mono">PO-CAT-9921 • PT Bank Mandiri Corporate (120 Pax)</p>
+                <span class="text-[9px] text-slate-400">3 menit lalu</span>
+              </div>
+              <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+                <p class="font-bold text-slate-900">Thermo Van 01 Tiba di Lokasi Pengiriman</p>
+                <p class="text-slate-500 text-[10px] font-mono">Gedung Wirausaha Kuningan • Suhu 62.4°C</p>
+                <span class="text-[9px] text-amber-700 font-bold">12 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== MAIN BODY VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1">
+
+      <!-- ==================== VIEW 1: KITCHEN DASHBOARD & KPI ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Total Pax Produced -->
+          <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-500 font-mono">TOTAL PAX DIPRODUKSI</span>
+              <div class="w-8 h-8 rounded-xl bg-bento-greenBg text-bento-green flex items-center justify-center font-bold border border-emerald-200">
+                <i data-lucide="box" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block" id="kpiTotalPax">2.450 Pax</span>
+              <p class="text-emerald-600 text-[11px] font-semibold flex items-center gap-1 mt-1 font-mono">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +16.2% vs target harian
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2: Today Gross Sales -->
+          <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-500 font-mono">OMSET PESANAN HARI INI</span>
+              <div class="w-8 h-8 rounded-xl bg-bento-orangeBg text-bento-deepOrange flex items-center justify-center font-bold border border-orange-200">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block" id="kpiGrossRevenue">Rp 85.750.000</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">18 Invoice Perusahaan & EO</p>
+            </div>
+          </div>
+
+          <!-- Card 3: Outstanding Balance at Handover (DP 50% vs Lunas) -->
+          <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-500 font-mono">OUTSTANDING PELUNASAN SERAH TERIMA</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-200">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-bento-deepOrange font-display block" id="kpiOutstandingDP">Rp 21.425.000</span>
+              <p class="text-stone-500 text-[11px] mt-1 font-mono">4 Klien dilunasi saat serah terima box</p>
+            </div>
+          </div>
+
+          <!-- Card 4: Active Thermo Van Fleet -->
+          <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-500 font-mono">ARMADA THERMO VAN DISPATCHED</span>
+              <div class="w-8 h-8 rounded-xl bg-slate-900 text-bento-lightGreen flex items-center justify-center font-bold border border-slate-700">
+                <i data-lucide="truck" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-black text-slate-900 font-display block" id="kpiFleetActive">4 / 4 Armada</span>
+              <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden mt-2">
+                <div class="bg-bento-green h-full rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (2 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Hourly Shift Pax Output Bar Chart -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display">Distribusi Pax Selesai per Shift Jadwal Kirim</h3>
+                <p class="text-xs text-stone-500 font-mono">Sarapan Pagi, Makan Siang Kantor, Coffee Break & Gala Dinner</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-stone-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-bento-green"></span> Pax Terkirim
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-stone-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-bento-orange"></span> Pax Sedang Packing
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="paxShiftBarChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Protein Selection Doughnut Chart -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-display">Rasio Pilihan Protein Utama</h3>
+              <p class="text-xs text-stone-500 font-mono">Komposisi racikan bento favorit klien</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="proteinDoughnutChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-stone-500 space-y-1 border-t border-stone-100">
+              <div class="flex justify-between">
+                <span>Ayam Bakar Madu Wijèn:</span>
+                <strong class="text-slate-900">54% (1.320 Pax)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Rendang Sapi Singkarak:</span>
+                <strong class="text-slate-900">28% (686 Pax)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Udang Crispy Telur Asin:</span>
+                <strong class="text-slate-900">18% (444 Pax)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Kitchen Production Kanban Strip -->
+        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-slate-800 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-emerald-400 text-xs font-mono uppercase font-bold tracking-widest">LIVE KITCHEN PRODUCTION LINE</span>
+              <h3 class="text-lg font-bold font-display mt-0.5">Alur Kerja Dapur Sentral & Packing Bento 5-Sekat</h3>
+            </div>
+            <button onclick="switchTab('orders')" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3.5 py-2 rounded-xl border border-slate-700 transition flex items-center gap-1.5 font-mono">
+              <span>Kelola Seluruh Pesanan</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-emerald-400"></i>
+            </button>
+          </div>
+
+          <!-- 4 Kanban Columns -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="kanbanColumnsContainer">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: MASTER ORDER & PAX CALCULATOR ==================== -->
+      <section id="view-orders" class="hidden space-y-6">
+        
+        <!-- Filter and Search Header -->
+        <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-400"></i>
+            <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="Cari PIC, Instansi, No PO..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-bento-green" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button onclick="filterOrderStatus('ALL')" class="order-status-btn px-3.5 py-2 rounded-xl font-bold bg-slate-900 text-white transition" data-status="ALL">Semua</button>
+            <button onclick="filterOrderStatus('DP_50')" class="order-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="DP_50">DP 50% (Sisa COD)</button>
+            <button onclick="filterOrderStatus('PAID_FULL')" class="order-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="PAID_FULL">Lunas 100%</button>
+            <button onclick="filterOrderStatus('COOKING')" class="order-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="COOKING">Sedang Dimasak</button>
+            <button onclick="filterOrderStatus('DISPATCHED')" class="order-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="DISPATCHED">Dalam Perjalanan</button>
+          </div>
+        </div>
+
+        <!-- Master Orders Table -->
+        <div class="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Database Pesanan Katering Box & Jadwal Kirim</h3>
+              <p class="text-xs text-stone-500 font-mono" id="ordersTableCountText">Menampilkan seluruh pesanan aktif</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportOrdersToCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                <tr>
+                  <th class="py-3 px-4">KODE PO & DISPATCH</th>
+                  <th class="py-3 px-4">PIC & PERUSAHAAN</th>
+                  <th class="py-3 px-4">KUANTITAS PAX</th>
+                  <th class="py-3 px-4">KOMPOSISI RACIKAN BENTO</th>
+                  <th class="py-3 px-4">JADWAL TIBA</th>
+                  <th class="py-3 px-4">TOTAL TAGIHAN</th>
+                  <th class="py-3 px-4">STATUS KASIR</th>
+                  <th class="py-3 px-4">STATUS DAPUR</th>
+                  <th class="py-3 px-4 text-center">AKSI OPERASIONAL</th>
+                </tr>
+              </thead>
+              <tbody id="masterOrdersTableBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: DISPATCHING FLEET & THERMO SCANNER ==================== -->
+      <section id="view-fleet" class="hidden space-y-6">
+        
+        <!-- Fleet Vans Status Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="fleetCardsContainer">
+          <!-- Populated via JS -->
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Optical Dispatch Barcode Scanner Simulator -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-4">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-bento-green"></i>
+                  Courier Dispatch & Proof-of-Delivery Scanner
+                </h3>
+                <p class="text-xs text-stone-500 font-mono">Scan barcode surat jalan paket saat serah terima di lobi penerima</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> SCANNER ONLINE
+              </span>
+            </div>
+
+            <!-- Optical Sensor Graphic -->
+            <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-bento-lightGreen rounded-2xl relative flex items-center justify-center p-4 bg-slate-800/40">
+                <div class="w-full h-0.5 bg-bento-lightGreen absolute top-1/2 -translate-y-1/2 shadow-lg shadow-emerald-400 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-stone-500 opacity-60"></i>
+              </div>
+              <p class="text-stone-300 text-xs font-mono mt-4">Arahkan Barcode Surat Jalan (Cth: <strong>DO-9921-BOX</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-stone-700">Input Manual Barcode Token Surat Jalan:</label>
+              <div class="flex gap-2">
+                <input type="text" id="dispatchTokenInput" value="DO-9921-BOX" placeholder="Ketik token surat jalan..." class="flex-1 bg-stone-50 px-4 py-2.5 rounded-xl border border-stone-200 font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-bento-green" />
+                <button onclick="executeDispatchScan()" class="bg-bento-green hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 font-sans">
+                  <i data-lucide="check" class="w-4 h-4"></i> Validasi Serah Terima
+                </button>
+              </div>
+              <p class="text-[11px] text-stone-400 font-sans">Preset token untuk pengetesan cepat: 
+                <span onclick="setScannerVal('DO-9921-BOX')" class="underline cursor-pointer text-bento-green font-mono font-bold">DO-9921-BOX (Mandiri 120 Pax - DP 50%)</span> • 
+                <span onclick="setScannerVal('DO-9922-BOX')" class="underline cursor-pointer text-bento-orange font-mono font-bold">DO-9922-BOX (Shopee 250 Pax - Lunas)</span> •
+                <span onclick="setScannerVal('INVALID-TOKEN-000')" class="underline cursor-pointer text-rose-600 font-mono font-bold">INVALID-TOKEN-000 (Tidak Terdaftar)</span>
+              </p>
+            </div>
+
+            <!-- Scanner Feedback Result Card -->
+            <div id="dispatchScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Live Courier Dispatch Logs -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 font-mono">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-sm text-slate-900 font-display">Log Dispatching & Serah Terima Kurir</h3>
+              <span class="text-[10px] text-stone-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs" id="dispatchAuditLogs">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: INVENTORI & BAHAN BAKU ==================== -->
+      <section id="view-inventory" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 font-display">Monitoring Stok Bahan Baku & Tray Bento 5-Sekat</h3>
+            <p class="text-xs text-stone-500 font-mono">Kebutuhan belanja harian otomatis dihitung berdasarkan agregasi Pax pesanan aktif</p>
+          </div>
+          <button onclick="showToast('Permintaan Restock PO Supplier berhasil dibuat')" class="bg-bento-green hover:bg-emerald-700 text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20">
+            <i data-lucide="plus" class="w-4 h-4"></i> + Buat Purchase Order Supplier
+          </button>
+        </div>
+
+        <!-- Inventory Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="inventoryGridContainer">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: KASIR PELUNASAN & SURAT JALAN ==================== -->
+      <section id="view-finance" class="hidden space-y-6">
+        
+        <!-- Financial Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">TOTAL OMSET KATERING HARI INI</span>
+            <span class="text-2xl font-black text-slate-900 font-display block mt-2">Rp 85.750.000</span>
+            <p class="text-stone-400 text-[11px] font-mono mt-1">18 Invoice Terbit</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">SETTLEMENT QRIS (DP 50% ONLINE TERKUNCI)</span>
+            <span class="text-2xl font-black text-bento-green font-display block mt-2">Rp 64.325.000</span>
+            <p class="text-emerald-600 text-[11px] font-mono mt-1">Auto-Settled ke BCA CateringPro</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">SISA PELUNASAN SAAT SERAH TERIMA</span>
+            <span class="text-2xl font-black text-bento-deepOrange font-display block mt-2">Rp 21.425.000</span>
+            <p class="text-amber-600 text-[11px] font-mono mt-1">4 Pesanan Menunggu Pelunasan</p>
+          </div>
+        </div>
+
+        <!-- Cashier Reconciliation Table -->
+        <div class="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Rekonsiliasi Kasir & Pelunasan Serah Terima</h3>
+              <p class="text-xs text-stone-500 font-mono">Pencatatan pembayaran uang muka DP 50%, pelunasan kurir COD, dan cetak faktur resmi</p>
+            </div>
+            <button onclick="exportOrdersToCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+              <i data-lucide="download" class="w-4 h-4 text-emerald-400"></i> Ekspor Jurnal Penjualan
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                <tr>
+                  <th class="py-3 px-4">INVOICE</th>
+                  <th class="py-3 px-4">KLIEN & PERUSAHAAN</th>
+                  <th class="py-3 px-4">PAX & MENU</th>
+                  <th class="py-3 px-4">TOTAL TAGIHAN</th>
+                  <th class="py-3 px-4">DP TERBAYAR</th>
+                  <th class="py-3 px-4">SISA KASIR</th>
+                  <th class="py-3 px-4">STATUS BAYAR</th>
+                  <th class="py-3 px-4 text-center">AKSI PELUNASAN</th>
+                </tr>
+              </thead>
+              <tbody id="financeTableBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: PREVIEW & PRINT RESMI FAKTUR / DELIVERY ORDER ==================== -->
+  <div id="invoicePreviewModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full border border-stone-200 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Top Action Bar -->
+      <div class="flex items-center justify-between border-b border-stone-100 pb-4 no-print font-mono">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-bento-greenBg text-bento-green uppercase tracking-wider">
+            OFFICIAL DELIVERY ORDER & FAKTUR
+          </span>
+          <span class="text-xs text-slate-400 font-mono">HACCP & HALAL CERTIFIED</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="printInvoiceDocument()" class="bg-bento-orange hover:bg-bento-deepOrange text-white font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm font-sans">
+            <i data-lucide="printer" class="w-4 h-4"></i> Cetak Surat Jalan / PDF
+          </button>
+          <button onclick="closeInvoiceModal()" class="p-2 text-stone-400 hover:text-stone-600 rounded-xl bg-stone-100">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Area -->
+      <div id="printableInvoiceModal" class="space-y-6">
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-stone-200 pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-bento-green flex items-center justify-center text-white font-bold">
+                <i data-lucide="package-check" class="w-4 h-4"></i>
+              </div>
+              <span class="font-black text-xl tracking-tight text-slate-900 font-display">CATERING<span class="text-bento-orange">PRO</span> <span class="text-xs font-bold bg-bento-orange text-white px-1.5 py-0.5 rounded font-sans uppercase">BOX</span></span>
+            </div>
+            <p class="text-[11px] text-stone-500 font-sans">PT CateringPro Nusantara • Central Kitchen Hub Senopati, Jakarta Selatan</p>
+            <p class="text-[11px] text-stone-500 font-sans">Hotline Dispatch Kurir: +62 812-9999-8888 • contact@cateringpro.frel.cloud</p>
+          </div>
+
+          <div class="text-right font-mono">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-bento-greenBg text-bento-green uppercase" id="modalInvStatusBadge">
+              ORDER CONFIRMED (DP 50%)
+            </span>
+            <p id="modalInvCode" class="text-xs font-bold text-slate-900 mt-1">CAT-202610-9921</p>
+            <p id="modalInvDate" class="text-[11px] text-stone-400">29 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Recipient & Logistics Details -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-stone-50 p-4 rounded-2xl border border-stone-200">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5 font-mono">PENERIMA PESANAN (KLIEN):</span>
+            <p id="modalRecipientName" class="font-bold text-slate-900 text-sm font-sans">Tedi Mahendra</p>
+            <p id="modalCompanyName" class="text-slate-700 font-medium font-sans">PT Bank Mandiri (Persero) Tbk</p>
+            <p id="modalRecipientPhone" class="text-stone-500 font-mono">WhatsApp: 081299998888</p>
+            <p id="modalAddress" class="text-stone-600 mt-1 font-sans">Gedung Plaza Mandiri Lt. 12, Jl. Gatot Subroto, Jaksel</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-stone-400 block mb-0.5 font-mono">JADWAL DISPATCHING TIBA:</span>
+            <p id="modalDeliveryDate" class="font-bold text-slate-900 text-sm font-mono">Kamis, 29 Okt 2026</p>
+            <p id="modalDeliveryShift" class="text-bento-deepOrange font-bold font-mono">Makan Siang (11:00 - 12:30 WIB)</p>
+            <p class="text-stone-500 font-sans mt-0.5" id="modalFleetAssigned">Armada: Thermo Van 01 (Suhu 61°C)</p>
+          </div>
+        </div>
+
+        <!-- Items Table Breakdown -->
+        <div class="border border-stone-200 rounded-2xl overflow-hidden text-xs">
+          <table class="w-full text-left font-mono">
+            <thead class="bg-stone-50 text-stone-600 font-bold border-b border-stone-200">
+              <tr>
+                <th class="py-2.5 px-4 font-sans">Rincian Komposisi Bento 5-Sekat</th>
+                <th class="py-2.5 px-3 text-center">Porsi</th>
+                <th class="py-2.5 px-4 text-right">Harga Satuan</th>
+                <th class="py-2.5 px-4 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 font-medium">
+              <tr>
+                <td class="py-3 px-4 font-sans">
+                  <span class="font-bold text-slate-900 block" id="modalItemTitle">Custom Bento Box Premium</span>
+                  <div class="text-[11px] text-stone-500 mt-0.5 leading-relaxed" id="modalMenuDetails">
+                    Nasi Daun Jeruk • Ayam Bakar Madu Wijèn • Perkedel Kentang • Tumis Buncis Baby Corn • Sambal Matah • Kerupuk Udang
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-center font-bold text-slate-800" id="modalPaxCount">120 Pax</td>
+                <td class="py-3 px-4 text-right text-stone-600 font-mono" id="modalRatePerBox">Rp 35.000</td>
+                <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono" id="modalRawSubtotal">Rp 4.200.000</td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-stone-50 border-t border-stone-200 text-xs font-mono">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-700 font-bold" id="modalDiscountLabel">Diskon Volume 100+ Pax (10%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700" id="modalDiscountVal">- Rp 420.000</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-stone-600 font-bold">Ongkir Thermal Insulated Van:</td>
+                <td class="py-2 px-4 text-right font-bold text-slate-900" id="modalShippingVal">GRATIS</td>
+              </tr>
+              <tr class="bg-stone-100 border-t border-stone-200">
+                <td colspan="3" class="py-2 px-4 text-right text-slate-900 font-extrabold text-xs">Total Nilai Tagihan:</td>
+                <td class="py-2 px-4 text-right font-black text-sm text-bento-green" id="modalGrandTotal">Rp 3.780.000</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-700 font-bold" id="modalPaidLabel">Sudah Dibayar (DP 50% QRIS):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700" id="modalPaidVal">Rp 1.890.000</td>
+              </tr>
+              <tr class="bg-bento-orangeBg/40 border-t border-orange-200">
+                <td colspan="3" class="py-2.5 px-4 text-right text-bento-deepOrange font-extrabold text-xs" id="modalDueLabel">Sisa Pelunasan Saat Serah Terima:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-bento-deepOrange" id="modalDueVal">Rp 1.890.000</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Dispatching Proof Barcode -->
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider font-mono">PROOF OF DELIVERY BARCODE</span>
+            <p class="text-xs font-bold text-slate-900">Scan Barcode Ini Saat Serah Terima di Lokasi Klien</p>
+            <p class="text-[11px] text-stone-500">Masa konsumsi terbaik adalah 4 jam setelah box katering tiba.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-stone-200 inline-block shadow-sm">
+              <img id="modalDispatchQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=DO-9921-BOX" alt="QR Dispatch" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-stone-400 mt-1" id="modalDispatchTokenText">TOKEN: DO-9921-BOX</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: PELUNASAN KASIR SAAT SERAH TERIMA ==================== -->
+  <div id="settlePaymentModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-stone-200 shadow-2xl p-6 space-y-5 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+          <i data-lucide="hand-coins" class="w-5 h-5 text-bento-green"></i>
+          Pelunasan Tagihan Katering Serah Terima
+        </h3>
+        <button onclick="closeSettleModal()" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-stone-500">Nomor PO:</span>
+          <span class="font-bold text-slate-900" id="settleOrderCode">PO-CAT-9921</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-stone-500">Klien / Perusahaan:</span>
+          <span class="font-bold text-slate-900 font-sans" id="settleClientName">PT Bank Mandiri</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-stone-500">Total Nilai Tagihan:</span>
+          <span class="font-bold text-slate-900" id="settleTotalCost">Rp 3.780.000</span>
+        </div>
+        <div class="flex justify-between text-emerald-700">
+          <span>DP 50% Sebelumnya Diterima:</span>
+          <span class="font-bold" id="settlePaidDP">Rp 1.890.000</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-stone-200 text-sm font-bold text-slate-900">
+          <span>Sisa Tagihan Pelunasan:</span>
+          <span class="text-bento-deepOrange font-extrabold" id="settleRemainingDue">Rp 1.890.000</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-bold text-stone-700 mb-1 font-sans">Metode Pelunasan Serah Terima:</label>
+        <select id="settleMethodSelect" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-sans focus:outline-none focus:ring-2 focus:ring-bento-green">
+          <option value="Transfer Bank BCA Escrow">Transfer Bank Mandiri / BCA (Saat Tiba)</option>
+          <option value="Cash / Tunai Kurir">Uang Tunai ke Kurir Dispatcher</option>
+          <option value="EDC Mobile Kurir">EDC Mobile Debit / Visa</option>
+          <option value="QRIS Statis Pelunasan">QRIS Statis Kurir</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-stone-100 font-sans">
+        <button onclick="closeSettleModal()" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="confirmSettleOrder()" class="px-5 py-2.5 bg-bento-green hover:bg-emerald-700 text-white font-bold rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Konfirmasi Lunas & Cetak Faktur
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: INPUT PESANAN BARU DENGAN KALKULATOR ==================== -->
+  <div id="newOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-stone-200 shadow-2xl p-6 space-y-4 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-bento-orange"></i>
+          Input Pesanan Baru (Kalkulator Pax Cepat)
+        </h3>
+        <button onclick="closeNewOrderModal()" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div>
+          <label class="block font-bold text-stone-700 mb-1 font-mono">Nama PIC Pemesan *</label>
+          <input type="text" id="newOrderPic" placeholder="Contoh: Rian Ardianto" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-bento-green" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-mono">Perusahaan / Acara *</label>
+            <input type="text" id="newOrderCompany" placeholder="Contoh: Shopee Indonesia" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-bento-green" />
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-mono">No. WhatsApp *</label>
+            <input type="tel" id="newOrderPhone" placeholder="0812..." class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-bento-green" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-mono">Lauk Utama Protein *</label>
+            <select id="newOrderProtein" onchange="calculateNewOrderPrice()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-bento-green">
+              <option value="main-1">Ayam Bakar Madu Wijèn (Rp 35k)</option>
+              <option value="main-2">Rendang Sapi Singkarak (Rp 42k)</option>
+              <option value="main-3">Udang Crispy Telur Asin (Rp 39k)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-mono">Pilihan Nasi *</label>
+            <select id="newOrderRice" onchange="calculateNewOrderPrice()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-bento-green">
+              <option value="rice-1">Nasi Daun Jeruk (Rp 0)</option>
+              <option value="rice-2">Nasi Liwet Sunda (+Rp 2k)</option>
+              <option value="rice-3">Nasi Putih Pandan (Rp 0)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-mono">Jumlah Porsi (Pax) *</label>
+            <input type="number" id="newOrderPax" oninput="calculateNewOrderPrice()" value="75" min="20" max="1000" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-bento-green" />
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-mono">Skema Pembayaran *</label>
+            <select id="newOrderScheme" onchange="calculateNewOrderPrice()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-bento-green">
+              <option value="DP">DP 50% via QRIS (Sisa COD)</option>
+              <option value="FULL">Lunas Penuh (100%)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 font-mono space-y-1 text-xs">
+          <div class="flex justify-between">
+            <span class="text-stone-500">Harga Dasar per Box:</span>
+            <span class="font-bold text-slate-900" id="newOrderRateBox">Rp 35.000</span>
+          </div>
+          <div class="flex justify-between text-emerald-700">
+            <span>Diskon Volume Otomatis:</span>
+            <span class="font-bold" id="newOrderDiscountText">Diskon 5% (50+ Pax)</span>
+          </div>
+          <div class="flex justify-between pt-1 border-t border-stone-200 text-sm font-black">
+            <span>Total Tagihan:</span>
+            <span class="text-bento-green" id="newOrderGrandTotal">Rp 2.543.750</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-stone-100 font-sans">
+        <button onclick="closeNewOrderModal()" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="saveNewOrder()" class="px-5 py-2.5 bg-bento-green hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-md shadow-emerald-600/20">
+          Simpan PO & Masukkan ke Antrean Dapur
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+    <div class="w-6 h-6 rounded-full bg-bento-green flex items-center justify-center text-white font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Sistem diperbarui</span>
+  </div>
+
+  <!-- ==================== CORE JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // 1. Data Orders Master
+    let masterOrders = [
+      {
+        orderId: "PO-CAT-9921",
+        dispatchToken: "DO-9921-BOX",
+        clientName: "Tedi Mahendra",
+        company: "PT Bank Mandiri (Persero) Tbk",
+        phone: "0812-9999-8888",
+        address: "Gedung Plaza Mandiri Lt. 12, Jl. Gatot Subroto, Jaksel",
+        pax: 120,
+        mainDish: "Ayam Bakar Madu Wijèn",
+        rice: "Nasi Daun Jeruk Wangi",
+        side: "Perkedel Kentang Daging",
+        veggie: "Tumis Buncis Baby Corn",
+        sambal: "Sambal Matah Bali",
+        date: "2026-10-31",
+        timeSlot: "Makan Siang (11:00 - 12:30 WIB)",
+        pricePerBox: 35000,
+        rawSubtotal: 4200000,
+        discountPercent: 0.10,
+        discountAmount: 420000,
+        shippingFee: 0,
+        grandTotal: 3780000,
+        paidAmount: 1890000,
+        dueAmount: 1890000,
+        paymentStatus: "DP_50",
+        kitchenStatus: "DISPATCHED",
+        fleetAssigned: "Thermo Van 01 (Senopati - Gatot Subroto)"
+      },
+      {
+        orderId: "PO-CAT-9922",
+        dispatchToken: "DO-9922-BOX",
+        clientName: "Nadia Hutagalung",
+        company: "Shopee Indonesia HQ",
+        phone: "0811-3456-7890",
+        address: "Pacific Century Place Lt. 25, SCBD, Jaksel",
+        pax: 250,
+        mainDish: "Rendang Sapi Singkarak",
+        rice: "Nasi Daun Jeruk Wangi",
+        side: "Tempe Orek Manis Gurih",
+        veggie: "Urap Sayur Bumbu Kelapa",
+        sambal: "Sambal Ijo Padang",
+        date: "2026-10-31",
+        timeSlot: "Makan Siang (11:00 - 12:30 WIB)",
+        pricePerBox: 42000,
+        rawSubtotal: 10500000,
+        discountPercent: 0.10,
+        discountAmount: 1050000,
+        shippingFee: 0,
+        grandTotal: 9450000,
+        paidAmount: 9450000,
+        dueAmount: 0,
+        paymentStatus: "PAID_FULL",
+        kitchenStatus: "DISPATCHED",
+        fleetAssigned: "Thermo Van 02 (SCBD Corridor)"
+      },
+      {
+        orderId: "PO-CAT-9923",
+        dispatchToken: "DO-9923-BOX",
+        clientName: "Bima Santoso",
+        company: "Kemenpora RI (Event Pelatnas)",
+        phone: "0813-5566-7788",
+        address: "Wisma Kemenpora, Jl. Gerbang Pemuda No. 3, Senayan",
+        pax: 80,
+        mainDish: "Udang Crispy Telur Asin",
+        rice: "Nasi Liwet Sunda Gurih",
+        side: "Bakwan Jagung Crispy",
+        veggie: "Capcay Jamur Wortel",
+        sambal: "Sambal Bawang Terasi",
+        date: "2026-10-31",
+        timeSlot: "Makan Siang (11:00 - 12:30 WIB)",
+        pricePerBox: 41000,
+        rawSubtotal: 3280000,
+        discountPercent: 0.05,
+        discountAmount: 164000,
+        shippingFee: 50000,
+        grandTotal: 3166000,
+        paidAmount: 1583000,
+        dueAmount: 1583000,
+        paymentStatus: "DP_50",
+        kitchenStatus: "PACKING",
+        fleetAssigned: "Thermo Van 03 (Senayan - Slipi)"
+      },
+      {
+        orderId: "PO-CAT-9924",
+        dispatchToken: "DO-9924-BOX",
+        clientName: "Agung Pratama",
+        company: "GoTo Financial Ecosystem",
+        phone: "0817-2233-4411",
+        address: "Pasaraya Blok M Gedung B, Kebayoran Baru",
+        pax: 50,
+        mainDish: "Ayam Bakar Madu Wijèn",
+        rice: "Nasi Daun Jeruk Wangi",
+        side: "Perkedel Kentang Daging",
+        veggie: "Tumis Buncis Baby Corn",
+        sambal: "Sambal Matah Bali",
+        date: "2026-10-31",
+        timeSlot: "Coffee Break / Sore (15:30 - 17:00 WIB)",
+        pricePerBox: 35000,
+        rawSubtotal: 1750000,
+        discountPercent: 0.05,
+        discountAmount: 87500,
+        shippingFee: 50000,
+        grandTotal: 1712500,
+        paidAmount: 1712500,
+        dueAmount: 0,
+        paymentStatus: "PAID_FULL",
+        kitchenStatus: "COOKING",
+        fleetAssigned: "Thermo Van 04 (Blok M Area)"
+      },
+      {
+        orderId: "PO-CAT-9925",
+        dispatchToken: "DO-9925-BOX",
+        clientName: "Siti Rahmawati",
+        company: "Prudential Life Assurance",
+        phone: "0856-7788-9922",
+        address: "Prudential Tower, Jl. Jend Sudirman Kav. 79, Setiabudi",
+        pax: 60,
+        mainDish: "Rendang Sapi Singkarak",
+        rice: "Nasi Putih Pandan Wangi",
+        side: "Tempe Orek Manis Gurih",
+        veggie: "Tumis Buncis Baby Corn",
+        sambal: "Sambal Ijo Padang",
+        date: "2026-10-31",
+        timeSlot: "Makan Malam (18:00 - 19:30 WIB)",
+        pricePerBox: 42000,
+        rawSubtotal: 2520000,
+        discountPercent: 0.05,
+        discountAmount: 126000,
+        shippingFee: 50000,
+        grandTotal: 2444000,
+        paidAmount: 1222000,
+        dueAmount: 1222000,
+        paymentStatus: "DP_50",
+        kitchenStatus: "PREPARING",
+        fleetAssigned: "Standby Dispatch"
+      }
+    ];
+
+    // 2. Data Armada Thermo Van
+    let masterFleet = [
+      { id: "VAN-01", name: "Thermo Van 01", driver: "Pak Joko Susilo", route: "Senopati - Kuningan - Gatot Subroto", temp: 62.4, status: "ON_DELIVERY", capacity: "600 Box", currentLoad: "370 Box", battery: "92%" },
+      { id: "VAN-02", name: "Thermo Van 02", driver: "Pak Hendra Wijaya", route: "SCBD - Sudirman - Thamrin", temp: 61.8, status: "ON_DELIVERY", capacity: "800 Box", currentLoad: "500 Box", battery: "88%" },
+      { id: "VAN-03", name: "Thermo Van 03", driver: "Pak Dani Saputra", route: "Senayan - Slipi - Tomang", temp: 60.5, status: "LOADING", capacity: "500 Box", currentLoad: "280 Box", battery: "95%" },
+      { id: "VAN-04", name: "Thermo Van 04", driver: "Pak Arief Rahman", route: "Cilandak - TB Simatupang", temp: 63.1, status: "STANDBY", capacity: "600 Box", currentLoad: "0 Box", battery: "99%" }
+    ];
+
+    // 3. Data Inventori & Bahan Baku
+    let masterInventory = [
+      { id: "INV-01", name: "Dada Ayam Fillet Segar", category: "Protein", stock: 320, unit: "Kg", minStock: 100, status: "SAFE", supplier: "PT Charoen Pokphand" },
+      { id: "INV-02", name: "Daging Sapi Gandik (Rendang)", category: "Protein", stock: 180, unit: "Kg", minStock: 80, status: "SAFE", supplier: "PT Santori Beef" },
+      { id: "INV-03", name: "Udang Vaname Kupas Bersih", category: "Seafood", stock: 45, unit: "Kg", minStock: 50, status: "REORDER", supplier: "Indo Mina Bahari" },
+      { id: "INV-04", name: "Beras Pandan Wangi Cianjur", category: "Bahan Pokok", stock: 1250, unit: "Kg", minStock: 400, status: "SAFE", supplier: "Koperasi Tani Makmur" },
+      { id: "INV-05", name: "Buncis Baby & Jagung Manis", category: "Sayuran", stock: 95, unit: "Kg", minStock: 40, status: "SAFE", supplier: "Sayur Segar Lembang" },
+      { id: "INV-06", name: "Kotak Bento 5-Sekat Food Grade", category: "Kemasan", stock: 850, unit: "Pcs", minStock: 1000, status: "REORDER", supplier: "PT Eco Packindo" }
+    ];
+
+    // 4. Dispatch Courier Audit Logs
+    let dispatchLogs = [
+      { time: "11:14:20", token: "DO-9921-BOX", client: "PT Bank Mandiri (Plaza Mandiri)", van: "Van 01", status: "TERKIRIM (SERAH TERIMA LOBI)" },
+      { time: "10:55:04", token: "DO-9922-BOX", client: "Shopee Indonesia (Pacific Century)", van: "Van 02", status: "TERKIRIM (LUNAS PENUH)" },
+      { time: "10:30:15", token: "DO-9920-BOX", client: "PT Telkomsel Smart Office", van: "Van 01", status: "SELESAI (SUHU BOX 63°C)" }
+    ];
+
+    let activeSettleOrderId = null;
+    let paxShiftBarChartInstance = null;
+    let proteinDoughnutChartInstance = null;
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Ringkasan Dapur & KPI Operasional",
+        orders: "Master Pesanan & Kalkulator Pax Dinamis",
+        fleet: "Dispatching Armada Thermo Van & Scanner Barcode",
+        inventory: "Monitoring Bahan Baku & Kemasan Bento",
+        finance: "Kasir Pelunasan Serah Terima & Faktur Resmi"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "CateringPro Admin Suite";
+
+      ['overview', 'orders', 'fleet', 'inventory', 'finance'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800 font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-emerald-400 bg-slate-800 border-l-4 border-bento-lightGreen shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'overview') renderKanbanColumns();
+      if (tabKey === 'orders') renderMasterOrdersTable();
+      if (tabKey === 'fleet') { renderFleetCards(); renderDispatchLogs(); }
+      if (tabKey === 'inventory') renderInventoryGrid();
+      if (tabKey === 'finance') renderFinanceTable();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    function changeFilterDate() {
+      const date = document.getElementById('topDateSelector').value;
+      showToast(`Filter tanggal produksi: ${date}`);
+      renderMasterOrdersTable();
+    }
+
+    function changeFilterShift() {
+      const shift = document.getElementById('topShiftSelector').value;
+      showToast(`Filter shift dapur: ${shift}`);
+      renderMasterOrdersTable();
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const topDate = document.getElementById('topDateSelector');
+      if (topDate) topDate.value = today;
+
+      initCharts();
+      renderKanbanColumns();
+      renderMasterOrdersTable();
+      renderFleetCards();
+      renderDispatchLogs();
+      renderInventoryGrid();
+      renderFinanceTable();
+      updateDashboardCounters();
+      calculateNewOrderPrice();
+      lucide.createIcons();
+    });
+
+    // ==================== 1. KITCHEN KANBAN & CHARTS ====================
+    function renderKanbanColumns() {
+      const container = document.getElementById('kanbanColumnsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const columns = [
+        { key: "PREPARING", label: "1. Bahan Baku Siap", color: "border-slate-600 bg-slate-800/60" },
+        { key: "COOKING", label: "2. Masak Central", color: "border-amber-500/50 bg-amber-950/20" },
+        { key: "PACKING", label: "3. Packing Bento 5-Sekat", color: "border-orange-500/50 bg-orange-950/20" },
+        { key: "DISPATCHED", label: "4. Diantar Thermo Van", color: "border-emerald-500/50 bg-emerald-950/20" }
+      ];
+
+      columns.forEach(col => {
+        const ordersInCol = masterOrders.filter(o => o.kitchenStatus === col.key);
+
+        let cardsHtml = ordersInCol.map(o => `
+          <div class="p-3.5 bg-slate-800 rounded-2xl border border-slate-700 space-y-2 text-xs font-mono">
+            <div class="flex justify-between items-start">
+              <span class="font-bold text-white text-[11px] truncate">${o.company}</span>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-bento-orange text-white">${o.pax} Pax</span>
+            </div>
+            <p class="text-[10px] text-slate-300 font-sans">${o.mainDish} (${o.rice})</p>
+            <div class="pt-2 border-t border-slate-700 flex justify-between items-center text-[10px] text-slate-400">
+              <span>${o.timeSlot.split(' ')[0]}</span>
+              <button onclick="advanceKanbanStatus('${o.orderId}')" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-0.5">
+                Proses →
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        if (ordersInCol.length === 0) {
+          cardsHtml = `<div class="p-4 text-center text-slate-500 text-xs italic">Tidak ada antrean</div>`;
+        }
+
+        const colDiv = document.createElement('div');
+        colDiv.className = `p-4 rounded-2xl border ${col.color} space-y-3`;
+        colDiv.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-700/80 pb-2">
+            <span class="font-bold text-xs text-white">${col.label}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-emerald-400">${ordersInCol.length}</span>
+          </div>
+          <div class="space-y-2.5">
+            ${cardsHtml}
+          </div>
+        `;
+        container.appendChild(colDiv);
+      });
+
+      lucide.createIcons();
+    }
+
+    function advanceKanbanStatus(orderId) {
+      const o = masterOrders.find(x => x.orderId === orderId);
+      if (!o) return;
+
+      const flow = ["PREPARING", "COOKING", "PACKING", "DISPATCHED"];
+      const currentIdx = flow.indexOf(o.kitchenStatus);
+      if (currentIdx < flow.length - 1) {
+        o.kitchenStatus = flow[currentIdx + 1];
+        showToast(`Pesanan ${o.orderId} beralih ke: ${flow[currentIdx + 1]}`);
+        renderKanbanColumns();
+        renderMasterOrdersTable();
+      } else {
+        showToast(`Pesanan ${o.orderId} sudah dalam status pengiriman akhir`);
+      }
+    }
+
+    function initCharts() {
+      // 1. Hourly Shift Output Bar Chart
+      const ctxShift = document.getElementById('paxShiftBarChart');
+      if (ctxShift) {
+        paxShiftBarChartInstance = new Chart(ctxShift, {
+          type: 'bar',
+          data: {
+            labels: ['Sarapan (07:00-08:30)', 'Siang (11:00-12:30)', 'Break (15:30-17:00)', 'Malam (18:00-19:30)'],
+            datasets: [
+              {
+                label: 'Pax Terkirim',
+                data: [350, 1420, 280, 400],
+                backgroundColor: '#059669',
+                borderRadius: 6
+              },
+              {
+                label: 'Pax Packing / Siap Kirim',
+                data: [0, 250, 150, 200],
+                backgroundColor: '#f97316',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 1600,
+                ticks: { stepSize: 400, color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#f1f5f9' }
+              },
+              x: {
+                ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Protein Ratio Doughnut Chart
+      const ctxProtein = document.getElementById('proteinDoughnutChart');
+      if (ctxProtein) {
+        proteinDoughnutChartInstance = new Chart(ctxProtein, {
+          type: 'doughnut',
+          data: {
+            labels: ['Ayam Bakar Madu', 'Rendang Sapi', 'Udang Telur Asin'],
+            datasets: [{
+              data: [54, 28, 18],
+              backgroundColor: ['#059669', '#f97316', '#10b981'],
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            },
+            cutout: '70%'
+          }
+        });
+      }
+    }
+
+    // ==================== 2. MASTER ORDERS TABLE ====================
+    function renderMasterOrdersTable(filteredList = null) {
+      const tbody = document.getElementById('masterOrdersTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterOrders;
+      document.getElementById('ordersTableCountText').innerText = `Menampilkan ${list.length} pesanan katering`;
+
+      list.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-stone-50 transition";
+
+        let paymentBadge = '';
+        if (o.paymentStatus === 'DP_50') {
+          paymentBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-amber-50 text-amber-700 border border-amber-200 font-bold">DP 50% (${formatRupiah(o.dueAmount)})</span>`;
+        } else {
+          paymentBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold">LUNAS 100%</span>`;
+        }
+
+        let kitchenBadge = '';
+        if (o.kitchenStatus === 'DISPATCHED') kitchenBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold">DISPATCHED</span>';
+        else if (o.kitchenStatus === 'PACKING') kitchenBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-orange-100 text-orange-800 font-bold">PACKING</span>';
+        else if (o.kitchenStatus === 'COOKING') kitchenBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-bold">COOKING</span>';
+        else kitchenBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 font-bold">PREPARING</span>';
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${o.orderId}<br><span class="text-[9px] text-stone-400 font-normal">Token: ${o.dispatchToken}</span></td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-800">${o.clientName}<br><span class="text-[10px] text-stone-500 font-mono font-normal">${o.company}</span></td>
+          <td class="py-3 px-4 text-center"><span class="px-2.5 py-1 rounded-lg bg-stone-100 font-black text-slate-900">${o.pax} Pax</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700">
+            <strong class="text-slate-900">${o.mainDish}</strong><br>
+            <span class="text-[10px] text-stone-500">${o.rice} • ${o.side} • ${o.veggie} • ${o.sambal}</span>
+          </td>
+          <td class="py-3 px-4 text-slate-700">${o.date}<br><span class="text-[10px] text-bento-deepOrange font-bold">${o.timeSlot.split(' ')[0]}</span></td>
+          <td class="py-3 px-4 font-mono font-bold text-slate-900">${formatRupiah(o.grandTotal)}</td>
+          <td class="py-3 px-4">${paymentBadge}</td>
+          <td class="py-3 px-4">${kitchenBadge}</td>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center gap-1.5 font-mono">
+              <button onclick="previewInvoiceModal('${o.orderId}')" class="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 transition" title="Cetak Surat Jalan & DO">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              </button>
+              ${o.dueAmount > 0 ? `
+                <button onclick="openSettlePaymentModal('${o.orderId}')" class="px-2 py-1 rounded-lg bg-bento-green hover:bg-emerald-700 text-white font-bold text-[10px] transition shadow-sm">
+                  Pelunasan
+                </button>
+              ` : `
+                <span class="text-[10px] text-emerald-600 font-bold flex items-center"><i data-lucide="check-check" class="w-3.5 h-3.5"></i> Clear</span>
+              `}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterOrdersTable() {
+      const q = document.getElementById('orderSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMasterOrdersTable();
+        return;
+      }
+      const filtered = masterOrders.filter(o => 
+        o.orderId.toLowerCase().includes(q) ||
+        o.dispatchToken.toLowerCase().includes(q) ||
+        o.clientName.toLowerCase().includes(q) ||
+        o.company.toLowerCase().includes(q)
+      );
+      renderMasterOrdersTable(filtered);
+    }
+
+    function filterOrderStatus(statusKey) {
+      document.querySelectorAll('.order-status-btn').forEach(btn => {
+        if (btn.getAttribute('data-status') === statusKey) {
+          btn.className = "order-status-btn px-3.5 py-2 rounded-xl font-bold bg-slate-900 text-white transition";
+        } else {
+          btn.className = "order-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition";
+        }
+      });
+
+      if (statusKey === 'ALL') {
+        renderMasterOrdersTable();
+      } else if (statusKey === 'DP_50' || statusKey === 'PAID_FULL') {
+        renderMasterOrdersTable(masterOrders.filter(o => o.paymentStatus === statusKey));
+      } else {
+        renderMasterOrdersTable(masterOrders.filter(o => o.kitchenStatus === statusKey));
+      }
+    }
+
+    function exportOrdersToCSV() {
+      let csv = "data:text/csv;charset=utf-8,ID Order,Token Surat Jalan,PIC,Perusahaan,Pax,Lauk Utama,Nasi,Tanggal Kirim,Shift,Total,Status Bayar,Status Dapur\n";
+      masterOrders.forEach(o => {
+        csv += `"${o.orderId}","${o.dispatchToken}","${o.clientName}","${o.company}","${o.pax}","${o.mainDish}","${o.rice}","${o.date}","${o.timeSlot}","${o.grandTotal}","${o.paymentStatus}","${o.kitchenStatus}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `CateringPro_Orders_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 3. FLEET VANS & DISPATCH SCANNER ====================
+    function renderFleetCards() {
+      const container = document.getElementById('fleetCardsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterFleet.forEach(v => {
+        let statusBadge = "bg-emerald-100 text-emerald-800";
+        if (v.status === 'LOADING') statusBadge = "bg-amber-100 text-amber-800";
+        if (v.status === 'STANDBY') statusBadge = "bg-slate-100 text-slate-700";
+
+        const div = document.createElement('div');
+        div.className = "bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-3 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start border-b border-stone-100 pb-2">
+            <div>
+              <span class="text-[10px] text-stone-400 font-bold">${v.id}</span>
+              <h4 class="font-bold text-slate-900 text-sm font-sans">${v.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusBadge}">${v.status}</span>
+          </div>
+
+          <div class="space-y-1 font-sans">
+            <p class="text-stone-500 text-[11px]">Driver: <strong class="text-slate-800 font-mono">${v.driver}</strong></p>
+            <p class="text-stone-500 text-[11px] truncate">Rute: ${v.route}</p>
+          </div>
+
+          <!-- Real-Time Insulation Temperature -->
+          <div class="p-3 bg-stone-50 rounded-2xl border border-stone-200 flex items-center justify-between font-mono">
+            <div>
+              <span class="text-[9px] text-stone-400 block">SUHU THERMAL BOX:</span>
+              <span class="text-base font-black ${v.temp >= 58 ? 'text-bento-green' : 'text-amber-600'}">${v.temp}°C</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[9px] text-stone-400 block">LOAD:</span>
+              <span class="font-bold text-slate-800">${v.currentLoad}</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function setScannerVal(val) {
+      document.getElementById('dispatchTokenInput').value = val;
+      executeDispatchScan();
+    }
+
+    function executeDispatchScan() {
+      const token = document.getElementById('dispatchTokenInput').value.trim().toUpperCase();
+      const card = document.getElementById('dispatchScanFeedbackCard');
+      card.classList.remove('hidden');
+
+      const match = masterOrders.find(o => o.dispatchToken.toUpperCase() === token || o.orderId.toUpperCase() === token);
+
+      if (!match) {
+        card.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-800">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> TOKEN SURAT JALAN TIDAK DITEMUKAN
+          </div>
+          <p class="text-xs font-sans">Barcode surat jalan <strong>${token}</strong> tidak memiliki catatan pengiriman di sistem CateringPro.</p>
+        `;
+        recordDispatchLog(token, "UNKNOWN CLIENT", "-", "DITOLAK (INVALID TOKEN)");
+      } else if (match.dueAmount > 0) {
+        card.className = "p-5 rounded-2xl border border-amber-300 bg-amber-50 text-slate-900 space-y-3 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-amber-800 flex items-center gap-1.5 font-display">
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i> SERAH TERIMA PENDING: SISA COD 50%
+            </span>
+            <span class="text-xs font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-mono">BUTUH PELUNASAN</span>
+          </div>
+          <div class="space-y-1 font-sans text-xs">
+            <p>Penerima: <strong class="text-slate-900">${match.clientName}</strong> (${match.company})</p>
+            <p>Kuantitas Box: <strong class="text-bento-green font-mono">${match.pax} Box Bento</strong> (${match.mainDish})</p>
+            <p class="text-slate-500 font-mono text-[11px]">Alamat: ${match.address}</p>
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-amber-200 flex items-center justify-between font-mono">
+            <span>Sisa Tagihan yang Wajib Dilunasi ke Kurir:</span>
+            <strong class="text-base text-bento-deepOrange">${formatRupiah(match.dueAmount)}</strong>
+          </div>
+          <button onclick="openSettlePaymentModal('${match.orderId}')" class="w-full bg-bento-green hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-sm">
+            <i data-lucide="hand-coins" class="w-4 h-4"></i> Pelunasan Serah Terima Sekarang
+          </button>
+        `;
+        recordDispatchLog(token, match.company, match.fleetAssigned, "PENDING (HOLD SISA COD)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 space-y-2 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-emerald-800 flex items-center gap-1.5 font-display">
+              <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i> SERAH TERIMA SUKSES (LUNAS 100%)
+            </span>
+            <span class="text-xs font-bold bg-bento-green text-white px-2 py-0.5 rounded">DELIVERED</span>
+          </div>
+          <p class="text-xs font-sans">Pesanan <strong>${match.company}</strong> (${match.pax} Pax) berhasil diverifikasi dan diserahkan ke ${match.clientName}.</p>
+          <span class="text-[10px] text-emerald-700 block pt-1">Suhu Thermo Van 61.5°C • Tanda terima digital tercatat otomatis</span>
+        `;
+        recordDispatchLog(token, match.company, match.fleetAssigned, "SERAH TERIMA SELESAI");
+      }
+
+      lucide.createIcons();
+    }
+
+    function recordDispatchLog(token, client, van, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      dispatchLogs.unshift({
+        time: timeStr,
+        token: token,
+        client: client,
+        van: van,
+        status: status
+      });
+      renderDispatchLogs();
+    }
+
+    function renderDispatchLogs() {
+      const list = document.getElementById('dispatchAuditLogs');
+      if (!list) return;
+      list.innerHTML = '';
+
+      dispatchLogs.slice(0, 7).forEach(l => {
+        const isOk = l.status.includes('SELESAI') || l.status.includes('TERKIRIM');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-emerald-50/70 border-emerald-200 text-emerald-900" : "bg-amber-50 border-amber-200 text-amber-900");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs">${l.client}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold opacity-80">${l.token}</span>
+            </div>
+            <span class="text-[10px] opacity-75">${l.van} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold">${l.status}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 4. INVENTORY MONITOR ====================
+    function renderInventoryGrid() {
+      const container = document.getElementById('inventoryGridContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterInventory.forEach(item => {
+        const isReorder = item.status === 'REORDER';
+        const percent = Math.min(Math.round((item.stock / (item.minStock * 2)) * 100), 100);
+
+        const card = document.createElement('div');
+        card.className = "bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-3 font-mono text-xs";
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-stone-100 pb-2">
+            <div>
+              <span class="text-[10px] text-stone-400 uppercase font-bold">${item.category}</span>
+              <h4 class="font-bold text-slate-900 text-sm font-sans">${item.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isReorder ? 'bg-rose-100 text-rose-800 border border-rose-200 animate-pulse' : 'bg-emerald-100 text-emerald-800'}">
+              ${isReorder ? 'REORDER' : 'AMAN'}
+            </span>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="text-stone-500 font-sans">Sisa Stok Fisik:</span>
+              <strong class="text-slate-900">${item.stock} ${item.unit}</strong>
+            </div>
+            <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
+              <div class="h-full rounded-full ${isReorder ? 'bg-rose-500' : 'bg-bento-green'}" style="width: ${percent}%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-stone-400 mt-1">
+              <span>Batas Min: ${item.minStock} ${item.unit}</span>
+              <span>Supplier: ${item.supplier}</span>
+            </div>
+          </div>
+
+          <button onclick="topUpStock('${item.id}')" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2 rounded-xl transition text-[11px] font-sans">
+            + Tambah Pasokan Stok
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function topUpStock(invId) {
+      const item = masterInventory.find(x => x.id === invId);
+      if (item) {
+        item.stock += 100;
+        item.status = "SAFE";
+        renderInventoryGrid();
+        updateDashboardCounters();
+        showToast(`Stok ${item.name} bertambah +100 ${item.unit}`);
+      }
+    }
+
+    // ==================== 5. FINANCE & INVOICE PREVIEW ====================
+    function renderFinanceTable() {
+      const tbody = document.getElementById('financeTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterOrders.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-stone-50 transition";
+
+        let statusText = o.dueAmount === 0 ? "LUNAS REKONSILIASI" : "MENUNGGU SISA SERAH TERIMA";
+        let statusBadge = o.dueAmount === 0 ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
+
+        let actionBtn = '';
+        if (o.dueAmount > 0) {
+          actionBtn = `
+            <button onclick="openSettlePaymentModal('${o.orderId}')" class="bg-bento-green hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-sm font-sans">
+              Pelunasan
+            </button>
+          `;
+        } else {
+          actionBtn = `
+            <button onclick="previewInvoiceModal('${o.orderId}')" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-2.5 py-1.5 rounded-lg text-[10px] transition font-sans inline-flex items-center gap-1">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak DO
+            </button>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${o.orderId}</td>
+          <td class="py-3 px-4 font-sans">${o.company}<br><span class="text-stone-400 text-[10px] font-mono">${o.clientName}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700"><strong>${o.pax} Pax</strong> • ${o.mainDish}</td>
+          <td class="py-3 px-4 font-bold text-slate-900">${formatRupiah(o.grandTotal)}</td>
+          <td class="py-3 px-4 text-emerald-700 font-bold">${formatRupiah(o.paidAmount)}</td>
+          <td class="py-3 px-4 font-bold ${o.dueAmount > 0 ? 'text-bento-deepOrange' : 'text-slate-400'}">${formatRupiah(o.dueAmount)}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold border ${statusBadge}">${statusText}</span>
+          </td>
+          <td class="py-3 px-4 text-center">${actionBtn}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function previewInvoiceModal(orderId) {
+      const o = masterOrders.find(x => x.orderId === orderId);
+      if (!o) return;
+
+      document.getElementById('modalInvCode').innerText = o.orderId;
+      document.getElementById('modalInvDate').innerText = o.date;
+      document.getElementById('modalRecipientName').innerText = o.clientName;
+      document.getElementById('modalCompanyName').innerText = o.company;
+      document.getElementById('modalRecipientPhone').innerText = `WhatsApp: ${o.phone}`;
+      document.getElementById('modalAddress').innerText = o.address;
+      document.getElementById('modalDeliveryDate').innerText = o.date;
+      document.getElementById('modalDeliveryShift').innerText = o.timeSlot;
+      document.getElementById('modalFleetAssigned').innerText = o.fleetAssigned;
+
+      document.getElementById('modalItemTitle').innerText = `Custom Bento Box: ${o.mainDish}`;
+      document.getElementById('modalMenuDetails').innerText = `${o.rice} • ${o.mainDish} • ${o.side} • ${o.veggie} • ${o.sambal} • Kerupuk Udang`;
+      document.getElementById('modalPaxCount').innerText = `${o.pax} Pax`;
+      document.getElementById('modalRatePerBox').innerText = formatRupiah(o.pricePerBox);
+      document.getElementById('modalRawSubtotal').innerText = formatRupiah(o.rawSubtotal);
+
+      document.getElementById('modalDiscountLabel').innerText = `Diskon Volume (${o.discountPercent * 100}%):`;
+      document.getElementById('modalDiscountVal').innerText = `- ${formatRupiah(o.discountAmount)}`;
+      document.getElementById('modalShippingVal').innerText = o.shippingFee === 0 ? "GRATIS" : formatRupiah(o.shippingFee);
+      document.getElementById('modalGrandTotal').innerText = formatRupiah(o.grandTotal);
+
+      document.getElementById('modalPaidVal').innerText = formatRupiah(o.paidAmount);
+      document.getElementById('modalDueVal').innerText = formatRupiah(o.dueAmount);
+
+      document.getElementById('modalDispatchTokenText').innerText = `TOKEN: ${o.dispatchToken}`;
+      document.getElementById('modalDispatchQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${o.dispatchToken}`;
+
+      if (o.dueAmount === 0) {
+        document.getElementById('modalInvStatusBadge').innerText = "FAKTUR LUNAS 100%";
+        document.getElementById('modalDueLabel').innerText = "Status Pelunasan:";
+        document.getElementById('modalDueVal').innerText = "LUNAS (Rp 0)";
+      } else {
+        document.getElementById('modalInvStatusBadge').innerText = "ORDER CONFIRMED (DP 50%)";
+        document.getElementById('modalDueLabel').innerText = "Sisa Pelunasan Saat Serah Terima:";
+      }
+
+      document.getElementById('invoicePreviewModal').classList.remove('hidden');
+    }
+
+    function closeInvoiceModal() {
+      document.getElementById('invoicePreviewModal').classList.add('hidden');
+    }
+
+    function printInvoiceDocument() {
+      window.print();
+    }
+
+    // Modal Pelunasan Kasir
+    function openSettlePaymentModal(orderId) {
+      const o = masterOrders.find(x => x.orderId === orderId);
+      if (!o) return;
+
+      activeSettleOrderId = orderId;
+      document.getElementById('settleOrderCode').innerText = o.orderId;
+      document.getElementById('settleClientName').innerText = `${o.company} (${o.clientName})`;
+      document.getElementById('settleTotalCost').innerText = formatRupiah(o.grandTotal);
+      document.getElementById('settlePaidDP').innerText = formatRupiah(o.paidAmount);
+      document.getElementById('settleRemainingDue').innerText = formatRupiah(o.dueAmount);
+
+      document.getElementById('settlePaymentModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settlePaymentModal').classList.add('hidden');
+      activeSettleOrderId = null;
+    }
+
+    function confirmSettleOrder() {
+      if (!activeSettleOrderId) return;
+      const o = masterOrders.find(x => x.orderId === activeSettleOrderId);
+      if (o) {
+        o.paidAmount = o.grandTotal;
+        o.dueAmount = 0;
+        o.paymentStatus = "PAID_FULL";
+
+        closeSettleModal();
+        renderMasterOrdersTable();
+        renderFinanceTable();
+        updateDashboardCounters();
+
+        showToast(`Pelunasan pesanan ${o.orderId} berhasil dicatat kasir!`);
+        previewInvoiceModal(o.orderId);
+      }
+    }
+
+    // ==================== 6. MODAL NEW ORDER HANDLER ====================
+    function openNewOrderModal() {
+      document.getElementById('newOrderModal').classList.remove('hidden');
+      calculateNewOrderPrice();
+    }
+
+    function closeNewOrderModal() {
+      document.getElementById('newOrderModal').classList.add('hidden');
+    }
+
+    function calculateNewOrderPrice() {
+      const proteinVal = document.getElementById('newOrderProtein').value;
+      const riceVal = document.getElementById('newOrderRice').value;
+      const pax = parseInt(document.getElementById('newOrderPax').value) || 20;
+
+      let basePrice = 35000;
+      if (proteinVal === 'main-2') basePrice = 42000;
+      if (proteinVal === 'main-3') basePrice = 39000;
+
+      let extraRice = 0;
+      if (riceVal === 'rice-2') extraRice = 2000;
+
+      const rateBox = basePrice + extraRice;
+      const rawSubtotal = rateBox * pax;
+
+      let discPercent = 0;
+      let shipping = 50000;
+
+      if (pax >= 100) {
+        discPercent = 0.10;
+        shipping = 0;
+        document.getElementById('newOrderDiscountText').innerText = "Diskon 10% + Free Ongkir (100+ Pax)";
+      } else if (pax >= 50) {
+        discPercent = 0.05;
+        document.getElementById('newOrderDiscountText').innerText = "Diskon 5% (50+ Pax)";
+      } else {
+        document.getElementById('newOrderDiscountText').innerText = "Diskon 0% (Min 20 Pax)";
+      }
+
+      const discAmount = rawSubtotal * discPercent;
+      const grandTotal = rawSubtotal - discAmount + shipping;
+
+      document.getElementById('newOrderRateBox').innerText = formatRupiah(rateBox);
+      document.getElementById('newOrderGrandTotal').innerText = formatRupiah(grandTotal);
+
+      return { rateBox, rawSubtotal, discPercent, discAmount, shipping, grandTotal };
+    }
+
+    function saveNewOrder() {
+      const pic = document.getElementById('newOrderPic').value.trim();
+      const comp = document.getElementById('newOrderCompany').value.trim();
+      const phone = document.getElementById('newOrderPhone').value.trim();
+      const pax = parseInt(document.getElementById('newOrderPax').value) || 20;
+      const scheme = document.getElementById('newOrderScheme').value;
+
+      if (!pic || !comp || !phone) {
+        alert("Lengkapi nama PIC, nama perusahaan, dan nomor WhatsApp.");
+        return;
+      }
+
+      const calc = calculateNewOrderPrice();
+      const randomOrder = "PO-CAT-" + Math.floor(1000 + Math.random() * 9000);
+      const randomToken = "DO-" + Math.floor(1000 + Math.random() * 9000) + "-BOX";
+
+      let paid = calc.grandTotal;
+      let due = 0;
+      let payStatus = "PAID_FULL";
+
+      if (scheme === 'DP') {
+        paid = calc.grandTotal * 0.5;
+        due = calc.grandTotal * 0.5;
+        payStatus = "DP_50";
+      }
+
+      masterOrders.unshift({
+        orderId: randomOrder,
+        dispatchToken: randomToken,
+        clientName: pic,
+        company: comp,
+        phone: phone,
+        address: "Gedung Klien, Jakarta",
+        pax: pax,
+        mainDish: document.getElementById('newOrderProtein').options[document.getElementById('newOrderProtein').selectedIndex].text.split(' (')[0],
+        rice: document.getElementById('newOrderRice').options[document.getElementById('newOrderRice').selectedIndex].text.split(' (')[0],
+        side: "Perkedel Kentang Daging",
+        veggie: "Tumis Buncis Baby Corn",
+        sambal: "Sambal Matah Bali",
+        date: new Date().toISOString().split('T')[0],
+        timeSlot: "Makan Siang (11:00 - 12:30 WIB)",
+        pricePerBox: calc.rateBox,
+        rawSubtotal: calc.rawSubtotal,
+        discountPercent: calc.discPercent,
+        discountAmount: calc.discAmount,
+        shippingFee: calc.shipping,
+        grandTotal: calc.grandTotal,
+        paidAmount: paid,
+        dueAmount: due,
+        paymentStatus: payStatus,
+        kitchenStatus: "PREPARING",
+        fleetAssigned: "Standby Dispatch"
+      });
+
+      closeNewOrderModal();
+      renderKanbanColumns();
+      renderMasterOrdersTable();
+      renderFinanceTable();
+      updateDashboardCounters();
+
+      showToast(`Pesanan ${randomOrder} untuk ${comp} (${pax} Pax) berhasil dimasukkan`);
+      previewInvoiceModal(randomOrder);
+    }
+
+    // ==================== DASHBOARD COUNTERS ====================
+    function updateDashboardCounters() {
+      const totalPax = masterOrders.reduce((sum, o) => sum + o.pax, 0);
+      const totalGross = masterOrders.reduce((sum, o) => sum + o.grandTotal, 0);
+      const totalDue = masterOrders.reduce((sum, o) => sum + o.dueAmount, 0);
+      const pendingDPCount = masterOrders.filter(o => o.dueAmount > 0).length;
+      const lowStockCount = masterInventory.filter(i => i.status === 'REORDER').length;
+
+      document.getElementById('kpiTotalPax').innerText = `${totalPax.toLocaleString('id-ID')} Pax`;
+      document.getElementById('kpiGrossRevenue').innerText = formatRupiah(totalGross);
+      document.getElementById('kpiOutstandingDP').innerText = formatRupiah(totalDue);
+
+      document.getElementById('topDepositPool').innerText = formatRupiah(totalGross - totalDue);
+      document.getElementById('badgeActiveOrders').innerText = `${masterOrders.length} PO`;
+      document.getElementById('badgePendingDP').innerText = `${pendingDPCount} DP 50%`;
+      document.getElementById('badgeLowStock').innerText = `${lowStockCount} Reorder`;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio//Raw — Brutalist Creative Atelier & Strategy Practice (Admin Console)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            botanical: {
+              moss: '#0F2A1D',          // Deep Moss Utama
+              mossDark: '#081710',      // Ultra Dark Moss
+              mossSurface: '#193C2B',   // Surface Card Dark
+              pale: '#E8EFE9',          // Pale Green Canvas
+              sand: '#DDA15E',          // Mustard Sand Aksen
+              sandHover: '#C68B45',     // Darker Sand
+              sandBg: '#FAF5EE',        // Pale Sand Tint
+              border: '#204733',        // Hard Border
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(15, 42, 29, 0.95);
+      backdrop-filter: blur(14px);
+    }
+    .raw-border {
+      border: 2px solid #0F2A1D;
+    }
+    .moss-shadow {
+      box-shadow: 5px 5px 0px #0F2A1D;
+    }
+    .moss-shadow-sm {
+      box-shadow: 3px 3px 0px #0F2A1D;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printAreaRetainer, #printAreaRetainer * {
+        visibility: visible;
+      }
+      #printAreaRetainer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #0F2A1D !important;
+        border: 2px solid #0F2A1D !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-botanical-pale text-slate-900 antialiased font-sans min-h-screen flex selection:bg-botanical-sand selection:text-botanical-moss">
+
+  <!-- SIDEBAR NAVIGATION (BRUTALIST ATELIER STYLE) -->
+  <aside class="w-64 bg-botanical-mossDark border-r-2 border-botanical-border flex-shrink-0 hidden md:flex flex-col justify-between z-30 font-mono text-white">
+    <div>
+      <!-- Brand Header -->
+      <div class="p-5 border-b-2 border-botanical-border flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-botanical-sand border-2 border-white flex items-center justify-center text-botanical-moss shadow-sm font-black text-lg">
+          //
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-display">
+            STUDIO<span class="text-botanical-sand">//RAW</span>
+          </span>
+          <span class="text-[9px] text-slate-400 font-mono tracking-wider uppercase block">ATELIER CONSOLE & ERP</span>
+        </div>
+      </div>
+
+      <!-- Nav Menu Items -->
+      <nav class="p-4 space-y-1.5 text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tabBtn-overview" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold bg-botanical-sand text-botanical-moss transition shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>[01] Overview</span>
+        </button>
+        <button onclick="switchTab('pipeline')" id="tabBtn-pipeline" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-botanical-mossSurface transition">
+          <i data-lucide="kanban" class="w-4 h-4 text-botanical-sand"></i>
+          <span>[02] Pipeline Design</span>
+        </button>
+        <button onclick="switchTab('calls')" id="tabBtn-calls" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-botanical-mossSurface transition">
+          <i data-lucide="calendar" class="w-4 h-4 text-botanical-sand"></i>
+          <span>[03] Discovery Calls</span>
+        </button>
+        <button onclick="switchTab('contracts')" id="tabBtn-contracts" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-botanical-mossSurface transition">
+          <i data-lucide="file-text" class="w-4 h-4 text-botanical-sand"></i>
+          <span>[04] Retainer & SPK</span>
+        </button>
+        <button onclick="switchTab('tokens')" id="tabBtn-tokens" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-botanical-mossSurface transition">
+          <i data-lucide="code-2" class="w-4 h-4 text-botanical-sand"></i>
+          <span>[05] Design Tokens</span>
+        </button>
+        <button onclick="switchTab('scanner')" id="tabBtn-scanner" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-botanical-mossSurface transition">
+          <i data-lucide="scan-barcode" class="w-4 h-4 text-botanical-sand"></i>
+          <span>[06] Scanner E-Pass</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Atelier Slot Status -->
+    <div class="p-4 border-t-2 border-botanical-border">
+      <div class="p-3 bg-botanical-mossSurface rounded-xl border border-botanical-border text-xs space-y-1.5 font-mono">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-300">Quarter Status</span>
+          <span class="flex items-center gap-1 text-[10px] text-botanical-sand font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-botanical-sand animate-ping"></span> Q4-2026
+          </span>
+        </div>
+        <div class="text-[11px] text-white">Senopati Atelier, Jaksel</div>
+        <div class="w-full bg-botanical-mossDark h-1.5 rounded-full overflow-hidden mt-1">
+          <div class="bg-botanical-sand h-full rounded-full" style="width: 75%"></div>
+        </div>
+        <div class="text-[9px] text-slate-300 flex justify-between">
+          <span>Client Slots: 3/4</span>
+          <span>Lead: Principal</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Header -->
+    <header class="glass-header sticky top-0 z-20 border-b-2 border-botanical-border px-6 py-4 flex items-center justify-between text-white">
+      <div class="flex items-center gap-3">
+        <button class="md:hidden text-white" onclick="alert('Gunakan tampilan desktop/tablet untuk dashboard studio terbaik')">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display uppercase tracking-wider" id="pageTitleDisplay">Dashboard Overview Atelier</h1>
+          <p class="text-xs text-slate-300 font-mono">Brutalist Creative Atelier, Retainer & Design System Console</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3.5 font-mono text-xs">
+        <div class="hidden sm:flex items-center gap-2 bg-botanical-mossSurface px-3 py-1.5 rounded-xl border border-botanical-border text-slate-200">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-botanical-sand"></i>
+          <span id="liveClockDisplay">Live Time</span>
+        </div>
+        <button onclick="openNewProjectModal()" class="bg-botanical-sand hover:bg-botanical-sandHover text-botanical-moss font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm uppercase">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Entri Retainer Baru</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="p-6 sm:p-8 space-y-8 flex-1">
+      
+      <!-- TAB 1: OVERVIEW -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
+          <div class="p-5 rounded-2xl bg-white raw-border moss-shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-500 text-xs">
+              <span>Proyek Retainer Aktif</span>
+              <i data-lucide="briefcase" class="w-4 h-4 text-botanical-moss"></i>
+            </div>
+            <div class="text-2xl font-black text-botanical-moss font-display" id="kpiActiveProjects">3 Klien</div>
+            <div class="text-[10px] text-emerald-700 font-bold font-sans">Kapasitas Maksimal: 4 Klien / Kuartal</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white raw-border moss-shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-500 text-xs">
+              <span>Total Retainer Fee Q4</span>
+              <i data-lucide="banknote" class="w-4 h-4 text-emerald-600"></i>
+            </div>
+            <div class="text-2xl font-black text-botanical-moss font-display" id="kpiRevenue">Rp 145.000.000</div>
+            <div class="text-[10px] text-slate-500 font-sans">Brand Identity & Design System</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white raw-border moss-shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-500 text-xs">
+              <span>Tagihan Due Milestone (50%)</span>
+              <i data-lucide="wallet" class="w-4 h-4 text-amber-600"></i>
+            </div>
+            <div class="text-2xl font-black text-botanical-sand font-display" id="kpiDueAmount">Rp 52.500.000</div>
+            <div class="text-[10px] text-amber-700 font-bold font-sans">Menunggu Serah Terima Brandbook</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white raw-border moss-shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-500 text-xs">
+              <span>Discovery Calls Bulan Ini</span>
+              <i data-lucide="phone-call" class="w-4 h-4 text-botanical-sand"></i>
+            </div>
+            <div class="text-2xl font-black text-botanical-moss font-display">6 Sesi</div>
+            <div class="text-[10px] text-emerald-700 font-bold font-sans">Conversion to Retainer: 50%</div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (Chart.js) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-8 bg-white p-6 rounded-2xl raw-border moss-shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-botanical-moss font-display uppercase">[SPRINT // VELOCITY] Jam Kerja Desain per Minggu</h3>
+                <p class="text-xs text-slate-500 font-mono">Alokasi Brand Identity, Product Design Tokens, dan Art Direction</p>
+              </div>
+              <span class="text-xs font-mono text-botanical-moss bg-botanical-pale px-2.5 py-1 rounded border border-botanical-border font-bold">Q4 2026</span>
+            </div>
+            <div class="h-64">
+              <canvas id="velocityChartCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 bg-white p-6 rounded-2xl raw-border moss-shadow-sm space-y-4">
+            <div>
+              <h3 class="text-sm font-bold text-botanical-moss font-display uppercase">[PORTFOLIO // SHARE]</h3>
+              <p class="text-xs text-slate-500 font-mono">Proporsi Scope Layanan Studio</p>
+            </div>
+            <div class="h-64 flex items-center justify-center">
+              <canvas id="scopeShareChartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Projects List Table -->
+        <div class="bg-white rounded-2xl raw-border moss-shadow-sm overflow-hidden font-mono text-xs">
+          <div class="p-5 border-b-2 border-botanical-moss flex items-center justify-between">
+            <h3 class="text-sm font-bold text-botanical-moss font-display uppercase">Daftar Retainer & Discovery Terkini</h3>
+            <button onclick="switchTab('pipeline')" class="text-xs font-mono font-bold text-botanical-sand hover:underline">Buka Pipeline Kanban →</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-botanical-pale text-botanical-moss border-b border-botanical-border font-bold">
+                <tr>
+                  <th class="py-3 px-4">No. Pass / Retainer</th>
+                  <th class="py-3 px-4">Klien / Brand</th>
+                  <th class="py-3 px-4">Ruang Lingkup (Scope)</th>
+                  <th class="py-3 px-3 text-center">Durasi Kerja</th>
+                  <th class="py-3 px-4 text-right">Nilai Retainer</th>
+                  <th class="py-3 px-3 text-center">Tahap Status</th>
+                  <th class="py-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="recentProjectsTableBody" class="divide-y divide-slate-200 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TAB 2: PIPELINE DESIGN KANBAN (4 TAHAP) -->
+      <section id="view-pipeline" class="hidden space-y-6">
+        <div class="flex items-center justify-between font-mono">
+          <div>
+            <h3 class="text-base font-bold text-botanical-moss font-display uppercase">Pipeline Pengerjaan Proyek Desain Studio (Kanban)</h3>
+            <p class="text-xs text-slate-500">Alur dari sesi discovery call hingga serah terima token kode & brandbook</p>
+          </div>
+          <button onclick="openNewProjectModal()" class="text-xs font-bold text-botanical-sand bg-botanical-moss px-3 py-1.5 rounded-xl hover:bg-botanical-mossSurface font-mono">
+            + Tambah Proyek Baru
+          </button>
+        </div>
+
+        <!-- 4 Kolom Kanban -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start font-mono text-xs">
+          <!-- Tahap 1: Discovery & Strategy Audit -->
+          <div class="bg-white rounded-2xl raw-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b-2 border-botanical-moss">
+              <span class="font-bold text-botanical-moss flex items-center gap-1.5 font-sans">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> 1. Discovery & Brief
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-botanical-pale text-blue-700 border border-blue-200" id="badge-stage-1">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-1"></div>
+          </div>
+
+          <!-- Tahap 2: Monolithic Concept Exploration -->
+          <div class="bg-white rounded-2xl raw-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b-2 border-botanical-moss">
+              <span class="font-bold text-botanical-moss flex items-center gap-1.5 font-sans">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 2. Concept Direction
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-botanical-pale text-amber-700 border border-amber-200" id="badge-stage-2">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-2"></div>
+          </div>
+
+          <!-- Tahap 3: Design Tokens & System Build -->
+          <div class="bg-white rounded-2xl raw-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b-2 border-botanical-moss">
+              <span class="font-bold text-botanical-moss flex items-center gap-1.5 font-sans">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> 3. Tokens & System
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-botanical-pale text-purple-700 border border-purple-200" id="badge-stage-3">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-3"></div>
+          </div>
+
+          <!-- Tahap 4: Handover & Final Retainer Settle -->
+          <div class="bg-white rounded-2xl raw-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b-2 border-botanical-moss">
+              <span class="font-bold text-botanical-moss flex items-center gap-1.5 font-sans">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 4. Final Handover
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-botanical-pale text-emerald-700 border border-emerald-200" id="badge-stage-4">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-4"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: DISCOVERY CALLS SCHEDULER -->
+      <section id="view-calls" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl raw-border moss-shadow-sm space-y-4 font-mono text-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-botanical-moss font-display uppercase">Jadwal Sesi Discovery Call (45 Menit)</h3>
+              <p class="text-slate-500 font-sans">Tautan Google Meet, status verifikasi brief, dan priority hold pass</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportProjectsToCsv()" class="bg-botanical-pale hover:bg-stone-200 text-botanical-moss px-3.5 py-2 rounded-xl border border-botanical-border flex items-center gap-1.5 font-bold font-sans">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-botanical-sand"></i>
+                <span>Ekspor CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-sans">
+            <div class="relative sm:col-span-2">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5"></i>
+              <input type="text" id="callSearchInput" oninput="renderMasterProjectsTable()" placeholder="Cari nama brand, founder, atau ID pass..." class="w-full pl-9 pr-4 py-2 bg-botanical-pale border border-botanical-border rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-botanical-moss font-mono text-xs" />
+            </div>
+            <select id="callStatusFilter" onchange="renderMasterProjectsTable()" class="bg-botanical-pale border border-botanical-border rounded-xl px-3 py-2 text-slate-800 font-sans focus:outline-none focus:ring-1 focus:ring-botanical-moss text-xs">
+              <option value="ALL">Semua Tahap Pipeline</option>
+              <option value="STAGE_1">1. Discovery Call</option>
+              <option value="STAGE_2">2. Concept Direction</option>
+              <option value="STAGE_3">3. Tokens & System</option>
+              <option value="STAGE_4">4. Final Handover</option>
+            </select>
+          </div>
+
+          <!-- Table Master Projects -->
+          <div class="overflow-x-auto rounded-xl border border-botanical-border">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-botanical-pale text-botanical-moss border-b border-botanical-border font-bold">
+                <tr>
+                  <th class="py-3 px-4">No. Pass / Retainer</th>
+                  <th class="py-3 px-4">Brand & Founder</th>
+                  <th class="py-3 px-4">Ruang Lingkup Scope</th>
+                  <th class="py-3 px-3 text-center">Jadwal Sesi</th>
+                  <th class="py-3 px-4 text-right">Nilai Retainer</th>
+                  <th class="py-3 px-4 text-right">DP / Sisa Due</th>
+                  <th class="py-3 px-3 text-center">Status</th>
+                  <th class="py-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="masterProjectsTableBody" class="divide-y divide-slate-200 font-medium">
+                <!-- Rendered JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: RETAINER & SPK INTAKE -->
+      <section id="view-contracts" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl raw-border moss-shadow-sm space-y-5 font-mono text-xs">
+          <div class="flex items-center justify-between border-b-2 border-botanical-moss pb-3">
+            <div>
+              <h3 class="text-base font-bold text-botanical-moss font-display uppercase">Dokumen Retainer & Perjanjian Desain (SPK)</h3>
+              <p class="text-slate-500 font-sans">Aturan hak cipta (IP Transfer), milestones pengerjaan, dan ketentuan pembayaran</p>
+            </div>
+            <span class="text-xs font-bold bg-botanical-sand text-botanical-moss px-2 py-0.5 rounded">DIRECT IP TRANSFER</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="contractsCardsContainer">
+            <!-- Rendered JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: DESIGN TOKENS & SYSTEM EXPORT -->
+      <section id="view-tokens" class="hidden space-y-6 font-mono text-xs">
+        <div class="bg-white p-6 rounded-2xl raw-border moss-shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b-2 border-botanical-moss pb-3">
+            <div>
+              <h3 class="text-base font-bold text-botanical-moss font-display uppercase">Studio//Raw Core Design Tokens Engine</h3>
+              <p class="text-slate-500 font-sans">Token desain berbasis JSON / CSS Variables untuk integrasi frontend developer</p>
+            </div>
+            <button onclick="copyTokensJson()" class="bg-botanical-moss text-botanical-sand px-3 py-1.5 rounded-lg border border-botanical-border hover:bg-botanical-mossSurface font-bold">
+              Salin JSON Tokens
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-botanical-mossDark text-slate-300 rounded-xl border border-botanical-border space-y-2">
+              <span class="text-botanical-sand font-bold block uppercase">[TOKENS // COLOR PALETTE]</span>
+              <pre class="text-[11px] font-mono leading-relaxed overflow-x-auto text-emerald-400" id="tokensJsonDisplay">
+{
+  "color": {
+    "brand": {
+      "moss": "#0F2A1D",
+      "mossDark": "#081710",
+      "pale": "#E8EFE9",
+      "sand": "#DDA15E",
+      "border": "#204733"
+    }
+  },
+  "typography": {
+    "fontDisplay": "Space Grotesk, sans-serif",
+    "fontBody": "Plus Jakarta Sans, sans-serif",
+    "fontMono": "JetBrains Mono, monospace"
+  },
+  "borders": {
+    "brutalist": "2px solid #0F2A1D",
+    "shadow": "5px 5px 0px #0F2A1D"
+  }
+}
+              </pre>
+            </div>
+
+            <div class="p-4 bg-botanical-pale rounded-xl border-2 border-botanical-moss space-y-3">
+              <span class="text-botanical-moss font-bold block uppercase">[COMPONENT PREVIEWS]</span>
+              <div class="space-y-2">
+                <button class="bg-botanical-moss text-botanical-sand font-bold px-4 py-2 rounded-lg raw-border moss-shadow-sm text-xs font-mono">
+                  BRUTALIST BUTTON PRIMARY
+                </button>
+                <div class="p-3 bg-white raw-border text-xs font-sans">
+                  Card Container dengan Border 2px Solid & Hard Drop Shadow 5px.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: SCANNER PASS DISCOVERY & CLIENT ONBOARDING -->
+      <section id="view-scanner" class="hidden space-y-6 font-mono text-xs max-w-2xl mx-auto">
+        <div class="bg-white p-7 rounded-3xl raw-border moss-shadow space-y-6 text-center">
+          <div class="space-y-1">
+            <div class="w-12 h-12 rounded-2xl bg-botanical-sand border-2 border-botanical-moss text-botanical-moss flex items-center justify-center mx-auto mb-2 font-black text-xl">
+              //
+            </div>
+            <h3 class="text-base font-bold text-botanical-moss font-display uppercase">Simulator Pemindai Pass Klien Atelier</h3>
+            <p class="text-slate-500 font-sans">Pindai barcode pada E-Pass undangan sesi discovery call untuk verifikasi brief teknis.</p>
+          </div>
+
+          <!-- Scanner Simulation Box -->
+          <div class="p-6 bg-botanical-pale rounded-2xl border-2 border-dashed border-botanical-moss space-y-4">
+            <div class="relative w-48 h-32 mx-auto border-2 border-botanical-moss rounded-xl flex items-center justify-center bg-white overflow-hidden shadow-inner">
+              <div class="w-full h-0.5 bg-botanical-sand shadow-lg shadow-amber-500 animate-pulse"></div>
+              <span class="absolute bottom-2 text-[9px] text-slate-400 font-mono">SCANNER OPTIK</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="barcodeScanInput" placeholder="Masukkan ID Pass (cth: RAW-CALL-202610-8812)" class="w-full bg-white border border-botanical-moss rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-botanical-moss text-center font-mono" />
+              <button onclick="processBarcodeScan()" class="bg-botanical-moss hover:bg-botanical-mossSurface text-botanical-sand font-bold px-4 py-2.5 rounded-xl transition font-mono uppercase">
+                Validasi
+              </button>
+            </div>
+            <div class="text-[10px] text-slate-500 font-mono">
+              Preset Quick Test: 
+              <button onclick="testBarcode('RAW-CALL-202610-8812')" class="underline text-botanical-moss font-bold">Voxel Logistics (Tedi)</button> • 
+              <button onclick="testBarcode('RAW-CALL-202610-8813')" class="underline text-botanical-moss font-bold">Aether Terminal (Christland)</button>
+            </div>
+          </div>
+
+          <!-- Scan Result Box -->
+          <div id="scanResultBox" class="hidden p-5 bg-botanical-pale rounded-2xl border-2 border-botanical-moss text-left space-y-3">
+            <div class="flex items-center justify-between border-b-2 border-botanical-moss pb-2">
+              <div>
+                <span class="font-bold text-botanical-moss text-sm font-display block uppercase" id="scanBrandTitle">Voxel Heavy Logistics</span>
+                <span class="text-[10px] text-slate-500 font-mono" id="scanPassCodeTitle">RAW-CALL-202610-8812</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-botanical-moss text-botanical-sand font-mono" id="scanStageBadge">STAGE 01</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-700 font-sans">
+              <div>Founder: <strong class="text-botanical-moss" id="scanPicName">-</strong></div>
+              <div>WhatsApp: <strong class="text-slate-900 font-mono" id="scanPhone">-</strong></div>
+              <div>Scope: <strong class="text-botanical-moss font-sans" id="scanScopeTitle">Brand Identity</strong></div>
+              <div>Retainer: <strong class="text-slate-800 font-mono" id="scanRetainerVal">-</strong></div>
+            </div>
+
+            <!-- Atelier Clearance Checklist -->
+            <div class="pt-2 border-t border-botanical-moss space-y-2 font-sans">
+              <span class="text-[10px] text-botanical-moss block uppercase font-bold font-mono">[INTAKE // VERIFICATION CHECKLIST]</span>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="checkIntake1" checked class="accent-botanical-moss" />
+                <span>1. Brief sasaran bisnis & kompetitor telah ditinjau Principal</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="checkIntake2" checked class="accent-botanical-moss" />
+                <span>2. Tautan Google Meet privat tersinkron ke kalender founder</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="checkIntake3" checked class="accent-botanical-moss" />
+                <span>3. Sesi discovery siap dilaksanakan tanpa pihak perantara</span>
+              </label>
+            </div>
+
+            <div class="flex gap-2 pt-2 font-mono">
+              <button onclick="advanceStageFromScanner()" class="flex-1 bg-botanical-moss text-botanical-sand font-bold py-2 rounded-xl hover:bg-botanical-mossSurface uppercase">
+                Otorisasi Brief & Majukan Pipeline →
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- MODAL 1: FORM TAMBAH RETAINER / PROYEK BARU -->
+  <div id="newProjectModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 raw-border moss-shadow space-y-4 font-mono text-xs">
+      <div class="flex items-center justify-between border-b-2 border-botanical-moss pb-3">
+        <h3 class="text-base font-bold text-botanical-moss font-display uppercase">Entri Proyek Retainer Atelier Baru</h3>
+        <button onclick="closeNewProjectModal()" class="w-7 h-7 rounded-full bg-botanical-pale flex items-center justify-center text-slate-500 hover:text-botanical-moss font-bold">✕</button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div>
+          <label class="block text-slate-600 mb-1 font-bold">Nama Klien / Perusahaan *</label>
+          <input type="text" id="mClientOrg" value="Nusantara Fintech Core" class="w-full bg-botanical-pale border border-botanical-moss rounded-xl px-3 py-2 text-slate-800 font-medium" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Nama Founder / PIC *</label>
+            <input type="text" id="mClientPic" value="Tedi Mahendra" class="w-full bg-botanical-pale border border-botanical-moss rounded-xl px-3 py-2 text-slate-800" />
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Nomor WhatsApp *</label>
+            <input type="tel" id="mClientPhone" value="081299998888" class="w-full bg-botanical-pale border border-botanical-moss rounded-xl px-3 py-2 text-slate-800 font-mono" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Ruang Lingkup (Scope)</label>
+            <select id="mScopeSelect" class="w-full bg-botanical-pale border border-botanical-moss rounded-xl px-3 py-2 text-slate-800">
+              <option value="Core Brand Identity & Design System">Brand Identity & System (Rp 35 Juta)</option>
+              <option value="Fullstack UI/UX & Digital Product Design">UI/UX & Product Design (Rp 50 Juta)</option>
+              <option value="Quarterly Dedicated Design Advisory">Quarterly Advisory (Rp 25 Juta/bln)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Target Durasi Pengerjaan</label>
+            <select id="mTimelineSelect" class="w-full bg-botanical-pale border border-botanical-moss rounded-xl px-3 py-2 text-slate-800">
+              <option value="6 - 8 Minggu">6 - 8 Minggu</option>
+              <option value="8 - 12 Minggu">8 - 12 Minggu</option>
+              <option value="3 Bulan Kontrak">3 Bulan Kontrak</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-600 mb-1 font-bold">Sasaran Desain & Tantangan Teknis *</label>
+          <textarea id="mChallengeText" rows="2" class="w-full bg-botanical-pale border border-botanical-moss rounded-xl px-3 py-2 text-slate-800 leading-relaxed">Membangun arsitektur identitas visual monolitik untuk ekosistem keuangan terdesentralisasi.</textarea>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-3 border-t-2 border-botanical-moss font-mono">
+        <button onclick="closeNewProjectModal()" class="flex-1 bg-botanical-pale hover:bg-stone-200 py-2.5 rounded-xl text-slate-700 font-bold">Batal</button>
+        <button onclick="submitNewProjectForm()" class="flex-1 bg-botanical-moss hover:bg-botanical-mossSurface text-botanical-sand font-bold py-2.5 rounded-xl uppercase">Terbitkan SPK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: DETAIL TRANSAKSI & CETAK SPK RETAINER (PDF) -->
+  <div id="settleModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 raw-border moss-shadow space-y-6 font-mono text-xs">
+      <div class="flex items-center justify-between border-b-2 border-botanical-moss pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-botanical-moss flex items-center justify-center text-botanical-sand font-bold text-sm">
+            //
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-botanical-moss font-display uppercase">Faktur Retainer & Surat Perintah Kerja (SPK)</h3>
+            <span class="text-[10px] text-slate-400" id="settlePassNumberTitle">RAW-CALL-202610-8812</span>
+          </div>
+        </div>
+        <button onclick="closeSettleModal()" class="w-7 h-7 rounded-full bg-botanical-pale flex items-center justify-center text-slate-500 hover:text-botanical-moss font-bold">✕</button>
+      </div>
+
+      <!-- Area Cetak Resmi SPK Retainer (PDF Ready) -->
+      <div id="printAreaRetainer" class="bg-white p-6 rounded-2xl border-2 border-botanical-moss space-y-4 text-slate-900 font-mono">
+        <div class="flex justify-between items-start border-b-2 border-botanical-moss pb-3">
+          <div>
+            <span class="font-bold text-base text-botanical-moss font-display">STUDIO<span class="text-botanical-sand">//RAW</span> ATELIER</span>
+            <p class="text-[10px] text-slate-500 font-sans">Jl. Senopati Raya No. 71, Jaksel • Principal Desk: +62 812-9999-8888</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-botanical-sand text-botanical-moss uppercase">OFFICIAL RETAINER PASS</span>
+            <p class="text-xs font-bold text-botanical-moss mt-1" id="pPassNumber">RAW-CALL-8812</p>
+            <p class="text-[10px] text-slate-400" id="pDateText">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-[11px] bg-botanical-pale p-3 rounded-xl border border-botanical-moss font-sans">
+          <div>
+            <span class="text-[9px] text-slate-500 block uppercase font-mono">Klien // Brand:</span>
+            <strong class="text-botanical-moss text-sm block font-display uppercase" id="pClientOrg">Voxel Heavy Logistics</strong>
+            <span class="text-slate-600 font-mono text-[10px]" id="pClientContact">PIC: Tedi Mahendra (081299998888)</span>
+            <p class="text-[10px] text-slate-500 mt-1 font-mono">Email: tedi.work@example.com</p>
+          </div>
+          <div class="text-right font-mono">
+            <span class="text-[9px] text-slate-500 block uppercase">Jadwal & Komitmen:</span>
+            <strong class="text-slate-900 text-xs block" id="pCallSchedule">28 Okt 2026 (10:00 WIB)</strong>
+            <span class="text-botanical-sand font-bold text-[10px]">Lead: Principal Designer</span>
+            <p class="text-[10px] text-emerald-700 font-bold mt-1" id="pPaymentStatusText">DP 50% RETAINER TERVERIFIKASI</p>
+          </div>
+        </div>
+
+        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-[10px] font-sans space-y-1">
+          <span class="font-bold text-botanical-moss font-mono uppercase block">[CHALLENGE // ARCHITECTURAL TARGET]</span>
+          <div class="text-slate-700 leading-relaxed" id="pChallengeSummaryText">
+            Membangun arsitektur visual monolitik untuk ekosistem SaaS teknologi baru.
+          </div>
+        </div>
+
+        <table class="w-full text-left text-xs">
+          <thead class="border-b-2 border-botanical-moss text-botanical-moss text-[10px] font-bold">
+            <tr>
+              <th class="py-2">Ruang Lingkup Proyek (Scope)</th>
+              <th class="py-2 text-center">Durasi</th>
+              <th class="py-2 text-right">Nilai Retainer</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 font-medium font-sans">
+            <tr>
+              <td class="py-2.5">
+                <strong class="text-slate-900 block font-display uppercase" id="pScopeTitleTable">Core Brand Identity & Design System</strong>
+                <span class="text-[10px] text-slate-500 font-mono">Direct IP Transfer • Figma Master Library • Token JSON</span>
+              </td>
+              <td class="py-2.5 text-center text-slate-600 font-mono" id="pTimelineDisplay">6 - 8 Minggu</td>
+              <td class="py-2.5 text-right font-bold text-slate-900 font-mono" id="pRetainerTotal">Rp 35.000.000</td>
+            </tr>
+          </tbody>
+          <tfoot class="border-t-2 border-botanical-moss text-xs font-bold pt-2 font-mono">
+            <tr>
+              <td colspan="2" class="py-1.5 text-right text-slate-500">Total Nilai Retainer:</td>
+              <td class="py-1.5 text-right text-slate-900" id="pGrandTotalAmount">Rp 35.000.000</td>
+            </tr>
+            <tr>
+              <td colspan="2" class="py-1.5 text-right text-emerald-700">DP Terbayar (50%):</td>
+              <td class="py-1.5 text-right text-emerald-700 font-mono" id="pPaidDpAmount">Rp 17.500.000</td>
+            </tr>
+            <tr class="bg-botanical-pale text-botanical-moss">
+              <td colspan="2" class="py-2 text-right font-black">Sisa Pelunasan Milestone Akhir:</td>
+              <td class="py-2 text-right font-black font-mono text-sm text-botanical-sand" id="pDueAmount">Rp 17.500.000</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Token Barcode -->
+        <div class="flex items-center justify-between p-3 bg-botanical-pale rounded-xl border border-botanical-moss text-[10px]">
+          <div>
+            <strong class="text-botanical-moss block font-sans uppercase">Akses Pertemuan Google Meet & Design Room</strong>
+            <span class="text-slate-500 font-sans">https://meet.google.com/raw-disc-call</span>
+          </div>
+          <div class="text-center font-mono">
+            <span class="font-bold text-botanical-moss block" id="pTokenCode">AUTH-RAW-8812</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Settlement Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-2 no-print font-mono">
+        <button onclick="window.print()" class="flex-1 bg-botanical-pale hover:bg-stone-200 text-botanical-moss font-bold py-3 rounded-xl border border-botanical-border flex items-center justify-center gap-2">
+          <i data-lucide="printer" class="w-4 h-4 text-botanical-sand"></i>
+          <span>Cetak SPK & Faktur (PDF)</span>
+        </button>
+        <button id="btnAdvancePipeline" onclick="executeAdvancePipeline()" class="flex-1 bg-botanical-moss hover:bg-botanical-mossSurface text-botanical-sand font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-md uppercase">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Majukan ke Tahap Berikutnya</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="hidden fixed bottom-6 right-6 z-50 bg-botanical-moss border border-botanical-sand text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-mono text-xs">
+    <i data-lucide="info" class="w-4 h-4 text-botanical-sand"></i>
+    <span id="toastMsg">Notifikasi Atelier</span>
+  </div>
+
+  <!-- CORE JAVASCRIPT ENGINE -->
+  <script>
+    // 1. DATA DATABASE PROYEK RETAINER & DISCOVERY CALL
+    let masterProjects = [
+      {
+        id: "RAW-CALL-202610-8812",
+        org: "Voxel Heavy Logistics",
+        pic: "Tedi Mahendra",
+        phone: "081299998888",
+        scope: "Core Brand Identity & Design System",
+        timeline: "6 - 8 Minggu",
+        challenge: "Merekrut armada logistik 500+ truk tronton dengan citra visual seragam yang tangguh, modern, dan menonjol.",
+        retainerVal: 35000000,
+        paidDp: 17500000,
+        due: 17500000,
+        stage: "STAGE_2", // 1: Call, 2: Concept, 3: Tokens, 4: Handover
+        callDate: "2026-10-28",
+        callTime: "10:00 - 10:45 WIB",
+        callMedium: "Google Meet Video Call",
+        isCompleted: false
+      },
+      {
+        id: "RAW-CALL-202610-8813",
+        org: "Aether Financial Terminal",
+        pic: "Christland Simatupang",
+        phone: "081388776655",
+        scope: "Fullstack UI/UX & Digital Product Design",
+        timeline: "8 - 12 Minggu",
+        challenge: "Platform trading B2B mengalami churn pengguna tinggi akibat dashboard yang lambat tanpa hierarki visual.",
+        retainerVal: 50000000,
+        paidDp: 25000000,
+        due: 25000000,
+        stage: "STAGE_3",
+        callDate: "2026-10-26",
+        callTime: "14:00 - 14:45 WIB",
+        callMedium: "In-Studio Senopati",
+        isCompleted: false
+      },
+      {
+        id: "RAW-CALL-202610-8814",
+        org: "Kroma Pavilion Bienalle",
+        pic: "David Riyanto",
+        phone: "081122334455",
+        scope: "Quarterly Dedicated Design Advisory",
+        timeline: "3 Bulan Kontrak",
+        challenge: "Struktur rangka baja mentah modular dengan pencahayaan terprogram dinamis di atas pelat beton.",
+        retainerVal: 25000000,
+        paidDp: 12500000,
+        due: 12500000,
+        stage: "STAGE_1",
+        callDate: "2026-10-29",
+        callTime: "16:30 - 17:15 WIB",
+        callMedium: "Google Meet Video Call",
+        isCompleted: false
+      },
+      {
+        id: "RAW-CALL-202610-8810",
+        org: "Monolith Architecture Collective",
+        pic: "Cinthya",
+        phone: "081244556677",
+        scope: "Core Brand Identity & Design System",
+        timeline: "6 - 8 Minggu",
+        challenge: "Buku pedoman arsitektur monokromatik cetak offset hard-cover 140 halaman.",
+        retainerVal: 35000000,
+        paidDp: 35000000,
+        due: 0,
+        stage: "STAGE_4",
+        callDate: "2026-10-20",
+        callTime: "10:00 - 10:45 WIB",
+        callMedium: "Google Meet Video Call",
+        isCompleted: true
+      }
+    ];
+
+    let activeProject = null;
+    let velocityChart = null;
+    let scopeChart = null;
+
+    // INITIALIZATION
+    window.addEventListener('DOMContentLoaded', () => {
+      initClock();
+      renderOverviewData();
+      initCharts();
+      renderKanbanBoard();
+      renderMasterProjectsTable();
+      renderContractsUI();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function initClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClockDisplay').innerText = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('id-ID');
+      }, 1000);
+    }
+
+    // TAB NAVIGATION
+    function switchTab(tabId) {
+      const tabs = ['overview', 'pipeline', 'calls', 'contracts', 'tokens', 'scanner'];
+      tabs.forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (btn) {
+          btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-botanical-mossSurface transition font-mono";
+        }
+      });
+
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold bg-botanical-sand text-botanical-moss transition shadow-sm font-mono";
+      }
+
+      const titles = {
+        overview: "Dashboard Overview Atelier",
+        pipeline: "Pipeline Pengerjaan Desain (Kanban)",
+        calls: "Jadwal Discovery Calls (45 Menit)",
+        contracts: "Dokumen Retainer & SPK Perjanjian",
+        tokens: "Design Tokens & System Export",
+        scanner: "Optical Barcode Scanner E-Pass"
+      };
+      document.getElementById('pageTitleDisplay').innerText = titles[tabId] || "Dashboard";
+      lucide.createIcons();
+    }
+
+    // OVERVIEW & CHARTS
+    function renderOverviewData() {
+      const activeCount = masterProjects.filter(p => !p.isCompleted).length;
+      document.getElementById('kpiActiveProjects').innerText = `${activeCount} Klien`;
+
+      let totalDue = 0;
+      masterProjects.forEach(p => {
+        if (!p.isCompleted) totalDue += p.due;
+      });
+      document.getElementById('kpiDueAmount').innerText = formatRupiah(totalDue);
+
+      const tbody = document.getElementById('recentProjectsTableBody');
+      tbody.innerHTML = '';
+      masterProjects.slice(0, 4).forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-botanical-pale/60 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-botanical-moss">${p.id}</td>
+          <td class="py-3 px-4">
+            <span class="text-slate-900 font-bold block font-display uppercase">${p.org}</span>
+            <span class="text-[10px] text-slate-500 font-mono">PIC: ${p.pic} (${p.phone})</span>
+          </td>
+          <td class="py-3 px-4 font-sans text-slate-700">${p.scope}</td>
+          <td class="py-3 px-3 text-center font-mono">${p.callDate} (${p.callTime.split(' ')[0]})</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-slate-900">${formatRupiah(p.retainerVal)}</td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(p.stage)}">${getStageName(p.stage)}</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openSettleModal('${p.id}')" class="text-botanical-moss hover:underline font-bold font-mono">SPK Fact</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function initCharts() {
+      // 1. Bar Chart: Sprint Velocity
+      const ctx1 = document.getElementById('velocityChartCanvas').getContext('2d');
+      velocityChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
+          datasets: [
+            { label: 'Brand Architecture', data: [32, 40, 38, 45], backgroundColor: '#0F2A1D' },
+            { label: 'Design Tokens / UI', data: [24, 28, 35, 30], backgroundColor: '#DDA15E' },
+            { label: 'Audit / Guidelines', data: [14, 16, 12, 18], backgroundColor: '#193C2B' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#0F2A1D', font: { family: 'JetBrains Mono' } } } },
+          scales: {
+            x: { ticks: { color: '#204733' }, grid: { color: 'rgba(32, 71, 51, 0.15)' } },
+            y: { ticks: { color: '#204733' }, grid: { color: 'rgba(32, 71, 51, 0.15)' } }
+          }
+        }
+      });
+
+      // 2. Doughnut Chart: Scope Share
+      const ctx2 = document.getElementById('scopeShareChartCanvas').getContext('2d');
+      scopeChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['Brand Identity & System', 'UI/UX Product Design', 'Quarterly Advisory'],
+          datasets: [{
+            data: [50, 30, 20],
+            backgroundColor: ['#0F2A1D', '#DDA15E', '#193C2B'],
+            borderColor: '#E8EFE9',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#0F2A1D', font: { family: 'JetBrains Mono', size: 10 } } } }
+        }
+      });
+    }
+
+    // KANBAN BOARD
+    function renderKanbanBoard() {
+      const stages = ['STAGE_1', 'STAGE_2', 'STAGE_3', 'STAGE_4'];
+      const counts = { STAGE_1: 0, STAGE_2: 0, STAGE_3: 0, STAGE_4: 0 };
+
+      stages.forEach((st, idx) => {
+        const col = document.getElementById(`kanban-stage-${idx+1}`);
+        col.innerHTML = '';
+      });
+
+      masterProjects.forEach(p => {
+        if (counts[p.stage] !== undefined) {
+          counts[p.stage]++;
+        }
+        const stageNum = p.stage.replace('STAGE_', '');
+        const col = document.getElementById(`kanban-stage-${stageNum}`);
+        if (!col) return;
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 rounded-xl bg-botanical-pale border border-botanical-moss hover:border-botanical-sand transition space-y-2 shadow-sm font-mono";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="font-bold text-botanical-moss text-xs">${p.id}</span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${p.due === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${p.due === 0 ? 'LUNAS' : 'DP 50%'}
+            </span>
+          </div>
+          <div>
+            <strong class="text-botanical-moss block text-xs font-display uppercase">${p.org}</strong>
+            <p class="text-[10px] text-slate-600 font-sans line-clamp-2">${p.challenge}</p>
+          </div>
+          <div class="flex justify-between items-center text-[10px] text-slate-500 border-t border-slate-300 pt-1.5 font-mono">
+            <span>${p.timeline.split(' ')[0]} ${p.timeline.split(' ')[1]}</span>
+            <span class="text-botanical-moss font-bold">${formatRupiah(p.retainerVal)}</span>
+          </div>
+          <div class="flex gap-1.5 pt-1">
+            <button onclick="advanceProjectStage('${p.id}')" class="flex-1 bg-white hover:bg-slate-100 text-botanical-moss py-1 rounded text-[10px] font-bold border border-botanical-moss font-mono uppercase">
+              Majukan →
+            </button>
+            <button onclick="openSettleModal('${p.id}')" class="px-2 py-1 bg-white hover:bg-slate-100 text-botanical-sand rounded text-[10px] border border-botanical-moss font-bold">
+              SPK
+            </button>
+          </div>
+        `;
+        col.appendChild(card);
+      });
+
+      stages.forEach((st, idx) => {
+        document.getElementById(`badge-stage-${idx+1}`).innerText = counts[st];
+      });
+    }
+
+    function advanceProjectStage(id) {
+      const p = masterProjects.find(x => x.id === id);
+      if (!p) return;
+
+      if (p.stage === 'STAGE_1') p.stage = 'STAGE_2';
+      else if (p.stage === 'STAGE_2') p.stage = 'STAGE_3';
+      else if (p.stage === 'STAGE_3') p.stage = 'STAGE_4';
+      else if (p.stage === 'STAGE_4') {
+        openSettleModal(id);
+        return;
+      }
+
+      renderOverviewData();
+      renderKanbanBoard();
+      renderMasterProjectsTable();
+      showToast(`Proyek ${p.org} dimajukan ke ${getStageName(p.stage)}`);
+    }
+
+    // MASTER PROJECTS TABLE
+    function renderMasterProjectsTable() {
+      const search = (document.getElementById('callSearchInput')?.value || '').toLowerCase().trim();
+      const filter = document.getElementById('callStatusFilter')?.value || 'ALL';
+
+      const tbody = document.getElementById('masterProjectsTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = masterProjects.filter(p => {
+        const matchSearch = p.org.toLowerCase().includes(search) || p.pic.toLowerCase().includes(search) || p.id.toLowerCase().includes(search);
+        let matchFilter = true;
+        if (filter !== 'ALL') matchFilter = p.stage === filter;
+        return matchSearch && matchFilter;
+      });
+
+      filtered.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-botanical-pale/60 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-botanical-moss">${p.id}</td>
+          <td class="py-3 px-4">
+            <span class="text-slate-900 font-bold block font-display uppercase">${p.org}</span>
+            <span class="text-[10px] text-slate-500 font-mono">PIC: ${p.pic} (${p.phone})</span>
+          </td>
+          <td class="py-3 px-4 font-sans text-slate-700">${p.scope}</td>
+          <td class="py-3 px-3 text-center font-mono">${p.callDate} (${p.callTime.split(' ')[0]})</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-slate-900">${formatRupiah(p.retainerVal)}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="block text-emerald-700 font-bold">DP: ${formatRupiah(p.paidDp)}</span>
+            <span class="block text-[10px] ${p.due > 0 ? 'text-amber-700 font-bold' : 'text-slate-400'}">Due: ${formatRupiah(p.due)}</span>
+          </td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(p.stage)}">
+              ${p.isCompleted ? 'SELESAI LUNAS' : getStageName(p.stage)}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openSettleModal('${p.id}')" class="px-2.5 py-1 bg-botanical-pale hover:bg-stone-200 text-botanical-moss rounded-lg border border-botanical-border text-[11px] font-bold">
+              Buka SPK
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function getStageName(stage) {
+      if (stage === 'STAGE_1') return "Discovery Call";
+      if (stage === 'STAGE_2') return "Concept Direction";
+      if (stage === 'STAGE_3') return "Tokens & System";
+      if (stage === 'STAGE_4') return "Final Handover";
+      return "Selesai";
+    }
+
+    function getStageBadgeColor(stage) {
+      if (stage === 'STAGE_1') return "bg-blue-100 text-blue-800 border border-blue-200";
+      if (stage === 'STAGE_2') return "bg-amber-100 text-amber-800 border border-amber-200";
+      if (stage === 'STAGE_3') return "bg-purple-100 text-purple-800 border border-purple-200";
+      if (stage === 'STAGE_4') return "bg-emerald-100 text-emerald-800 border border-emerald-200";
+      return "bg-slate-200 text-slate-700";
+    }
+
+    // CONTRACTS UI
+    function renderContractsUI() {
+      const container = document.getElementById('contractsCardsContainer');
+      container.innerHTML = masterProjects.map(p => `
+        <div class="p-4 bg-botanical-pale rounded-2xl border-2 border-botanical-moss space-y-2">
+          <div class="flex justify-between items-center">
+            <strong class="text-botanical-moss uppercase font-display">${p.org}</strong>
+            <span class="text-[10px] bg-white text-botanical-moss px-1.5 py-0.5 rounded border border-botanical-moss font-bold">${p.id}</span>
+          </div>
+          <p class="text-[11px] text-slate-600 font-sans">${p.scope}</p>
+          <div class="flex justify-between text-[11px] pt-2 border-t border-slate-300">
+            <span>Retainer:</span>
+            <strong class="text-botanical-moss">${formatRupiah(p.retainerVal)}</strong>
+          </div>
+          <button onclick="openSettleModal('${p.id}')" class="w-full bg-white hover:bg-stone-100 text-botanical-moss font-bold py-1.5 rounded-lg border border-botanical-moss text-center mt-2 block">
+            Buka Surat Perjanjian SPK →
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function copyTokensJson() {
+      const tokensText = document.getElementById('tokensJsonDisplay').innerText;
+      navigator.clipboard.writeText(tokensText).then(() => {
+        showToast("JSON Design Tokens berhasil disalin ke clipboard!");
+      });
+    }
+
+    // SCANNER E-PASS DISCOVERY
+    function testBarcode(code) {
+      document.getElementById('barcodeScanInput').value = code;
+      processBarcodeScan();
+    }
+
+    function processBarcodeScan() {
+      const code = document.getElementById('barcodeScanInput').value.trim();
+      const p = masterProjects.find(x => x.id === code || x.id.includes(code) || x.org.toLowerCase().includes(code.toLowerCase()));
+
+      if (!p) {
+        alert("Nomor Pass Discovery tidak ditemukan dalam basis data atelier!");
+        return;
+      }
+
+      document.getElementById('scanResultBox').classList.remove('hidden');
+      document.getElementById('scanBrandTitle').innerText = p.org;
+      document.getElementById('scanPassCodeTitle').innerText = p.id;
+      document.getElementById('scanStageBadge').innerText = getStageName(p.stage);
+      document.getElementById('scanPicName').innerText = p.pic;
+      document.getElementById('scanPhone').innerText = p.phone;
+      document.getElementById('scanScopeTitle').innerText = p.scope;
+      document.getElementById('scanRetainerVal').innerText = formatRupiah(p.retainerVal);
+
+      activeProject = p;
+      showToast(`Pass ${p.id} berhasil divalidasi oleh Principal Atelier!`);
+    }
+
+    function advanceStageFromScanner() {
+      if (!activeProject) return;
+      advanceProjectStage(activeProject.id);
+      document.getElementById('scanStageBadge').innerText = getStageName(activeProject.stage);
+    }
+
+    // SETTLEMENT MODAL & PRINT SPK
+    function openSettleModal(id) {
+      const p = masterProjects.find(x => x.id === id);
+      if (!p) return;
+      activeProject = p;
+
+      document.getElementById('settlePassNumberTitle').innerText = p.id;
+      document.getElementById('pPassNumber').innerText = p.id;
+      document.getElementById('pDateText').innerText = p.date || "28 Okt 2026";
+      document.getElementById('pClientOrg').innerText = p.org;
+      document.getElementById('pClientContact').innerText = `PIC: ${p.pic} (${p.phone})`;
+      document.getElementById('pCallSchedule').innerText = `${p.callDate} (${p.callTime})`;
+      document.getElementById('pChallengeSummaryText').innerText = p.challenge;
+
+      document.getElementById('pScopeTitleTable').innerText = p.scope;
+      document.getElementById('pTimelineDisplay').innerText = p.timeline;
+      document.getElementById('pRetainerTotal').innerText = formatRupiah(p.retainerVal);
+      document.getElementById('pGrandTotalAmount').innerText = formatRupiah(p.retainerVal);
+      document.getElementById('pPaidDpAmount').innerText = formatRupiah(p.paidDp);
+      document.getElementById('pDueAmount').innerText = formatRupiah(p.due);
+
+      document.getElementById('pTokenCode').innerText = `AUTH-RAW-${p.id.split('-').pop()}`;
+
+      const btnAdvance = document.getElementById('btnAdvancePipeline');
+      if (p.isCompleted) {
+        document.getElementById('pPaymentStatusText').innerText = "RETAINER LUNAS 100% (SELESAI)";
+        btnAdvance.classList.add('hidden');
+      } else {
+        document.getElementById('pPaymentStatusText').innerText = "DP 50% RETAINER TERVERIFIKASI";
+        btnAdvance.classList.remove('hidden');
+      }
+
+      document.getElementById('settleModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settleModal').classList.add('hidden');
+    }
+
+    function executeAdvancePipeline() {
+      if (!activeProject) return;
+      advanceProjectStage(activeProject.id);
+      closeSettleModal();
+    }
+
+    // MODAL FORM MANUAL PROYEK BARU
+    function openNewProjectModal() {
+      document.getElementById('newProjectModal').classList.remove('hidden');
+    }
+
+    function closeNewProjectModal() {
+      document.getElementById('newProjectModal').classList.add('hidden');
+    }
+
+    function submitNewProjectForm() {
+      const org = document.getElementById('mClientOrg').value.trim() || 'Perusahaan Klien';
+      const pic = document.getElementById('mClientPic').value.trim() || 'Founder';
+      const phone = document.getElementById('mClientPhone').value.trim() || '081299998888';
+      const scope = document.getElementById('mScopeSelect').value;
+      const timeline = document.getElementById('mTimelineSelect').value;
+      const challenge = document.getElementById('mChallengeText').value.trim() || '-';
+
+      let retainerVal = 35000000;
+      if (scope.includes('UI/UX')) retainerVal = 50000000;
+      if (scope.includes('Advisory')) retainerVal = 25000000;
+
+      const dp = Math.round(retainerVal * 0.5);
+      const newId = "RAW-CALL-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+
+      const newProj = {
+        id: newId,
+        org: org,
+        pic: pic,
+        phone: phone,
+        scope: scope,
+        timeline: timeline,
+        challenge: challenge,
+        retainerVal: retainerVal,
+        paidDp: dp,
+        due: retainerVal - dp,
+        stage: "STAGE_1",
+        callDate: new Date().toISOString().split('T')[0],
+        callTime: "10:00 - 10:45 WIB",
+        callMedium: "Google Meet Video Call",
+        isCompleted: false,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      masterProjects.unshift(newProj);
+      renderOverviewData();
+      renderKanbanBoard();
+      renderMasterProjectsTable();
+      renderContractsUI();
+      closeNewProjectModal();
+      showToast(`Proyek ${org} berhasil diterbitkan di antrean Stage 1!`);
+    }
+
+    // CSV EXPORT
+    function exportProjectsToCsv() {
+      let csv = "ID Pass,Organisasi/Brand,PIC,No WhatsApp,Scope,Timeline,Tantangan,Nilai Retainer,DP Terbayar,Sisa Tagihan,Tahap Status\n";
+      masterProjects.forEach(p => {
+        csv += `"${p.id}","${p.org}","${p.pic}","${p.phone}","${p.scope}","${p.timeline}","${p.challenge.replace(/"/g, '""')}",${p.retainerVal},${p.paidDp},${p.due},"${p.stage}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Projects_Retainer_StudioRaw_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Data Retainer Studio//Raw berhasil diekspor ke file CSV!");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMsg').innerText = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+  </script>
+</body>
+</html>

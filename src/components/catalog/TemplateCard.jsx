@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { ArrowUpRight, Check, Clock, Eye, Info, Sparkles } from '../../lib/icons'
+import { ArrowUpRight, Check, Clock, Eye, Info, LayoutGrid, Sparkles } from '../../lib/icons'
 import { getCategoryLabel } from '../../data'
 import { PAYMENT_ADDON, hasPaymentHighlight } from '../../data/paymentAddon'
-import { previewLinkProps } from '../../lib/router'
+import { previewLinkProps, previewPath } from '../../lib/router'
 import ArchetypeThumb from './ArchetypeThumb'
 
 const BADGE_STYLES = {
@@ -112,6 +112,19 @@ export default function TemplateCard({ template, onSelect, selected = false }) {
           {variantStyle}
         </p>
         <p className="mt-2 text-[12.5px] leading-relaxed text-slate-400">{template.description}</p>
+
+        {/* Keterangan paket: satu paket = dua antarmuka (customer + admin) */}
+        <a
+          href={`${previewPath(template.id)}?view=admin`}
+          title="Buka Dashboard Admin template ini"
+          className="mt-3 inline-flex items-start gap-2 rounded-lg border border-indigo-400/20 bg-indigo-500/[0.07] px-2.5 py-2 transition hover:border-indigo-400/45 hover:bg-indigo-500/[0.12]"
+        >
+          <LayoutGrid className="mt-[1px] h-3 w-3 shrink-0 text-indigo-300" />
+          <span className="text-[10.5px] font-semibold leading-snug text-indigo-100/90">
+            Termasuk: Halaman Customer + Dashboard Admin
+          </span>
+          <ArrowUpRight className="ml-auto mt-[1px] h-3 w-3 shrink-0 text-indigo-300/70" />
+        </a>
 
         <div className="mt-3.5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-1.5" aria-label="Palet warna template">

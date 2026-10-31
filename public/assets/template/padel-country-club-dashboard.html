@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Royal Padel Country Club - Executive Concierge & Admin Portal</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Cinzel, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Cinzel"', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            slate: {
+              850: '#151e2e',
+              900: '#0f172a',
+              950: '#080d1a',
+            },
+            ice: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8', // Ice Blue Accent
+              500: '#0ea5e9',
+              600: '#0284c7',
+            },
+            gold: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#eab308',
+              500: '#d4af37', // Luxury Warm Gold
+              600: '#b48c28',
+              700: '#8a681c',
+              800: '#684d14',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d4af37;
+    }
+
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .gold-gradient-btn {
+      background: linear-gradient(135deg, #d4af37 0%, #b48c28 100%);
+    }
+    .gold-gradient-btn:hover {
+      background: linear-gradient(135deg, #e4bf47 0%, #c49c38 100%);
+    }
+    .gold-border-glow {
+      border-color: #d4af37;
+      box-shadow: 0 0 16px rgba(212, 175, 55, 0.22);
+    }
+    .ice-border-glow {
+      border-color: #38bdf8;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+    }
+
+    /* Print VIP Receipt / Member Pass */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printPassContainer, #printPassContainer * {
+        visibility: visible !important;
+      }
+      #printPassContainer {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+        padding: 24px;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 antialiased font-sans min-h-screen flex selection:bg-gold-200 selection:text-slate-900 overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-slate-900 border-r border-slate-800 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-slate-800">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-850 border border-gold-500/60 flex items-center justify-center text-gold-400 shadow-md shadow-gold-500/15 flex-shrink-0">
+            <i data-lucide="crown" class="w-5 h-5 text-gold-400"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-serif">
+              ROYAL<span class="text-ice-400 font-sans tracking-normal ml-0.5 font-black">PADEL</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-slate-800 text-gold-300 border border-gold-500/30 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">CONCIERGE & OPS</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Location & Status Strip -->
+      <div class="px-5 py-3 border-b border-slate-800/80 bg-slate-950/40">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gold-400"></i> Senayan Golf Country Club
+          </span>
+          <span class="text-ice-400 font-bold">ONLINE</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-gold-400 bg-slate-850 border-l-4 border-gold-500 shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Executive Overview</span>
+        </button>
+
+        <button onclick="switchTab('courts')" id="tab-courts" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="shield" class="w-4 h-4"></i>
+          <span>Private Court Matrix</span>
+          <span class="ml-auto bg-slate-800 text-ice-300 border border-ice-500/30 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgeActiveCourts">3 Court</span>
+        </button>
+
+        <button onclick="switchTab('lounge')" id="tab-lounge" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="coffee" class="w-4 h-4"></i>
+          <span>Clubhouse & Lounge</span>
+          <span class="ml-auto bg-gold-500/20 text-gold-300 border border-gold-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgeLoungeOccupied">4 Meja</span>
+        </button>
+
+        <button onclick="switchTab('valet')" id="tab-valet" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="car" class="w-4 h-4"></i>
+          <span>Valet Bay & Scanner</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 ml-auto animate-pulse"></span>
+        </button>
+
+        <button onclick="switchTab('members')" id="tab-members" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="award" class="w-4 h-4"></i>
+          <span>Member Tier Directory</span>
+          <span class="ml-auto bg-slate-800 text-slate-300 text-[10px] px-1.5 py-0.5 rounded" id="badgeMemberCount">84 VIP</span>
+        </button>
+
+        <button onclick="switchTab('cashier')" id="tab-cashier" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Concierge Cashier POS</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgePendingDP">2 DP</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Concierge Master Profile -->
+    <div class="p-4 border-t border-slate-800 bg-slate-950/50">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-gold-500/40 flex items-center justify-center text-gold-400 font-serif font-bold text-xs shadow-sm">
+          TM
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-white truncate font-serif">Tedi Mahendra</p>
+          <p class="text-[10px] text-slate-400 font-mono truncate">Master Concierge & Society</p>
+        </div>
+        <button onclick="showToast('Sistem Concierge disinkronkan')" title="Pengaturan Privilese" class="text-slate-400 hover:text-gold-400 transition">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-slate-950 text-slate-300 text-xs py-2 px-4 flex justify-between items-center border-b border-slate-800 font-mono">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gold-500/20 text-gold-300 border border-gold-400/40 font-serif">ROYAL VIP ACCESS</span>
+        <span class="hidden sm:inline">Panoramic Glass WPT Regulation • Valet Dedicated Bay • Sommelier & Infrared Sauna Ready</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-400">
+        <span>Slot Okupansi Court: <strong class="text-gold-400 font-bold">91.6% Malam Ini</strong></span>
+      </div>
+    </div>
+
+    <!-- Header / Action Bar -->
+    <header class="glass-nav sticky top-0 z-30 border-b border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1.5 rounded-lg bg-slate-800">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-serif">
+            <span id="currentViewTitle">Executive Overview</span>
+          </h1>
+          <p class="text-slate-400 text-xs hidden sm:block font-mono">Real-Time Management of Private Courts, VIP Lounges, and Member Privileges</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- New VIP Booking Button -->
+        <button onclick="openNewReservationModal()" class="gold-gradient-btn text-slate-950 font-bold px-4 py-2.5 rounded-xl transition shadow-md shadow-gold-500/20 flex items-center gap-2 active:scale-95 border border-gold-300 font-sans">
+          <i data-lucide="calendar-plus" class="w-4 h-4 text-slate-950"></i>
+          <span>+ Reservasi VIP</span>
+        </button>
+
+        <!-- Notification Dropdown -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-gold-400 flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-gold-400 rounded-full animate-pulse"></span>
+          </button>
+
+          <!-- Notification Dropdown Menu -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-3 text-slate-800 z-50">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2 px-1">
+              <span class="font-bold text-xs font-serif">Country Club Live Feed</span>
+              <span class="text-[10px] font-mono text-gold-700 font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                <p class="font-bold text-slate-900">Kendaraan Tiba di Valet Bay #VIP-09</p>
+                <p class="text-slate-500 text-[10px] font-mono">B 1928 RYD • Tedi Mahendra (Royal VIP)</p>
+                <span class="text-[9px] text-slate-400">2 menit lalu</span>
+              </div>
+              <div class="p-2.5 bg-gold-50/60 rounded-xl border border-gold-200">
+                <p class="font-bold text-slate-900">DP 50% QRIS Masuk: Rp 262.500</p>
+                <p class="text-slate-500 text-[10px] font-mono">Presidential Court 01 (19:00 - 21:00)</p>
+                <span class="text-[9px] text-gold-700 font-bold">14 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1">
+
+      <!-- ==================== VIEW 1: EXECUTIVE OVERVIEW ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Daily Revenue -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">TOTAL REVENUE HARI INI</span>
+              <div class="w-8 h-8 rounded-lg bg-gold-50 text-gold-600 flex items-center justify-center font-bold border border-gold-200">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-slate-900 font-serif block" id="kpiRevenue">Rp 6.825.000</span>
+              <p class="text-emerald-600 text-[11px] font-semibold flex items-center gap-1 mt-1 font-mono">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +21.4% vs rata-rata
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2: Court Hours Played -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">SESI COURT TERJADWAL</span>
+              <div class="w-8 h-8 rounded-lg bg-ice-50 text-ice-600 flex items-center justify-center font-bold border border-ice-200">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-slate-900 font-serif block" id="kpiSessionsCount">14 Sesi (28 Jam)</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">Presidential, Center & Skyline</p>
+            </div>
+          </div>
+
+          <!-- Card 3: Outstanding Balance at Reception -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">SISA PELUNASAN CLUBHOUSE (DP 50%)</span>
+              <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-200">
+                <i data-lucide="receipt" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-gold-700 font-serif block" id="kpiOutstandingDP">Rp 562.500</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">2 Tamu belum pelunasan sisa 50% di meja kasir</p>
+            </div>
+          </div>
+
+          <!-- Card 4: VIP Lounge Occupancy -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">CLUBHOUSE LOUNGE OCCUPANCY</span>
+              <div class="w-8 h-8 rounded-lg bg-slate-900 text-gold-400 flex items-center justify-center font-bold border border-gold-400">
+                <i data-lucide="crown" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-slate-900 font-serif block">78.5%</span>
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
+                <div class="gold-gradient-btn h-full rounded-full" style="width: 78.5%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (2 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Prime Time Court Occupancy (8 Cols) -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-serif">Okupansi Private Court & Peak Time (Malam Ini)</h3>
+                <p class="text-xs text-slate-500 font-mono">Distribusi slot 2-jam per lapangan privat berspesifikasi WPT</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-gold-500"></span> Presidential 01
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-ice-500"></span> Center Royal 02
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slate-900"></span> Skyline Roof 03
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="occupancyBarChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Membership Tier & Lounge Distribution (4 Cols) -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-slate-100 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-serif">Rasio Tier Keanggotaan</h3>
+              <p class="text-xs text-slate-500 font-mono">Aktivitas booking berdasarkan level VIP</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="tierDoughnutChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-slate-500 space-y-1 border-t border-slate-100">
+              <div class="flex justify-between">
+                <span>Platinum Royal VIP (25% off):</span>
+                <strong class="text-slate-900">58% (Favorit Club)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Gold Society (15% off):</span>
+                <strong class="text-slate-900">27%</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Silver Regular:</span>
+                <strong class="text-slate-900">15%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Private Court Strip -->
+        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-slate-800 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">LIVE COURT & RECOVERY TRACKER</span>
+              <h3 class="text-lg font-bold font-serif mt-0.5">Status Lapangan Privat & Fasilitas Pemulihan</h3>
+            </div>
+            <button onclick="switchTab('courts')" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3.5 py-2 rounded-xl border border-slate-700 transition flex items-center gap-1.5 font-mono">
+              <span>Buka Matriks Kalender</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-gold-400"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="liveCourtsCards">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Recent Reservations Table Quick Action -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-serif">Daftar Reservasi VIP & Status Tagihan Concierge</h3>
+              <p class="text-xs text-slate-500 font-mono">Daftar member yang terdaftar bermain malam ini beserta status pelunasan</p>
+            </div>
+            <button onclick="switchTab('cashier')" class="text-xs font-bold text-gold-700 hover:text-gold-800 transition flex items-center gap-1 font-mono">
+              Buka Meja Kasir Concierge <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-4">INVOICE</th>
+                  <th class="py-3 px-4">MEMBER & VALET BAY</th>
+                  <th class="py-3 px-4">COURT & JADWAL</th>
+                  <th class="py-3 px-4">CLUBHOUSE LOUNGE</th>
+                  <th class="py-3 px-4 text-right">TAGIHAN SISA</th>
+                  <th class="py-3 px-4">TIER & STATUS</th>
+                  <th class="py-3 px-4 text-center">AKSI CONCIERGE</th>
+                </tr>
+              </thead>
+              <tbody id="overviewReservationsTable" class="divide-y divide-slate-100 font-medium">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: PRIVATE COURT MATRIX ==================== -->
+      <section id="view-courts" class="hidden space-y-6">
+        
+        <!-- Controls Strip -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="flex items-center gap-3">
+            <span class="text-slate-600 font-bold">Tanggal Reservasi:</span>
+            <input type="date" id="courtDateFilter" onchange="renderCourtsMatrix()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-gold-400" />
+            <button onclick="setDateToday()" class="bg-slate-900 text-white hover:bg-slate-800 px-3 py-2 rounded-xl transition">Hari Ini</button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3 text-slate-600">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-white border border-slate-300"></span> Tersedia</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-100 border border-gold-400"></span> DP 50%</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-100 border border-emerald-500"></span> Lunas 100%</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-300 border border-slate-400"></span> Maintenance / Block</span>
+          </div>
+        </div>
+
+        <!-- Court Matrix Grid -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-serif">Matriks Sesi Private Court (Sesi 2 Jam)</h3>
+              <p class="text-xs text-slate-500 font-mono">Klik slot untuk memblokir jadwal, mengatur sesi latihan privat dengan pelatih, atau inspeksi lampu WPT</p>
+            </div>
+            <button onclick="promptBlockCustomCourt()" class="bg-slate-900 hover:bg-slate-800 text-gold-400 font-mono text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-gold-500/30">
+              <i data-lucide="lock" class="w-3.5 h-3.5"></i> + Kunci Jadwal Khusus
+            </button>
+          </div>
+
+          <div class="space-y-4" id="courtMatrixContainer">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: CLUBHOUSE & LOUNGE ==================== -->
+      <section id="view-lounge" class="hidden space-y-6">
+        
+        <!-- Lounge Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">PANORAMIC TERRACE MEJA TERISI</span>
+            <span class="text-2xl font-black text-slate-900 font-serif block mt-2">6 / 8 Meja</span>
+            <p class="text-ice-600 text-[11px] font-mono mt-1">Free Flow Artisan Espresso & Mocktail</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">PRESIDENTIAL SALON VIP</span>
+            <span class="text-2xl font-black text-gold-700 font-serif block mt-2">2 / 3 Ruang</span>
+            <p class="text-gold-600 text-[11px] font-mono mt-1">Dedicated Sommelier & Private Audiophile</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">TOTAL GUEST DI LOUNGE</span>
+            <span class="text-2xl font-black text-slate-900 font-serif block mt-2">28 VIP Guests</span>
+            <p class="text-slate-500 text-[11px] font-mono mt-1">Pasca sesi pertandingan padel</p>
+          </div>
+        </div>
+
+        <!-- Lounge Tables Grid -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-serif">Manajemen Meja & Ruang Relaksasi Lounge</h3>
+              <p class="text-xs text-slate-500 font-mono">Pantau durasi sewa lounge 90-menit dan pesanan F&B konsumsi anggota</p>
+            </div>
+            <button onclick="showToast('Pesanan F&B baru ditambahkan ke bill member')" class="gold-gradient-btn text-slate-950 font-bold font-mono text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 border border-gold-300">
+              <i data-lucide="plus" class="w-4 h-4"></i> + Input Pesanan F&B
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="loungeTablesGrid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: VALET BAY & SCANNER ==================== -->
+      <section id="view-valet" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Optical Scanner Simulator -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-serif flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-gold-600"></i>
+                  Valet Gate & Court Turnstile Validator
+                </h3>
+                <p class="text-xs text-slate-500 font-mono">Pemindaian barcode VIP Pass saat mobil tiba di area valet dan akses court</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> CONCIERGE GATE OPEN
+              </span>
+            </div>
+
+            <!-- Optical Reader Graphic UI -->
+            <div class="bg-slate-900 rounded-2xl p-8 border border-slate-800 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-52 h-32 border-2 border-dashed border-gold-400/60 rounded-2xl relative flex items-center justify-center p-4 bg-slate-800/40">
+                <div class="w-full h-0.5 bg-gold-400 absolute top-1/2 -translate-y-1/2 shadow-lg shadow-gold-400 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-slate-500 opacity-60"></i>
+              </div>
+              <p class="text-slate-300 text-xs font-mono mt-4">Posisikan Barcode Tiket (Cth: <strong>RPCC-VIP-9912</strong> atau Plat Nomor)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-slate-700">Input Manual Token VIP Pass / Plat Mobil:</label>
+              <div class="flex gap-2">
+                <input type="text" id="valetTokenInput" value="RPCC-VIP-9912" placeholder="Masukkan token pass..." class="flex-1 bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                <button onclick="executeScanVIPPass()" class="gold-gradient-btn text-slate-950 font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-gold-500/20 active:scale-95 font-sans border border-gold-300">
+                  <i data-lucide="check" class="w-4 h-4 text-slate-950"></i> Validasi Akses
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-400 font-sans">Contoh cepat pengujian token: 
+                <span onclick="setScannerVal('RPCC-VIP-9912')" class="underline cursor-pointer text-gold-700 font-mono font-bold">RPCC-VIP-9912 (Royal VIP - DP 50%)</span> • 
+                <span onclick="setScannerVal('RPCC-VIP-9913')" class="underline cursor-pointer text-emerald-700 font-mono font-bold">RPCC-VIP-9913 (Gold Tier - Lunas)</span> •
+                <span onclick="setScannerVal('INVALID-TOKEN')" class="underline cursor-pointer text-rose-700 font-mono font-bold">INVALID-TOKEN (Tidak Terdaftar)</span>
+              </p>
+            </div>
+
+            <!-- Feedback Result Container -->
+            <div id="valetFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Right: Valet Parking Bays & Access Logs -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 font-mono">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="font-bold text-sm text-slate-900 font-serif">Valet Dedicated Bays & Log Akses</h3>
+              <span class="text-[10px] text-slate-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs" id="valetAuditLogs">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: MEMBER DIRECTORY & TIERS ==================== -->
+      <section id="view-members" class="hidden space-y-6">
+        
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+            <input type="text" id="memberSearchInput" onkeyup="filterMemberDirectory()" placeholder="Cari nama, ID member, Plat mobil..." class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-gold-400" />
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="openAddMemberModal()" class="gold-gradient-btn text-slate-950 font-bold px-4 py-2.5 rounded-xl transition shadow-md shadow-gold-500/20 flex items-center gap-1.5 border border-gold-300 font-sans">
+              <i data-lucide="user-plus" class="w-4 h-4"></i> Registrasi Member VIP
+            </button>
+          </div>
+        </div>
+
+        <!-- Members Table -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-serif">Database Anggota Royal Padel Society</h3>
+              <p class="text-xs text-slate-500 font-mono" id="memberCountText">Menampilkan data keanggotaan aktif</p>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-4">ID ANGGOTA</th>
+                  <th class="py-3 px-4">NAMA MEMBER</th>
+                  <th class="py-3 px-4">MEMBERSHIP TIER</th>
+                  <th class="py-3 px-4">PLAT VALET</th>
+                  <th class="py-3 px-4">BENEFIT COURT</th>
+                  <th class="py-3 px-4">BENEFIT LOUNGE</th>
+                  <th class="py-3 px-4 text-center">AKSI PRIVILEGE</th>
+                </tr>
+              </thead>
+              <tbody id="memberDirectoryBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 6: CONCIERGE CASHIER POS ==================== -->
+      <section id="view-cashier" class="hidden space-y-6">
+        
+        <!-- Shift Financial Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">TOTAL OMSET SESI HARI INI</span>
+            <span class="text-2xl font-black text-slate-900 font-serif block mt-2">Rp 6.825.000</span>
+            <p class="text-slate-400 text-[11px] font-mono mt-1">14 Sesi Private Court & Lounge</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">SETTLEMENT QRIS (DP ONLINE TERKUNCI)</span>
+            <span class="text-2xl font-black text-gold-700 font-serif block mt-2">Rp 6.262.500</span>
+            <p class="text-emerald-600 text-[11px] font-mono mt-1">Auto-Settled ke BCA Royal Society</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">SISA PELUNASAN CLUBHOUSE RESEPSIONIS</span>
+            <span class="text-2xl font-black text-amber-600 font-serif block mt-2">Rp 562.500</span>
+            <p class="text-amber-600 text-[11px] font-mono mt-1">2 Transaksi Menunggu Kedatangan</p>
+          </div>
+        </div>
+
+        <!-- POS Master Table -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-serif">Jurnal Transaksi Kasir Concierge</h3>
+              <p class="text-xs text-slate-500 font-mono">Pencatatan uang muka DP 50%, pelunasan di clubhouse concierge, dan invoice VIP</p>
+            </div>
+            <button onclick="exportReservationsCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+              <i data-lucide="download" class="w-4 h-4 text-gold-400"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-4">INVOICE</th>
+                  <th class="py-3 px-4">NAMA MEMBER</th>
+                  <th class="py-3 px-4">COURT & JADWAL</th>
+                  <th class="py-3 px-4">NILAI RESERVASI</th>
+                  <th class="py-3 px-4">DP DITERIMA</th>
+                  <th class="py-3 px-4">SISA KASIR</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-center">AKSI PELUNASAN</th>
+                </tr>
+              </thead>
+              <tbody id="cashierTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: RESERVASI VIP BARU ==================== -->
+  <div id="newReservationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl p-6 space-y-4 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-serif flex items-center gap-2">
+          <i data-lucide="calendar-plus" class="w-5 h-5 text-gold-600"></i>
+          Input Reservasi Private Court & Lounge
+        </h3>
+        <button onclick="closeNewReservationModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nama Member / Tamu VIP *</label>
+          <input type="text" id="newResName" placeholder="Contoh: Erick Thohir" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-gold-400 font-medium" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">No. WhatsApp *</label>
+            <input type="tel" id="newResPhone" placeholder="0812..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-gold-400" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Plat Mobil (Valet VIP)</label>
+            <input type="text" id="newResPlate" placeholder="B 1234 VIP" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 uppercase font-mono focus:outline-none focus:ring-2 focus:ring-gold-400" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Pilih Private Court *</label>
+            <select id="newResCourt" onchange="updateNewReservationPrice()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-gold-400">
+              <option value="court-presidential">Presidential Panoramic Glass 01 (Rp 350k/jam)</option>
+              <option value="court-royal-center">Center Royal Glass Court 02 (Rp 320k/jam)</option>
+              <option value="court-sunset-roof">Skyline Sunset Court 03 (Rp 300k/jam)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Slot Waktu (2 Jam) *</label>
+            <select id="newResTime" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-gold-400">
+              <option value="08:00 - 10:00">08:00 - 10:00 WIB</option>
+              <option value="15:00 - 17:00">15:00 - 17:00 WIB</option>
+              <option value="19:00 - 21:00">19:00 - 21:00 WIB</option>
+              <option value="21:00 - 23:00">21:00 - 23:00 WIB</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Pilihan Tier Member *</label>
+            <select id="newResTier" onchange="updateNewReservationPrice()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-gold-400">
+              <option value="ROYAL">Platinum Royal VIP (Diskon 25%)</option>
+              <option value="GOLD">Gold Society (Diskon 15%)</option>
+              <option value="SILVER">Silver Member (Normal)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Reservasi Lounge</label>
+            <select id="newResLounge" onchange="updateNewReservationPrice()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-gold-400">
+              <option value="TERRACE">Panoramic Terrace (Complimentary VIP)</option>
+              <option value="PRESIDENTIAL">Presidential Cigar & Wine Salon</option>
+              <option value="NONE">Tanpa Lounge</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between font-mono">
+          <span class="text-slate-500">Estimasi Total Nilai (Setelah Diskon):</span>
+          <span class="text-base font-extrabold text-gold-700" id="newResEstimateTotal">Rp 525.000</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 font-sans">
+        <button onclick="closeNewReservationModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="saveNewReservation()" class="px-5 py-2.5 gold-gradient-btn text-slate-950 font-bold rounded-xl transition shadow-md shadow-gold-500/20 border border-gold-300">
+          Konfirmasi & Terbitkan Pass
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: PELUNASAN KASIR CLUBHOUSE ==================== -->
+  <div id="settleModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl p-6 space-y-5 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-serif flex items-center gap-2">
+          <i data-lucide="hand-coins" class="w-5 h-5 text-gold-600"></i>
+          Pelunasan Sisa 50% di Meja Concierge
+        </h3>
+        <button onclick="closeSettleModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Invoice:</span>
+          <span class="font-bold text-slate-900" id="settleInvoiceCode">RPCC-202610-0982</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Nama Member:</span>
+          <span class="font-bold text-slate-900" id="settleMemberName">Tedi Mahendra</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Total Tarif Reservasi:</span>
+          <span class="font-bold text-slate-900" id="settleTotalCost">Rp 525.000</span>
+        </div>
+        <div class="flex justify-between text-emerald-700">
+          <span>Sudah Dibayar (DP 50% QRIS):</span>
+          <span class="font-bold" id="settlePaidDP">Rp 262.500</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-slate-200 text-sm font-bold text-slate-900">
+          <span>Sisa Tagihan yang Wajib Diterima:</span>
+          <span class="text-gold-700 font-extrabold" id="settleRemainingDue">Rp 262.500</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-700 mb-1 font-sans">Metode Pelunasan Meja Resepsionis:</label>
+        <select id="settleMethodSelect" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-sans focus:outline-none focus:ring-2 focus:ring-gold-400">
+          <option value="Debit / EDC BCA Prioritas">Debit EDC BCA Prioritas</option>
+          <option value="Uang Tunai (Cash di Resepsionis)">Uang Tunai Pas di Meja Concierge</option>
+          <option value="QRIS Statis Concierge">QRIS Meja Kasir</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 font-sans">
+        <button onclick="closeSettleModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="confirmSettlePayment()" class="px-5 py-2.5 gold-gradient-btn text-slate-950 font-bold rounded-xl transition shadow-md shadow-gold-500/20 border border-gold-300 flex items-center gap-1.5">
+          <i data-lucide="check-circle" class="w-4 h-4 text-slate-950"></i> Konfirmasi Lunas & Buka Loker
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: REGISTRASI MEMBER VIP ==================== -->
+  <div id="addMemberModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl p-6 space-y-4 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-serif flex items-center gap-2">
+          <i data-lucide="award" class="w-5 h-5 text-gold-600"></i> Registrasi Member Royal Society
+        </h3>
+        <button onclick="closeAddMemberModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Member *</label>
+          <input type="text" id="newMemberName" placeholder="Contoh: Budi Gunawan" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-gold-400" />
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp *</label>
+          <input type="tel" id="newMemberPhone" placeholder="0811..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-gold-400" />
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nomor Plat Mobil Valet</label>
+          <input type="text" id="newMemberPlate" placeholder="B 8888 RYC" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 uppercase font-mono focus:outline-none focus:ring-2 focus:ring-gold-400" />
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Tier Keanggotaan *</label>
+          <select id="newMemberTierSelect" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-gold-400">
+            <option value="ROYAL">Platinum Royal VIP (25% Diskon + Free Lounge)</option>
+            <option value="GOLD">Gold Society (15% Diskon Court)</option>
+            <option value="SILVER">Silver Member (Standard Access)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 font-sans">
+        <button onclick="closeAddMemberModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="saveNewMember()" class="px-5 py-2.5 gold-gradient-btn text-slate-950 font-bold rounded-xl transition shadow-md shadow-gold-500/20 border border-gold-300">
+          Terbitkan Member ID & Valet Pass
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PRINTABLE HIDDEN VIP PASS ==================== -->
+  <div id="printPassContainer" class="hidden">
+    <div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 320px; margin: 0 auto; text-align: left; font-size: 11px;">
+      <div style="text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 8px; margin-bottom: 8px;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 800; font-family: 'Cinzel', serif; color: #0f172a;">ROYAL PADEL COUNTRY CLUB</h2>
+        <p style="margin: 2px 0; font-size: 10px; color: #666;">Private Court, Membership Tier & Lounge Sanctuary</p>
+        <p style="margin: 0; font-size: 9px; color: #999;">Jl. Senayan Golf No. 1, Jakarta Selatan</p>
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <p style="margin: 2px 0;"><strong>Invoice:</strong> <span id="prnInvoice">RPCC-202610-0982</span></p>
+        <p style="margin: 2px 0;"><strong>Member:</strong> <span id="prnMember">Tedi Mahendra</span></p>
+        <p style="margin: 2px 0;"><strong>Valet Bay:</strong> <span id="prnValet">B 1928 RYD (#BAY-VIP-09)</span></p>
+        <p style="margin: 2px 0;"><strong>Court:</strong> <span id="prnCourt">Presidential Panoramic Glass 01</span></p>
+        <p style="margin: 2px 0;"><strong>Jadwal:</strong> <span id="prnSchedule">19:00 - 21:00 WIB (2 Jam)</span></p>
+        <p style="margin: 2px 0;"><strong>Lounge:</strong> <span id="prnLounge">Terrace Lounge (Complimentary VIP)</span></p>
+      </div>
+
+      <div style="border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; padding: 6px 0; margin-bottom: 8px;">
+        <table style="width: 100%;">
+          <tr>
+            <td>Nilai Sesi:</td>
+            <td style="text-align: right;" id="prnTotal">Rp 525.000</td>
+          </tr>
+          <tr>
+            <td>DP QRIS:</td>
+            <td style="text-align: right;" id="prnDP">Rp 262.500</td>
+          </tr>
+          <tr>
+            <td><strong>Status Pelunasan:</strong></td>
+            <td style="text-align: right;"><strong id="prnPaidStatus">LUNAS DI CLUBHOUSE</strong></td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <p style="margin: 0; font-weight: bold; font-family: monospace;">ACCESS TOKEN: RPCC-VIP-9912</p>
+        <p style="margin: 3px 0 0; font-size: 9px; color: #666;">Harap gunakan sepatu padel sol non-marking.</p>
+        <p style="margin: 2px 0 0; font-size: 9px; color: #666;">Selamat menikmati permainan privat Anda!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium">
+    <div class="w-6 h-6 rounded-full gold-gradient-btn flex items-center justify-center text-slate-950 font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Sistem diperbarui</span>
+  </div>
+
+  <!-- ==================== CORE JAVASCRIPT ==================== -->
+  <script>
+    // 1. Data Court Privat
+    let masterCourts = [
+      {
+        id: "court-presidential",
+        name: "Presidential Panoramic Glass 01",
+        badge: "WPT World Panoramic",
+        ratePerHour: 350000,
+        specs: "12mm Panoramic Glass • Supercourt XN Turf • Private Sauna & Cold Plunge",
+        status: "ACTIVE",
+        slots: [
+          { time: "08:00 - 10:00", status: "FREE" },
+          { time: "10:00 - 12:00", status: "SETTLED", member: "Raffi Ahmad (Royal VIP)" },
+          { time: "15:00 - 17:00", status: "FREE" },
+          { time: "17:00 - 19:00", status: "MAINTENANCE" },
+          { time: "19:00 - 21:00", status: "PENDING_DP", member: "Tedi Mahendra (Royal VIP)" },
+          { time: "21:00 - 23:00", status: "FREE" }
+        ]
+      },
+      {
+        id: "court-royal-center",
+        name: "Center Royal Glass Court 02",
+        badge: "Indoor Climate Controlled",
+        ratePerHour: 320000,
+        specs: "Full AC Indoor • Anti-Glare LED 1000 Lux • Private Changing Suite",
+        status: "ACTIVE",
+        slots: [
+          { time: "09:00 - 11:00", status: "FREE" },
+          { time: "11:00 - 13:00", status: "FREE" },
+          { time: "16:00 - 18:00", status: "PENDING_DP", member: "Gading Marten (Gold)" },
+          { time: "18:00 - 20:00", status: "SETTLED", member: "Nia Ramadhani (Royal VIP)" },
+          { time: "20:00 - 22:00", status: "FREE" }
+        ]
+      },
+      {
+        id: "court-sunset-roof",
+        name: "Skyline Sunset Court 03",
+        badge: "Rooftop Open-Air View",
+        ratePerHour: 300000,
+        specs: "360° Skyline Jakarta View • Acoustic Dampening • Private Terrace Access",
+        status: "ACTIVE",
+        slots: [
+          { time: "07:00 - 09:00", status: "FREE" },
+          { time: "09:00 - 11:00", status: "SETTLED", member: "Luna Maya (Royal VIP)" },
+          { time: "15:30 - 17:30", status: "FREE" },
+          { time: "17:30 - 19:30", status: "BLOCKED" },
+          { time: "19:30 - 21:30", status: "SETTLED", member: "Reza Rahadian (Gold)" }
+        ]
+      }
+    ];
+
+    // 2. Data Membership
+    let masterMembers = [
+      {
+        id: "RPCC-ROYAL-001",
+        name: "Tedi Mahendra",
+        phone: "0812-9999-8888",
+        tier: "ROYAL",
+        tierName: "Platinum Royal VIP",
+        plate: "B 1928 RYD",
+        courtDiscount: "25% OFF",
+        loungeBenefit: "Complimentary VIP All-Access"
+      },
+      {
+        id: "RPCC-ROYAL-002",
+        name: "Raffi Ahmad",
+        phone: "0811-2233-4455",
+        tier: "ROYAL",
+        tierName: "Platinum Royal VIP",
+        plate: "B 17 RFS",
+        courtDiscount: "25% OFF",
+        loungeBenefit: "Complimentary VIP All-Access"
+      },
+      {
+        id: "RPCC-GOLD-019",
+        name: "Gading Marten",
+        phone: "0818-5566-7788",
+        tier: "GOLD",
+        tierName: "Gold Society",
+        plate: "B 73 GDS",
+        courtDiscount: "15% OFF",
+        loungeBenefit: "Terrace 50% Disc (Rp 75k)"
+      },
+      {
+        id: "RPCC-SILVER-102",
+        name: "Bima Santoso",
+        phone: "0856-7890-1234",
+        tier: "SILVER",
+        tierName: "Silver Member",
+        plate: "B 2049 BMS",
+        courtDiscount: "Regular Rate",
+        loungeBenefit: "Standard Rate (Rp 150k)"
+      }
+    ];
+
+    // 3. Data Reservasi & POS
+    let masterReservations = [
+      {
+        invoice: "RPCC-202610-0982",
+        token: "RPCC-VIP-9912",
+        memberId: "RPCC-ROYAL-001",
+        memberName: "Tedi Mahendra",
+        phone: "0812-9999-8888",
+        plate: "B 1928 RYD",
+        valetBay: "#BAY-VIP-09",
+        courtId: "court-presidential",
+        courtName: "Presidential Panoramic 01",
+        time: "19:00 - 21:00",
+        date: "2026-10-29",
+        tier: "ROYAL",
+        lounge: "Terrace Lounge (Complimentary)",
+        totalCost: 525000,
+        paid: 262500,
+        due: 262500,
+        status: "PENDING_DP"
+      },
+      {
+        invoice: "RPCC-202610-0983",
+        token: "RPCC-VIP-9913",
+        memberId: "RPCC-GOLD-019",
+        memberName: "Gading Marten",
+        phone: "0818-5566-7788",
+        plate: "B 73 GDS",
+        valetBay: "#BAY-VIP-04",
+        courtId: "court-royal-center",
+        courtName: "Center Royal Glass 02",
+        time: "16:00 - 18:00",
+        date: "2026-10-29",
+        tier: "GOLD",
+        lounge: "Terrace Lounge (50% Disc)",
+        totalCost: 619000,
+        paid: 309500,
+        due: 309500,
+        status: "PENDING_DP"
+      },
+      {
+        invoice: "RPCC-202610-0984",
+        token: "RPCC-VIP-9914",
+        memberId: "RPCC-ROYAL-002",
+        memberName: "Raffi Ahmad",
+        phone: "0811-2233-4455",
+        plate: "B 17 RFS",
+        valetBay: "#BAY-VIP-01",
+        courtId: "court-presidential",
+        courtName: "Presidential Panoramic 01",
+        time: "10:00 - 12:00",
+        date: "2026-10-29",
+        tier: "ROYAL",
+        lounge: "Presidential Cigar Salon",
+        totalCost: 625000,
+        paid: 625000,
+        due: 0,
+        status: "SETTLED"
+      },
+      {
+        invoice: "RPCC-202610-0985",
+        token: "RPCC-VIP-9915",
+        memberId: "RPCC-SILVER-102",
+        memberName: "Bima Santoso",
+        phone: "0856-7890-1234",
+        plate: "B 2049 BMS",
+        valetBay: "#BAY-REG-12",
+        courtId: "court-sunset-roof",
+        courtName: "Skyline Sunset Court 03",
+        time: "19:30 - 21:30",
+        date: "2026-10-29",
+        tier: "SILVER",
+        lounge: "Tanpa Lounge",
+        totalCost: 600000,
+        paid: 600000,
+        due: 0,
+        status: "SETTLED"
+      }
+    ];
+
+    // 4. Data Lounge Tables
+    let masterLoungeTables = [
+      { id: "T-01", name: "Panoramic Terrace Table 01", type: "Terrace", capacity: "4 Pax", status: "OCCUPIED", member: "Tedi Mahendra (Royal VIP)", session: "19:00 - 20:30", fnb: "Artisan Cold Brew & Sparkling Water" },
+      { id: "T-02", name: "Panoramic Terrace Table 02", type: "Terrace", capacity: "4 Pax", status: "RESERVED", member: "Gading Marten (Gold)", session: "18:00 - 19:30", fnb: "Hydration Mocktail Pack" },
+      { id: "T-03", name: "Panoramic Terrace Table 03", type: "Terrace", capacity: "4 Pax", status: "VACANT", member: "-", session: "-", fnb: "-" },
+      { id: "S-01", name: "Presidential Cigar & Wine Salon A", type: "Presidential", capacity: "8 Pax", status: "OCCUPIED", member: "Raffi Ahmad (Royal VIP)", session: "12:00 - 14:00", fnb: "Bordeaux Grand Cru & Charcuterie" },
+      { id: "S-02", name: "Presidential Cigar & Wine Salon B", type: "Presidential", capacity: "8 Pax", status: "VACANT", member: "-", session: "-", fnb: "-" }
+    ];
+
+    // 5. Valet Logs
+    let valetLogs = [
+      { time: "18:48:10", token: "RPCC-VIP-9912", member: "Tedi Mahendra", plate: "B 1928 RYD", bay: "#BAY-VIP-09", note: "Mobil Parkir di Bay VIP" },
+      { time: "15:42:00", token: "RPCC-VIP-9913", member: "Gading Marten", plate: "B 73 GDS", bay: "#BAY-VIP-04", note: "Mobil Parkir di Bay VIP" },
+      { time: "09:50:22", token: "RPCC-VIP-9914", member: "Raffi Ahmad", plate: "B 17 RFS", bay: "#BAY-VIP-01", note: "Kunci Diserahkan ke Concierge" }
+    ];
+
+    let activeSettleInvoice = null;
+    let occupancyBarChartInstance = null;
+    let tierDoughnutChartInstance = null;
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Executive Overview",
+        courts: "Private Court Matrix & Recovery",
+        lounge: "Clubhouse Lounge & Sommelier Service",
+        valet: "Valet Dedicated Bay & Scanner",
+        members: "Member Tier Directory & Society",
+        cashier: "Concierge Cashier POS & Official Pass"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "Royal Padel Portal";
+
+      ['overview', 'courts', 'lounge', 'valet', 'members', 'cashier'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800 font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-gold-400 bg-slate-850 border-l-4 border-gold-500 shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'courts') renderCourtsMatrix();
+      if (tabKey === 'lounge') renderLoungeTables();
+      if (tabKey === 'valet') renderValetLogs();
+      if (tabKey === 'members') renderMemberDirectory();
+      if (tabKey === 'cashier') renderCashierTable();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    // Initializer
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const courtDate = document.getElementById('courtDateFilter');
+      if (courtDate) courtDate.value = today;
+
+      initCharts();
+      renderLiveCourtsCards();
+      renderOverviewReservations();
+      renderCourtsMatrix();
+      renderLoungeTables();
+      renderValetLogs();
+      renderMemberDirectory();
+      renderCashierTable();
+      updateDashboardCounters();
+      lucide.createIcons();
+    });
+
+    // Chart.js Implementations
+    function initCharts() {
+      const ctxOcc = document.getElementById('occupancyBarChart');
+      if (ctxOcc) {
+        occupancyBarChartInstance = new Chart(ctxOcc, {
+          type: 'bar',
+          data: {
+            labels: ['08:00', '10:00', '15:00', '17:00', '19:00', '21:00'],
+            datasets: [
+              {
+                label: 'Presidential 01',
+                data: [1, 1, 0, 1, 1, 1],
+                backgroundColor: '#d4af37',
+                borderRadius: 6
+              },
+              {
+                label: 'Center Royal 02',
+                data: [0, 1, 1, 0, 1, 1],
+                backgroundColor: '#38bdf8',
+                borderRadius: 6
+              },
+              {
+                label: 'Skyline Roof 03',
+                data: [1, 0, 1, 1, 1, 0],
+                backgroundColor: '#0f172a',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 3,
+                ticks: { stepSize: 1, color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#f1f5f9' }
+              },
+              x: {
+                ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      const ctxTier = document.getElementById('tierDoughnutChart');
+      if (ctxTier) {
+        tierDoughnutChartInstance = new Chart(ctxTier, {
+          type: 'doughnut',
+          data: {
+            labels: ['Platinum Royal VIP', 'Gold Society', 'Silver Member'],
+            datasets: [{
+              data: [58, 27, 15],
+              backgroundColor: ['#d4af37', '#eab308', '#0f172a'],
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            },
+            cutout: '72%'
+          }
+        });
+      }
+    }
+
+    // Render Fast Live Court Strip
+    function renderLiveCourtsCards() {
+      const container = document.getElementById('liveCourtsCards');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterCourts.forEach(c => {
+        const activeSlot = c.slots[4] || c.slots[0];
+        const isOccupied = activeSlot.status === 'PENDING_DP' || activeSlot.status === 'SETTLED';
+
+        const div = document.createElement('div');
+        div.className = "bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-3 font-mono";
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-white font-serif">${c.name}</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isOccupied ? 'bg-gold-500/20 text-gold-300 border border-gold-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+              ${isOccupied ? 'SESI BERMAIN' : 'TERSEDIA'}
+            </span>
+          </div>
+
+          <div class="space-y-1">
+            <span class="text-[10px] text-slate-400 block">Sesi Prime-Time (${activeSlot.time}):</span>
+            <p class="text-xs font-sans text-slate-200 font-bold leading-tight truncate">${activeSlot.member || 'Tersedia untuk Anggota VIP'}</p>
+          </div>
+
+          <div class="flex justify-between items-center text-[10px] text-slate-400 pt-2 border-t border-slate-700">
+            <span>Tarif: <strong class="text-white">${formatRupiah(c.ratePerHour * 2)}</strong> /2 Jam</span>
+            <button onclick="switchTab('courts')" class="text-gold-400 hover:underline">Kelola Slot</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Render Overview Table
+    function renderOverviewReservations() {
+      const tbody = document.getElementById('overviewReservationsTable');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterReservations.slice(0, 5).forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        let tierBadge = '';
+        if (r.tier === 'ROYAL') {
+          tierBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-gold-100 text-gold-800 border border-gold-300 font-serif">ROYAL VIP</span>`;
+        } else if (r.tier === 'GOLD') {
+          tierBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200">GOLD</span>`;
+        } else {
+          tierBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-slate-100 text-slate-700">SILVER</span>`;
+        }
+
+        let actionBtn = '';
+        if (r.due > 0) {
+          actionBtn = `
+            <button onclick="openSettleModal('${r.invoice}')" class="gold-gradient-btn text-slate-950 font-bold px-3 py-1.5 rounded-lg text-[10px] shadow-sm flex items-center gap-1 mx-auto active:scale-95 border border-gold-300 font-sans">
+              <i data-lucide="hand-coins" class="w-3.5 h-3.5"></i> Pelunasan Kasir
+            </button>
+          `;
+        } else {
+          actionBtn = `
+            <button onclick="printOfficialPass('${r.invoice}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-[10px] flex items-center gap-1 mx-auto font-sans">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak Pass
+            </button>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${r.invoice}</td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-800">${r.memberName}<br><span class="text-[10px] text-ice-600 font-mono font-normal">${r.plate} (${r.valetBay})</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700">${r.courtName}<br><span class="text-[10px] text-gold-700 font-mono font-bold">${r.time} WIB</span></td>
+          <td class="py-3 px-4 font-sans text-slate-600">${r.lounge}</td>
+          <td class="py-3 px-4 font-bold ${r.due > 0 ? 'text-amber-600' : 'text-slate-400'} text-right">${formatRupiah(r.due)}</td>
+          <td class="py-3 px-4">${tierBadge}</td>
+          <td class="py-3 px-4 text-center">${actionBtn}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Render Court Matrix
+    function renderCourtsMatrix() {
+      const container = document.getElementById('courtMatrixContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterCourts.forEach(c => {
+        const row = document.createElement('div');
+        row.className = "p-4 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-3 font-mono";
+
+        let slotsHtml = c.slots.map(s => {
+          let btnClass = "";
+          let labelText = s.time;
+          let subText = "Tersedia";
+
+          if (s.status === 'FREE') {
+            btnClass = "bg-white border-slate-200 text-slate-800 hover:border-gold-400 hover:bg-gold-50/30";
+          } else if (s.status === 'PENDING_DP') {
+            btnClass = "bg-amber-50 border-gold-400 text-gold-800 font-bold";
+            subText = s.member || "DP 50%";
+          } else if (s.status === 'SETTLED') {
+            btnClass = "bg-emerald-50 border-emerald-400 text-emerald-800 font-bold";
+            subText = s.member || "Lunas VIP";
+          } else {
+            btnClass = "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed";
+            subText = "Maintenance";
+          }
+
+          return `
+            <div onclick="clickSlotAction('${c.id}', '${s.time}', '${s.status}')" class="p-2.5 rounded-xl border transition text-center cursor-pointer ${btnClass}">
+              <span class="block font-bold text-[11px]">${labelText}</span>
+              <span class="block text-[9px] truncate font-sans mt-0.5 opacity-80">${subText}</span>
+            </div>
+          `;
+        }).join('');
+
+        row.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-gold-500"></span>
+              <h4 class="font-bold text-sm text-slate-900 font-serif">${c.name}</h4>
+              <span class="text-[10px] text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">${c.badge}</span>
+            </div>
+            <span class="text-xs font-bold text-slate-800">${formatRupiah(c.ratePerHour * 2)} / 2 Jam</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+            ${slotsHtml}
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      lucide.createIcons();
+    }
+
+    function setDateToday() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('courtDateFilter').value = today;
+      renderCourtsMatrix();
+    }
+
+    function clickSlotAction(courtId, timeStr, status) {
+      if (status === 'FREE') {
+        const confirmLock = window.confirm(`Slot ${timeStr} kosong. Apakah Anda ingin MENGUNCI (Maintenance WPT Glass / Lampu 1000 Lux) slot ini?`);
+        if (confirmLock) {
+          const c = masterCourts.find(x => x.id === courtId);
+          if (c) {
+            const slot = c.slots.find(s => s.time === timeStr);
+            if (slot) slot.status = 'BLOCKED';
+            renderCourtsMatrix();
+            showToast(`Slot ${c.name} [${timeStr}] berhasil dikunci`);
+          }
+        }
+      } else if (status === 'BLOCKED' || status === 'MAINTENANCE') {
+        const confirmUnlock = window.confirm(`Buka kembali slot ${timeStr} menjadi TERSEDIA untuk pemesanan anggota?`);
+        if (confirmUnlock) {
+          const c = masterCourts.find(x => x.id === courtId);
+          if (c) {
+            const slot = c.slots.find(s => s.time === timeStr);
+            if (slot) slot.status = 'FREE';
+            renderCourtsMatrix();
+            showToast(`Slot ${c.name} [${timeStr}] TERSEDIA kembali`);
+          }
+        }
+      } else {
+        const match = masterReservations.find(r => r.courtId === courtId && r.time === timeStr);
+        if (match) {
+          if (match.due > 0) openSettleModal(match.invoice);
+          else printOfficialPass(match.invoice);
+        }
+      }
+    }
+
+    function promptBlockCustomCourt() {
+      const courtName = prompt("Ketik nama court (Presidential / Center / Skyline):", "Presidential");
+      if (courtName) {
+        showToast(`Sesi privat VIP khusus untuk ${courtName} berhasil dialokasikan.`);
+      }
+    }
+
+    // Render Lounge Tables
+    function renderLoungeTables() {
+      const grid = document.getElementById('loungeTablesGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      masterLoungeTables.forEach(t => {
+        const isOccupied = t.status === 'OCCUPIED';
+        const isReserved = t.status === 'RESERVED';
+
+        let badgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+        if (isOccupied) badgeClass = "bg-gold-50 text-gold-800 border-gold-300";
+        if (isReserved) badgeClass = "bg-ice-50 text-ice-700 border-ice-200";
+
+        const div = document.createElement('div');
+        div.className = "p-5 rounded-2xl border border-slate-200 bg-slate-50 space-y-3 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start border-b border-slate-200 pb-2">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 block">${t.id} • ${t.type.toUpperCase()}</span>
+              <h4 class="font-bold text-slate-900 font-sans text-sm">${t.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold border ${badgeClass}">${t.status}</span>
+          </div>
+
+          <div class="space-y-1 font-sans">
+            <span class="text-[10px] text-slate-400 block font-mono">Anggota / Tamu:</span>
+            <p class="font-bold text-slate-800 text-xs">${t.member}</p>
+            <p class="text-[11px] text-slate-500">Sesi: ${t.session} (${t.capacity})</p>
+          </div>
+
+          <div class="p-2.5 bg-white rounded-xl border border-slate-200 space-y-1">
+            <span class="text-[9px] font-bold text-slate-400 block font-mono">F&B SELECTION:</span>
+            <p class="text-[11px] text-gold-800 font-medium">${t.fnb}</p>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    // Scanner & Valet Gate
+    function setScannerVal(tok) {
+      document.getElementById('valetTokenInput').value = tok;
+      executeScanVIPPass();
+    }
+
+    function executeScanVIPPass() {
+      const token = document.getElementById('valetTokenInput').value.trim().toUpperCase();
+      const feedback = document.getElementById('valetFeedbackCard');
+      feedback.classList.remove('hidden');
+
+      const match = masterReservations.find(r => r.token.toUpperCase() === token || r.plate.toUpperCase().replace(/\s+/g, '') === token.replace(/\s+/g, ''));
+
+      if (!match) {
+        feedback.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+        feedback.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-800">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> TOKEN / PLAT TIDAK TERDAFTAR
+          </div>
+          <p class="text-xs font-sans">Barcode token atau plat <strong>${token}</strong> tidak memiliki jadwal reservasi aktif di Royal Padel Country Club.</p>
+        `;
+        recordValetLog(token, "UNKNOWN GUEST", "-", "-", "DITOLAK (INVALID TOKEN)");
+      } else if (match.due > 0) {
+        feedback.className = "p-5 rounded-2xl border border-gold-300 bg-gold-50/60 text-slate-900 space-y-3 font-mono";
+        feedback.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-gold-800 flex items-center gap-1.5 font-serif">
+              <i data-lucide="lock" class="w-4 h-4 text-gold-600"></i> AKSES COURT DITAHAN (BELUM LUNAS)
+            </span>
+            <span class="text-xs font-bold bg-gold-200 text-gold-900 px-2 py-0.5 rounded font-mono">BUTUH KASIR</span>
+          </div>
+          <p class="text-xs font-sans">Member <strong>${match.memberName}</strong> baru membayar DP 50%. Sisa tagihan court & lounge belum dilunasi di meja kasir concierge.</p>
+          <div class="p-3 bg-white rounded-xl border border-gold-200 flex items-center justify-between font-mono">
+            <span>Sisa Tagihan Pelunasan:</span>
+            <strong class="text-base text-gold-700">${formatRupiah(match.due)}</strong>
+          </div>
+          <button onclick="openSettleModal('${match.invoice}')" class="w-full gold-gradient-btn text-slate-950 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans border border-gold-300 shadow-sm">
+            <i data-lucide="credit-card" class="w-4 h-4 text-slate-950"></i> Buka Pembayaran Meja Concierge
+          </button>
+        `;
+        recordValetLog(token, match.memberName, match.plate, match.valetBay, "HOLD (BELUM LUNAS)");
+      } else {
+        feedback.className = "p-5 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-900 space-y-2 font-mono";
+        feedback.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-emerald-800 flex items-center gap-1.5 font-serif">
+              <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i> GERBANG VALET & PINTU COURT TERBUKA
+            </span>
+            <span class="text-xs font-bold bg-emerald-600 text-white px-2 py-0.5 rounded">ROYAL GRANTED</span>
+          </div>
+          <p class="text-xs font-sans">Selamat datang Yang Terhormat <strong>${match.memberName}</strong> (${match.tier} Member). Silakan parkir di <strong>${match.valetBay}</strong>.</p>
+          <p class="text-[11px] text-emerald-700 font-sans">Loker privat dan sauna siap digunakan di ${match.courtName}.</p>
+        `;
+        recordValetLog(token, match.memberName, match.plate, match.valetBay, "BERHASIL (LUNAS)");
+      }
+
+      lucide.createIcons();
+    }
+
+    function recordValetLog(tok, member, plate, bay, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      valetLogs.unshift({
+        time: timeStr,
+        token: tok,
+        member: member,
+        plate: plate,
+        bay: bay,
+        note: status
+      });
+      renderValetLogs();
+    }
+
+    function renderValetLogs() {
+      const list = document.getElementById('valetAuditLogs');
+      if (!list) return;
+      list.innerHTML = '';
+
+      valetLogs.slice(0, 7).forEach(l => {
+        const isOk = l.note.includes('BERHASIL') || l.note.includes('Parkir');
+        const isHold = l.note.includes('HOLD');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-emerald-50/70 border-emerald-200 text-emerald-900" :
+           isHold ? "bg-amber-50 border-amber-200 text-amber-900" : "bg-rose-50 border-rose-200 text-rose-900");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs">${l.member}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold opacity-80">${l.plate}</span>
+            </div>
+            <span class="text-[10px] opacity-75">${l.bay} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold">${l.note}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // Render Member Directory
+    function renderMemberDirectory(filteredList = null) {
+      const tbody = document.getElementById('memberDirectoryBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterMembers;
+      document.getElementById('memberCountText').innerText = `Menampilkan ${list.length} anggota resmi Royal Society`;
+
+      list.forEach(m => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        let tierBadge = '';
+        if (m.tier === 'ROYAL') {
+          tierBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gold-100 text-gold-800 border border-gold-300 font-serif">PLATINUM ROYAL VIP</span>`;
+        } else if (m.tier === 'GOLD') {
+          tierBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">GOLD SOCIETY</span>`;
+        } else {
+          tierBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">SILVER STANDARD</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${m.id}</td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-800">${m.name}<br><span class="text-[10px] text-slate-400 font-mono font-normal">${m.phone}</span></td>
+          <td class="py-3 px-4">${tierBadge}</td>
+          <td class="py-3 px-4 text-ice-600 font-bold font-mono">${m.plate}</td>
+          <td class="py-3 px-4 text-slate-700">${m.courtDiscount}</td>
+          <td class="py-3 px-4 text-gold-800 font-medium">${m.loungeBenefit}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="showToast('Privilese member ${m.name} diverifikasi')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-gold-50 text-slate-700 hover:text-gold-800 border border-slate-200 text-[10px] font-bold transition font-sans">
+              Detail Privilese
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterMemberDirectory() {
+      const q = document.getElementById('memberSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMemberDirectory();
+        return;
+      }
+      const filtered = masterMembers.filter(m => 
+        m.name.toLowerCase().includes(q) ||
+        m.id.toLowerCase().includes(q) ||
+        m.plate.toLowerCase().includes(q) ||
+        m.phone.toLowerCase().includes(q)
+      );
+      renderMemberDirectory(filtered);
+    }
+
+    function openAddMemberModal() {
+      document.getElementById('addMemberModal').classList.remove('hidden');
+    }
+
+    function closeAddMemberModal() {
+      document.getElementById('addMemberModal').classList.add('hidden');
+    }
+
+    function saveNewMember() {
+      const name = document.getElementById('newMemberName').value.trim();
+      const phone = document.getElementById('newMemberPhone').value.trim();
+      const plate = document.getElementById('newMemberPlate').value.trim() || 'B 1928 VIP';
+      const tier = document.getElementById('newMemberTierSelect').value;
+
+      if (!name || !phone) {
+        alert("Lengkapi nama anggota dan nomor WhatsApp resmi.");
+        return;
+      }
+
+      let tierTitle = "Platinum Royal VIP";
+      let disc = "25% OFF";
+      let lounge = "Complimentary VIP All-Access";
+
+      if (tier === 'GOLD') {
+        tierTitle = "Gold Society";
+        disc = "15% OFF";
+        lounge = "Terrace 50% Disc (Rp 75k)";
+      } else if (tier === 'SILVER') {
+        tierTitle = "Silver Member";
+        disc = "Regular Rate";
+        lounge = "Standard Rate (Rp 150k)";
+      }
+
+      const randomId = "RPCC-" + tier + "-" + Math.floor(100 + Math.random() * 900);
+
+      masterMembers.unshift({
+        id: randomId,
+        name: name,
+        phone: phone,
+        tier: tier,
+        tierName: tierTitle,
+        plate: plate,
+        courtDiscount: disc,
+        loungeBenefit: lounge
+      });
+
+      closeAddMemberModal();
+      renderMemberDirectory();
+      updateDashboardCounters();
+      showToast(`Member VIP ${name} terdaftar dengan ID ${randomId}`);
+    }
+
+    // Render Cashier Table
+    function renderCashierTable() {
+      const tbody = document.getElementById('cashierTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterReservations.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        let statusText = r.due === 0 ? "LUNAS (100%)" : "DP 50% DITERIMA";
+        let statusBadge = r.due === 0 ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
+
+        let actionBtn = '';
+        if (r.due > 0) {
+          actionBtn = `
+            <button onclick="openSettleModal('${r.invoice}')" class="gold-gradient-btn text-slate-950 font-bold px-3 py-1.5 rounded-lg text-[10px] shadow-sm flex items-center gap-1 mx-auto active:scale-95 border border-gold-300 font-sans">
+              <i data-lucide="hand-coins" class="w-3.5 h-3.5 text-slate-950"></i> Pelunasan Kasir
+            </button>
+          `;
+        } else {
+          actionBtn = `
+            <button onclick="printOfficialPass('${r.invoice}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-[10px] flex items-center gap-1 mx-auto font-sans">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Struk Pass
+            </button>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${r.invoice}</td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-800">${r.memberName}</td>
+          <td class="py-3 px-4 font-sans text-slate-700">${r.courtName} (${r.time})</td>
+          <td class="py-3 px-4 font-bold text-slate-900">${formatRupiah(r.totalCost)}</td>
+          <td class="py-3 px-4 text-emerald-700 font-bold">${formatRupiah(r.paid)}</td>
+          <td class="py-3 px-4 font-bold ${r.due > 0 ? 'text-amber-600' : 'text-slate-400'}">${formatRupiah(r.due)}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold border ${statusBadge}">${statusText}</span>
+          </td>
+          <td class="py-3 px-4 text-center">${actionBtn}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Modal Pelunasan Kasir
+    function openSettleModal(inv) {
+      const r = masterReservations.find(x => x.invoice === inv);
+      if (!r) return;
+
+      activeSettleInvoice = inv;
+      document.getElementById('settleInvoiceCode').innerText = r.invoice;
+      document.getElementById('settleMemberName').innerText = r.memberName;
+      document.getElementById('settleTotalCost').innerText = formatRupiah(r.totalCost);
+      document.getElementById('settlePaidDP').innerText = formatRupiah(r.paid);
+      document.getElementById('settleRemainingDue').innerText = formatRupiah(r.due);
+
+      document.getElementById('settleModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settleModal').classList.add('hidden');
+      activeSettleInvoice = null;
+    }
+
+    function confirmSettlePayment() {
+      if (!activeSettleInvoice) return;
+      const r = masterReservations.find(x => x.invoice === activeSettleInvoice);
+      if (r) {
+        r.paid = r.totalCost;
+        r.due = 0;
+        r.status = "SETTLED";
+
+        closeSettleModal();
+        renderOverviewReservations();
+        renderCashierTable();
+        updateDashboardCounters();
+
+        showToast(`Pelunasan reservasi ${r.invoice} berhasil diterima`);
+        printOfficialPass(r.invoice);
+      }
+    }
+
+    // Modal Reservasi Baru Handlers
+    function openNewReservationModal() {
+      document.getElementById('newReservationModal').classList.remove('hidden');
+      updateNewReservationPrice();
+    }
+
+    function closeNewReservationModal() {
+      document.getElementById('newReservationModal').classList.add('hidden');
+    }
+
+    function updateNewReservationPrice() {
+      const courtId = document.getElementById('newResCourt').value;
+      const tier = document.getElementById('newResTier').value;
+      const lounge = document.getElementById('newResLounge').value;
+
+      const court = masterCourts.find(c => c.id === courtId);
+      if (!court) return;
+
+      let disc = 0;
+      if (tier === 'GOLD') disc = 0.15;
+      if (tier === 'ROYAL') disc = 0.25;
+
+      const courtCost = (court.ratePerHour * 2) * (1 - disc);
+      let loungeCost = 0;
+
+      if (lounge === 'TERRACE') {
+        if (tier === 'SILVER') loungeCost = 150000;
+        else if (tier === 'GOLD') loungeCost = 75000;
+        else loungeCost = 0;
+      } else if (lounge === 'PRESIDENTIAL') {
+        if (tier === 'SILVER') loungeCost = 300000;
+        else if (tier === 'GOLD') loungeCost = 200000;
+        else loungeCost = 100000;
+      }
+
+      const total = courtCost + loungeCost;
+      document.getElementById('newResEstimateTotal').innerText = formatRupiah(total);
+    }
+
+    function saveNewReservation() {
+      const name = document.getElementById('newResName').value.trim();
+      const phone = document.getElementById('newResPhone').value.trim();
+      const plate = document.getElementById('newResPlate').value.trim() || 'B 1928 VIP';
+      const courtId = document.getElementById('newResCourt').value;
+      const time = document.getElementById('newResTime').value;
+      const tier = document.getElementById('newResTier').value;
+      const loungeType = document.getElementById('newResLounge').value;
+
+      if (!name || !phone) {
+        alert("Harap lengkapi nama anggota dan nomor WhatsApp.");
+        return;
+      }
+
+      const court = masterCourts.find(c => c.id === courtId);
+      let disc = 0;
+      if (tier === 'GOLD') disc = 0.15;
+      if (tier === 'ROYAL') disc = 0.25;
+
+      const courtCost = (court.ratePerHour * 2) * (1 - disc);
+      let loungeCost = 0;
+      let loungeTitle = "Tanpa Lounge";
+
+      if (loungeType === 'TERRACE') {
+        loungeTitle = "Panoramic Terrace";
+        if (tier === 'SILVER') loungeCost = 150000;
+        else if (tier === 'GOLD') loungeCost = 75000;
+        else loungeCost = 0;
+      } else if (loungeType === 'PRESIDENTIAL') {
+        loungeTitle = "Presidential Cigar Salon";
+        if (tier === 'SILVER') loungeCost = 300000;
+        else if (tier === 'GOLD') loungeCost = 200000;
+        else loungeCost = 100000;
+      }
+
+      const total = courtCost + loungeCost;
+      const invCode = "RPCC-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      const tokenPass = "RPCC-VIP-" + Math.floor(1000 + Math.random() * 9000);
+
+      masterReservations.unshift({
+        invoice: invCode,
+        token: tokenPass,
+        memberId: "MEMBER-" + Math.floor(100 + Math.random() * 900),
+        memberName: name,
+        phone: phone,
+        plate: plate,
+        valetBay: "#BAY-VIP-" + Math.floor(10 + Math.random() * 80),
+        courtId: courtId,
+        courtName: court.name,
+        time: time,
+        date: new Date().toISOString().split('T')[0],
+        tier: tier,
+        lounge: loungeTitle,
+        totalCost: total,
+        paid: total * 0.5,
+        due: total * 0.5,
+        status: "PENDING_DP"
+      });
+
+      closeNewReservationModal();
+      renderOverviewReservations();
+      renderCashierTable();
+      updateDashboardCounters();
+
+      showToast(`Reservasi ${invCode} untuk ${name} berhasil disimpan`);
+      printOfficialPass(invCode);
+    }
+
+    // Print Pass Function
+    function printOfficialPass(inv) {
+      const r = masterReservations.find(x => x.invoice === inv);
+      if (!r) return;
+
+      document.getElementById('prnInvoice').innerText = r.invoice;
+      document.getElementById('prnMember').innerText = r.memberName;
+      document.getElementById('prnValet').innerText = `${r.plate} (${r.valetBay})`;
+      document.getElementById('prnCourt').innerText = r.courtName;
+      document.getElementById('prnSchedule').innerText = `${r.time} WIB (2 Jam)`;
+      document.getElementById('prnLounge').innerText = r.lounge;
+      document.getElementById('prnTotal').innerText = formatRupiah(r.totalCost);
+      document.getElementById('prnDP').innerText = formatRupiah(r.paid);
+      document.getElementById('prnPaidStatus').innerText = r.due === 0 ? "LUNAS (GATE & VALET GRANTED)" : `BELUM LUNAS (SISA ${formatRupiah(r.due)})`;
+
+      window.print();
+    }
+
+    // Export CSV
+    function exportReservationsCSV() {
+      let csv = "data:text/csv;charset=utf-8,Invoice,Token,Member,WhatsApp,Plat,Valet Bay,Court,Waktu,Total,DP,Sisa,Tier,Status\n";
+      masterReservations.forEach(r => {
+        csv += `"${r.invoice}","${r.token}","${r.memberName}","${r.phone}","${r.plate}","${r.valetBay}","${r.courtName}","${r.time}","${r.totalCost}","${r.paid}","${r.due}","${r.tier}","${r.status}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `RoyalPadel_Reservations_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Counters Updater
+    function updateDashboardCounters() {
+      const totalRev = masterReservations.reduce((sum, r) => sum + r.paid, 0);
+      const totalOutstanding = masterReservations.reduce((sum, r) => sum + r.due, 0);
+      const pendingCount = masterReservations.filter(r => r.due > 0).length;
+
+      document.getElementById('kpiRevenue').innerText = formatRupiah(totalRev);
+      document.getElementById('kpiOutstandingDP').innerText = formatRupiah(totalOutstanding);
+      document.getElementById('badgePendingDP').innerText = `${pendingCount} DP`;
+      document.getElementById('badgeMemberCount').innerText = `${masterMembers.length} VIP`;
+    }
+  </script>
+
+</body>
+</html>

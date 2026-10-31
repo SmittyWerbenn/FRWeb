@@ -2,6 +2,10 @@
  * Dataset katalog template FRWeb — 25 template dengan file HTML statis mandiri.
  * Sumber file: `public/assets/template/[id].html` (di-copy dari paket desain),
  * thumbnail representatif: `public/assets/template/thumbs/[id].jpg` (screenshot nyata).
+ *
+ * Setiap template adalah sistem 2-in-1:
+ *   - `htmlPath`      → Web Customer (landing page & alur booking/order)
+ *   - `adminHtmlPath` → Dashboard Admin pengelola (pesanan, jadwal, transaksi)
  */
 
 const BASE = import.meta.env.BASE_URL || '/'
@@ -48,6 +52,7 @@ const RAW_TEMPLATES = [
 export const TEMPLATE_CATALOG = RAW_TEMPLATES.map((item) => ({
   ...item,
   htmlPath: assetUrl(`assets/template/${item.id}.html`),
+  adminHtmlPath: assetUrl(`assets/template/${item.id}-dashboard.html`),
   liveUrl: assetUrl(`assets/template/${item.id}.html`),
   thumbnail: assetUrl(`assets/template/thumbs/${item.id}.jpg`),
 }))
@@ -57,5 +62,6 @@ export const TEMPLATE_CATALOG_BY_ID = Object.fromEntries(
 )
 
 export const catalogHtmlPath = (id) => assetUrl(`assets/template/${id}.html`)
+export const catalogAdminPath = (id) => assetUrl(`assets/template/${id}-dashboard.html`)
 export const catalogThumbPath = (id) => assetUrl(`assets/template/thumbs/${id}.jpg`)
 export { assetUrl }

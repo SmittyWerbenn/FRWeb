@@ -16,6 +16,7 @@ export const PLANS = [
     accent: '#38bdf8',
     recommended: false,
     specs: [
+      'Termasuk Web Customer (landing + booking) + Dashboard Admin pengelola',
       'Website company profile siap tayang',
       'Free SSL otomatis (HTTPS aktif)',
       'Setup domain + perpanjangan 1 tahun',
@@ -35,6 +36,7 @@ export const PLANS = [
     recommended: true,
     badge: 'BEST VALUE',
     specs: [
+      'Termasuk Web Customer (landing + booking) + Dashboard Admin pengelola',
       'Performa dioptimalkan untuk trafik promo & campaign',
       'Caching cepat + asset CDN',
       'Database terisolasi & aman',
@@ -54,6 +56,7 @@ export const PLANS = [
     accent: '#a78bfa',
     recommended: false,
     specs: [
+      'Termasuk Web Customer (landing + booking) + Dashboard Admin pengelola',
       'Arsitektur siap trafik tinggi & multi-cabang',
       'Antrean transaksi terpisah agar tetap responsif',
       'Auto-backup harian + retensi 30 hari',
@@ -73,6 +76,7 @@ export const PLANS = [
     accent: '#fbbf24',
     recommended: false,
     specs: [
+      'Web Customer + Dashboard Admin dirancang sesuai proses bisnis',
       'Arsitektur & scope dirancang bersama tim Anda',
       'Multi-tenant API dan SSO opsional',
       'Integrasi ERP / POS / sistem internal',

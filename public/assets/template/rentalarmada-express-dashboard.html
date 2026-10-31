@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RentalArmada Express - Dispatcher & Fleet Operations Console</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            earth: {
+              matcha: '#2D3B2D',       // Matcha Dark Utama
+              matchaDeep: '#1E281E',   // Darker Matcha
+              matchaSurface: '#3A4B3A',// Surface Green
+              cream: '#F3EFE0',        // Warm Cream
+              creamLight: '#FAF8F2',   // Off-white Cream
+              terracotta: '#C89666',   // Terracotta Muda Aksen
+              terracottaHover: '#A67343', // Darker Terracotta
+              border: '#E2DDCB',       // Border Soft
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      background: rgba(45, 59, 45, 0.94);
+      backdrop-filter: blur(14px);
+    }
+    .cream-pattern {
+      background-color: #F3EFE0;
+      background-image: radial-gradient(#2D3B2D12 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printAreaSPK, #printAreaSPK * {
+        visibility: visible;
+      }
+      #printAreaSPK {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #2D3B2D !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="cream-pattern text-slate-800 antialiased font-sans min-h-screen flex selection:bg-earth-terracotta selection:text-white">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="w-64 bg-earth-matchaDeep border-r border-earth-matchaSurface flex-shrink-0 hidden md:flex flex-col justify-between z-30 font-mono text-white">
+    <div>
+      <!-- Brand Header -->
+      <div class="p-5 border-b border-earth-matchaSurface flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-earth-matchaSurface border border-earth-terracotta flex items-center justify-center text-earth-terracotta shadow-md">
+          <i data-lucide="car" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-display">
+            RENTAL<span class="text-earth-terracotta">ARMADA</span>
+          </span>
+          <span class="text-[9px] text-slate-300 font-mono tracking-wider uppercase block">FLEET DISPATCH ERP</span>
+        </div>
+      </div>
+
+      <!-- Nav Menu Items -->
+      <nav class="p-4 space-y-1.5 text-xs">
+        <button onclick="switchTab('overview')" id="tabBtn-overview" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold bg-earth-terracotta text-white transition shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard Overview</span>
+        </button>
+        <button onclick="switchTab('fleet')" id="tabBtn-fleet" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-earth-matchaSurface transition">
+          <i data-lucide="truck" class="w-4 h-4 text-earth-terracotta"></i>
+          <span>Status Unit Armada</span>
+        </button>
+        <button onclick="switchTab('kanban')" id="tabBtn-kanban" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-earth-matchaSurface transition">
+          <i data-lucide="kanban" class="w-4 h-4 text-earth-terracotta"></i>
+          <span>Alur Dispatch Kanban</span>
+        </button>
+        <button onclick="switchTab('orders')" id="tabBtn-orders" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-earth-matchaSurface transition">
+          <i data-lucide="clipboard-list" class="w-4 h-4 text-earth-terracotta"></i>
+          <span>Master SPK Sewa</span>
+        </button>
+        <button onclick="switchTab('gps')" id="tabBtn-gps" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-earth-matchaSurface transition">
+          <i data-lucide="map-pin" class="w-4 h-4 text-earth-terracotta"></i>
+          <span>Live GPS & Odometer</span>
+        </button>
+        <button onclick="switchTab('scanner')" id="tabBtn-scanner" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-earth-matchaSurface transition">
+          <i data-lucide="scan-barcode" class="w-4 h-4 text-earth-terracotta"></i>
+          <span>Scanner Serah Terima</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Dispatch Pool Info -->
+    <div class="p-4 border-t border-earth-matchaSurface">
+      <div class="p-3 bg-earth-matchaSurface rounded-xl border border-earth-matcha text-xs space-y-1.5 font-mono">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-300">Pool Cilandak Hub</span>
+          <span class="flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> ONLINE
+          </span>
+        </div>
+        <div class="text-[11px] text-white">Jakarta Selatan - Banten</div>
+        <div class="w-full bg-earth-matchaDeep h-1.5 rounded-full overflow-hidden mt-1">
+          <div class="bg-earth-terracotta h-full rounded-full" style="width: 82%"></div>
+        </div>
+        <div class="text-[9px] text-slate-300 flex justify-between">
+          <span>Terpakai: 20 Unit</span>
+          <span>Siap: 24 Unit</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Header -->
+    <header class="glass-header sticky top-0 z-20 border-b border-earth-matchaSurface px-6 py-4 flex items-center justify-between text-white">
+      <div class="flex items-center gap-3">
+        <button class="md:hidden text-white" onclick="alert('Buka di tampilan desktop/tablet untuk fitur dispatcher terlengkap')">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display" id="pageTitleDisplay">Dashboard Overview Rental</h1>
+          <p class="text-xs text-slate-300 font-mono">Manajemen Armada, Dispatcher & Verifikasi Lepas Kunci</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3.5 font-mono text-xs">
+        <div class="hidden sm:flex items-center gap-2 bg-earth-matchaSurface px-3 py-1.5 rounded-xl border border-earth-matcha text-slate-200">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-earth-terracotta"></i>
+          <span id="liveClockDisplay">Live Time</span>
+        </div>
+        <button onclick="openBookingModal()" class="bg-earth-terracotta hover:bg-earth-terracottaHover text-white font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Entri Sewa Baru</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="p-6 sm:p-8 space-y-8 flex-1">
+      
+      <!-- TAB 1: OVERVIEW -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
+          <div class="p-5 rounded-2xl bg-white border border-earth-border shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-500 text-xs">
+              <span>Unit On-Duty (Jalan)</span>
+              <i data-lucide="car" class="w-4 h-4 text-earth-matcha"></i>
+            </div>
+            <div class="text-2xl font-black text-earth-matcha font-display" id="kpiActiveCars">19 Mobil</div>
+            <div class="text-[10px] text-emerald-600 font-bold font-sans">14 Lepas Kunci • 5 Supir</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-earth-border shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-500 text-xs">
+              <span>Omset Sewa Bulan Ini</span>
+              <i data-lucide="banknote" class="w-4 h-4 text-emerald-600"></i>
+            </div>
+            <div class="text-2xl font-black text-earth-matcha font-display" id="kpiRevenue">Rp 84.750.000</div>
+            <div class="text-[10px] text-slate-500 font-sans">Pertumbuhan +18.4% vs Sept</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-earth-border shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-500 text-xs">
+              <span>Sisa Tagihan Pelunasan (70%)</span>
+              <i data-lucide="wallet" class="w-4 h-4 text-amber-600"></i>
+            </div>
+            <div class="text-2xl font-black text-earth-terracotta font-display" id="kpiDueAmount">Rp 12.450.000</div>
+            <div class="text-[10px] text-amber-600 font-bold font-sans">Menunggu Serah Kunci</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-earth-border shadow-sm space-y-1">
+            <div class="flex justify-between items-center text-slate-500 text-xs">
+              <span>Tingkat Utilisasi Armada</span>
+              <i data-lucide="gauge" class="w-4 h-4 text-earth-terracotta"></i>
+            </div>
+            <div class="text-2xl font-black text-earth-matcha font-display">86.4%</div>
+            <div class="text-[10px] text-emerald-600 font-bold font-sans">Optimal (High Demand)</div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (Chart.js) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-8 bg-white p-6 rounded-2xl border border-earth-border shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-earth-matcha font-display">Distribusi Hari Sewa Mingguan (Days)</h3>
+                <p class="text-xs text-slate-500 font-mono">Berdasarkan Avanza, Zenix Hybrid, dan HiAce</p>
+              </div>
+              <span class="text-xs font-mono text-earth-matcha bg-earth-cream px-2.5 py-1 rounded border border-earth-border">Oktober 2026</span>
+            </div>
+            <div class="h-64">
+              <canvas id="weeklyFleetChartCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 bg-white p-6 rounded-2xl border border-earth-border shadow-sm space-y-4">
+            <div>
+              <h3 class="text-sm font-bold text-earth-matcha font-display">Porsi Layanan Pengemudi</h3>
+              <p class="text-xs text-slate-500 font-mono">Lepas Kunci vs Termasuk Supir</p>
+            </div>
+            <div class="h-64 flex items-center justify-center">
+              <canvas id="driverShareChartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent SPK List Table -->
+        <div class="bg-white rounded-2xl border border-earth-border shadow-sm overflow-hidden font-mono text-xs">
+          <div class="p-5 border-b border-earth-border flex items-center justify-between">
+            <h3 class="text-sm font-bold text-earth-matcha font-display">Antrean Sewa Terkini</h3>
+            <button onclick="switchTab('orders')" class="text-xs font-mono font-bold text-earth-terracotta hover:underline">Lihat Semua SPK →</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-earth-creamLight text-slate-600 border-b border-earth-border">
+                <tr>
+                  <th class="py-3 px-4">No. SPK</th>
+                  <th class="py-3 px-4">Penyewa & WhatsApp</th>
+                  <th class="py-3 px-4">Armada Mobil</th>
+                  <th class="py-3 px-3 text-center">Durasi & Rute</th>
+                  <th class="py-3 px-4 text-right">Nilai Sewa</th>
+                  <th class="py-3 px-3 text-center">Tahap Status</th>
+                  <th class="py-3 px-4 text-center">Aksi Cepat</th>
+                </tr>
+              </thead>
+              <tbody id="recentOrdersTableBody" class="divide-y divide-earth-border font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TAB 2: STATUS UNIT ARMADA (FLEET CARDS) -->
+      <section id="view-fleet" class="hidden space-y-6">
+        <div class="flex items-center justify-between font-mono">
+          <div>
+            <h3 class="text-base font-bold text-earth-matcha font-display">Status Unit Armada di Pool & In-Transit</h3>
+            <p class="text-xs text-slate-500">Monitoring kesiapan unit, servis berkala, dan jadwal jalan</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="flex items-center gap-1.5 text-emerald-700 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Ready Pool</span>
+            <span class="flex items-center gap-1.5 text-amber-700 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Jalan (Dispatched)</span>
+            <span class="flex items-center gap-1.5 text-slate-400 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> Servis Rutin</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 font-mono text-xs" id="fleetGridContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- TAB 3: PAPAN ALUR DISPATCH KANBAN -->
+      <section id="view-kanban" class="hidden space-y-6">
+        <div class="flex items-center justify-between font-mono">
+          <div>
+            <h3 class="text-base font-bold text-earth-matcha font-display">Papan Alur Dispatch Armada (Kanban 4-Tahap)</h3>
+            <p class="text-xs text-slate-500">Lacak proses dari verifikasi KTP/SIM hingga pengembalian unit</p>
+          </div>
+          <button onclick="openBookingModal()" class="text-xs font-bold text-white bg-earth-matcha px-3 py-1.5 rounded-xl hover:bg-earth-matchaSurface">
+            + Tambah Order Sewa
+          </button>
+        </div>
+
+        <!-- 4 Kolom Kanban -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start font-mono text-xs">
+          <!-- Tahap 1: Verifikasi Berkas (KTP/SIM) -->
+          <div class="bg-white rounded-2xl border border-earth-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-earth-border">
+              <span class="font-bold text-earth-matcha flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> 1. Verifikasi Dokumen
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-earth-creamLight text-blue-700 border border-blue-200" id="badge-stage-1">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-1"></div>
+          </div>
+
+          <!-- Tahap 2: Persiapan Mobil & QC Pool -->
+          <div class="bg-white rounded-2xl border border-earth-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-earth-border">
+              <span class="font-bold text-earth-matcha flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 2. Cuci & Inspeksi
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-earth-creamLight text-amber-700 border border-amber-200" id="badge-stage-2">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-2"></div>
+          </div>
+
+          <!-- Tahap 3: Dispatched / Sedang Jalan -->
+          <div class="bg-white rounded-2xl border border-earth-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-earth-border">
+              <span class="font-bold text-earth-matcha flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 3. Sedang Jalan
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-earth-creamLight text-emerald-700 border border-emerald-200" id="badge-stage-3">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-3"></div>
+          </div>
+
+          <!-- Tahap 4: Kembali Pool & Pelunasan -->
+          <div class="bg-white rounded-2xl border border-earth-border p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-earth-border">
+              <span class="font-bold text-earth-matcha flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> 4. Selesai / Lunas
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-earth-creamLight text-purple-700 border border-purple-200" id="badge-stage-4">0</span>
+            </div>
+            <div class="space-y-3 min-h-[350px]" id="kanban-stage-4"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: MASTER SPK & ORDERS -->
+      <section id="view-orders" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-earth-border shadow-sm space-y-4 font-mono text-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-earth-matcha font-display">Database Master SPK Sewa Mobil</h3>
+              <p class="text-slate-500">Pencarian data penyewa, armada, rute luar kota & pelunasan 70%</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportOrdersToCsv()" class="bg-earth-cream hover:bg-stone-200 text-earth-matcha px-3.5 py-2 rounded-xl border border-earth-border flex items-center gap-1.5 font-bold">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-earth-terracotta"></i>
+                <span>Ekspor CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="relative sm:col-span-2">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5"></i>
+              <input type="text" id="orderSearchInput" oninput="renderMasterOrdersTable()" placeholder="Cari nama penyewa (Tedi), pelat mobil, no. SPK..." class="w-full pl-9 pr-4 py-2 bg-earth-creamLight border border-earth-border rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-earth-matcha font-mono" />
+            </div>
+            <select id="orderStatusFilter" onchange="renderMasterOrdersTable()" class="bg-earth-creamLight border border-earth-border rounded-xl px-3 py-2 text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-earth-matcha">
+              <option value="ALL">Semua Tahap Sewa</option>
+              <option value="STAGE_1">1. Verifikasi Berkas</option>
+              <option value="STAGE_2">2. Cuci & Inspeksi Pool</option>
+              <option value="STAGE_3">3. Sedang Digunakan</option>
+              <option value="STAGE_4">4. Selesai / Lunas Penuh</option>
+            </select>
+          </div>
+
+          <!-- Table Master -->
+          <div class="overflow-x-auto rounded-xl border border-earth-border">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-earth-creamLight text-slate-600 border-b border-earth-border">
+                <tr>
+                  <th class="py-3 px-4">No. SPK</th>
+                  <th class="py-3 px-4">Penyewa & Kontak</th>
+                  <th class="py-3 px-4">Armada & Pelat</th>
+                  <th class="py-3 px-3 text-center">Durasi & Rute</th>
+                  <th class="py-3 px-4 text-right">Nilai Sewa</th>
+                  <th class="py-3 px-4 text-right">DP 30% / Sisa</th>
+                  <th class="py-3 px-3 text-center">Status</th>
+                  <th class="py-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="masterOrdersTableBody" class="divide-y divide-earth-border font-medium">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: LIVE GPS & ODOMETER -->
+      <section id="view-gps" class="hidden space-y-6 font-mono text-xs">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-earth-border space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-earth-matcha text-sm font-sans">Geofence & Kecepatan Aktif</h4>
+              <span class="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">GPS SYNC</span>
+            </div>
+            <div class="space-y-3" id="gpsTrackingList"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-earth-border space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-earth-matcha text-sm font-sans">Odometer & Jadwal Oli</h4>
+              <button onclick="simulateOdometerSync()" class="text-earth-matcha text-[10px] font-bold border border-earth-border px-2 py-1 rounded bg-earth-cream hover:bg-stone-200">+ Sinkron OBD-II</button>
+            </div>
+            <div class="space-y-3" id="odometerList"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-earth-border space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-earth-matcha text-sm font-sans">Bahan Bakar Bar-to-Bar</h4>
+              <span class="text-[10px] text-slate-500 font-mono">Standar Kembali</span>
+            </div>
+            <div class="space-y-3" id="fuelStatusList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: SCANNER SERAH TERIMA VOUCHER -->
+      <section id="view-scanner" class="hidden space-y-6 font-mono text-xs max-w-2xl mx-auto">
+        <div class="bg-white p-7 rounded-3xl border border-earth-border shadow-xl space-y-6 text-center">
+          <div class="space-y-1">
+            <div class="w-12 h-12 rounded-2xl bg-earth-cream border border-earth-border text-earth-matcha flex items-center justify-center mx-auto mb-2">
+              <i data-lucide="scan-barcode" class="w-6 h-6 text-earth-terracotta"></i>
+            </div>
+            <h3 class="text-base font-bold text-earth-matcha font-display">Simulator Scanner Serah Terima Kunci</h3>
+            <p class="text-slate-500 font-sans">Pindai barcode pada voucher sewa konsumen saat pengantaran unit mobil.</p>
+          </div>
+
+          <!-- Scanner Simulation Box -->
+          <div class="p-6 bg-earth-creamLight rounded-2xl border-2 border-dashed border-earth-border space-y-4">
+            <div class="relative w-48 h-32 mx-auto border-2 border-earth-matcha rounded-xl flex items-center justify-center bg-white overflow-hidden shadow-inner">
+              <div class="w-full h-0.5 bg-emerald-600 shadow-lg shadow-emerald-500 animate-pulse"></div>
+              <span class="absolute bottom-2 text-[9px] text-slate-400">AREA SCAN OPTIK</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="barcodeScanInput" placeholder="Masukkan ID SPK (cth: SPK-ARM-202610-8812)" class="w-full bg-white border border-earth-border rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-earth-matcha text-center font-mono" />
+              <button onclick="processBarcodeScan()" class="bg-earth-matcha hover:bg-earth-matchaDeep text-white font-bold px-4 py-2.5 rounded-xl transition">
+                Validasi
+              </button>
+            </div>
+            <div class="text-[10px] text-slate-500">
+              Preset Quick Test: 
+              <button onclick="testBarcode('SPK-ARM-202610-8812')" class="underline text-earth-matcha font-bold">Avanza (Tedi)</button> • 
+              <button onclick="testBarcode('SPK-ARM-202610-8813')" class="underline text-earth-matcha font-bold">Zenix (Christland)</button>
+            </div>
+          </div>
+
+          <!-- Scan Result Box -->
+          <div id="scanResultBox" class="hidden p-5 bg-earth-creamLight rounded-2xl border border-earth-matcha text-left space-y-3">
+            <div class="flex items-center justify-between border-b border-earth-border pb-2">
+              <div>
+                <span class="font-bold text-earth-matcha text-sm font-sans block" id="scanCarTitle">Toyota All New Avanza 2024</span>
+                <span class="text-[10px] text-slate-500" id="scanSpkCodeTitle">SPK-ARM-202610-8812</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-earth-matcha text-white" id="scanStageBadge">STAGE 01</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-700 font-sans">
+              <div>Penyewa: <strong class="text-earth-matcha" id="scanRenterName">-</strong></div>
+              <div>WhatsApp: <strong class="text-slate-900 font-mono" id="scanPhone">-</strong></div>
+              <div>Pelat Unit: <strong class="text-earth-terracotta font-mono font-bold" id="scanPlateNumber">-</strong></div>
+              <div>Rute: <strong class="text-slate-800" id="scanRouteZone">-</strong></div>
+            </div>
+
+            <!-- Inspection Checklist -->
+            <div class="pt-2 border-t border-earth-border space-y-2 font-sans">
+              <span class="text-[10px] text-earth-matcha block uppercase font-bold font-mono">Checklist Serah Terima Fisik:</span>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="checkPhysical1" checked class="accent-earth-matcha" />
+                <span>1. Foto bodi keliling & cek goresan halus pra-serah terima</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="checkPhysical2" checked class="accent-earth-matcha" />
+                <span>2. Foto odometer awal & indikator bensin (Bar-to-Bar)</span>
+              </label>
+              <label class="flex items-center gap-2 text-slate-700">
+                <input type="checkbox" id="checkPhysical3" checked class="accent-earth-matcha" />
+                <span>3. Verifikasi fisik KTP asli & SIM A penyewa di lokasi</span>
+              </label>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+              <button onclick="advanceStageFromScanner()" class="flex-1 bg-earth-matcha text-white font-bold py-2 rounded-xl hover:bg-earth-matchaDeep font-sans">
+                Kunci Unit Diberikan & Mobil Jalan →
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- MODAL 1: FORM SEWA BARU -->
+  <div id="bookingModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 border border-earth-border shadow-2xl space-y-4 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-earth-border pb-3">
+        <h3 class="text-base font-bold text-earth-matcha font-display">Entri Pemesanan Sewa Mobil Baru</h3>
+        <button onclick="closeBookingModal()" class="w-7 h-7 rounded-full bg-earth-cream flex items-center justify-center text-slate-500 hover:text-earth-matcha">✕</button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Nama Penyewa (KTP) *</label>
+            <input type="text" id="mRenterName" value="Tedi Mahendra" class="w-full bg-earth-creamLight border border-earth-border rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-earth-matcha font-medium" />
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Nomor WhatsApp *</label>
+            <input type="tel" id="mPhone" value="081299998888" class="w-full bg-earth-creamLight border border-earth-border rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-earth-matcha font-mono" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Pilihan Armada</label>
+            <select id="mCarSelect" class="w-full bg-earth-creamLight border border-earth-border rounded-xl px-3 py-2 text-slate-800">
+              <option value="CAR-AVANZA">Avanza 2024</option>
+              <option value="CAR-INNOVA">Innova Zenix</option>
+              <option value="CAR-HIACE">HiAce 14-Seat</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Skema Driver</label>
+            <select id="mDriverSelect" class="w-full bg-earth-creamLight border border-earth-border rounded-xl px-3 py-2 text-slate-800">
+              <option value="SELF_DRIVE">Lepas Kunci</option>
+              <option value="WITH_DRIVER">Dengan Supir</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-bold">Durasi (Hari)</label>
+            <input type="number" id="mDaysInput" value="2" min="1" max="30" class="w-full bg-earth-creamLight border border-earth-border rounded-xl px-3 py-2 text-slate-800 font-mono text-center font-bold" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-600 mb-1 font-bold">Zona Wilayah Pemakaian</label>
+          <select id="mZoneSelect" class="w-full bg-earth-creamLight border border-earth-border rounded-xl px-3 py-2 text-slate-800">
+            <option value="DALAM_KOTA">Dalam Kota (Jabodetabek)</option>
+            <option value="JABAR">Jawa Barat (Bandung/Cirebon)</option>
+            <option value="JATENG">Jawa Tengah & DIY (Jogja/Solo)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-600 mb-1 font-bold">Alamat Pengantaran Mobil</label>
+          <input type="text" id="mAddressInput" value="Gedung Wirausaha Lt. 5, Jl. HR Rasuna Said, Jakarta Selatan" class="w-full bg-earth-creamLight border border-earth-border rounded-xl px-3 py-2 text-slate-800 font-medium" />
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-3 border-t border-earth-border font-mono">
+        <button onclick="closeBookingModal()" class="flex-1 bg-earth-cream hover:bg-stone-200 py-2.5 rounded-xl text-slate-700 font-bold">Batal</button>
+        <button onclick="submitNewBookingRegistration()" class="flex-1 bg-earth-matcha hover:bg-earth-matchaDeep text-white font-bold py-2.5 rounded-xl">Kunci Unit & Terbitkan SPK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: PELUNASAN KASIR 70% & CETAK SPK VOUCHER RESMI (PDF) -->
+  <div id="settleModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-earth-border shadow-2xl space-y-6 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-earth-border pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-earth-matcha flex items-center justify-center text-white font-bold">
+            <i data-lucide="receipt" class="w-4 h-4 text-earth-terracotta"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-earth-matcha font-display">Kasir Pelunasan & Surat Perintah Jalan (SPK)</h3>
+            <span class="text-[10px] text-slate-400" id="settleSpkNumberTitle">SPK-ARM-202610-8812</span>
+          </div>
+        </div>
+        <button onclick="closeSettleModal()" class="w-7 h-7 rounded-full bg-earth-cream flex items-center justify-center text-slate-400 hover:text-earth-matcha">✕</button>
+      </div>
+
+      <!-- Area Cetak Resmi SPK / Voucher (PDF Ready) -->
+      <div id="printAreaSPK" class="bg-white p-6 rounded-2xl border border-earth-border space-y-4 text-slate-900 font-mono">
+        <div class="flex justify-between items-start border-b border-earth-border pb-3">
+          <div>
+            <span class="font-bold text-base text-earth-matcha font-display">RENTAL<span class="text-earth-terracotta">ARMADA</span> EXPRESS</span>
+            <p class="text-[10px] text-slate-500 font-sans">Pool Cilandak, Jakarta Selatan • 24H Dispatch: +62 812-9999-8888</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-earth-cream text-earth-matcha border border-earth-border">OFFICIAL SPK & VOUCHER</span>
+            <p class="text-xs font-bold text-earth-matcha mt-1" id="pSpkNumber">SPK-ARM-8812</p>
+            <p class="text-[10px] text-slate-400" id="pDateText">28 Okt 2026</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-[11px] bg-earth-creamLight p-3 rounded-xl border border-earth-border font-sans">
+          <div>
+            <span class="text-[9px] text-slate-500 block uppercase font-mono">Penyewa / PIC:</span>
+            <strong class="text-earth-matcha text-sm block" id="pRenterName">Tedi Mahendra</strong>
+            <span class="text-slate-600 font-mono text-[10px]" id="pRenterPhone">WhatsApp: 081299998888</span>
+            <p class="text-[10px] text-slate-500 mt-1" id="pDeliveryAddress">Gedung Wirausaha, Jakarta Selatan</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] text-slate-500 block uppercase font-mono">Armada & Rute:</span>
+            <strong class="text-slate-900 text-xs block font-mono" id="pCarModel">Toyota Avanza (B 1928 RYD)</strong>
+            <span class="text-earth-terracotta font-bold text-[10px]" id="pRouteZone">Dalam Kota (Jabodetabek)</span>
+            <p class="text-[10px] text-emerald-700 font-bold mt-1 font-mono" id="pPaymentStatusText">DP 30% TERVERIFIKASI</p>
+          </div>
+        </div>
+
+        <div class="p-2.5 bg-slate-50 rounded-xl border border-earth-border text-[10px] font-sans space-y-1">
+          <span class="font-bold text-earth-matcha font-mono uppercase block">Ketentuan Sewa & Jaminan:</span>
+          <div class="text-slate-600">
+            • Asuransi: <strong>All-Risk Komprehensif</strong> | • Bensin: <strong>Bar-to-Bar</strong> | • Batas Waktu: <strong>24 Jam/Hari</strong>
+          </div>
+        </div>
+
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-earth-border text-slate-500 text-[10px] font-sans">
+            <tr>
+              <th class="py-2">Rincian Armada & Layanan</th>
+              <th class="py-2 text-center">Durasi</th>
+              <th class="py-2 text-right">Tarif Dasar / Hari</th>
+              <th class="py-2 text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-earth-border font-medium font-sans">
+            <tr>
+              <td class="py-2.5">
+                <strong class="text-slate-900 block" id="pItemTitle">Toyota All New Avanza 2024</strong>
+                <span class="text-[10px] text-slate-400" id="pItemDetail">Lepas Kunci • 7 Penumpang • Matic AT</span>
+              </td>
+              <td class="py-2.5 text-center text-slate-600 font-mono" id="pItemDays">2 Hari</td>
+              <td class="py-2.5 text-right text-slate-600 font-mono" id="pUnitRate">Rp 450.000</td>
+              <td class="py-2.5 text-right font-bold text-slate-900 font-mono" id="pItemTotal">Rp 900.000</td>
+            </tr>
+          </tbody>
+          <tfoot class="border-t-2 border-earth-border text-xs font-bold pt-2 font-mono">
+            <tr>
+              <td colspan="3" class="py-1.5 text-right text-slate-500">Total Nilai Sewa:</td>
+              <td class="py-1.5 text-right text-slate-900 font-mono" id="pGrandTotalAmount">Rp 900.000</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="py-1.5 text-right text-emerald-700">DP Terbayar (30%):</td>
+              <td class="py-1.5 text-right text-emerald-700 font-mono" id="pPaidDpAmount">Rp 270.000</td>
+            </tr>
+            <tr class="bg-amber-50 text-earth-matcha">
+              <td colspan="3" class="py-2 text-right font-black">Sisa Pelunasan di Lokasi:</td>
+              <td class="py-2 text-right font-black font-mono text-sm text-earth-terracotta" id="pDueAmount">Rp 630.000</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Token Barcode -->
+        <div class="flex items-center justify-between p-3 bg-earth-creamLight rounded-xl border border-earth-border text-[10px]">
+          <div>
+            <strong class="text-earth-matcha block font-sans">Sertifikat Odometer & Checklist Fisik Unit</strong>
+            <span class="text-slate-500 font-sans">Scan barcode saat serah terima kunci di lokasi penyewa</span>
+          </div>
+          <div class="text-center font-mono">
+            <span class="font-bold text-earth-matcha block" id="pTokenCode">SPK-8812-PASS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Settlement Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-2 no-print font-sans">
+        <button onclick="window.print()" class="flex-1 bg-earth-cream hover:bg-stone-200 text-earth-matcha font-bold py-3 rounded-xl border border-earth-border flex items-center justify-center gap-2">
+          <i data-lucide="printer" class="w-4 h-4 text-earth-terracotta"></i>
+          <span>Cetak SPK / Voucher (PDF)</span>
+        </button>
+        <button id="btnConfirmSettleDue" onclick="executeSettleDue()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-md">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Konfirmasi Pelunasan 100% Selesai</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="hidden fixed bottom-6 right-6 z-50 bg-earth-matcha border border-earth-terracotta text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-mono text-xs">
+    <i data-lucide="info" class="w-4 h-4 text-earth-terracotta"></i>
+    <span id="toastMsg">Notifikasi Dispatcher</span>
+  </div>
+
+  <!-- CORE JAVASCRIPT ENGINE -->
+  <script>
+    // 1. DATA DATABASE SPK SEWA ARMADA
+    let masterOrders = [
+      {
+        id: "SPK-ARM-202610-8812",
+        renter: "Tedi Mahendra",
+        phone: "081299998888",
+        carName: "Toyota All New Avanza 2024",
+        plate: "B 1928 RYD",
+        driverMode: "Lepas Kunci (Self-Drive)",
+        zone: "Dalam Kota (Jabodetabek)",
+        days: 2,
+        address: "Gedung Wirausaha Lt. 5, Jaksel",
+        dailyRate: 450000,
+        totalAmount: 900000,
+        paidDp: 270000,
+        due: 630000,
+        stage: "STAGE_2", // 1: Verif, 2: Cuci/QC, 3: Jalan, 4: Selesai
+        isCompleted: false,
+        date: "2026-10-28",
+        statusUnit: "QC_CLEAN"
+      },
+      {
+        id: "SPK-ARM-202610-8813",
+        renter: "Christland Simatupang",
+        phone: "081388776655",
+        carName: "Toyota Innova Zenix Hybrid",
+        plate: "B 1024 ZEN",
+        driverMode: "Termasuk Supir Ramah",
+        zone: "Jawa Barat (Bandung/Cirebon)",
+        days: 3,
+        address: "Menara Mandiri, Senayan, Jaksel",
+        dailyRate: 750000,
+        totalAmount: 2925000, // include driver + surcharge - disc
+        paidDp: 877500,
+        due: 2047500,
+        stage: "STAGE_3",
+        isCompleted: false,
+        date: "2026-10-27",
+        statusUnit: "IN_TRANSIT"
+      },
+      {
+        id: "SPK-ARM-202610-8814",
+        renter: "David Riyanto",
+        phone: "081122334455",
+        carName: "Toyota HiAce Commuter 14-Seat",
+        plate: "B 8888 HIA",
+        driverMode: "Termasuk Supir Ramah",
+        zone: "Jawa Tengah & DIY (Jogja/Solo)",
+        days: 5,
+        address: "Jl. Gunawarman No. 24, Jaksel",
+        dailyRate: 1100000,
+        totalAmount: 6850000,
+        paidDp: 2055000,
+        due: 4795000,
+        stage: "STAGE_1",
+        isCompleted: false,
+        date: "2026-10-29",
+        statusUnit: "READY"
+      },
+      {
+        id: "SPK-ARM-202610-8811",
+        renter: "Cinthya",
+        phone: "081244556677",
+        carName: "Toyota All New Avanza 2024",
+        plate: "B 1234 AVZ",
+        driverMode: "Lepas Kunci (Self-Drive)",
+        zone: "Dalam Kota (Jabodetabek)",
+        days: 1,
+        address: "Senopati Suites, Jaksel",
+        dailyRate: 450000,
+        totalAmount: 450000,
+        paidDp: 450000,
+        due: 0,
+        stage: "STAGE_4",
+        isCompleted: true,
+        date: "2026-10-25",
+        statusUnit: "READY"
+      }
+    ];
+
+    // 2. DATA UNIT ARMADA DI POOL
+    let fleetUnits = [
+      { id: "U-01", name: "Toyota Avanza 1.5 AT", plate: "B 1928 RYD", status: "PREP", odo: "24.520 Km", fuel: "Full (Bar-to-Bar)", nextService: "28.000 Km" },
+      { id: "U-02", name: "Toyota Innova Zenix Hybrid", plate: "B 1024 ZEN", status: "ON_ROAD", odo: "18.140 Km", fuel: "85%", nextService: "25.000 Km" },
+      { id: "U-03", name: "Toyota HiAce 14-Seat", plate: "B 8888 HIA", status: "READY", odo: "36.210 Km", fuel: "Full (Bar-to-Bar)", nextService: "40.000 Km" },
+      { id: "U-04", name: "Toyota Avanza 1.5 AT", plate: "B 1234 AVZ", status: "READY", odo: "14.800 Km", fuel: "Full (Bar-to-Bar)", nextService: "20.000 Km" },
+      { id: "U-05", name: "Mitsubishi Xpander Cross", plate: "B 5541 XPX", status: "SERVICE", odo: "41.900 Km", fuel: "50%", nextService: "Pergantian Oli" },
+      { id: "U-06", name: "Toyota Fortuner 2.8 VRZ", plate: "B 7777 FOR", status: "READY", odo: "22.300 Km", fuel: "Full (Bar-to-Bar)", nextService: "30.000 Km" }
+    ];
+
+    let activeSettlingOrder = null;
+    let fleetChart = null;
+    let driverChart = null;
+
+    // INITIALIZATION
+    window.addEventListener('DOMContentLoaded', () => {
+      initClock();
+      renderOverviewData();
+      initCharts();
+      renderFleetGrid();
+      renderKanbanBoard();
+      renderMasterOrdersTable();
+      renderGpsAndTelemetry();
+      lucide.createIcons();
+    });
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    function initClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClockDisplay').innerText = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('id-ID');
+      }, 1000);
+    }
+
+    // TAB NAVIGATION
+    function switchTab(tabId) {
+      const tabs = ['overview', 'fleet', 'kanban', 'orders', 'gps', 'scanner'];
+      tabs.forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (btn) {
+          btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-earth-matchaSurface transition font-mono";
+        }
+      });
+
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold bg-earth-terracotta text-white transition shadow-sm font-mono";
+      }
+
+      const titles = {
+        overview: "Dashboard Overview Rental & Dispatch",
+        fleet: "Status & Kesiapan Unit Armada Pool",
+        kanban: "Papan Alur Dispatcher (Kanban)",
+        orders: "Database Master SPK & Sewa Mobil",
+        gps: "Live GPS Telemetry & Odometer Tracker",
+        scanner: "Optical Barcode Scanner Serah Terima"
+      };
+      document.getElementById('pageTitleDisplay').innerText = titles[tabId] || "Dashboard";
+      lucide.createIcons();
+    }
+
+    // OVERVIEW & CHARTS
+    function renderOverviewData() {
+      const activeCount = masterOrders.filter(o => !o.isCompleted).length;
+      document.getElementById('kpiActiveCars').innerText = `${activeCount} Mobil`;
+
+      let totalDue = 0;
+      masterOrders.forEach(o => {
+        if (!o.isCompleted) totalDue += o.due;
+      });
+      document.getElementById('kpiDueAmount').innerText = formatRupiah(totalDue);
+
+      const tbody = document.getElementById('recentOrdersTableBody');
+      tbody.innerHTML = '';
+      masterOrders.slice(0, 4).forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-earth-creamLight/70 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-earth-matcha">${o.id}</td>
+          <td class="py-3 px-4">
+            <span class="text-slate-900 font-bold block font-sans">${o.renter}</span>
+            <span class="text-[10px] text-slate-500 font-mono">${o.phone}</span>
+          </td>
+          <td class="py-3 px-4">
+            <span class="text-slate-800 font-semibold block">${o.carName}</span>
+            <span class="text-[10px] text-earth-terracotta font-bold font-mono">${o.plate}</span>
+          </td>
+          <td class="py-3 px-3 text-center text-slate-600 font-mono">${o.days} Hari (${o.zone.split(' ')[0]})</td>
+          <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono">${formatRupiah(o.totalAmount)}</td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(o.stage)}">${getStageName(o.stage)}</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openSettleModal('${o.id}')" class="text-earth-matcha hover:underline font-bold">Voucher SPK</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function initCharts() {
+      // 1. Bar Chart: Fleet Days
+      const ctx1 = document.getElementById('weeklyFleetChartCanvas').getContext('2d');
+      fleetChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
+          datasets: [
+            { label: 'Avanza 1.5 AT', data: [28, 35, 32, 40], backgroundColor: '#2D3B2D' },
+            { label: 'Innova Zenix Hybrid', data: [18, 22, 20, 25], backgroundColor: '#C89666' },
+            { label: 'HiAce 14-Seat', data: [12, 15, 14, 18], backgroundColor: '#3A4B3A' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#2D3B2D', font: { family: 'JetBrains Mono' } } } },
+          scales: {
+            x: { ticks: { color: '#627D98' }, grid: { color: '#E2DDCB' } },
+            y: { ticks: { color: '#627D98' }, grid: { color: '#E2DDCB' } }
+          }
+        }
+      });
+
+      // 2. Doughnut Chart: Driver Share
+      const ctx2 = document.getElementById('driverShareChartCanvas').getContext('2d');
+      driverChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['Lepas Kunci (Self-Drive)', 'Dengan Supir Ramah'],
+          datasets: [{
+            data: [72, 28],
+            backgroundColor: ['#2D3B2D', '#C89666'],
+            borderColor: '#FFFFFF',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#2D3B2D', font: { family: 'JetBrains Mono', size: 10 } } } }
+        }
+      });
+    }
+
+    // FLEET CARDS GRID
+    function renderFleetGrid() {
+      const container = document.getElementById('fleetGridContainer');
+      container.innerHTML = fleetUnits.map(unit => {
+        let badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-300";
+        let statusLabel = "READY DI POOL";
+        if (unit.status === 'ON_ROAD') {
+          badgeColor = "bg-amber-100 text-amber-800 border-amber-300";
+          statusLabel = "SEDANG JALAN (ON TRIP)";
+        } else if (unit.status === 'PREP') {
+          badgeColor = "bg-blue-100 text-blue-800 border-blue-300";
+          statusLabel = "CUCI & INSPEKSI";
+        } else if (unit.status === 'SERVICE') {
+          badgeColor = "bg-rose-100 text-rose-800 border-rose-300";
+          statusLabel = "SERVIS BENGKEL";
+        }
+
+        return `
+          <div class="bg-white p-5 rounded-2xl border border-earth-border shadow-sm space-y-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-base font-bold text-earth-matcha block tracking-wider">${unit.plate}</span>
+                <p class="text-xs text-slate-700 font-sans">${unit.name}</p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[9px] font-bold border ${badgeColor}">${statusLabel}</span>
+            </div>
+
+            <div class="space-y-1.5 text-[11px] bg-earth-creamLight p-2.5 rounded-xl border border-earth-border text-slate-600">
+              <div class="flex justify-between">
+                <span>Odometer:</span>
+                <strong class="text-slate-900">${unit.odo}</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Indikator BBM:</span>
+                <strong class="text-slate-900">${unit.fuel}</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Servis Berikutnya:</span>
+                <span class="text-earth-terracotta font-bold">${unit.nextService}</span>
+              </div>
+            </div>
+
+            <div class="pt-1 flex gap-2">
+              <button onclick="toggleUnitMaintenance('${unit.id}')" class="flex-1 bg-white hover:bg-slate-50 text-slate-700 py-1.5 rounded-lg border border-earth-border text-[10px] font-bold">
+                Update Status
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function toggleUnitMaintenance(uid) {
+      const u = fleetUnits.find(x => x.id === uid);
+      if (!u) return;
+      if (u.status === 'READY') u.status = 'SERVICE';
+      else u.status = 'READY';
+      renderFleetGrid();
+      showToast(`Status unit ${u.plate} berhasil diperbarui!`);
+    }
+
+    // KANBAN BOARD
+    function renderKanbanBoard() {
+      const stages = ['STAGE_1', 'STAGE_2', 'STAGE_3', 'STAGE_4'];
+      const counts = { STAGE_1: 0, STAGE_2: 0, STAGE_3: 0, STAGE_4: 0 };
+
+      stages.forEach((st, idx) => {
+        const col = document.getElementById(`kanban-stage-${idx+1}`);
+        col.innerHTML = '';
+      });
+
+      masterOrders.forEach(o => {
+        if (counts[o.stage] !== undefined) {
+          counts[o.stage]++;
+        }
+        const stageNum = o.stage.replace('STAGE_', '');
+        const col = document.getElementById(`kanban-stage-${stageNum}`);
+        if (!col) return;
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 rounded-xl bg-earth-creamLight border border-earth-border hover:border-earth-matcha transition space-y-2 shadow-sm font-mono";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="font-bold text-earth-matcha text-xs">${o.plate}</span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${o.due === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${o.due === 0 ? 'LUNAS' : 'DP 30%'}
+            </span>
+          </div>
+          <div class="font-sans">
+            <strong class="text-slate-800 block text-xs">${o.renter}</strong>
+            <p class="text-[10px] text-slate-500">${o.carName}</p>
+          </div>
+          <div class="flex justify-between items-center text-[10px] text-slate-500 border-t border-earth-border pt-1.5 font-mono">
+            <span>${o.days} Hari (${o.driverMode.split(' ')[0]})</span>
+            <span class="text-earth-matcha font-bold">${formatRupiah(o.totalAmount)}</span>
+          </div>
+          <div class="flex gap-1.5 pt-1">
+            <button onclick="advanceOrderStage('${o.id}')" class="flex-1 bg-white hover:bg-slate-100 text-earth-matcha py-1 rounded text-[10px] font-bold border border-earth-border">
+              Tahap Lanjut →
+            </button>
+            <button onclick="openSettleModal('${o.id}')" class="px-2 py-1 bg-white hover:bg-slate-100 text-earth-terracotta rounded text-[10px] border border-earth-border font-bold">
+              SPK
+            </button>
+          </div>
+        `;
+        col.appendChild(card);
+      });
+
+      stages.forEach((st, idx) => {
+        document.getElementById(`badge-stage-${idx+1}`).innerText = counts[st];
+      });
+    }
+
+    function advanceOrderStage(id) {
+      const o = masterOrders.find(x => x.id === id);
+      if (!o) return;
+
+      if (o.stage === 'STAGE_1') o.stage = 'STAGE_2';
+      else if (o.stage === 'STAGE_2') o.stage = 'STAGE_3';
+      else if (o.stage === 'STAGE_3') o.stage = 'STAGE_4';
+      else if (o.stage === 'STAGE_4') {
+        openSettleModal(id);
+        return;
+      }
+
+      renderOverviewData();
+      renderKanbanBoard();
+      renderMasterOrdersTable();
+      showToast(`SPK ${o.id} dimajukan ke ${getStageName(o.stage)}`);
+    }
+
+    // MASTER ORDERS TABLE
+    function renderMasterOrdersTable() {
+      const search = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+      const filter = document.getElementById('orderStatusFilter')?.value || 'ALL';
+
+      const tbody = document.getElementById('masterOrdersTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = masterOrders.filter(o => {
+        const matchSearch = o.renter.toLowerCase().includes(search) || o.plate.toLowerCase().includes(search) || o.id.toLowerCase().includes(search);
+        let matchFilter = true;
+        if (filter === 'COMPLETED') matchFilter = o.isCompleted;
+        else if (filter !== 'ALL') matchFilter = o.stage === filter;
+        return matchSearch && matchFilter;
+      });
+
+      filtered.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-earth-creamLight/60 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-earth-matcha">${o.id}</td>
+          <td class="py-3 px-4">
+            <span class="text-slate-900 font-bold block font-sans">${o.renter}</span>
+            <span class="text-[10px] text-slate-500 font-mono">${o.phone}</span>
+          </td>
+          <td class="py-3 px-4 font-sans text-slate-700">
+            <span>${o.carName}</span>
+            <span class="block text-[10px] text-earth-terracotta font-mono font-bold">${o.plate}</span>
+          </td>
+          <td class="py-3 px-3 text-center font-mono">${o.days} Hari (${o.zone.split(' ')[0]})</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-slate-900">${formatRupiah(o.totalAmount)}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="block text-emerald-700 font-bold">DP: ${formatRupiah(o.paidDp)}</span>
+            <span class="block text-[10px] ${o.due > 0 ? 'text-amber-700 font-bold' : 'text-slate-400'}">Due: ${formatRupiah(o.due)}</span>
+          </td>
+          <td class="py-3 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getStageBadgeColor(o.stage)}">
+              ${o.isCompleted ? 'SELESAI LUNAS' : getStageName(o.stage)}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openSettleModal('${o.id}')" class="px-2.5 py-1 bg-earth-cream hover:bg-stone-200 text-earth-matcha rounded-lg border border-earth-border text-[11px] font-bold">
+              Buka SPK
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function getStageName(stage) {
+      if (stage === 'STAGE_1') return "Verifikasi KTP";
+      if (stage === 'STAGE_2') return "Cuci & QC Pool";
+      if (stage === 'STAGE_3') return "Sedang Jalan";
+      if (stage === 'STAGE_4') return "Kembali & Lunas";
+      return "Selesai";
+    }
+
+    function getStageBadgeColor(stage) {
+      if (stage === 'STAGE_1') return "bg-blue-100 text-blue-800 border border-blue-200";
+      if (stage === 'STAGE_2') return "bg-amber-100 text-amber-800 border border-amber-200";
+      if (stage === 'STAGE_3') return "bg-emerald-100 text-emerald-800 border border-emerald-200";
+      if (stage === 'STAGE_4') return "bg-purple-100 text-purple-800 border border-purple-200";
+      return "bg-slate-200 text-slate-700";
+    }
+
+    // GPS & TELEMETRY UI
+    function renderGpsAndTelemetry() {
+      const gList = document.getElementById('gpsTrackingList');
+      gList.innerHTML = masterOrders.filter(o => o.stage === 'STAGE_3').map(o => `
+        <div class="p-3 bg-earth-creamLight rounded-xl border border-earth-border space-y-1">
+          <div class="flex justify-between items-center">
+            <strong class="text-earth-matcha">${o.plate}</strong>
+            <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">68 Km/h</span>
+          </div>
+          <p class="text-[10px] text-slate-600">Tol Cipularang KM 92 (Arah Bandung)</p>
+          <div class="text-[9px] text-slate-400">Penyewa: ${o.renter}</div>
+        </div>
+      `).join('') || '<div class="py-4 text-center text-slate-400">Tidak ada unit in-transit saat ini</div>';
+
+      const oList = document.getElementById('odometerList');
+      oList.innerHTML = fleetUnits.slice(0, 3).map(u => `
+        <div class="p-3 bg-earth-creamLight rounded-xl border border-earth-border flex justify-between items-center">
+          <div>
+            <strong class="text-slate-900 block">${u.plate}</strong>
+            <span class="text-[10px] text-slate-500">${u.name}</span>
+          </div>
+          <span class="text-xs font-bold text-earth-matcha">${u.odo}</span>
+        </div>
+      `).join('');
+
+      const fList = document.getElementById('fuelStatusList');
+      fList.innerHTML = fleetUnits.slice(0, 3).map(u => `
+        <div class="p-3 bg-earth-creamLight rounded-xl border border-earth-border flex justify-between items-center">
+          <div>
+            <strong class="text-slate-900 block">${u.plate}</strong>
+            <span class="text-[10px] text-slate-500">Status Tangki:</span>
+          </div>
+          <span class="text-xs font-bold text-emerald-700">${u.fuel}</span>
+        </div>
+      `).join('');
+    }
+
+    function simulateOdometerSync() {
+      fleetUnits.forEach(u => {
+        let cur = parseInt(u.odo.replace(/\D/g, ''));
+        u.odo = (cur + Math.floor(Math.random() * 45 + 10)).toLocaleString('id-ID') + " Km";
+      });
+      renderGpsAndTelemetry();
+      renderFleetGrid();
+      showToast("Sinkronisasi sensor OBD-II & Odometer berhasil diperbarui!");
+    }
+
+    // SCANNER SERAH TERIMA VOUCHER
+    function testBarcode(code) {
+      document.getElementById('barcodeScanInput').value = code;
+      processBarcodeScan();
+    }
+
+    function processBarcodeScan() {
+      const code = document.getElementById('barcodeScanInput').value.trim();
+      const o = masterOrders.find(x => x.id === code || x.id.includes(code) || x.plate.toLowerCase() === code.toLowerCase());
+
+      if (!o) {
+        alert("Nomor SPK atau pelat mobil tidak ditemukan dalam antrean aktif!");
+        return;
+      }
+
+      document.getElementById('scanResultBox').classList.remove('hidden');
+      document.getElementById('scanCarTitle').innerText = o.carName;
+      document.getElementById('scanSpkCodeTitle').innerText = o.id;
+      document.getElementById('scanStageBadge').innerText = getStageName(o.stage);
+      document.getElementById('scanRenterName').innerText = o.renter;
+      document.getElementById('scanPhone').innerText = o.phone;
+      document.getElementById('scanPlateNumber').innerText = o.plate;
+      document.getElementById('scanRouteZone').innerText = o.zone;
+
+      activeSettlingOrder = o;
+      showToast(`Voucher SPK ${o.id} berhasil divalidasi!`);
+    }
+
+    function advanceStageFromScanner() {
+      if (!activeSettlingOrder) return;
+      advanceOrderStage(activeSettlingOrder.id);
+      document.getElementById('scanStageBadge').innerText = getStageName(activeSettlingOrder.stage);
+    }
+
+    // SETTLEMENT MODAL & PRINT SPK / VOUCHER
+    function openSettleModal(id) {
+      const o = masterOrders.find(x => x.id === id);
+      if (!o) return;
+      activeSettlingOrder = o;
+
+      document.getElementById('settleSpkNumberTitle').innerText = o.id;
+      document.getElementById('pSpkNumber').innerText = o.id;
+      document.getElementById('pDateText').innerText = o.date;
+      document.getElementById('pRenterName').innerText = o.renter;
+      document.getElementById('pRenterPhone').innerText = `WhatsApp: ${o.phone}`;
+      document.getElementById('pDeliveryAddress').innerText = o.address;
+      document.getElementById('pCarModel').innerText = `${o.carName} (${o.plate})`;
+      document.getElementById('pRouteZone').innerText = o.zone;
+
+      document.getElementById('pItemTitle').innerText = o.carName;
+      document.getElementById('pItemDetail').innerText = `${o.driverMode} • Asuransi All-Risk • Bensin Bar-to-Bar`;
+      document.getElementById('pItemDays').innerText = `${o.days} Hari`;
+      document.getElementById('pUnitRate').innerText = formatRupiah(o.dailyRate);
+      document.getElementById('pItemTotal').innerText = formatRupiah(o.totalAmount);
+
+      document.getElementById('pGrandTotalAmount').innerText = formatRupiah(o.totalAmount);
+      document.getElementById('pPaidDpAmount').innerText = formatRupiah(o.paidDp);
+      document.getElementById('pDueAmount').innerText = formatRupiah(o.due);
+
+      document.getElementById('pTokenCode').innerText = `SPK-${o.id.split('-').pop()}-PASS`;
+
+      const btnSettle = document.getElementById('btnConfirmSettleDue');
+      if (o.due === 0) {
+        document.getElementById('pPaymentStatusText').innerText = "LUNAS 100% (SELESAI)";
+        btnSettle.classList.add('hidden');
+      } else {
+        document.getElementById('pPaymentStatusText').innerText = "DP 30% TERBAYAR (DUE 70%)";
+        btnSettle.classList.remove('hidden');
+      }
+
+      document.getElementById('settleModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settleModal').classList.add('hidden');
+    }
+
+    function executeSettleDue() {
+      if (!activeSettlingOrder) return;
+      activeSettlingOrder.paidDp = activeSettlingOrder.totalAmount;
+      activeSettlingOrder.due = 0;
+      activeSettlingOrder.isCompleted = true;
+      activeSettlingOrder.stage = 'STAGE_4';
+
+      renderOverviewData();
+      renderKanbanBoard();
+      renderMasterOrdersTable();
+      renderGpsAndTelemetry();
+      closeSettleModal();
+      showToast(`SPK ${activeSettlingOrder.id} resmi DILUNASI 100%!`);
+    }
+
+    // MODAL FORM BOOKING MANUAL
+    function openBookingModal() {
+      document.getElementById('bookingModal').classList.remove('hidden');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('bookingModal').classList.add('hidden');
+    }
+
+    function submitNewBookingRegistration() {
+      const renter = document.getElementById('mRenterName').value.trim() || 'Penyewa';
+      const phone = document.getElementById('mPhone').value.trim() || '081299998888';
+      const carKey = document.getElementById('mCarSelect').value;
+      const driver = document.getElementById('mDriverSelect').value;
+      const days = parseInt(document.getElementById('mDaysInput').value) || 1;
+      const zoneKey = document.getElementById('mZoneSelect').value;
+      const addr = document.getElementById('mAddressInput').value;
+
+      let carName = "Toyota All New Avanza 2024";
+      let plate = "B 1928 RYD";
+      let baseRate = 450000;
+
+      if (carKey === 'CAR-INNOVA') {
+        carName = "Toyota Innova Zenix Hybrid";
+        plate = "B 1024 ZEN";
+        baseRate = 750000;
+      } else if (carKey === 'CAR-HIACE') {
+        carName = "Toyota HiAce 14-Seat";
+        plate = "B 8888 HIA";
+        baseRate = 1100000;
+      }
+
+      let driverRate = driver === 'WITH_DRIVER' ? 175000 : 0;
+      let zoneSurcharge = zoneKey === 'JABAR' ? 75000 : (zoneKey === 'JATENG' ? 150000 : 0);
+
+      const totalAmount = (baseRate + driverRate + zoneSurcharge) * days;
+      const dp = Math.round(totalAmount * 0.3);
+      const newId = "SPK-ARM-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+
+      const newOrder = {
+        id: newId,
+        renter: renter,
+        phone: phone,
+        carName: carName,
+        plate: plate,
+        driverMode: driver === 'WITH_DRIVER' ? 'Termasuk Supir Ramah' : 'Lepas Kunci (Self-Drive)',
+        zone: zoneKey === 'JABAR' ? 'Jawa Barat' : (zoneKey === 'JATENG' ? 'Jawa Tengah' : 'Dalam Kota (Jabodetabek)'),
+        days: days,
+        address: addr,
+        dailyRate: baseRate,
+        totalAmount: totalAmount,
+        paidDp: dp,
+        due: totalAmount - dp,
+        stage: "STAGE_1",
+        isCompleted: false,
+        date: new Date().toISOString().split('T')[0],
+        statusUnit: "PREP"
+      };
+
+      masterOrders.unshift(newOrder);
+      renderOverviewData();
+      renderKanbanBoard();
+      renderMasterOrdersTable();
+      renderGpsAndTelemetry();
+      closeBookingModal();
+      showToast(`SPK Sewa ${plate} berhasil diterbitkan!`);
+    }
+
+    // CSV EXPORT
+    function exportOrdersToCsv() {
+      let csv = "Nomor SPK,Penyewa,WhatsApp,Armada,Pelat Nomor,Driver,Zona,Durasi Hari,Total Nilai,DP Terbayar,Sisa Tagihan,Tahap Status\n";
+      masterOrders.forEach(o => {
+        csv += `"${o.id}","${o.renter}","${o.phone}","${o.carName}","${o.plate}","${o.driverMode}","${o.zone}",${o.days},${o.totalAmount},${o.paidDp},${o.due},"${o.stage}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Master_SPK_RentalArmada_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Data SPK Rental berhasil diekspor ke file CSV!");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMsg').innerText = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+  </script>
+</body>
+</html>

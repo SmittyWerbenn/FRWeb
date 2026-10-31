@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RestoDine VIP - Host & Table Management Admin Suite</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Playfair Display, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            resto: {
+              green: '#059669',
+              lightGreen: '#10b981',
+              darkGreen: '#047857',
+              greenBg: '#ecfdf5',
+              orange: '#f97316',
+              deepOrange: '#ea580c',
+              orangeBg: '#fff7ed',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #059669;
+    }
+
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .table-pattern {
+      background-color: #ffffff;
+      background-image: radial-gradient(#10b98118 1px, transparent 1px), radial-gradient(#f9731618 1px, #ffffff 1px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+    }
+
+    /* Print VIP Guest Receipt / Bill */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printBillReceipt, #printBillReceipt * {
+        visibility: visible !important;
+      }
+      #printBillReceipt {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+        padding: 24px;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-slate-800 antialiased font-sans min-h-screen flex selection:bg-resto-orangeBg selection:text-resto-deepOrange overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-slate-900 border-r border-slate-800 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-slate-800">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-resto-green to-resto-lightGreen flex items-center justify-center text-white shadow-md shadow-emerald-500/20 flex-shrink-0">
+            <i data-lucide="utensils-crossed" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-serif">
+              RESTO<span class="text-resto-orange font-sans tracking-normal ml-0.5 font-black">DINE</span>
+              <span class="text-[10px] font-sans font-bold bg-resto-orange text-white px-1.5 py-0.2 rounded ml-1">VIP</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-slate-800 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">MAÎTRE D' SUITE</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Shift & Branch Indicator -->
+      <div class="px-5 py-3 border-b border-slate-800/80 bg-slate-950/40">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-resto-orange"></i> Senopati Flagship
+          </span>
+          <span class="text-emerald-400 font-bold" id="sidebarShiftTag">DINNER 1</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('floorplan')" id="tab-floorplan" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-emerald-400 bg-slate-800 border-l-4 border-resto-lightGreen shadow-sm">
+          <i data-lucide="layout-grid" class="w-4 h-4"></i>
+          <span>Live Denah & Meja</span>
+          <span class="ml-auto bg-resto-greenBg text-resto-green text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="badgeAvailableTables">9 Free</span>
+        </button>
+
+        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="scan" class="w-4 h-4"></i>
+          <span>Host QR Check-in</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 ml-auto animate-ping"></span>
+        </button>
+
+        <button onclick="switchTab('reservations')" id="tab-reservations" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Database Reservasi</span>
+          <span class="ml-auto bg-resto-orangeBg text-resto-deepOrange text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgePendingReservations">14 Booked</span>
+        </button>
+
+        <button onclick="switchTab('pos')" id="tab-pos" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Kasir POS (Potong DP)</span>
+          <span class="ml-auto bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgeBilledTables">3 Billed</span>
+        </button>
+
+        <button onclick="switchTab('analytics')" id="tab-analytics" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Metrik & Anti No-Show</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Host User Profile & Role Selector -->
+    <div class="p-4 border-t border-slate-800 bg-slate-950/50">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-resto-green to-resto-orange flex items-center justify-center text-white font-bold text-xs font-mono shadow-sm">
+          HD
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-white truncate font-sans">Chef Jean-Luc</p>
+          <select id="roleSelector" onchange="changeHostRole()" class="bg-transparent text-[10px] text-stone-400 font-mono focus:outline-none cursor-pointer">
+            <option value="HEAD_HOST" class="bg-slate-900 text-white">Head Maître d'</option>
+            <option value="FLOOR_MGR" class="bg-slate-900 text-white">Floor Operations Lead</option>
+            <option value="CASHIER" class="bg-slate-900 text-white">Cashier & POS Lead</option>
+          </select>
+        </div>
+        <button onclick="showToast('Sesi Maître D\' tersinkronkan')" title="Pengaturan Lantai" class="text-slate-400 hover:text-resto-orange transition">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-slate-950 text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 font-mono gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-resto-green text-white">LIVE SHIFT ENGINE</span>
+        <span>Anti No-Show Active: <strong>100% Saldo Deposit Terjamin</strong> • Grace Period Max 30 Menit</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-stone-400">
+        <span>Deposit Pool Hari Ini: <strong class="text-resto-orange" id="topDepositPool">Rp 4.250.000</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span class="text-emerald-400 font-bold">Turnover: 1.8x/Meja</span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-nav sticky top-0 z-30 border-b border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1.5 rounded-lg bg-slate-800">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-serif">
+            <span id="currentViewTitle">Live Denah & Meja</span>
+          </h1>
+          <p class="text-slate-400 text-xs hidden sm:block font-mono">Real-Time Floorplan Controller, Guest Seating & 30-Min Grace Period Monitor</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- Shift Selector -->
+        <div class="hidden lg:flex items-center bg-slate-850 border border-slate-750 px-2.5 py-1.5 rounded-xl text-stone-300">
+          <span class="text-stone-400 text-[11px] mr-2">Shift:</span>
+          <select id="mainShiftSelector" onchange="switchServiceShift()" class="bg-transparent text-white font-bold text-xs focus:outline-none cursor-pointer">
+            <option value="LUNCH" class="bg-slate-900">Lunch (12:00 - 14:30)</option>
+            <option value="DINNER1" class="bg-slate-900" selected>Dinner 1 (18:00 - 20:30)</option>
+            <option value="DINNER2" class="bg-slate-900">Dinner 2 (20:30 - 23:00)</option>
+          </select>
+        </div>
+
+        <!-- Walk-in Seating Button -->
+        <button onclick="openWalkinModal()" class="bg-resto-orange hover:bg-resto-deepOrange text-white font-bold px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-orange-500/20 flex items-center gap-1.5 active:scale-95 font-sans">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          <span>+ Tamu Walk-in</span>
+        </button>
+
+        <!-- Notification Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-resto-orange flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-resto-orange rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-stone-200 p-3 text-slate-800 z-50">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-2 px-1">
+              <span class="font-bold text-xs font-serif">Aktivitas Restoran Terkini</span>
+              <span class="text-[10px] font-mono text-resto-green font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                <p class="font-bold text-slate-900">Tamu Check-in: Tedi Mahendra</p>
+                <p class="text-slate-500 text-[10px] font-mono">VIP Suite 01 (Imperial) • Deposit Rp 500k Verified</p>
+                <span class="text-[9px] text-slate-400">Baru saja</span>
+              </div>
+              <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+                <p class="font-bold text-slate-900">Peringatan Grace Period: Meja 04</p>
+                <p class="text-slate-500 text-[10px] font-mono">Tersisa 8 Menit sebelum meja dialihkan</p>
+                <span class="text-[9px] text-amber-600 font-bold">5 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1">
+
+      <!-- ==================== VIEW 1: INTERACTIVE FLOORPLAN CONTROLLER ==================== -->
+      <section id="view-floorplan" class="space-y-6">
+        
+        <!-- Floor Filter & Real-Time Metrics Strip -->
+        <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <!-- Area Selector Buttons -->
+          <div class="flex items-center p-1 bg-stone-100 rounded-2xl border border-stone-200 w-full lg:w-auto">
+            <button onclick="changeFloorArea('MAIN')" id="areaBtn-MAIN" class="flex-1 lg:flex-initial px-4 py-2 rounded-xl font-bold bg-white text-slate-900 shadow-sm transition">
+              Main Dining Hall (T-01 s/d T-06)
+            </button>
+            <button onclick="changeFloorArea('GARDEN')" id="areaBtn-GARDEN" class="flex-1 lg:flex-initial px-4 py-2 rounded-xl font-bold text-stone-600 hover:text-slate-900 transition">
+              Alfresco Terrace (G-01 s/d G-04)
+            </button>
+            <button onclick="changeFloorArea('VIP')" id="areaBtn-VIP" class="flex-1 lg:flex-initial px-4 py-2 rounded-xl font-bold text-stone-600 hover:text-slate-900 transition">
+              VIP Suites (VIP-01 s/d VIP-03)
+            </button>
+          </div>
+
+          <!-- Color Legend -->
+          <div class="flex flex-wrap items-center gap-3 text-stone-600">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-md bg-emerald-500"></span> Tersedia</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-md bg-resto-orange"></span> Reserved (DP Paid)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-md bg-blue-600"></span> Seated / Eating</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-md bg-purple-600"></span> Billed (Menunggu Kasir)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-md bg-stone-300"></span> Dirty / Cleaning</span>
+          </div>
+        </div>
+
+        <!-- Visual Floorplan Grid Canvas -->
+        <div class="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 sm:p-7 space-y-6 table-pattern">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-4">
+            <div>
+              <span class="text-[10px] font-bold text-resto-green uppercase font-mono tracking-wider" id="activeAreaSubtitle">MAIN DINING AREA • 6 TABLES</span>
+              <h3 class="text-lg font-bold text-slate-900 font-serif" id="activeAreaHeading">Denah Meja Utama (Main Dining Hall)</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-stone-500 font-mono">Klik meja untuk tindakan cepat:</span>
+              <button onclick="autoRefreshFloor()" class="p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold flex items-center gap-1 transition">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh Denah
+              </button>
+            </div>
+          </div>
+
+          <!-- Table Tiles Grid Container -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="floorplanGrid">
+            <!-- Dynamically injected via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: HOST QR BARCODE SCANNER SIMULATOR ==================== -->
+      <section id="view-scanner" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Optical Scanner Simulator -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-4">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-serif flex items-center gap-2">
+                  <i data-lucide="scan-line" class="w-5 h-5 text-resto-green"></i>
+                  Host Greeting & QR Dining Pass Validator
+                </h3>
+                <p class="text-xs text-stone-500 font-mono">Scan barcode tiket reservasi tamu saat tiba di meja resepsionis depan</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> SCANNER ONLINE
+              </span>
+            </div>
+
+            <!-- Optical Sensor Graphic -->
+            <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-resto-lightGreen rounded-2xl relative flex items-center justify-center p-4 bg-slate-800/40">
+                <div class="w-full h-0.5 bg-resto-lightGreen absolute top-1/2 -translate-y-1/2 shadow-lg shadow-emerald-400 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-stone-500 opacity-60"></i>
+              </div>
+              <p class="text-stone-300 text-xs font-mono mt-4">Arahkan Barcode Dining Pass Tamu (Cth: <strong>TABLE-PASS-9821</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-stone-700">Input Manual Barcode Token / No. Tiket Reservasi:</label>
+              <div class="flex gap-2">
+                <input type="text" id="scannerTokenInput" value="TABLE-PASS-9821" placeholder="Ketik token pass..." class="flex-1 bg-stone-50 px-4 py-2.5 rounded-xl border border-stone-200 font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-resto-green" />
+                <button onclick="executeHostScan()" class="bg-resto-green hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 font-sans">
+                  <i data-lucide="check" class="w-4 h-4"></i> Validasi Tamu
+                </button>
+              </div>
+              <p class="text-[11px] text-stone-400 font-sans">Preset token untuk pengetesan: 
+                <span onclick="setScannerVal('TABLE-PASS-9821')" class="underline cursor-pointer text-resto-green font-mono font-bold">TABLE-PASS-9821 (VIP 01 Imperial)</span> • 
+                <span onclick="setScannerVal('TABLE-PASS-9822')" class="underline cursor-pointer text-resto-orange font-mono font-bold">TABLE-PASS-9822 (Meja T-04 Center)</span> •
+                <span onclick="setScannerVal('INVALID-PASS-000')" class="underline cursor-pointer text-rose-600 font-mono font-bold">INVALID-PASS-000 (Palsu/Tidak Ada)</span>
+              </p>
+            </div>
+
+            <!-- Scanner Result Feedback Card -->
+            <div id="hostScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Live Greeting Logs -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 font-mono">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-sm text-slate-900 font-serif">Log Sambutan & Check-in Tamu</h3>
+              <span class="text-[10px] text-stone-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs" id="hostCheckinLogs">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: ANTI NO-SHOW RESERVATIONS MASTER ==================== -->
+      <section id="view-reservations" class="hidden space-y-6">
+        
+        <!-- Filter and Search Header -->
+        <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-400"></i>
+            <input type="text" id="resSearchInput" onkeyup="filterReservationsTable()" placeholder="Cari Nama, No. WhatsApp, Meja..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-resto-green" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button onclick="filterResStatus('ALL')" class="res-status-btn px-3.5 py-2 rounded-xl font-bold bg-slate-900 text-white transition" data-status="ALL">Semua</button>
+            <button onclick="filterResStatus('RESERVED')" class="res-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="RESERVED">Reserved (DP Locked)</button>
+            <button onclick="filterResStatus('SEATED')" class="res-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="SEATED">Sedang Santap</button>
+            <button onclick="filterResStatus('BILLED')" class="res-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="BILLED">Menunggu Bill</button>
+            <button onclick="filterResStatus('COMPLETED')" class="res-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-status="COMPLETED">Selesai</button>
+          </div>
+        </div>
+
+        <!-- Master Reservations Table -->
+        <div class="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-serif">Database Reservasi Meja RestoDine VIP</h3>
+              <p class="text-xs text-stone-500 font-mono" id="reservationsCountLabel">Menampilkan seluruh reservasi aktif</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportReservationsCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                <tr>
+                  <th class="py-3 px-4">KODE RESERVASI</th>
+                  <th class="py-3 px-4">TAMU & WHATSAPP</th>
+                  <th class="py-3 px-4">MEJA & AREA</th>
+                  <th class="py-3 px-4">SHIFT & JAM</th>
+                  <th class="py-3 px-4">DEPOSIT TERVERIFIKASI</th>
+                  <th class="py-3 px-4">GRACE PERIOD</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-center">AKSI OPERASIONAL</th>
+                </tr>
+              </thead>
+              <tbody id="masterReservationsTableBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: KASIR POS & POTONG DEPOSIT ==================== -->
+      <section id="view-pos" class="hidden space-y-6">
+        
+        <!-- Shift Financial Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">TOTAL OMSET DITERIMA KASIR</span>
+            <span class="text-2xl font-black text-slate-900 font-serif block mt-2" id="posGrossSales">Rp 18.750.000</span>
+            <p class="text-stone-400 text-[11px] font-mono mt-1">Dinner Shift 1 & 2</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">TOTAL DEPOSIT TERPOTONG DI BILL</span>
+            <span class="text-2xl font-black text-resto-green font-serif block mt-2" id="posDeductedDeposits">Rp 3.250.000</span>
+            <p class="text-emerald-600 text-[11px] font-mono mt-1">100% Mengurangi Tagihan Tamu</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">MEJA AKTIF MENUNGGU SETTLEMENT</span>
+            <span class="text-2xl font-black text-resto-deepOrange font-serif block mt-2" id="posActiveTablesCount">3 Meja Billed</span>
+            <p class="text-amber-600 text-[11px] font-mono mt-1">Siap cetak struk potong deposit</p>
+          </div>
+        </div>
+
+        <!-- POS Interactive Bill Calculator & Master Table -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Table Bill Quick Checkout Form -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-5 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-serif flex items-center gap-2">
+                <i data-lucide="calculator" class="w-4 h-4 text-resto-green"></i>
+                Kalkulator Potong Deposit 100%
+              </h3>
+              <span class="px-2 py-0.5 rounded text-[10px] bg-resto-orangeBg text-resto-deepOrange font-bold">POS SETTLEMENT</span>
+            </div>
+
+            <div class="space-y-3 font-sans">
+              <div>
+                <label class="block font-bold text-stone-700 mb-1 font-mono">Pilih Meja yang Akan Ditutup Bill:</label>
+                <select id="posSelectTable" onchange="loadTableToPOS()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-resto-green">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1 font-mono">Subtotal Makanan & Minuman (F&B Rp):</label>
+                <input type="number" id="posFoodSubtotalInput" oninput="calculatePOSBill()" value="1450000" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 font-mono font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-resto-green" />
+              </div>
+
+              <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2 font-mono text-xs">
+                <div class="flex justify-between text-stone-600">
+                  <span>Subtotal Pesanan:</span>
+                  <span id="posCalcSubtotal" class="font-bold text-slate-900">Rp 1.450.000</span>
+                </div>
+                <div class="flex justify-between text-stone-600">
+                  <span>Pajak Restoran & Service (15%):</span>
+                  <span id="posCalcTax" class="font-bold text-slate-900">Rp 217.500</span>
+                </div>
+                <div class="flex justify-between text-resto-green font-bold bg-resto-greenBg p-2 rounded-lg border border-emerald-200">
+                  <span>Kredit Deposit Anti No-Show (100%):</span>
+                  <span id="posCalcDepositCredit">- Rp 100.000</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-stone-200 text-sm font-black text-slate-900">
+                  <span>Total Tagihan Akhir Tamu:</span>
+                  <span id="posCalcGrandTotal" class="text-resto-deepOrange text-base">Rp 1.567.500</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-stone-700 mb-1 font-mono">Metode Pelunasan Meja:</label>
+                <select id="posPaymentMethod" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-resto-green">
+                  <option value="EDC BCA Prioritas">Debit / EDC BCA Prioritas</option>
+                  <option value="Kartu Kredit Mandiri">Kartu Kredit Visa/Mastercard</option>
+                  <option value="Uang Tunai (Cash)">Uang Tunai Pas di Meja</option>
+                  <option value="QRIS Dinamis Pelunasan">QRIS Dinamis Kasir</option>
+                </select>
+              </div>
+
+              <button onclick="executePOSCloseout()" class="w-full bg-resto-green hover:bg-emerald-700 active:scale-95 text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 font-sans">
+                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk & Kosongkan Meja
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Billed Tables Master -->
+          <div class="lg:col-span-7 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-sm text-slate-900 font-serif">Antrean Meja Siap Tutup Bill</h3>
+              <span class="text-stone-400 text-[10px]">Real-time POS queue</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                  <tr>
+                    <th class="py-3 px-3">MEJA</th>
+                    <th class="py-3 px-3">NAMA TAMU</th>
+                    <th class="py-3 px-3">AREA</th>
+                    <th class="py-3 px-3">DEPOSIT</th>
+                    <th class="py-3 px-3 text-center">AKSI CEPAT</th>
+                  </tr>
+                </thead>
+                <tbody id="posQueuedTablesBody" class="divide-y divide-stone-100 font-medium">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: ANALYTICS & ANTI NO-SHOW METRICS ==================== -->
+      <section id="view-analytics" class="hidden space-y-6">
+        
+        <!-- Analytics KPI Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">TOTAL OMSET HARI INI</span>
+            <span class="text-2xl font-black text-slate-900 font-serif block mt-2">Rp 24.850.000</span>
+            <p class="text-emerald-600 text-[11px] font-mono mt-1 font-semibold">+18.5% vs minggu lalu</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">NO-SHOW RATE RESTORAN</span>
+            <span class="text-2xl font-black text-resto-green font-serif block mt-2">0.8% (Anti No-Show)</span>
+            <p class="text-emerald-700 text-[11px] font-mono mt-1 font-semibold">Turun dari 16.4% era pre-deposit</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">RATA-RATA DWELL TIME</span>
+            <span class="text-2xl font-black text-slate-900 font-serif block mt-2">94 Menit / Meja</span>
+            <p class="text-stone-400 text-[11px] font-mono mt-1">Sesuai standar Fine Dining</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+            <span class="text-xs text-stone-500 font-mono font-bold">VIP SUITE OCCUPANCY</span>
+            <span class="text-2xl font-black text-resto-orange font-serif block mt-2">100% Full</span>
+            <p class="text-amber-600 text-[11px] font-mono mt-1">Rp 500k Deposit per Room</p>
+          </div>
+        </div>
+
+        <!-- Charts Grid (2 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Hourly Occupancy Chart -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-serif">Distribusi Okupansi Meja per Jam Operasional</h3>
+                <p class="text-xs text-stone-500 font-mono">Lunch Shift vs Dinner Shift 1 vs Dinner Shift 2</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-stone-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-resto-green"></span> Main Hall
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-stone-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-resto-orange"></span> VIP Suites
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="hourlyOccupancyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Revenue Distribution Doughnut -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-stone-100 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-serif">Sumber Pendapatan Restoran</h3>
+              <p class="text-xs text-stone-500 font-mono">Porsi menu makanan vs Wine Sommelier</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="revenueDistributionChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-stone-500 space-y-1 border-t border-stone-100">
+              <div class="flex justify-between">
+                <span>Gastronomy Food Courses:</span>
+                <strong class="text-slate-900">62%</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Wine & Sommelier Pairing:</span>
+                <strong class="text-slate-900">26%</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>VIP Suites Room Amenities:</span>
+                <strong class="text-resto-orange">12%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: TAMU WALK-IN KILAT ==================== -->
+  <div id="walkinModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-stone-200 shadow-2xl p-6 space-y-4 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-serif flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-5 h-5 text-resto-orange"></i>
+          Dudukkan Tamu Walk-in Langsung
+        </h3>
+        <button onclick="closeWalkinModal()" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div>
+          <label class="block font-bold text-stone-700 mb-1 font-mono">Nama Tamu Walk-in *</label>
+          <input type="text" id="walkinGuestName" placeholder="Contoh: Ibu Renatta Moeloek" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-resto-green" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-mono">Jumlah Pax *</label>
+            <input type="number" id="walkinPaxCount" value="2" min="1" max="20" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-resto-green" />
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 mb-1 font-mono">Pilih Meja Tersedia *</label>
+            <select id="walkinAvailableTableSelect" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-resto-green">
+              <!-- Injected via JS -->
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-700 mb-1 font-mono">Catatan Khusus (Allergy / Dietary)</label>
+          <input type="text" id="walkinNotes" placeholder="Cth: No seafood, table anniversary" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-resto-green" />
+        </div>
+
+        <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 text-stone-500 font-mono text-[11px]">
+          *Tamu walk-in langsung menduduki meja tanpa penarikan deposit online (Status: <strong>SEATED</strong>).
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-stone-100 font-sans">
+        <button onclick="closeWalkinModal()" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="confirmSeatWalkin()" class="px-5 py-2.5 bg-resto-orange hover:bg-resto-deepOrange text-white font-bold rounded-xl transition shadow-md shadow-orange-500/20 flex items-center gap-1.5">
+          <i data-lucide="check" class="w-4 h-4"></i> Dudukkan Sekarang
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: DETAIL MEJA & INTERACTIVE ACTION ==================== -->
+  <div id="tableActionModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-stone-200 shadow-2xl p-6 space-y-5 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-serif flex items-center gap-2">
+          <i data-lucide="utensils" class="w-5 h-5 text-resto-green"></i>
+          <span id="modalTableTitle">Meja 01 (Booth Cozy)</span>
+        </h3>
+        <button onclick="closeTableModal()" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-stone-500">Status Meja:</span>
+          <span class="font-bold px-2 py-0.5 rounded text-[10px]" id="modalTableStatusBadge">TERSEDIA</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-stone-500">Kapasitas Maksimal:</span>
+          <span class="font-bold text-slate-900" id="modalTableCapacity">4 Pax</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-stone-500">Nama Tamu / Reservasi:</span>
+          <span class="font-bold text-slate-900 font-sans" id="modalTableGuest">-</span>
+        </div>
+        <div class="flex justify-between text-resto-deepOrange font-bold">
+          <span>Deposit Anti No-Show:</span>
+          <span id="modalTableDeposit">Rp 0</span>
+        </div>
+        <div class="flex justify-between pt-1 border-t border-stone-200">
+          <span class="text-stone-500">Grace Period 30 Menit:</span>
+          <span class="font-bold text-emerald-700" id="modalTableGracePeriod">-</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons Grid -->
+      <div class="space-y-2 font-sans pt-1" id="modalTableActionsContainer">
+        <!-- Injected via JS based on table status -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PRINTABLE THERMAL RECEIPT (KASIR POS) ==================== -->
+  <div id="printBillReceipt" class="hidden">
+    <div style="font-family: 'JetBrains Mono', monospace; max-width: 300px; margin: 0 auto; text-align: left; font-size: 11px;">
+      <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 8px; margin-bottom: 8px;">
+        <h2 style="margin: 0; font-size: 15px; font-weight: 800; font-family: 'Playfair Display', serif;">RESTODINE VIP DINING</h2>
+        <p style="margin: 2px 0; font-size: 9px;">Fine Dining & Gastronomy Suites</p>
+        <p style="margin: 0; font-size: 9px;">Jl. Gunawarman No. 28, Senopati, Jaksel</p>
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <p style="margin: 2px 0;"><strong>Receipt:</strong> <span id="prnReceiptCode">BILL-202610-9921</span></p>
+        <p style="margin: 2px 0;"><strong>Meja:</strong> <span id="prnTable">Meja 02 (Center Hall)</span></p>
+        <p style="margin: 2px 0;"><strong>Tamu:</strong> <span id="prnGuest">Tedi Mahendra</span></p>
+        <p style="margin: 2px 0;"><strong>Shift:</strong> Dinner 1 (18:00 - 20:30 WIB)</p>
+        <p style="margin: 2px 0;"><strong>Kasir:</strong> Maître d' Jean-Luc</p>
+      </div>
+
+      <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 6px 0; margin-bottom: 8px;">
+        <table style="width: 100%;">
+          <tr>
+            <td>F&B Courses:</td>
+            <td style="text-align: right;" id="prnSubtotal">Rp 1.450.000</td>
+          </tr>
+          <tr>
+            <td>PB1 & Service 15%:</td>
+            <td style="text-align: right;" id="prnTax">Rp 217.500</td>
+          </tr>
+          <tr style="font-weight: bold;">
+            <td>Total Tagihan Kotor:</td>
+            <td style="text-align: right;" id="prnGrossTotal">Rp 1.667.500</td>
+          </tr>
+          <tr style="color: #000; font-weight: bold; background: #eee;">
+            <td>Kredit DP Anti No-Show:</td>
+            <td style="text-align: right;" id="prnDepositDeduction">- Rp 100.000</td>
+          </tr>
+          <tr style="font-size: 12px; font-weight: 900; border-top: 1px dashed #000;">
+            <td>TOTAL DIBAYAR:</td>
+            <td style="text-align: right;" id="prnNetTotal">Rp 1.567.500</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <p style="margin: 0; font-weight: bold;">METODE: EDC BCA PRIORITAS</p>
+        <p style="margin: 3px 0 0; font-size: 9px;">Deposit Anti No-Show 100% dipotong dari bill.</p>
+        <p style="margin: 2px 0 0; font-size: 9px;">Terima kasih atas jamuan istimewa Anda di RestoDine VIP!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+    <div class="w-6 h-6 rounded-full bg-resto-green flex items-center justify-center text-white font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Operasi meja berhasil diperbarui</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APP LOGIC ==================== -->
+  <script>
+    // Master Floorplan Tables State
+    let masterTables = [
+      // Main Dining Hall Area
+      { id: "T-01", area: "MAIN", name: "Meja 01", type: "Booth Cozy", capacity: "2-4 Pax", status: "AVAILABLE", deposit: 100000, guest: null, phone: null, resCode: null, arrivalTime: null, graceCountdown: null, billAmount: 0 },
+      { id: "T-02", area: "MAIN", name: "Meja 02", type: "Center Hall", capacity: "4 Pax", status: "BILLED", deposit: 100000, guest: "Bambang Soesatyo", phone: "0811-2233-4455", resCode: "RES-202610-8802", arrivalTime: "18:15", graceCountdown: "Seated", billAmount: 1850000 },
+      { id: "T-03", area: "MAIN", name: "Meja 03", type: "Booth Cozy", capacity: "2-4 Pax", status: "SEATED", deposit: 100000, guest: "Chelsea Islan", phone: "0812-7788-9900", resCode: "RES-202610-8803", arrivalTime: "18:00", graceCountdown: "Seated", billAmount: 920000 },
+      { id: "T-04", area: "MAIN", name: "Meja 04", type: "Center Hall", capacity: "4 Pax", status: "RESERVED", deposit: 100000, guest: "Nicholas Saputra", phone: "0813-4455-6677", resCode: "RES-202610-8804", arrivalTime: "19:00", graceCountdown: 24, billAmount: 0 },
+      { id: "T-05", area: "MAIN", name: "Meja 05", type: "Window Side", capacity: "2 Pax", status: "AVAILABLE", deposit: 100000, guest: null, phone: null, resCode: null, arrivalTime: null, graceCountdown: null, billAmount: 0 },
+      { id: "T-06", area: "MAIN", name: "Meja 06", type: "Window Side", capacity: "2 Pax", status: "DIRTY", deposit: 100000, guest: null, phone: null, resCode: null, arrivalTime: null, graceCountdown: null, billAmount: 0 },
+
+      // Alfresco Terrace Area
+      { id: "G-01", area: "GARDEN", name: "Garden Cabana 01", type: "Semi-Outdoor", capacity: "4-6 Pax", status: "RESERVED", deposit: 150000, guest: "Dian Sastrowardoyo", phone: "0818-3344-5566", resCode: "RES-202610-8805", arrivalTime: "19:15", graceCountdown: 28, billAmount: 0 },
+      { id: "G-02", area: "GARDEN", name: "Terrace High-Top 02", type: "Bistro Table", capacity: "2-3 Pax", status: "AVAILABLE", deposit: 150000, guest: null, phone: null, resCode: null, arrivalTime: null, graceCountdown: null, billAmount: 0 },
+      { id: "G-03", area: "GARDEN", name: "Garden Cabana 03", type: "Semi-Outdoor", capacity: "4-6 Pax", status: "SEATED", deposit: 150000, guest: "Reza Rahadian", phone: "0817-6655-4433", resCode: "RES-202610-8806", arrivalTime: "18:10", graceCountdown: "Seated", billAmount: 1350000 },
+      { id: "G-04", area: "GARDEN", name: "Terrace Table 04", type: "Open Sky", capacity: "4 Pax", status: "AVAILABLE", deposit: 150000, guest: null, phone: null, resCode: null, arrivalTime: null, graceCountdown: null, billAmount: 0 },
+
+      // VIP Suites Area
+      { id: "VIP-01", area: "VIP", name: "VIP Suite 01 (The Imperial)", type: "Private Suite", capacity: "8-12 Pax", status: "RESERVED", deposit: 500000, guest: "Tedi Mahendra", phone: "0812-9999-8888", resCode: "RES-202610-8812", arrivalTime: "18:30", graceCountdown: 14, billAmount: 0 },
+      { id: "VIP-02", area: "VIP", name: "VIP Suite 02 (Botanical Lounge)", type: "Private Suite", capacity: "6-8 Pax", status: "BILLED", deposit: 500000, guest: "Kaesang Pangarep", phone: "0819-2233-4411", resCode: "RES-202610-8807", arrivalTime: "17:45", graceCountdown: "Seated", billAmount: 4850000 },
+      { id: "VIP-03", area: "VIP", name: "VIP Suite 03 (The Grand Salon)", type: "Boardroom Suite", capacity: "14-20 Pax", status: "AVAILABLE", deposit: 500000, guest: null, phone: null, resCode: null, arrivalTime: null, graceCountdown: null, billAmount: 0 }
+    ];
+
+    // Master Reservations Table State
+    let masterReservations = [
+      {
+        resCode: "RES-202610-8812",
+        token: "TABLE-PASS-9821",
+        guestName: "Tedi Mahendra",
+        phone: "0812-9999-8888",
+        email: "tedi.work@example.com",
+        tableId: "VIP-01",
+        tableName: "VIP Suite 01 (The Imperial)",
+        area: "VIP",
+        shift: "Dinner 1 (18:00 - 20:30)",
+        arrivalTime: "18:30",
+        pax: "8-12 Pax",
+        deposit: 500000,
+        status: "RESERVED",
+        notes: "Anniversary Dinner - Mohon complimentary cake candle & sommelier wine pairing"
+      },
+      {
+        resCode: "RES-202610-8804",
+        token: "TABLE-PASS-9822",
+        guestName: "Nicholas Saputra",
+        phone: "0813-4455-6677",
+        email: "nico.s@example.com",
+        tableId: "T-04",
+        tableName: "Meja 04 (Center Hall)",
+        area: "MAIN",
+        shift: "Dinner 1 (18:00 - 20:30)",
+        arrivalTime: "19:00",
+        pax: "4 Pax",
+        deposit: 100000,
+        status: "RESERVED",
+        notes: "Ulang tahun pasangan, minta meja dekorasi lilin ekstra"
+      },
+      {
+        resCode: "RES-202610-8805",
+        token: "TABLE-PASS-9823",
+        guestName: "Dian Sastrowardoyo",
+        phone: "0818-3344-5566",
+        email: "dian.s@example.com",
+        tableId: "G-01",
+        tableName: "Garden Cabana 01",
+        area: "GARDEN",
+        shift: "Dinner 1 (18:00 - 20:30)",
+        arrivalTime: "19:15",
+        pax: "4-6 Pax",
+        deposit: 150000,
+        status: "RESERVED",
+        notes: "Private family gathering, request high-chair bayi 1"
+      },
+      {
+        resCode: "RES-202610-8802",
+        token: "TABLE-PASS-9824",
+        guestName: "Bambang Soesatyo",
+        phone: "0811-2233-4455",
+        email: "bamsoet@example.com",
+        tableId: "T-02",
+        tableName: "Meja 02 (Center Hall)",
+        area: "MAIN",
+        shift: "Dinner 1 (18:00 - 20:30)",
+        arrivalTime: "18:15",
+        pax: "4 Pax",
+        deposit: 100000,
+        status: "BILLED",
+        notes: "Bisnis dinner, butuh invoice resmi perusahaan"
+      },
+      {
+        resCode: "RES-202610-8807",
+        token: "TABLE-PASS-9825",
+        guestName: "Kaesang Pangarep",
+        phone: "0819-2233-4411",
+        email: "kaesang@example.com",
+        tableId: "VIP-02",
+        tableName: "VIP Suite 02 (Botanical)",
+        area: "VIP",
+        shift: "Dinner 1 (18:00 - 20:30)",
+        arrivalTime: "17:45",
+        pax: "6-8 Pax",
+        deposit: 500000,
+        status: "BILLED",
+        notes: "Private dinner VIP, security check steril"
+      }
+    ];
+
+    // Host Check-in Logs
+    let hostAuditLogs = [
+      { time: "18:02:15", token: "TABLE-PASS-9820", guest: "Chelsea Islan", table: "Meja 03 (Booth)", status: "BERHASIL DUDUK (SEATED)" },
+      { time: "18:11:40", token: "TABLE-PASS-9819", guest: "Reza Rahadian", table: "Garden Cabana 03", status: "BERHASIL DUDUK (SEATED)" },
+      { time: "17:50:05", token: "INVALID-TOKEN", guest: "Unknown Guest", table: "-", status: "DITOLAK (TIDAK DITEMUKAN)" }
+    ];
+
+    // Current State Management
+    let currentAreaFilter = 'MAIN';
+    let currentActiveTableForModal = null;
+    let hourlyOccupancyChartInstance = null;
+    let revenueDistributionChartInstance = null;
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Toggle Sidebar Mobile
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    // Switch Navigation Tabs
+    function switchTab(tabKey) {
+      const titles = {
+        floorplan: "Live Denah & Meja Restoran",
+        scanner: "Host QR Barcode Check-in Scanner",
+        reservations: "Anti No-Show Reservations Database",
+        pos: "Kasir POS & Pelunasan Potong Deposit",
+        analytics: "Metrik Penjualan & Analisis No-Show"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "RestoDine VIP Admin";
+
+      ['floorplan', 'scanner', 'reservations', 'pos', 'analytics'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800 font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-emerald-400 bg-slate-800 border-l-4 border-resto-lightGreen shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'floorplan') renderFloorplanGrid();
+      if (tabKey === 'scanner') renderHostCheckinLogs();
+      if (tabKey === 'reservations') renderMasterReservationsTable();
+      if (tabKey === 'pos') renderPOSQueuedTables();
+      if (tabKey === 'analytics') initCharts();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    function changeHostRole() {
+      const role = document.getElementById('roleSelector').value;
+      showToast(`Mode akses beralih ke: ${role}`);
+    }
+
+    function switchServiceShift() {
+      const shift = document.getElementById('mainShiftSelector').value;
+      document.getElementById('sidebarShiftTag').innerText = shift;
+      showToast(`Shift operasional kini: ${shift}`);
+      renderFloorplanGrid();
+    }
+
+    // Initializer
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      renderFloorplanGrid();
+      renderHostCheckinLogs();
+      renderMasterReservationsTable();
+      renderPOSQueuedTables();
+      updateDashboardCounters();
+      lucide.createIcons();
+    });
+
+    // ==================== 1. FLOORPLAN INTERACTIVE CONTROLLER ====================
+    function changeFloorArea(areaKey) {
+      currentAreaFilter = areaKey;
+
+      const titles = {
+        MAIN: { subtitle: "MAIN DINING AREA • 6 TABLES", heading: "Denah Meja Utama (Main Dining Hall)" },
+        GARDEN: { subtitle: "ALFRESCO TERRACE • 4 CABANAS & HIGH-TOPS", heading: "Denah Meja Semi-Outdoor (Alfresco Terrace)" },
+        VIP: { subtitle: "VIP SUITES • 3 EXCLUSIVE BOARDROOMS", heading: "Denah Ruang Privat VIP (VIP Suites Room)" }
+      };
+
+      document.getElementById('activeAreaSubtitle').innerText = titles[areaKey].subtitle;
+      document.getElementById('activeAreaHeading').innerText = titles[areaKey].heading;
+
+      ['MAIN', 'GARDEN', 'VIP'].forEach(a => {
+        const btn = document.getElementById(`areaBtn-${a}`);
+        if (a === areaKey) {
+          btn.className = "flex-1 lg:flex-initial px-4 py-2 rounded-xl font-bold bg-white text-slate-900 shadow-sm transition";
+        } else {
+          btn.className = "flex-1 lg:flex-initial px-4 py-2 rounded-xl font-bold text-stone-600 hover:text-slate-900 transition";
+        }
+      });
+
+      renderFloorplanGrid();
+    }
+
+    function renderFloorplanGrid() {
+      const container = document.getElementById('floorplanGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const filteredTables = masterTables.filter(t => t.area === currentAreaFilter);
+
+      filteredTables.forEach(t => {
+        // Status Colors Configuration
+        let statusBadge = '';
+        let cardBorder = '';
+        let statusText = '';
+
+        if (t.status === 'AVAILABLE') {
+          statusBadge = 'bg-emerald-50 text-resto-green border border-emerald-200';
+          cardBorder = 'border-emerald-300 hover:border-resto-lightGreen';
+          statusText = 'TERSEDIA';
+        } else if (t.status === 'RESERVED') {
+          statusBadge = 'bg-resto-orangeBg text-resto-deepOrange border border-orange-200 animate-pulse';
+          cardBorder = 'border-resto-orange ring-1 ring-orange-300';
+          statusText = 'RESERVED (DP)';
+        } else if (t.status === 'SEATED') {
+          statusBadge = 'bg-blue-50 text-blue-700 border border-blue-200';
+          cardBorder = 'border-blue-300';
+          statusText = 'SEDANG SANTAP';
+        } else if (t.status === 'BILLED') {
+          statusBadge = 'bg-purple-50 text-purple-700 border border-purple-200 animate-bounce';
+          cardBorder = 'border-purple-300';
+          statusText = 'MENUNGGU KASIR';
+        } else if (t.status === 'DIRTY') {
+          statusBadge = 'bg-stone-100 text-stone-500 border border-stone-200';
+          cardBorder = 'border-stone-300 opacity-70';
+          statusText = 'DIRTY (CLEANING)';
+        }
+
+        const card = document.createElement('div');
+        card.onclick = () => openTableModal(t.id);
+        card.className = `p-5 rounded-3xl border-2 bg-white shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between select-none ${cardBorder}`;
+
+        let detailHtml = '';
+        if (t.guest) {
+          detailHtml = `
+            <div class="mt-3 p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+              <span class="text-[10px] text-stone-400 block font-mono">Tamu:</span>
+              <p class="font-bold text-slate-900 text-xs truncate font-sans">${t.guest}</p>
+              <div class="flex justify-between items-center text-[10px] text-stone-500 font-mono pt-1">
+                <span>Jam: ${t.arrivalTime}</span>
+                <span class="font-bold text-resto-deepOrange">DP: ${formatRupiah(t.deposit)}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          detailHtml = `
+            <div class="mt-3 p-3 bg-stone-50/50 rounded-2xl border border-dashed border-stone-200 text-center py-4 text-stone-400 text-xs">
+              Meja kosong siap digunakan
+            </div>
+          `;
+        }
+
+        // Grace Period Indicator
+        let graceHtml = '';
+        if (t.status === 'RESERVED' && typeof t.graceCountdown === 'number') {
+          graceHtml = `
+            <div class="flex items-center justify-between text-[10px] font-mono font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 mt-2">
+              <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Grace Period:</span>
+              <span>${t.graceCountdown} Menit</span>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-bold text-stone-400 font-mono">${t.id} • ${t.type}</span>
+                <h4 class="text-base font-extrabold text-slate-900 font-serif">${t.name}</h4>
+              </div>
+              <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded ${statusBadge}">
+                ${statusText}
+              </span>
+            </div>
+
+            <div class="text-[11px] text-stone-500 font-sans mt-0.5">
+              Kapasitas: <strong class="text-slate-800">${t.capacity}</strong>
+            </div>
+
+            ${detailHtml}
+            ${graceHtml}
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-[11px] font-mono">
+            <span class="text-stone-400">Tindakan:</span>
+            <span class="text-resto-green font-bold flex items-center gap-0.5">Atur Meja <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function autoRefreshFloor() {
+      showToast('Memperbarui status denah meja terkini...');
+      renderFloorplanGrid();
+      updateDashboardCounters();
+    }
+
+    // Table Modal Handlers
+    function openTableModal(tableId) {
+      const t = masterTables.find(x => x.id === tableId);
+      if (!t) return;
+
+      currentActiveTableForModal = t;
+      document.getElementById('modalTableTitle').innerText = `${t.name} (${t.type})`;
+      document.getElementById('modalTableCapacity').innerText = t.capacity;
+      document.getElementById('modalTableGuest').innerText = t.guest ? `${t.guest} (${t.phone || '-'})` : 'Tidak ada tamu (Meja Bebas)';
+      document.getElementById('modalTableDeposit').innerText = t.deposit ? formatRupiah(t.deposit) : 'Rp 0';
+      document.getElementById('modalTableGracePeriod').innerText = t.status === 'RESERVED' ? `${t.graceCountdown} Menit tersisa` : (t.status === 'SEATED' ? 'Tamu sudah duduk' : '-');
+
+      const badge = document.getElementById('modalTableStatusBadge');
+      badge.innerText = t.status;
+      badge.className = `font-bold px-2 py-0.5 rounded text-[10px] ${t.status === 'AVAILABLE' ? 'bg-emerald-100 text-emerald-800' : (t.status === 'RESERVED' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800')}`;
+
+      // Build Action Buttons
+      const actionsContainer = document.getElementById('modalTableActionsContainer');
+      actionsContainer.innerHTML = '';
+
+      if (t.status === 'AVAILABLE') {
+        actionsContainer.innerHTML = `
+          <button onclick="seatWalkinFromModal('${t.id}')" class="w-full bg-resto-orange hover:bg-resto-deepOrange text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+            <i data-lucide="user-plus" class="w-4 h-4"></i> Dudukkan Tamu Walk-in ke Meja Ini
+          </button>
+          <button onclick="setTableDirty('${t.id}')" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2 rounded-xl transition">
+            Tandai Meja Perlu Dibersihkan (Dirty)
+          </button>
+        `;
+      } else if (t.status === 'RESERVED') {
+        actionsContainer.innerHTML = `
+          <button onclick="seatReservedGuest('${t.id}')" class="w-full bg-resto-green hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+            <i data-lucide="user-check" class="w-4 h-4"></i> Konfirmasi Tamu Tiba & Duduk (Seated)
+          </button>
+          <button onclick="forfeitNoShowTable('${t.id}')" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold py-2 rounded-xl transition border border-rose-200">
+            Tamu Melewati 30 Menit (Forfeit No-Show Deposit)
+          </button>
+        `;
+      } else if (t.status === 'SEATED') {
+        actionsContainer.innerHTML = `
+          <button onclick="triggerBillTable('${t.id}')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+            <i data-lucide="receipt" class="w-4 h-4"></i> Tamu Minta Bill (Billed)
+          </button>
+        `;
+      } else if (t.status === 'BILLED') {
+        actionsContainer.innerHTML = `
+          <button onclick="openPOSTableModal('${t.id}')" class="w-full bg-resto-green hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+            <i data-lucide="calculator" class="w-4 h-4"></i> Buka Meja Kasir & Potong Deposit
+          </button>
+        `;
+      } else if (t.status === 'DIRTY') {
+        actionsContainer.innerHTML = `
+          <button onclick="setTableAvailable('${t.id}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Meja Selesai Dibersihkan (Ready)
+          </button>
+        `;
+      }
+
+      document.getElementById('tableActionModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeTableModal() {
+      document.getElementById('tableActionModal').classList.add('hidden');
+      currentActiveTableForModal = null;
+    }
+
+    function seatReservedGuest(tableId) {
+      const t = masterTables.find(x => x.id === tableId);
+      if (t) {
+        t.status = 'SEATED';
+        t.graceCountdown = 'Seated';
+        closeTableModal();
+        renderFloorplanGrid();
+        renderPOSQueuedTables();
+        updateDashboardCounters();
+        showToast(`Tamu ${t.guest} berhasil didudukkan di ${t.name}`);
+      }
+    }
+
+    function forfeitNoShowTable(tableId) {
+      const t = masterTables.find(x => x.id === tableId);
+      if (t) {
+        const confirmForfeit = window.confirm(`Apakah Anda yakin membatalkan reservasi ${t.guest} karena melewati 30 menit grace period? Deposit ${formatRupiah(t.deposit)} akan di-forfeit.`);
+        if (confirmForfeit) {
+          t.status = 'AVAILABLE';
+          t.guest = null;
+          t.phone = null;
+          t.resCode = null;
+          t.graceCountdown = null;
+          closeTableModal();
+          renderFloorplanGrid();
+          updateDashboardCounters();
+          showToast(`No-show tercatat. Meja ${t.name} dibuka kembali untuk umum.`);
+        }
+      }
+    }
+
+    function triggerBillTable(tableId) {
+      const t = masterTables.find(x => x.id === tableId);
+      if (t) {
+        t.status = 'BILLED';
+        if (!t.billAmount) t.billAmount = 1450000;
+        closeTableModal();
+        renderFloorplanGrid();
+        renderPOSQueuedTables();
+        updateDashboardCounters();
+        showToast(`Bill diminta untuk ${t.name}. Masuk antrean kasir POS.`);
+      }
+    }
+
+    function setTableDirty(tableId) {
+      const t = masterTables.find(x => x.id === tableId);
+      if (t) {
+        t.status = 'DIRTY';
+        closeTableModal();
+        renderFloorplanGrid();
+        showToast(`Meja ${t.name} ditandai butuh cleaning staff.`);
+      }
+    }
+
+    function setTableAvailable(tableId) {
+      const t = masterTables.find(x => x.id === tableId);
+      if (t) {
+        t.status = 'AVAILABLE';
+        closeTableModal();
+        renderFloorplanGrid();
+        updateDashboardCounters();
+        showToast(`Meja ${t.name} bersih & siap direservasi!`);
+      }
+    }
+
+    function openPOSTableModal(tableId) {
+      closeTableModal();
+      switchTab('pos');
+      const select = document.getElementById('posSelectTable');
+      select.value = tableId;
+      loadTableToPOS();
+    }
+
+    // ==================== 2. HOST CHECK-IN SCANNER SIMULATOR ====================
+    function setScannerVal(val) {
+      document.getElementById('scannerTokenInput').value = val;
+      executeHostScan();
+    }
+
+    function executeHostScan() {
+      const token = document.getElementById('scannerTokenInput').value.trim().toUpperCase();
+      const card = document.getElementById('hostScanFeedbackCard');
+      card.classList.remove('hidden');
+
+      const match = masterReservations.find(r => r.token.toUpperCase() === token || r.resCode.toUpperCase() === token);
+
+      if (!match) {
+        card.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-800">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> TOKEN RESERVASI TIDAK DITEMUKAN
+          </div>
+          <p class="text-xs font-sans">Kode tiket <strong>${token}</strong> tidak terdaftar dalam database sistem RestoDine VIP.</p>
+        `;
+        recordHostLog(token, "UNKNOWN", "-", "DITOLAK (INVALID TOKEN)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 space-y-3 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-emerald-800 flex items-center gap-1.5 font-serif">
+              <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i> DINING PASS TERVERIFIKASI
+            </span>
+            <span class="text-xs font-bold bg-resto-green text-white px-2 py-0.5 rounded">DEPOSIT LUNAS QRIS</span>
+          </div>
+          <div class="space-y-1 font-sans text-xs">
+            <p>Tamu Terhormat: <strong class="text-slate-900">${match.guestName}</strong> (${match.phone})</p>
+            <p>Alokasi Meja: <strong class="text-resto-green font-mono">${match.tableName}</strong> (${match.shift})</p>
+            <p class="text-resto-deepOrange italic font-medium">Catatan Khusus: ${match.notes}</p>
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-emerald-200 flex items-center justify-between font-mono">
+            <span>Saldo Kredit Deposit Anti No-Show:</span>
+            <strong class="text-base text-resto-deepOrange">${formatRupiah(match.deposit)} (100% Saldo Bill)</strong>
+          </div>
+          <button onclick="seatGuestFromScanner('${match.tableId}', '${match.guestName}')" class="w-full bg-resto-green hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-sm">
+            <i data-lucide="user-check" class="w-4 h-4"></i> Sambut & Dudukkan Tamu ke Meja
+          </button>
+        `;
+        recordHostLog(token, match.guestName, match.tableName, "BERHASIL VERIFIKASI");
+      }
+
+      lucide.createIcons();
+    }
+
+    function seatGuestFromScanner(tableId, guestName) {
+      const t = masterTables.find(x => x.id === tableId);
+      if (t) {
+        t.status = 'SEATED';
+        t.graceCountdown = 'Seated';
+        showToast(`Tamu ${guestName} resmi duduk di ${t.name}. Waiter & sommelier siap melayani.`);
+        renderFloorplanGrid();
+        renderPOSQueuedTables();
+        updateDashboardCounters();
+        switchTab('floorplan');
+      }
+    }
+
+    function recordHostLog(token, guest, table, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      hostAuditLogs.unshift({
+        time: timeStr,
+        token: token,
+        guest: guest,
+        table: table,
+        status: status
+      });
+      renderHostCheckinLogs();
+    }
+
+    function renderHostCheckinLogs() {
+      const list = document.getElementById('hostCheckinLogs');
+      if (!list) return;
+      list.innerHTML = '';
+
+      hostAuditLogs.slice(0, 7).forEach(l => {
+        const isOk = l.status.includes('BERHASIL');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-emerald-50/70 border-emerald-200 text-emerald-900" : "bg-rose-50 border-rose-200 text-rose-900");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs">${l.guest}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold opacity-80">${l.token}</span>
+            </div>
+            <span class="text-[10px] opacity-75">${l.table} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold">${l.status}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 3. RESERVATIONS MASTER TABLE ====================
+    function renderMasterReservationsTable(filteredList = null) {
+      const tbody = document.getElementById('masterReservationsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterReservations;
+      document.getElementById('reservationsCountLabel').innerText = `Menampilkan ${list.length} data reservasi tersimpan`;
+
+      list.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-stone-50 transition";
+
+        let statusBadge = '';
+        if (r.status === 'RESERVED') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-orange-100 text-orange-800 font-bold">RESERVED</span>';
+        } else if (r.status === 'SEATED') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-800 font-bold">SEATED</span>';
+        } else if (r.status === 'BILLED') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-100 text-purple-800 font-bold">BILLED</span>';
+        } else {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold">COMPLETED</span>';
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${r.resCode}<br><span class="text-[9px] text-stone-400 font-normal">Pass: ${r.token}</span></td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-800">${r.guestName}<br><span class="text-[10px] text-stone-400 font-mono font-normal">${r.phone}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700">${r.tableName}<br><span class="text-[10px] text-resto-green font-bold font-mono">${r.pax}</span></td>
+          <td class="py-3 px-4 font-mono text-slate-700">${r.shift}</td>
+          <td class="py-3 px-4 font-mono font-bold text-resto-deepOrange">${formatRupiah(r.deposit)}</td>
+          <td class="py-3 px-4 font-mono text-emerald-700 font-bold">30 Mins Grace</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="setScannerVal('${r.token}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 text-[10px] font-bold font-mono transition inline-flex items-center gap-1">
+              <i data-lucide="scan" class="w-3.5 h-3.5"></i> Host Scan
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterReservationsTable() {
+      const q = document.getElementById('resSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMasterReservationsTable();
+        return;
+      }
+      const filtered = masterReservations.filter(r => 
+        r.resCode.toLowerCase().includes(q) ||
+        r.guestName.toLowerCase().includes(q) ||
+        r.phone.toLowerCase().includes(q) ||
+        r.tableName.toLowerCase().includes(q) ||
+        r.token.toLowerCase().includes(q)
+      );
+      renderMasterReservationsTable(filtered);
+    }
+
+    function filterResStatus(statusKey) {
+      document.querySelectorAll('.res-status-btn').forEach(btn => {
+        if (btn.getAttribute('data-status') === statusKey) {
+          btn.className = "res-status-btn px-3.5 py-2 rounded-xl font-bold bg-slate-900 text-white transition";
+        } else {
+          btn.className = "res-status-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition";
+        }
+      });
+
+      if (statusKey === 'ALL') {
+        renderMasterReservationsTable();
+      } else {
+        renderMasterReservationsTable(masterReservations.filter(r => r.status === statusKey));
+      }
+    }
+
+    function exportReservationsCSV() {
+      let csv = "data:text/csv;charset=utf-8,Kode Reservasi,Token,Nama Tamu,WhatsApp,Meja,Shift,Deposit,Status\n";
+      masterReservations.forEach(r => {
+        csv += `"${r.resCode}","${r.token}","${r.guestName}","${r.phone}","${r.tableName}","${r.shift}","${r.deposit}","${r.status}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `RestoDine_Reservations_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 4. KASIR POS & POTONG DEPOSIT ====================
+    function renderPOSQueuedTables() {
+      const select = document.getElementById('posSelectTable');
+      const tbody = document.getElementById('posQueuedTablesBody');
+      if (!select || !tbody) return;
+
+      select.innerHTML = '';
+      tbody.innerHTML = '';
+
+      const billedOrSeated = masterTables.filter(t => t.status === 'BILLED' || t.status === 'SEATED');
+
+      if (billedOrSeated.length === 0) {
+        select.innerHTML = '<option value="">Tidak ada meja aktif</option>';
+        tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-stone-400">Belum ada meja yang meminta bill</td></tr>';
+        return;
+      }
+
+      billedOrSeated.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.innerText = `${t.id} - ${t.name} (${t.guest || 'Tamu Walk-in'})`;
+        select.appendChild(opt);
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-stone-50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-3 font-bold text-slate-900">${t.id}</td>
+          <td class="py-3 px-3 font-sans font-bold text-slate-800">${t.guest || 'Tamu Walk-in'}</td>
+          <td class="py-3 px-3 text-stone-500">${t.area}</td>
+          <td class="py-3 px-3 text-resto-deepOrange font-bold">${formatRupiah(t.deposit || 0)}</td>
+          <td class="py-3 px-3 text-center">
+            <button onclick="openPOSTableModal('${t.id}')" class="px-2.5 py-1 bg-resto-green hover:bg-emerald-700 text-white font-bold rounded-lg text-[10px] transition font-sans">
+              Hitung Bill
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      loadTableToPOS();
+    }
+
+    function loadTableToPOS() {
+      const tableId = document.getElementById('posSelectTable').value;
+      const t = masterTables.find(x => x.id === tableId);
+      if (!t) return;
+
+      if (t.billAmount) {
+        document.getElementById('posFoodSubtotalInput').value = t.billAmount;
+      } else {
+        document.getElementById('posFoodSubtotalInput').value = 1450000;
+      }
+      calculatePOSBill();
+    }
+
+    function calculatePOSBill() {
+      const tableId = document.getElementById('posSelectTable').value;
+      const t = masterTables.find(x => x.id === tableId);
+
+      const subtotal = parseFloat(document.getElementById('posFoodSubtotalInput').value) || 0;
+      const tax = subtotal * 0.15;
+      const gross = subtotal + tax;
+      const depositCredit = t && t.deposit ? t.deposit : 0;
+      const netTotal = gross - depositCredit > 0 ? gross - depositCredit : 0;
+
+      document.getElementById('posCalcSubtotal').innerText = formatRupiah(subtotal);
+      document.getElementById('posCalcTax').innerText = formatRupiah(tax);
+      document.getElementById('posCalcDepositCredit').innerText = `- ${formatRupiah(depositCredit)}`;
+      document.getElementById('posCalcGrandTotal').innerText = formatRupiah(netTotal);
+
+      return { subtotal, tax, gross, depositCredit, netTotal };
+    }
+
+    function executePOSCloseout() {
+      const tableId = document.getElementById('posSelectTable').value;
+      const t = masterTables.find(x => x.id === tableId);
+      if (!t) {
+        alert("Pilih meja terlebih dahulu.");
+        return;
+      }
+
+      const calc = calculatePOSBill();
+
+      // Setup Printable Thermal Receipt
+      document.getElementById('prnReceiptCode').innerText = "BILL-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('prnTable').innerText = `${t.id} (${t.name})`;
+      document.getElementById('prnGuest').innerText = t.guest || "Tamu Walk-in";
+      document.getElementById('prnSubtotal').innerText = formatRupiah(calc.subtotal);
+      document.getElementById('prnTax').innerText = formatRupiah(calc.tax);
+      document.getElementById('prnGrossTotal').innerText = formatRupiah(calc.gross);
+      document.getElementById('prnDepositDeduction').innerText = `- ${formatRupiah(calc.depositCredit)}`;
+      document.getElementById('prnNetTotal').innerText = formatRupiah(calc.netTotal);
+
+      // Reset table status to DIRTY
+      t.status = 'DIRTY';
+      t.guest = null;
+      t.phone = null;
+      t.resCode = null;
+      t.billAmount = 0;
+      t.graceCountdown = null;
+
+      renderFloorplanGrid();
+      renderPOSQueuedTables();
+      updateDashboardCounters();
+
+      const printNow = window.confirm(`Pembayaran pelunasan ${formatRupiah(calc.netTotal)} berhasil! Cetak struk kasir sekarang?`);
+      if (printNow) {
+        window.print();
+      }
+      showToast(`Meja ${t.name} ditutup bill dan dialihkan ke cleaning staff.`);
+    }
+
+    // ==================== 5. MODAL WALK-IN HANDLER ====================
+    function openWalkinModal() {
+      const select = document.getElementById('walkinAvailableTableSelect');
+      select.innerHTML = '';
+
+      const freeTables = masterTables.filter(t => t.status === 'AVAILABLE');
+      if (freeTables.length === 0) {
+        alert("Saat ini seluruh meja sedang penuh atau terisi.");
+        return;
+      }
+
+      freeTables.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.innerText = `${t.id} - ${t.name} (${t.capacity})`;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('walkinModal').classList.remove('hidden');
+    }
+
+    function closeWalkinModal() {
+      document.getElementById('walkinModal').classList.add('hidden');
+    }
+
+    function confirmSeatWalkin() {
+      const name = document.getElementById('walkinGuestName').value.trim();
+      const pax = document.getElementById('walkinPaxCount').value;
+      const tableId = document.getElementById('walkinAvailableTableSelect').value;
+
+      if (!name) {
+        alert("Harap isi nama tamu walk-in.");
+        return;
+      }
+
+      const t = masterTables.find(x => x.id === tableId);
+      if (t) {
+        t.status = 'SEATED';
+        t.guest = name;
+        t.phone = "Walk-in Guest";
+        t.deposit = 0; // Walk-in tidak melalui deposit online
+        t.arrivalTime = new Date().toTimeString().split(' ')[0].substring(0, 5);
+        t.graceCountdown = 'Seated';
+
+        closeWalkinModal();
+        renderFloorplanGrid();
+        renderPOSQueuedTables();
+        updateDashboardCounters();
+        showToast(`Tamu walk-in ${name} (${pax} pax) berhasil didudukkan di ${t.name}`);
+      }
+    }
+
+    function seatWalkinFromModal(tableId) {
+      closeTableModal();
+      openWalkinModal();
+      document.getElementById('walkinAvailableTableSelect').value = tableId;
+    }
+
+    // ==================== 6. CHARTS & ANALYTICS ====================
+    function initCharts() {
+      const ctxOcc = document.getElementById('hourlyOccupancyChart');
+      if (ctxOcc) {
+        hourlyOccupancyChartInstance = new Chart(ctxOcc, {
+          type: 'bar',
+          data: {
+            labels: ['12:00', '13:00', '14:00', '18:00', '19:00', '20:00', '21:00', '22:00'],
+            datasets: [
+              {
+                label: 'Main Hall Tables',
+                data: [4, 5, 3, 6, 6, 6, 5, 4],
+                backgroundColor: '#059669',
+                borderRadius: 6
+              },
+              {
+                label: 'VIP Suites Room',
+                data: [1, 2, 1, 3, 3, 3, 2, 1],
+                backgroundColor: '#f97316',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 7,
+                ticks: { stepSize: 1, color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#f1f5f9' }
+              },
+              x: {
+                ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      const ctxRev = document.getElementById('revenueDistributionChart');
+      if (ctxRev) {
+        revenueDistributionChartInstance = new Chart(ctxRev, {
+          type: 'doughnut',
+          data: {
+            labels: ['Gastronomy Courses', 'Wine & Pairing', 'VIP Suites Fee'],
+            datasets: [{
+              data: [62, 26, 12],
+              backgroundColor: ['#059669', '#f97316', '#10b981'],
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            },
+            cutout: '72%'
+          }
+        });
+      }
+    }
+
+    // Counters Updater
+    function updateDashboardCounters() {
+      const freeCount = masterTables.filter(t => t.status === 'AVAILABLE').length;
+      const billedCount = masterTables.filter(t => t.status === 'BILLED').length;
+      const bookedCount = masterReservations.filter(r => r.status === 'RESERVED').length;
+
+      document.getElementById('badgeAvailableTables').innerText = `${freeCount} Free`;
+      document.getElementById('badgeBilledTables').innerText = `${billedCount} Billed`;
+      document.getElementById('badgePendingReservations').innerText = `${bookedCount} Booked`;
+      document.getElementById('posActiveTablesCount').innerText = `${billedCount} Meja Billed`;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MaterialHub Bangunan - B2B Procurement & Logistics Admin Dashboard</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            saas: {
+              canvas: '#F8FAFC',
+              dark: '#1E293B',
+              darker: '#0F172A',
+              card: '#FFFFFF',
+              border: '#E2E8F0',
+              borderLight: '#F1F5F9',
+              blue: '#2563EB',
+              blueHover: '#1D4ED8',
+              blueMuted: '#EFF6FF',
+              slateText: '#64748B',
+              emerald: '#059669',
+              emeraldBg: '#ECFDF5',
+              amber: '#D97706',
+              amberBg: '#FFFBEB',
+              rose: '#E11D48',
+              roseBg: '#FFF1F2',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94A3B8;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2563EB;
+    }
+
+    .glass-header {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .grid-pattern {
+      background-color: #F8FAFC;
+      background-image: radial-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    /* Print View - Commercial Quotation & Delivery Order */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableQuotationModal, #printableQuotationModal * {
+        visibility: visible !important;
+      }
+      #printableQuotationModal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #1E293B !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 99999;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-saas-canvas text-saas-dark antialiased font-sans min-h-screen flex selection:bg-saas-blueMuted selection:text-saas-blue overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-saas-dark border-r border-slate-700 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-slate-700/80 bg-saas-darker">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-saas-blue flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0">
+            <i data-lucide="layers" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-display">
+              MATERIAL<span class="text-blue-400">HUB</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-slate-800 text-blue-300 border border-blue-500/30 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">PROCUREMENT OS</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Warehouse Dispatch Hub Status Indicator -->
+      <div class="px-5 py-3 border-b border-slate-700 bg-slate-900/50">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-300">
+          <span class="flex items-center gap-1.5 truncate">
+            <i data-lucide="building-2" class="w-3.5 h-3.5 text-blue-400"></i> Gudang Pulogadung Hub
+          </span>
+          <span class="text-emerald-400 font-bold" id="sidebarStockStatus">SNI CERTIFIED</span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1 font-mono">
+          <span>Timbangan Jembatan:</span>
+          <span class="text-blue-300 font-bold">120 Ton Calibrated</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-white bg-saas-blue shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Overview & Analytics</span>
+        </button>
+
+        <button onclick="switchTab('rfq')" id="tab-rfq" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-slate-800">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+          <span>Manajemen RFQ & PO</span>
+          <span class="ml-auto bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgeActiveRFQ">7 Proyek</span>
+        </button>
+
+        <button onclick="switchTab('inventory')" id="tab-inventory" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-slate-800">
+          <i data-lucide="boxes" class="w-4 h-4"></i>
+          <span>Stok Material & Tonase</span>
+          <span class="ml-auto bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] px-1.5 py-0.5 rounded" id="badgeLowStockAlert">1 Reorder</span>
+        </button>
+
+        <button onclick="switchTab('fleet')" id="tab-fleet" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-slate-800">
+          <i data-lucide="truck" class="w-4 h-4"></i>
+          <span>Armada & Jembatan Timbang</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 ml-auto animate-ping"></span>
+        </button>
+
+        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-slate-800">
+          <i data-lucide="scan" class="w-4 h-4"></i>
+          <span>Scanner Surat Jalan (DO)</span>
+        </button>
+
+        <button onclick="switchTab('finance')" id="tab-finance" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-slate-800">
+          <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+          <span>Finance & Kasir SCF</span>
+          <span class="ml-auto bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] px-1.5 py-0.5 rounded font-bold" id="badgePendingDP">4 Alokasi</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Procurement Officer Profile Widget -->
+    <div class="p-4 border-t border-slate-700 bg-saas-darker">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-blue-400 font-bold text-xs font-mono shadow-sm">
+          MH
+        </div>
+        <div class="flex-1 min-w-0 font-sans">
+          <p class="text-xs font-bold text-white truncate" id="profileOfficerName">Ir. Tedi Mahendra, S.T.</p>
+          <p class="text-[10px] text-slate-400 font-mono truncate">Lead Procurement & Logistics</p>
+        </div>
+        <button onclick="showToast('Sertifikasi ISO 9001 & SNI aktif')" title="Status Mutu" class="text-slate-400 hover:text-blue-400 transition">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Backdrop -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-saas-dark text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-slate-700 font-mono gap-1">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-saas-blue text-white">B2B ENTERPRISE LOGISTICS</span>
+        <span>Suplai Langsung Pabrik Semen, Krakatau Steel, & Broco AAC • Armada Tronton 30-Ton Ready</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-400">
+        <span>Pengiriman Hari Ini: <strong class="text-emerald-400 font-mono" id="topTonnageShipped">248.5 Tonase</strong></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span>On-Time SLA: <strong class="text-white">99.2%</strong></span>
+      </div>
+    </div>
+
+    <!-- Header Navigation Bar -->
+    <header class="glass-header sticky top-0 z-30 border-b border-saas-border px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-700 hover:text-saas-blue p-1.5 rounded-lg bg-slate-100">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-saas-dark font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
+            <span id="currentViewTitle">Overview & Procurement Analytics</span>
+          </h1>
+          <p class="text-saas-slateText text-xs hidden sm:block font-mono">B2B Material Supply Chain Platform, Weighbridge Dispatcher & Commercial Billing</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions Right -->
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+        <!-- New RFQ Generator Modal Trigger -->
+        <button onclick="openNewRfqModal()" class="bg-saas-blue hover:bg-saas-blueHover text-white font-bold px-3.5 sm:px-4 py-2.5 rounded-xl transition shadow-md shadow-blue-500/20 flex items-center gap-1.5 active:scale-95 font-sans">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>+ Buat RFQ Kontraktor</span>
+        </button>
+
+        <!-- Notification Trigger -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-white border border-saas-border text-slate-600 hover:text-saas-blue flex items-center justify-center transition shadow-sm">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-saas-blue rounded-full animate-ping"></span>
+          </button>
+
+          <!-- Notification Dropdown Panel -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-saas-border p-3 text-slate-800 z-50 font-sans">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2 px-1">
+              <span class="font-bold text-xs font-display">Notifikasi Logistik & RFQ</span>
+              <span class="text-[10px] font-mono text-saas-blue font-bold">Auto-Sync</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+              <div class="p-2.5 bg-saas-blueMuted rounded-xl border border-blue-200">
+                <p class="font-bold text-slate-900">DP 30% Terverifikasi: Rp 88.500.000</p>
+                <p class="text-slate-500 text-[10px] font-mono">PO-MH-8891 • PT Waskita Precast</p>
+                <span class="text-[9px] text-saas-blue font-bold font-mono">3 menit lalu</span>
+              </div>
+              <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+                <p class="font-bold text-slate-900">Jembatan Timbang Tronton #B9128UYX</p>
+                <p class="text-slate-500 text-[10px] font-mono">Gross: 42.8 Ton • Net: 29.4 Ton Semen</p>
+                <span class="text-[9px] text-amber-700 font-bold font-mono">14 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1 grid-pattern">
+
+      <!-- ==================== VIEW 1: OVERVIEW & PROCUREMENT ANALYTICS ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- KPI Metrics Grid (4 Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Gross Value Contract -->
+          <div class="bg-white p-5 rounded-3xl border border-saas-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-saas-slateText font-mono">NILAI KONTRAK BULAN INI</span>
+              <div class="w-8 h-8 rounded-xl bg-saas-blueMuted text-saas-blue flex items-center justify-center font-bold border border-blue-200">
+                <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-saas-dark font-display block" id="kpiGrossRevenue">Rp 3.420.500.000</span>
+              <p class="text-emerald-600 text-[11px] font-semibold flex items-center gap-1 mt-1 font-mono">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +24.8% vs bulan lalu
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2: Active RFQ under review -->
+          <div class="bg-white p-5 rounded-3xl border border-saas-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-saas-slateText font-mono">RFQ PROYEK AKTIF</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-200">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-saas-dark font-display block" id="kpiActiveRFQCount">18 Proyek PO</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">7 Kontraktor BUMN • 11 Swasta</p>
+            </div>
+          </div>
+
+          <!-- Card 3: Ready Tonage in Warehouses -->
+          <div class="bg-white p-5 rounded-3xl border border-saas-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-saas-slateText font-mono">STOK READY GUDANG SENTRAL</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-200">
+                <i data-lucide="boxes" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-saas-dark font-display block" id="kpiReadyTonage">1.840 Ton</span>
+              <p class="text-emerald-700 text-[11px] font-mono mt-1 font-semibold">100% Sertifikasi SNI Penuh</p>
+            </div>
+          </div>
+
+          <!-- Card 4: Active Fleet Dispatched -->
+          <div class="bg-white p-5 rounded-3xl border border-saas-border shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-saas-slateText font-mono">ARMADA LOGISTIK ON-DUTY</span>
+              <div class="w-8 h-8 rounded-xl bg-slate-900 text-blue-400 flex items-center justify-center font-bold">
+                <i data-lucide="truck" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-saas-dark font-display block" id="kpiActiveFleet">38 / 45 Truk</span>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mt-2">
+                <div class="bg-saas-blue h-full rounded-full" style="width: 84.4%"></div>
+              </div>
+              <p class="text-slate-400 text-[10px] font-mono mt-1">16 Tronton • 22 CDD Double</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Monthly Procurement Volume by Category (8 Cols) -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-saas-border shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-saas-border pb-3">
+              <div>
+                <h3 class="font-bold text-base text-saas-dark font-display">Volume Tonase Pengadaan per Kategori Material</h3>
+                <p class="text-xs text-saas-slateText font-mono">Semen PCC vs Besi Beton Ulir vs Bata Ringan AAC vs Baja C75</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-saas-blue"></span> Semen PCC
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slate-800"></span> Besi Baja SNI
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Bata Ringan
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="procurementVolumeChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Payment & Financing Scheme Doughnut (4 Cols) -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-saas-border shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-saas-border pb-3">
+              <h3 class="font-bold text-base text-saas-dark font-display">Skema Pembiayaan Kontrak</h3>
+              <p class="text-xs text-saas-slateText font-mono">DP 30% vs Supply Chain Financing (SCF 30 Hari)</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="financingSchemeChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-saas-slateText space-y-1 border-t border-saas-border">
+              <div class="flex justify-between">
+                <span>DP 30% Alokasi + Pelunasan:</span>
+                <strong class="text-saas-dark">55% (Rp 1.88 M)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>SCF Tempo 30 Hari B2B:</span>
+                <strong class="text-saas-blue">32% (Rp 1.09 M)</strong>
+              </div>
+              <div class="flex justify-between">
+                <span>Cash Before Delivery (CBD):</span>
+                <strong class="text-emerald-700">13% (Rp 444 Jt)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Weighbridge & Dispatch Live Monitor Strip -->
+        <div class="bg-saas-dark text-white rounded-3xl p-6 sm:p-7 border border-slate-700 shadow-xl space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-blue-400 text-xs font-mono uppercase font-bold tracking-widest">LIVE WEIGHBRIDGE & TRUCK DISPATCHER</span>
+              <h3 class="text-lg font-bold font-display mt-0.5">Pantauan Timbangan Digital & Surat Jalan Aktif</h3>
+            </div>
+            <button onclick="switchTab('fleet')" class="bg-slate-800 hover:bg-slate-700 text-xs text-blue-300 px-3.5 py-2 rounded-xl border border-slate-700 transition flex items-center gap-1.5 font-mono">
+              <span>Buka Terminal Timbangan Jembatan</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-blue-400"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="weighbridgeLiveStrip">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- Recent RFQ Submissions Quick Access Table -->
+        <div class="bg-white rounded-3xl border border-saas-border shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-saas-border pb-4">
+            <div>
+              <h3 class="font-bold text-base text-saas-dark font-display">Antrean RFQ Penawaran Harga Proyek Terkini</h3>
+              <p class="text-xs text-saas-slateText font-mono">Daftar PO kontraktor yang membutuhkan validasi penawaran dan penjadwalan armada</p>
+            </div>
+            <button onclick="switchTab('rfq')" class="text-xs font-bold text-saas-blue hover:text-saas-blueHover transition flex items-center gap-1 font-mono">
+              Kelola Seluruh RFQ Proyek <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-saas-border">
+                <tr>
+                  <th class="py-3 px-4">KODE RFQ & PO</th>
+                  <th class="py-3 px-4">KONTRAKTOR / PT</th>
+                  <th class="py-3 px-4">TITIK LOKASI PROYEK</th>
+                  <th class="py-3 px-4">ESTIMASI TONASE</th>
+                  <th class="py-3 px-4">NILAI KONTRAK</th>
+                  <th class="py-3 px-4">DP 30%</th>
+                  <th class="py-3 px-4">STATUS ALOKASI</th>
+                  <th class="py-3 px-4 text-center">AKSI DOKUMEN</th>
+                </tr>
+              </thead>
+              <tbody id="overviewRfqTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: RFQ & PO MANAGEMENT HUB ==================== -->
+      <section id="view-rfq" class="hidden space-y-6">
+        
+        <!-- Search & Filter Controls -->
+        <div class="bg-white p-5 rounded-3xl border border-saas-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+            <input type="text" id="rfqSearchInput" onkeyup="filterRfqTable()" placeholder="Cari PT, Kode RFQ, Proyek..." class="w-full pl-9 pr-3 py-2.5 bg-saas-canvas border border-saas-border rounded-xl text-saas-dark focus:outline-none focus:ring-2 focus:ring-saas-blue" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button onclick="filterRfqStatus('ALL')" class="rfq-filter-btn px-3.5 py-2 rounded-xl font-bold bg-saas-dark text-white transition" data-status="ALL">Semua</button>
+            <button onclick="filterRfqStatus('DP_VERIFIED')" class="rfq-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-status="DP_VERIFIED">DP 30% Terkunci</button>
+            <button onclick="filterRfqStatus('DISPATCHED')" class="rfq-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-status="DISPATCHED">Dalam Pengiriman</button>
+            <button onclick="filterRfqStatus('SCF_30')" class="rfq-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-status="SCF_30">Tempo SCF 30 Hari</button>
+            <button onclick="filterRfqStatus('COMPLETED')" class="rfq-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-status="COMPLETED">Selesai Drop</button>
+          </div>
+        </div>
+
+        <!-- Master RFQ Table -->
+        <div class="bg-white rounded-3xl border border-saas-border shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-saas-border pb-4">
+            <div>
+              <h3 class="font-bold text-base text-saas-dark font-display">Database Procurement Kontraktor B2B</h3>
+              <p class="text-xs text-saas-slateText font-mono" id="rfqTableCountText">Menampilkan seluruh data RFQ aktif</p>
+            </div>
+            <button onclick="exportRfqToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-saas-border">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-saas-border">
+                <tr>
+                  <th class="py-3 px-4">KODE RFQ & DO</th>
+                  <th class="py-3 px-4">KONTRAKTOR / PT</th>
+                  <th class="py-3 px-4">MATERIAL & RINCIAN</th>
+                  <th class="py-3 px-4">AKSES ARMADA</th>
+                  <th class="py-3 px-4">TOTAL KONTRAK</th>
+                  <th class="py-3 px-4">DP 30%</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-center">AKSI PROFORMA</th>
+                </tr>
+              </thead>
+              <tbody id="masterRfqTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: WAREHOUSE STOCK & TONNAGE MATRIX ==================== -->
+      <section id="view-inventory" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-saas-border shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-saas-dark font-display">Monitoring Stok Material Konstruksi & Sertifikasi SNI/TKDN</h3>
+            <p class="text-xs text-saas-slateText font-mono">Pantau tonase gudang, alokasi bay, dan toleransi sertifikasi resmi langsung dari pabrikan</p>
+          </div>
+          <button onclick="openRestockModal()" class="bg-saas-blue hover:bg-saas-blueHover text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-blue-500/20">
+            <i data-lucide="plus" class="w-4 h-4"></i> + Input Penerimaan Material Pabrik
+          </button>
+        </div>
+
+        <!-- Inventory Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="warehouseInventoryGrid">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: LOGISTICS FLEET & WEIGHBRIDGE DISPATCHING ==================== -->
+      <section id="view-fleet" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Jembatan Timbang Digital Console (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-saas-border shadow-sm space-y-6 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-saas-border pb-4">
+              <div>
+                <h3 class="font-bold text-base text-saas-dark font-display flex items-center gap-2">
+                  <i data-lucide="scale" class="w-5 h-5 text-saas-blue"></i>
+                  Terminal Jembatan Timbang Digital (120-Ton Scale)
+                </h3>
+                <p class="text-xs text-saas-slateText font-mono">Pencatatan berat kotor (Gross), tara truk (Tare), dan berat bersih muatan (Netto)</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> SENSOR AKTIF
+              </span>
+            </div>
+
+            <!-- Digital Weigh Display UI -->
+            <div class="bg-saas-dark rounded-2xl p-6 border border-slate-700 text-center relative overflow-hidden flex flex-col items-center justify-center">
+              <div class="flex items-center justify-between w-full text-slate-400 mb-2">
+                <span>INDICATOR MODEL: TOLEDO 8142</span>
+                <span class="text-emerald-400 font-bold">CALIBRATED BMKG</span>
+              </div>
+              <div class="bg-slate-900 px-8 py-4 rounded-xl border border-slate-800 shadow-inner w-full">
+                <span class="text-4xl sm:text-5xl font-black text-emerald-400 font-mono tracking-wider" id="weighbridgeDigitalDisplay">42.850 KG</span>
+                <span class="block text-xs text-slate-400 mt-1">BERAT KOTOR TRUK + MUATAN (GROSS WEIGHT)</span>
+              </div>
+            </div>
+
+            <!-- Weighbridge Calculation Form -->
+            <div class="space-y-3 font-sans">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1 font-mono">Pilih Surat Jalan (DO) Tujuan *</label>
+                  <select id="weighbridgeDoSelect" onchange="loadDoToWeighbridge()" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-saas-dark font-mono font-bold focus:outline-none focus:ring-2 focus:ring-saas-blue">
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1 font-mono">Nomor Polisi Truk *</label>
+                  <input type="text" id="weighPlateInput" value="B 9128 UYX" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-saas-dark font-mono font-bold uppercase focus:outline-none focus:ring-2 focus:ring-saas-blue" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3 font-mono text-xs">
+                <div>
+                  <label class="block font-bold text-slate-600 mb-1">Gross (Kg):</label>
+                  <input type="number" id="weighGrossInput" oninput="calculateNetWeight()" value="42850" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2 font-bold text-saas-dark focus:ring-1 focus:ring-saas-blue" />
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-600 mb-1">Tare Kosong (Kg):</label>
+                  <input type="number" id="weighTareInput" oninput="calculateNetWeight()" value="13450" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2 font-bold text-slate-500 focus:ring-1 focus:ring-saas-blue" />
+                </div>
+                <div>
+                  <label class="block font-bold text-emerald-700 mb-1">Netto Muatan (Kg):</label>
+                  <input type="number" id="weighNettoInput" readonly value="29400" class="w-full bg-emerald-50 border border-emerald-200 rounded-xl p-2 font-bold text-emerald-800" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 font-mono">Nama Driver & Catatan Segel Muatan:</label>
+                <input type="text" id="weighDriverNotes" value="Sopir: Pak Joko Susilo • Segel Terpal Kencang & Surat Jalan Sah" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-saas-blue" />
+              </div>
+
+              <button onclick="saveWeighbridgeTicket()" class="w-full bg-saas-blue hover:bg-saas-blueHover text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 font-sans">
+                <i data-lucide="check-circle" class="w-4 h-4"></i> Sahkan Tiket Timbang & Terbitkan Surat Jalan Keluar
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Active Fleet Status (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-saas-border shadow-sm space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-saas-border pb-3">
+              <h3 class="font-bold text-sm text-saas-dark font-display">Status Armada Truk Pengangkut</h3>
+              <span class="text-[10px] text-slate-400">Live GPS Fleet</span>
+            </div>
+
+            <div class="space-y-3" id="fleetTruckListContainer">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: OPTICAL DO SCANNER SIMULATOR ==================== -->
+      <section id="view-scanner" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Scanner Simulator (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-saas-border shadow-sm space-y-6 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-saas-border pb-4">
+              <div>
+                <h3 class="font-bold text-base text-saas-dark font-display flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-saas-blue"></i>
+                  Delivery Order (DO) Site Gate Scanner
+                </h3>
+                <p class="text-xs text-saas-slateText font-mono">Pindai barcode surat jalan saat truk tiba di pintu gerbang pos keamanan proyek</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GATE OPEN
+              </span>
+            </div>
+
+            <!-- Optical Reader UI Graphic -->
+            <div class="bg-saas-dark rounded-2xl p-8 border border-slate-700 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-56 h-36 border-2 border-dashed border-blue-400 rounded-2xl relative flex items-center justify-center p-4 bg-slate-800/40">
+                <div class="w-full h-0.5 bg-blue-400 absolute top-1/2 -translate-y-1/2 shadow-lg shadow-blue-400 animate-pulse"></div>
+                <i data-lucide="qr-code" class="w-16 h-16 text-slate-500 opacity-60"></i>
+              </div>
+              <p class="text-slate-300 text-xs font-mono mt-4">Arahkan Barcode Surat Jalan DO (Cth: <strong>DO-8891-B2B</strong>)</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-slate-700 font-sans">Input Manual Nomor Token Surat Jalan:</label>
+              <div class="flex gap-2">
+                <input type="text" id="doScanInput" value="DO-8891-B2B" placeholder="Masukkan token surat jalan..." class="flex-1 bg-saas-canvas px-4 py-2.5 rounded-xl border border-saas-border font-bold text-saas-dark uppercase focus:outline-none focus:ring-2 focus:ring-saas-blue" />
+                <button onclick="executeDOScan()" class="bg-saas-blue hover:bg-saas-blueHover text-white font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 font-sans">
+                  <i data-lucide="check" class="w-4 h-4"></i> Validasi Gerbang
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-400 font-sans">Preset token pengujian cepat: 
+                <span onclick="setScannerVal('DO-8891-B2B')" class="underline cursor-pointer text-saas-blue font-mono font-bold">DO-8891-B2B (Waskita - Tronton Semen)</span> • 
+                <span onclick="setScannerVal('DO-8892-B2B')" class="underline cursor-pointer text-emerald-700 font-mono font-bold">DO-8892-B2B (Adhi Karya - Besi D16 SNI)</span> •
+                <span onclick="setScannerVal('INVALID-DO-000')" class="underline cursor-pointer text-rose-600 font-mono font-bold">INVALID-DO-000 (Ditolak)</span>
+              </p>
+            </div>
+
+            <!-- Scanner Feedback Card -->
+            <div id="doScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Live Site Gate Delivery Logs (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-saas-border shadow-sm space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-saas-border pb-3">
+              <h3 class="font-bold text-sm text-saas-dark font-display">Log Penerimaan Material di Proyek</h3>
+              <span class="text-[10px] text-slate-400">Live Timestamp</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto" id="gateScanAuditLogs">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 6: FINANCE, SCF & KASIR SETTLEMENT ==================== -->
+      <section id="view-finance" class="hidden space-y-6">
+        
+        <!-- Shift Financial Overview Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-saas-border shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">TOTAL OMSET MATERIAL BULAN INI</span>
+            <span class="text-2xl font-black text-saas-dark font-mono block mt-2">Rp 3.420.500.000</span>
+            <p class="text-slate-400 text-[11px] font-mono mt-1">18 Kontrak Berjalan</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-saas-border shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">UANG MUKA DP 30% TERLUNASI</span>
+            <span class="text-2xl font-black text-saas-blue font-mono block mt-2">Rp 1.026.150.000</span>
+            <p class="text-emerald-700 text-[11px] font-mono mt-1">Masuk Escrow BCA MaterialHub</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-saas-border shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">PIUTANG TEMPO B2B (SCF 30 HARI)</span>
+            <span class="text-2xl font-black text-amber-600 font-mono block mt-2" id="financeDueSummaryCard">Rp 2.394.350.000</span>
+            <p class="text-amber-700 text-[11px] font-mono mt-1">Dijamin Bank Mandiri & BNI Factoring</p>
+          </div>
+        </div>
+
+        <!-- Master Finance Reconciliation Table -->
+        <div class="bg-white rounded-3xl border border-saas-border shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-saas-border pb-4">
+            <div>
+              <h3 class="font-bold text-base text-saas-dark font-display">Jurnal Faktur Komersial & Rekonsiliasi SCF</h3>
+              <p class="text-xs text-saas-slateText font-mono">Pencatatan pembayaran uang muka DP 30%, penarikan SCF B2B, dan e-Faktur PPN 11%</p>
+            </div>
+            <button onclick="exportRfqToCSV()" class="bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+              <i data-lucide="download" class="w-4 h-4 text-blue-400"></i> Ekspor Jurnal Akuntansi
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-saas-border">
+                <tr>
+                  <th class="py-3 px-4">KODE INVOICE</th>
+                  <th class="py-3 px-4">KONTRAKTOR / PT</th>
+                  <th class="py-3 px-4">PROYEK</th>
+                  <th class="py-3 px-4">NILAI KONTRAK</th>
+                  <th class="py-3 px-4">DP 30%</th>
+                  <th class="py-3 px-4">SISA TEMPO (TOP)</th>
+                  <th class="py-3 px-4">METODE BAYAR</th>
+                  <th class="py-3 px-4 text-center">FAKTUR SAH</th>
+                </tr>
+              </thead>
+              <tbody id="financeTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: PRINTABLE PROFORMA QUOTATION (PDF) ==================== -->
+  <div id="quotationPrintModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full border border-saas-border shadow-2xl p-6 sm:p-9 space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Top Action Bar -->
+      <div class="flex items-center justify-between border-b border-saas-border pb-4 no-print font-mono">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-saas-blueMuted text-saas-blue uppercase border border-blue-200">
+            OFFICIAL B2B COMMERCIAL QUOTATION
+          </span>
+          <span class="text-xs text-slate-400 font-mono">SNI 7064 &amp; 2052 COMPLIANT</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="bg-saas-blue hover:bg-saas-blueHover text-white font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm font-sans">
+            <i data-lucide="printer" class="w-4 h-4"></i> Cetak PDF Surat Penawaran
+          </button>
+          <button onclick="closeQuotationModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-xl bg-slate-100">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Area -->
+      <div id="printableQuotationModal" class="space-y-6 font-sans">
+        <!-- Document Header -->
+        <div class="flex items-start justify-between border-b border-saas-border pb-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-saas-blue flex items-center justify-center text-white font-bold">
+                <i data-lucide="layers" class="w-5 h-5 text-white"></i>
+              </div>
+              <span class="font-extrabold text-xl tracking-tight text-saas-dark font-display">MATERIAL<span class="text-saas-blue">HUB</span></span>
+            </div>
+            <p class="text-[11px] text-saas-slateText">PT MaterialHub Bangunan Nusantara • Kawasan Industri Pulogadung Blok B-12, Jakarta Timur</p>
+            <p class="text-[11px] text-saas-slateText">Divisi Pengadaan Proyek &amp; Logistik B2B • Hotline: +62 812-9999-8888</p>
+          </div>
+
+          <div class="text-right font-mono">
+            <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-saas-blueMuted text-saas-blue uppercase border border-blue-200" id="modalRfqBadge">
+              SURAT PENAWARAN RESMI
+            </span>
+            <p id="modalRfqCode" class="text-xs font-bold text-saas-dark mt-1">RFQ-202610-8891</p>
+            <p id="modalRfqDate" class="text-[11px] text-slate-400">31 Okt 2026</p>
+          </div>
+        </div>
+
+        <!-- Project & Contractor Metadata -->
+        <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border border-saas-border font-mono">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">KONTRAKTOR / PELAKSANA:</span>
+            <p id="modalCompanyName" class="font-bold text-saas-dark text-sm font-sans">PT Waskita Precast Tbk</p>
+            <p id="modalPicDetail" class="text-slate-600 font-sans">PIC: Ir. Hendro Wibowo (081122334455)</p>
+            <p id="modalProjectAddress" class="text-slate-500 mt-1 font-sans leading-relaxed">Proyek Pembangunan Tol Layang Semanggi, Jakarta</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">METODE LOGISTIK &amp; ARMADA:</span>
+            <p id="modalFleetAccess" class="font-bold text-saas-blue text-sm font-sans">Tronton Trailer 30-Ton</p>
+            <p class="text-slate-500 font-sans mt-0.5">Disertai Sertifikat Hasil Uji Tarik Krakatau Steel</p>
+            <p class="text-emerald-700 font-bold font-mono mt-1" id="modalPaymentStatusText">DP 30% ALOKASI TERLUNASI</p>
+          </div>
+        </div>
+
+        <!-- Table Summary of Material SKUs -->
+        <div class="border border-saas-border rounded-2xl overflow-hidden text-xs">
+          <table class="w-full text-left font-mono">
+            <thead class="bg-slate-50 text-slate-600 font-bold border-b border-saas-border font-sans">
+              <tr>
+                <th class="py-2.5 px-4">Deskripsi SKU Material Bangunan</th>
+                <th class="py-2.5 px-3 text-center">Volume</th>
+                <th class="py-2.5 px-4 text-right">Harga Satuan</th>
+                <th class="py-2.5 px-4 text-right">Jumlah</th>
+              </tr>
+            </thead>
+            <tbody id="modalItemsTbody" class="divide-y divide-slate-100 font-medium">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+            <tfoot class="bg-slate-50 border-t border-saas-border text-xs font-mono">
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-sans">Subtotal Material:</td>
+                <td class="py-2 px-4 text-right font-bold text-saas-dark" id="modalSubtotalAmount">Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-emerald-700 font-sans">Diskon Tonase Grosir Proyek:</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700" id="modalDiscountAmount">- Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-sans">PPN 11% (e-Faktur Resmi):</td>
+                <td class="py-2 px-4 text-right font-bold text-saas-dark" id="modalTaxAmount">Rp 0</td>
+              </tr>
+              <tr class="bg-saas-blueMuted border-t-2 border-blue-200 font-extrabold text-sm">
+                <td colspan="3" class="py-2.5 px-4 text-right text-saas-blue font-sans">Total Nilai Kontrak Pengadaan:</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-saas-blue" id="modalGrandTotal">Rp 0</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="py-2 px-4 text-right text-slate-600 font-sans">Uang Muka Diterima (DP 30%):</td>
+                <td class="py-2 px-4 text-right font-bold text-emerald-700" id="modalPaidAmount">Rp 0</td>
+              </tr>
+              <tr class="bg-slate-100 border-t border-slate-200">
+                <td colspan="3" class="py-2.5 px-4 text-right text-slate-700 font-bold font-sans">Sisa Tagihan / Term Of Payment (TOP):</td>
+                <td class="py-2.5 px-4 text-right font-black text-sm text-saas-dark" id="modalDueAmount">Rp 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- DO Barcode Token Verification Box -->
+        <div class="p-4 bg-slate-50 rounded-2xl border border-saas-border flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+          <div class="space-y-1 text-center sm:text-left font-sans">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">DELIVERY ORDER SURAT JALAN BARCODE</span>
+            <p class="text-xs font-bold text-saas-dark">Scan Barcode Ini Saat Truk Tiba di Titik Drop Proyek</p>
+            <p class="text-[11px] text-saas-slateText">Bukti timbang digital jembatan tera BMKG disertakan dalam berkas DO fisik pengemudi.</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white p-2 rounded-xl border border-slate-200 inline-block shadow-sm">
+              <img id="modalDOBarcodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=DO-8891-B2B" alt="DO Barcode" class="w-16 h-16 object-contain" />
+            </div>
+            <span class="block text-[9px] font-mono text-slate-400 mt-1" id="modalDOTokenText">TOKEN: DO-8891-B2B</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: PELUNASAN KASIR & SCF SETTLEMENT ==================== -->
+  <div id="settlePaymentModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-saas-border shadow-2xl p-6 space-y-5 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-saas-border pb-3">
+        <h3 class="font-bold text-base text-saas-dark font-display flex items-center gap-2">
+          <i data-lucide="hand-coins" class="w-5 h-5 text-saas-blue"></i>
+          Konfirmasi Pelunasan / Penarikan SCF
+        </h3>
+        <button onclick="closeSettleModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-slate-50 p-4 rounded-2xl border border-saas-border space-y-2">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Nomor PO:</span>
+          <span class="font-bold text-saas-dark" id="settlePoCode">PO-MH-8891</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Kontraktor:</span>
+          <span class="font-bold text-saas-dark font-sans" id="settleCompanyName">PT Waskita Precast</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Nilai Kontrak Total:</span>
+          <span class="font-bold text-saas-dark" id="settleTotalCost">Rp 295.000.000</span>
+        </div>
+        <div class="flex justify-between text-emerald-700">
+          <span>DP 30% Terbayar:</span>
+          <span class="font-bold" id="settlePaidDP">Rp 88.500.000</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-saas-border text-sm font-bold text-saas-dark">
+          <span>Sisa Tagihan yang Dilunasi:</span>
+          <span class="text-saas-blue font-extrabold" id="settleRemainingDue">Rp 206.500.000</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-700 mb-1 font-sans">Pilihan Skema Pelunasan Bank:</label>
+        <select id="settleMethodSelect" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-saas-dark font-sans focus:outline-none focus:ring-2 focus:ring-saas-blue">
+          <option value="Supply Chain Financing (SCF Mandiri 30 Hari)">Supply Chain Financing (SCF Mandiri 30 Hari)</option>
+          <option value="Transfer RTGS Bank BCA Escrow">Transfer RTGS Bank BCA Escrow</option>
+          <option value="Bilyet Giro (BG) 14 Hari Jatuh Tempo">Bilyet Giro (BG) 14 Hari Jatuh Tempo</option>
+          <option value="QRIS Pelunasan Kasir">QRIS Korporat Multi-Bank</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-saas-border font-sans">
+        <button onclick="closeSettleModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="confirmSettleOrder()" class="px-5 py-2.5 bg-saas-blue hover:bg-saas-blueHover text-white font-bold rounded-xl transition flex items-center gap-1.5 shadow-md shadow-blue-500/20">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Konfirmasi Lunas &amp; Cetak Faktur
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: INPUT RFQ KONTRAKTOR BARU ==================== -->
+  <div id="newRfqModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-saas-border shadow-2xl p-6 space-y-4 text-xs font-mono">
+      <div class="flex items-center justify-between border-b border-saas-border pb-3">
+        <h3 class="font-bold text-base text-saas-dark font-display flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-saas-blue"></i>
+          Input Permintaan RFQ Proyek Baru
+        </h3>
+        <button onclick="closeNewRfqModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 font-sans">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1 font-mono">Nama Perusahaan Kontraktor / PT *</label>
+          <input type="text" id="newRfqCompany" placeholder="Contoh: PT Pembangunan Perumahan (Persero)" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-saas-dark font-medium focus:outline-none focus:ring-2 focus:ring-saas-blue" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1 font-mono">Nama PIC Lapangan *</label>
+            <input type="text" id="newRfqPic" placeholder="Contoh: Ir. Dwi Santoso" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-saas-dark font-medium focus:outline-none focus:ring-2 focus:ring-saas-blue" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1 font-mono">No. WhatsApp PIC *</label>
+            <input type="tel" id="newRfqPhone" placeholder="0811..." class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-saas-dark font-mono focus:outline-none focus:ring-2 focus:ring-saas-blue" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1 font-mono">Pilih SKU Material Utama *</label>
+            <select id="newRfqMaterialSelect" onchange="calculateNewRfqPrice()" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-saas-dark font-mono focus:outline-none focus:ring-2 focus:ring-saas-blue">
+              <option value="SKU-SMN-01">Semen Tiga Roda PCC 50kg (Rp 67.000)</option>
+              <option value="SKU-BSI-01">Besi Beton Ulir D16 SNI (Rp 182.000)</option>
+              <option value="SKU-BTA-01">Bata Ringan AAC Broco m³ (Rp 585.000)</option>
+              <option value="SKU-BJA-01">Baja Ringan Canal C75 (Rp 98.000)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1 font-mono">Volume Pengadaan *</label>
+            <input type="number" id="newRfqVolumeInput" oninput="calculateNewRfqPrice()" value="500" min="50" max="10000" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 font-mono font-bold text-saas-dark focus:outline-none focus:ring-2 focus:ring-saas-blue" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1 font-mono">Akses Drop Lokasi Proyek</label>
+          <select id="newRfqAccessSelect" class="w-full bg-saas-canvas border border-saas-border rounded-xl p-2.5 text-saas-dark font-sans focus:outline-none focus:ring-2 focus:ring-saas-blue">
+            <option value="Tronton Trailer 30-Ton">Tronton Trailer 30-Ton (Akses Bebas)</option>
+            <option value="Colt Diesel Double (CDD 8-Ton)">Colt Diesel Double (CDD 8-Ton)</option>
+            <option value="Engkel / Pickup L300">Engkel / Pickup L300 (Akses Sempit)</option>
+          </select>
+        </div>
+
+        <div class="p-3 bg-saas-canvas rounded-xl border border-saas-border font-mono space-y-1 text-xs">
+          <div class="flex justify-between">
+            <span class="text-slate-500">Estimasi Tonase Muatan:</span>
+            <span class="font-bold text-saas-blue" id="newRfqTonnageText">~25.0 Ton</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Diskon Volume Tonase (5%):</span>
+            <span class="font-bold text-emerald-700" id="newRfqDiscountText">- Rp 1.675.000</span>
+          </div>
+          <div class="flex justify-between pt-1 border-t border-saas-border text-sm font-black">
+            <span>Estimasi Kontrak (Inc. PPN):</span>
+            <span class="text-saas-dark" id="newRfqGrandTotalText">Rp 35.321.750</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-saas-border font-sans">
+        <button onclick="closeNewRfqModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">Batal</button>
+        <button onclick="saveNewRfqOrder()" class="px-5 py-2.5 bg-saas-blue hover:bg-saas-blueHover text-white font-bold rounded-xl transition shadow-md shadow-blue-500/20">
+          Terbitkan RFQ &amp; Jadwalkan Armada
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-saas-dark text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+    <div class="w-6 h-6 rounded-full bg-saas-blue flex items-center justify-center text-white font-bold">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <span id="toastMessage">Operasi pengadaan berhasil disinkronkan</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT MASTER BUSINESS LOGIC ==================== -->
+  <script>
+    // 1. Master RFQ & PO Contracts Database
+    let masterRFQOrders = [
+      {
+        rfqCode: "RFQ-202610-8891",
+        doToken: "DO-8891-B2B",
+        company: "PT Waskita Precast Tbk",
+        picName: "Ir. Hendro Wibowo",
+        phone: "0811-2233-4455",
+        projectSite: "Proyek Tol Layang Semanggi, Jakarta",
+        tonnage: 28.5,
+        fleetAccess: "Tronton Trailer 30-Ton",
+        items: [
+          { sku: "SKU-SMN-01", name: "Semen Tiga Roda PCC 50kg", qty: 570, unit: "Sak", rate: 67000 },
+          { sku: "SKU-SMN-02", name: "Mortar MU-380 Perekat Bata 40kg", qty: 150, unit: "Sak", rate: 92000 }
+        ],
+        subtotal: 52000000,
+        discount: 4160000,
+        tax: 5262400,
+        totalContract: 53102400,
+        paidDP: 15930720,
+        dueAmount: 37171680,
+        status: "DP_VERIFIED", // DP_VERIFIED, DISPATCHED, SCF_30, COMPLETED
+        paymentScheme: "DP 30% Alokasi + SCF 30 Hari",
+        date: "2026-10-31"
+      },
+      {
+        rfqCode: "RFQ-202610-8892",
+        doToken: "DO-8892-B2B",
+        company: "PT Adhi Karya (Persero) Tbk",
+        picName: "Bambang Soesatyo, S.T.",
+        phone: "0812-7788-9900",
+        projectSite: "Stasiun LRT Dukuh Atas, Jakarta Pusat",
+        tonnage: 37.9,
+        fleetAccess: "Tronton Trailer 30-Ton",
+        items: [
+          { sku: "SKU-BSI-01", name: "Besi Beton Ulir D16 SNI BJTS 420B", qty: 2000, unit: "Batang", rate: 182000 }
+        ],
+        subtotal: 364000000,
+        discount: 29120000,
+        tax: 36836800,
+        totalContract: 371716800,
+        paidDP: 111515040,
+        dueAmount: 260201760,
+        status: "DISPATCHED",
+        paymentScheme: "SCF Tempo 30 Hari B2B",
+        date: "2026-10-31"
+      },
+      {
+        rfqCode: "RFQ-202610-8893",
+        doToken: "DO-8893-B2B",
+        company: "PT Total Bangun Persada",
+        picName: "Dian Sastrowardoyo, M.Arch.",
+        phone: "0818-3344-5566",
+        projectSite: "Pusat Riset Farmasi Sentul, Bogor",
+        tonnage: 19.5,
+        fleetAccess: "Colt Diesel Double (CDD 8-Ton)",
+        items: [
+          { sku: "SKU-BTA-01", name: "Bata Ringan AAC Broco 10x20x60", qty: 30, unit: "m³", rate: 585000 },
+          { sku: "SKU-SMN-02", name: "Mortar MU-380 Perekat 40kg", qty: 80, unit: "Sak", rate: 92000 }
+        ],
+        subtotal: 24910000,
+        discount: 1245500,
+        tax: 2603095,
+        totalContract: 26267595,
+        paidDP: 26267595,
+        dueAmount: 0,
+        status: "COMPLETED",
+        paymentScheme: "Cash Before Delivery (CBD)",
+        date: "2026-10-31"
+      },
+      {
+        rfqCode: "RFQ-202610-8894",
+        doToken: "DO-8894-B2B",
+        company: "PT Wijaya Karya Rekayasa",
+        picName: "Agung Pratama, S.T.",
+        phone: "0817-2233-4411",
+        projectSite: "Pelebaran Jembatan Kalimalang, Bekasi",
+        tonnage: 42.0,
+        fleetAccess: "Tronton Trailer 30-Ton",
+        items: [
+          { sku: "SKU-BSI-02", name: "Besi Beton Polos 10mm SNI TP 280", qty: 3500, unit: "Batang", rate: 74000 },
+          { sku: "SKU-BJA-01", name: "Baja Ringan Kencana C75 0.75mm", qty: 400, unit: "Batang", rate: 98000 }
+        ],
+        subtotal: 298200000,
+        discount: 23856000,
+        tax: 30177840,
+        totalContract: 304521840,
+        paidDP: 91356552,
+        dueAmount: 213165288,
+        status: "SCF_30",
+        paymentScheme: "SCF Tempo 30 Hari B2B",
+        date: "2026-10-31"
+      }
+    ];
+
+    // 2. Master Warehouse Material Tonnage & Inventory
+    let masterWarehouseStock = [
+      { id: "SKU-SMN-01", name: "Semen Tiga Roda Portland PCC 50kg", brand: "Indocement Tunggal Prakarsa", category: "Semen", stockQty: 12450, unit: "Sak", stockTonnage: 622.5, minThresholdTon: 200, sniCert: "SNI 7064:2014", tkdnPct: "88.4%", bayLocation: "Bay A-01 s/d A-04", status: "SAFE", rate: 67000 },
+      { id: "SKU-BSI-01", name: "Besi Beton Ulir D16 SNI BJTS 420B (12m)", brand: "PT Krakatau Steel (Persero)", category: "Besi Baja", stockQty: 4850, unit: "Batang", stockTonnage: 91.9, minThresholdTon: 50, sniCert: "SNI 2052:2017", tkdnPct: "94.2%", bayLocation: "Bay Steel C-01", status: "SAFE", rate: 182000 },
+      { id: "SKU-BTA-01", name: "Bata Ringan AAC Broco Hebel 10x20x60", brand: "Broco Aerated Concrete", category: "Bata Ringan", stockQty: 820, unit: "m³", stockTonnage: 533.0, minThresholdTon: 150, sniCert: "SNI 8640:2018", tkdnPct: "82.1%", bayLocation: "Outdoor Yard 1", status: "SAFE", rate: 585000 },
+      { id: "SKU-BJA-01", name: "Baja Ringan Kencana Canal C75 0.75mm", brand: "Kencana Truss Indonesia", category: "Baja Ringan", stockQty: 3400, unit: "Batang", stockTonnage: 16.3, minThresholdTon: 20, sniCert: "SNI 8399:2017", tkdnPct: "90.0%", bayLocation: "Bay Light Steel E", status: "LOW_STOCK", rate: 98000 },
+      { id: "SKU-SMN-02", name: "Mortar MU-380 Perekat Bata Ringan 40kg", brand: "Mortar Utama Saint-Gobain", category: "Semen", stockQty: 2950, unit: "Sak", stockTonnage: 118.0, minThresholdTon: 40, sniCert: "ISO 9001:2015", tkdnPct: "85.6%", bayLocation: "Bay A-05 Racking", status: "SAFE", rate: 92000 },
+      { id: "SKU-BSI-02", name: "Besi Beton Polos 10mm SNI TP 280 (12m)", brand: "Krakatau Wajatama", category: "Besi Baja", stockQty: 6200, unit: "Batang", stockTonnage: 45.8, minThresholdTon: 30, sniCert: "SNI 2052:2017", tkdnPct: "92.8%", bayLocation: "Bay Steel C-02", status: "SAFE", rate: 74000 }
+    ];
+
+    // 3. Master Fleet & Weighbridge Trackers
+    let masterFleetTrucks = [
+      { id: "TRK-01", plate: "B 9128 UYX", type: "Tronton 10-Roda (30 Ton)", driver: "Joko Susilo", currentDO: "DO-8891-B2B", contractor: "PT Waskita Precast", grossKg: 42850, tareKg: 13450, nettoKg: 29400, status: "ON_DELIVERY", destination: "Tol Semanggi", exitTime: "10:30 WIB" },
+      { id: "TRK-02", plate: "B 9488 TDA", type: "Tronton 10-Roda (30 Ton)", driver: "Hendra Wijaya", currentDO: "DO-8892-B2B", contractor: "PT Adhi Karya Tbk", grossKg: 43200, tareKg: 13600, nettoKg: 29600, status: "ON_DELIVERY", destination: "LRT Dukuh Atas", exitTime: "11:15 WIB" },
+      { id: "TRK-03", plate: "B 9201 KLA", type: "Colt Diesel Double (8 Ton)", driver: "Dani Saputra", currentDO: "DO-8893-B2B", contractor: "PT Total Bangun", grossKg: 11450, tareKg: 3800, nettoKg: 7650, status: "ARRIVED_SITE", destination: "Sentul Bogor", exitTime: "09:45 WIB" },
+      { id: "TRK-04", plate: "B 9712 UZA", type: "Tronton Trailer (30 Ton)", driver: "Arief Rahman", currentDO: "DO-8894-B2B", contractor: "PT Wijaya Karya", grossKg: 44100, tareKg: 14000, nettoKg: 30100, status: "WEIGHING_SCALE", destination: "Jembatan Kalimalang", exitTime: "In Scale" }
+    ];
+
+    // 4. Site Gate Inspection Audit Logs
+    let gateAuditLogs = [
+      { time: "11:24:15", token: "DO-8891-B2B", company: "PT Waskita Precast", site: "Tol Layang Semanggi", status: "IZIN BONGKAR (VALID)" },
+      { time: "10:50:30", token: "DO-8893-B2B", company: "PT Total Bangun", site: "Riset Farmasi Sentul", status: "SELESAI BONGKAR (DO CLOSE)" },
+      { time: "09:15:10", token: "INVALID-DO-000", company: "Vendor Tidak Dikenal", site: "-", status: "DITOLAK (INVALID TOKEN)" }
+    ];
+
+    // Chart.js Instances
+    let procurementVolumeChartInstance = null;
+    let financingSchemeChartInstance = null;
+
+    // Currency Formatter
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Sidebar Mobile Toggle
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    // Tab Switcher
+    function switchTab(tabKey) {
+      const titles = {
+        overview: "Overview & Procurement Analytics",
+        rfq: "Manajemen RFQ & Kontrak PO Kontraktor",
+        inventory: "Monitoring Stok Material Konstruksi & Tonase Gudang",
+        fleet: "Terminal Armada & Timbangan Jembatan (120-Ton Scale)",
+        scanner: "Optical Delivery Order (DO) Site Gate Scanner",
+        finance: "Commercial Finance, SCF 30-Hari & Settlement Rekonsiliasi"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "MaterialHub Console";
+
+      ['overview', 'rfq', 'inventory', 'fleet', 'scanner', 'finance'].forEach(k => {
+        const v = document.getElementById(`view-${k}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${k}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-300 hover:text-white hover:bg-slate-800 font-mono";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-white bg-saas-blue shadow-sm font-mono";
+      }
+
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      if (tabKey === 'overview') renderWeighbridgeLiveStrip();
+      if (tabKey === 'rfq') renderMasterRfqTable();
+      if (tabKey === 'inventory') renderWarehouseInventoryGrid();
+      if (tabKey === 'fleet') { renderFleetTrucks(); loadDoOptionsToWeighbridge(); }
+      if (tabKey === 'scanner') renderGateScanAuditLogs();
+      if (tabKey === 'finance') renderFinanceTable();
+
+      lucide.createIcons();
+    }
+
+    function toggleNotificationPanel() {
+      document.getElementById('notificationPanel').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        t.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      renderWeighbridgeLiveStrip();
+      renderOverviewRfqTable();
+      renderMasterRfqTable();
+      renderWarehouseInventoryGrid();
+      renderFleetTrucks();
+      renderGateScanAuditLogs();
+      renderFinanceTable();
+      loadDoOptionsToWeighbridge();
+      updateDashboardCounters();
+      calculateNewRfqPrice();
+      lucide.createIcons();
+    });
+
+    // ==================== 1. OVERVIEW & CHARTS ====================
+    function renderWeighbridgeLiveStrip() {
+      const container = document.getElementById('weighbridgeLiveStrip');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterFleetTrucks.forEach(t => {
+        let badgeColor = "bg-blue-500/20 text-blue-300 border border-blue-400/30";
+        if (t.status === 'WEIGHING_SCALE') badgeColor = "bg-amber-500/20 text-amber-300 border border-amber-400/40 animate-pulse";
+        if (t.status === 'ARRIVED_SITE') badgeColor = "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30";
+
+        const div = document.createElement('div');
+        div.className = "bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-2 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <span class="font-bold text-white text-sm">${t.plate}</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${badgeColor}">${t.status}</span>
+          </div>
+          <p class="text-slate-300 text-[11px] truncate font-sans">${t.contractor}</p>
+          <div class="pt-2 border-t border-slate-700 flex justify-between items-center text-[10px] text-slate-400">
+            <span>Netto: <strong class="text-emerald-400 font-mono">${(t.nettoKg / 1000).toFixed(1)} Ton</strong></span>
+            <span class="text-blue-300 font-bold">${t.currentDO}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function initCharts() {
+      // 1. Monthly Material Procurement Volume Bar Chart
+      const ctxVol = document.getElementById('procurementVolumeChart');
+      if (ctxVol) {
+        procurementVolumeChartInstance = new Chart(ctxVol, {
+          type: 'bar',
+          data: {
+            labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4', 'Proyek Tol Ekstra'],
+            datasets: [
+              {
+                label: 'Semen PCC (Ton)',
+                data: [420, 580, 610, 540, 780],
+                backgroundColor: '#2563EB',
+                borderRadius: 6
+              },
+              {
+                label: 'Besi Baja SNI (Ton)',
+                data: [280, 310, 420, 390, 450],
+                backgroundColor: '#1E293B',
+                borderRadius: 6
+              },
+              {
+                label: 'Bata Ringan AAC (m³)',
+                data: [190, 240, 310, 280, 360],
+                backgroundColor: '#10B981',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 900,
+                ticks: { stepSize: 200, color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#F1F5F9' }
+              },
+              x: {
+                ticks: { color: '#64748B', font: { family: 'Inter', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Financing Scheme Distribution Doughnut Chart
+      const ctxScheme = document.getElementById('financingSchemeChart');
+      if (ctxScheme) {
+        financingSchemeChartInstance = new Chart(ctxScheme, {
+          type: 'doughnut',
+          data: {
+            labels: ['DP 30% Alokasi + TOP', 'SCF Tempo 30 Hari B2B', 'Cash Before Delivery (CBD)'],
+            datasets: [{
+              data: [55, 32, 13],
+              backgroundColor: ['#2563EB', '#60A5FA', '#10B981'],
+              borderWidth: 2,
+              borderColor: '#FFFFFF'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Inter', size: 10 } } }
+            },
+            cutout: '72%'
+          }
+        });
+      }
+    }
+
+    // ==================== 2. MASTER RFQ TABLE LOGIC ====================
+    function renderOverviewRfqTable() {
+      const tbody = document.getElementById('overviewRfqTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterRFQOrders.slice(0, 5).forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        let statusBadge = "";
+        if (o.status === 'DP_VERIFIED') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-800 font-bold font-mono">DP 30% LOCK</span>';
+        else if (o.status === 'DISPATCHED') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-bold font-mono">IN TRANSIT</span>';
+        else if (o.status === 'SCF_30') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-100 text-purple-800 font-bold font-mono">SCF 30 HARI</span>';
+        else statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold font-mono">COMPLETED</span>';
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-saas-dark">${o.rfqCode}<br><span class="text-[9px] text-slate-400 font-normal">DO: ${o.doToken}</span></td>
+          <td class="py-3 px-4 font-sans font-bold text-saas-dark">${o.company}<br><span class="text-[10px] text-slate-400 font-mono font-normal">${o.picName}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-600 truncate max-w-[180px]">${o.projectSite}</td>
+          <td class="py-3 px-4 font-mono font-bold text-saas-blue">~${o.tonnage} Ton</td>
+          <td class="py-3 px-4 font-mono font-bold text-saas-dark">${formatRupiah(o.totalContract)}</td>
+          <td class="py-3 px-4 font-mono text-emerald-700 font-bold">${formatRupiah(o.paidDP)}</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="previewQuotationModal('${o.rfqCode}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-saas-blue hover:text-white text-saas-dark font-bold text-[10px] transition inline-flex items-center gap-1">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Proforma
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function renderMasterRfqTable(filteredList = null) {
+      const tbody = document.getElementById('masterRfqTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterRFQOrders;
+      document.getElementById('rfqTableCountText').innerText = `Menampilkan ${list.length} pesanan kontrak B2B`;
+
+      list.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        let statusBadge = "";
+        if (o.status === 'DP_VERIFIED') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-800 font-bold">DP 30% LOCK</span>';
+        else if (o.status === 'DISPATCHED') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-bold">DISPATCHED</span>';
+        else if (o.status === 'SCF_30') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-100 text-purple-800 font-bold">SCF 30 HARI</span>';
+        else statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold">COMPLETED</span>';
+
+        const materialSummary = o.items.map(it => `${it.qty} ${it.unit} ${it.name}`).join(' + ');
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-saas-dark">${o.rfqCode}<br><span class="text-[9px] text-slate-400 font-normal">DO: ${o.doToken}</span></td>
+          <td class="py-3 px-4 font-sans font-bold text-saas-dark">${o.company}<br><span class="text-[10px] text-slate-500 font-mono font-normal">${o.phone}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700 max-w-[220px] truncate" title="${materialSummary}">${materialSummary}</td>
+          <td class="py-3 px-4 text-saas-slateText font-sans">${o.fleetAccess}</td>
+          <td class="py-3 px-4 font-bold text-saas-dark font-mono">${formatRupiah(o.totalContract)}</td>
+          <td class="py-3 px-4 font-mono text-emerald-700 font-bold">${formatRupiah(o.paidDP)}</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center gap-1.5 font-mono">
+              <button onclick="previewQuotationModal('${o.rfqCode}')" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition" title="Cetak Proforma">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              </button>
+              ${o.dueAmount > 0 ? `
+                <button onclick="openSettlePaymentModal('${o.rfqCode}')" class="px-2.5 py-1 rounded-lg bg-saas-blue hover:bg-saas-blueHover text-white font-bold text-[10px] transition shadow-sm font-sans">
+                  Settle SCF
+                </button>
+              ` : `
+                <span class="text-[10px] text-emerald-600 font-bold flex items-center"><i data-lucide="check-check" class="w-3.5 h-3.5"></i> Clear</span>
+              `}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function filterRfqTable() {
+      const q = document.getElementById('rfqSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMasterRfqTable();
+        return;
+      }
+      const filtered = masterRFQOrders.filter(o => 
+        o.rfqCode.toLowerCase().includes(q) ||
+        o.company.toLowerCase().includes(q) ||
+        o.projectSite.toLowerCase().includes(q) ||
+        o.doToken.toLowerCase().includes(q)
+      );
+      renderMasterRfqTable(filtered);
+    }
+
+    function filterRfqStatus(statusKey) {
+      document.querySelectorAll('.rfq-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-status') === statusKey) {
+          btn.className = "rfq-filter-btn px-3.5 py-2 rounded-xl font-bold bg-saas-dark text-white transition";
+        } else {
+          btn.className = "rfq-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+        }
+      });
+
+      if (statusKey === 'ALL') {
+        renderMasterRfqTable();
+      } else {
+        renderMasterRfqTable(masterRFQOrders.filter(o => o.status === statusKey));
+      }
+    }
+
+    function exportRfqToCSV() {
+      let csv = "data:text/csv;charset=utf-8,Kode RFQ,Surat Jalan DO,Kontraktor,PIC,WhatsApp,Lokasi Proyek,Tonase,Armada,Total Kontrak,DP 30%,Sisa Piutang,Status\n";
+      masterRFQOrders.forEach(o => {
+        csv += `"${o.rfqCode}","${o.doToken}","${o.company}","${o.picName}","${o.phone}","${o.projectSite}","${o.tonnage} Ton","${o.fleetAccess}","${o.totalContract}","${o.paidDP}","${o.dueAmount}","${o.status}"\n`;
+      });
+      const encodedUri = encodeURI(csv);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `MaterialHub_Procurement_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== 3. WAREHOUSE INVENTORY GRID ====================
+    function renderWarehouseInventoryGrid() {
+      const container = document.getElementById('warehouseInventoryGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterWarehouseStock.forEach(item => {
+        const isLow = item.status === 'LOW_STOCK';
+
+        const card = document.createElement('div');
+        card.className = "bg-white p-5 rounded-3xl border border-saas-border shadow-sm space-y-3 font-mono text-xs";
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-saas-border pb-2.5">
+            <div>
+              <span class="text-[10px] text-saas-blue font-bold">${item.id} • ${item.category}</span>
+              <h4 class="font-bold text-saas-dark text-sm font-sans mt-0.5">${item.name}</h4>
+              <p class="text-[10px] text-slate-400 font-sans">${item.brand}</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isLow ? 'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse' : 'bg-emerald-100 text-emerald-800'}">
+              ${item.status}
+            </span>
+          </div>
+
+          <div class="space-y-1.5 font-sans">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-500">Stok Siap Kirim:</span>
+              <strong class="text-saas-dark font-mono font-bold">${item.stockQty.toLocaleString('id-ID')} ${item.unit} (~${item.stockTonnage} Ton)</strong>
+            </div>
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-500">Sertifikasi Legal:</span>
+              <strong class="text-blue-700 font-mono font-bold">${item.sniCert} (TKDN ${item.tkdnPct})</strong>
+            </div>
+            <div class="flex justify-between text-slate-400 text-[10px] font-mono">
+              <span>Lokasi Gudang: ${item.bayLocation}</span>
+              <span>Batas Min: ${item.minThresholdTon} Ton</span>
+            </div>
+          </div>
+
+          <button onclick="topUpMaterialStock('${item.id}')" class="w-full bg-saas-canvas hover:bg-slate-100 text-saas-dark font-bold py-2 rounded-xl transition text-[11px] font-sans border border-saas-border">
+            + Tambah Pasokan Pabrikan (DO Inbound)
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function topUpMaterialStock(skuId) {
+      const item = masterWarehouseStock.find(x => x.id === skuId);
+      if (item) {
+        item.stockQty += 1000;
+        item.stockTonnage = parseFloat((item.stockTonnage + 50).toFixed(1));
+        item.status = "SAFE";
+        renderWarehouseInventoryGrid();
+        updateDashboardCounters();
+        showToast(`Stok ${item.name} berhasil ditambahkan +50 Ton dari pabrik.`);
+      }
+    }
+
+    function openRestockModal() {
+      const sku = prompt("Masukkan SKU pabrik baru yang akan didaftarkan:", "Besi Beton D22 SNI Krakatau Steel");
+      if (sku) {
+        showToast(`SKU ${sku} berhasil dicatat ke antrean verifikasi lab SNI.`);
+      }
+    }
+
+    // ==================== 4. WEIGHBRIDGE TERMINAL & DISPATCH ====================
+    function renderFleetTrucks() {
+      const container = document.getElementById('fleetTruckListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterFleetTrucks.forEach(trk => {
+        let statusBadge = "bg-blue-100 text-blue-800";
+        if (trk.status === 'WEIGHING_SCALE') statusBadge = "bg-amber-100 text-amber-800 animate-pulse";
+        if (trk.status === 'ARRIVED_SITE') statusBadge = "bg-emerald-100 text-emerald-800";
+
+        const div = document.createElement('div');
+        div.className = "p-3.5 bg-slate-50 rounded-2xl border border-saas-border space-y-1.5 font-mono text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-saas-dark text-sm">${trk.plate}</span>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusBadge}">${trk.status}</span>
+          </div>
+          <p class="text-slate-600 font-sans text-[11px]">${trk.contractor} (${trk.type})</p>
+          <div class="flex justify-between items-center text-[10px] text-slate-500 pt-1 border-t border-slate-200">
+            <span>Muatan Netto: <strong class="text-saas-dark font-bold">${(trk.nettoKg / 1000).toFixed(1)} Ton</strong></span>
+            <span class="text-saas-blue font-bold">${trk.destination}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function loadDoOptionsToWeighbridge() {
+      const select = document.getElementById('weighbridgeDoSelect');
+      if (!select) return;
+      select.innerHTML = '';
+
+      masterRFQOrders.forEach(o => {
+        const opt = document.createElement('option');
+        opt.value = o.doToken;
+        opt.innerText = `${o.doToken} - ${o.company} (~${o.tonnage} Ton)`;
+        select.appendChild(opt);
+      });
+
+      loadDoToWeighbridge();
+    }
+
+    function loadDoToWeighbridge() {
+      const token = document.getElementById('weighbridgeDoSelect').value;
+      const o = masterRFQOrders.find(x => x.doToken === token);
+      if (!o) return;
+
+      const approxNetto = Math.round(o.tonnage * 1000);
+      const tareVal = 13450;
+      const grossVal = tareVal + approxNetto;
+
+      document.getElementById('weighGrossInput').value = grossVal;
+      document.getElementById('weighTareInput').value = tareVal;
+      document.getElementById('weighNettoInput').value = approxNetto;
+      document.getElementById('weighbridgeDigitalDisplay').innerText = `${grossVal.toLocaleString('id-ID')} KG`;
+    }
+
+    function calculateNetWeight() {
+      const gross = parseFloat(document.getElementById('weighGrossInput').value) || 0;
+      const tare = parseFloat(document.getElementById('weighTareInput').value) || 0;
+      const netto = gross - tare > 0 ? gross - tare : 0;
+
+      document.getElementById('weighNettoInput').value = netto;
+      document.getElementById('weighbridgeDigitalDisplay').innerText = `${gross.toLocaleString('id-ID')} KG`;
+    }
+
+    function saveWeighbridgeTicket() {
+      const token = document.getElementById('weighbridgeDoSelect').value;
+      const plate = document.getElementById('weighPlateInput').value.trim();
+      const netto = document.getElementById('weighNettoInput').value;
+
+      showToast(`Tiket timbang tera BMKG disahkan: Truk ${plate} membawa ${(netto / 1000).toFixed(1)} Tonase keluar pabrik.`);
+      renderWeighbridgeLiveStrip();
+      updateDashboardCounters();
+    }
+
+    // ==================== 5. OPTICAL DO SCANNER SIMULATOR ====================
+    function setScannerVal(val) {
+      document.getElementById('doScanInput').value = val;
+      executeDOScan();
+    }
+
+    function executeDOScan() {
+      const token = document.getElementById('doScanInput').value.trim().toUpperCase();
+      const card = document.getElementById('doScanFeedbackCard');
+      card.classList.remove('hidden');
+
+      const match = masterRFQOrders.find(o => o.doToken.toUpperCase() === token || o.rfqCode.toUpperCase() === token);
+
+      if (!match) {
+        card.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm text-rose-800">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> SURAT JALAN (DO) TIDAK DITEMUKAN
+          </div>
+          <p class="text-xs font-sans">Token barcode <strong>${token}</strong> tidak memiliki catatan muatan di gerbang MaterialHub.</p>
+        `;
+        recordGateAudit(token, "UNKNOWN VENDOR", "-", "DITOLAK (INVALID TOKEN)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-blue-200 bg-saas-blueMuted text-saas-dark space-y-3 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-saas-blue flex items-center gap-1.5 font-display">
+              <i data-lucide="check-circle" class="w-5 h-5 text-saas-blue"></i> SURAT JALAN VALID &amp; IZIN BONGKAR AKTIF
+            </span>
+            <span class="text-xs font-bold bg-saas-blue text-white px-2 py-0.5 rounded font-mono">${match.doToken}</span>
+          </div>
+          <div class="space-y-1 font-sans text-xs">
+            <p>Kontraktor Penerima: <strong class="text-saas-dark">${match.company}</strong> (${match.picName})</p>
+            <p>Titik Bongkar Proyek: <span class="text-slate-600">${match.projectSite}</span></p>
+            <p>Muatan Tonase Bersih: <strong class="text-saas-blue font-mono">~${match.tonnage} Ton</strong> (${match.fleetAccess})</p>
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-blue-200 flex items-center justify-between font-mono text-xs">
+            <span>Status Pembayaran Kontrak:</span>
+            <strong class="text-emerald-700">${match.status === 'COMPLETED' ? 'LUNAS (CBD / SCF SETTLED)' : 'DP 30% LUNAS (TERVERIFIKASI)'}</strong>
+          </div>
+          <button onclick="confirmSiteDropCompleted('${match.rfqCode}')" class="w-full bg-saas-blue hover:bg-saas-blueHover text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-md shadow-blue-500/20">
+            <i data-lucide="package-check" class="w-4 h-4 text-white"></i> Konfirmasi Material Selesai Dibongkar di Lapangan
+          </button>
+        `;
+        recordGateAudit(token, match.company, match.projectSite, "BERHASIL VERIFIKASI GERBANG");
+      }
+
+      lucide.createIcons();
+    }
+
+    function confirmSiteDropCompleted(rfqCode) {
+      const o = masterRFQOrders.find(x => x.rfqCode === rfqCode);
+      if (o) {
+        o.status = "COMPLETED";
+        showToast(`Material untuk proyek ${o.company} resmi dibongkar. DO dinyatakan Selesai.`);
+        renderMasterRfqTable();
+        renderOverviewRfqTable();
+        updateDashboardCounters();
+        switchTab('rfq');
+      }
+    }
+
+    function recordGateAudit(token, company, site, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      gateAuditLogs.unshift({
+        time: timeStr,
+        token: token,
+        company: company,
+        site: site,
+        status: status
+      });
+      renderGateScanAuditLogs();
+    }
+
+    function renderGateScanAuditLogs() {
+      const list = document.getElementById('gateScanAuditLogs');
+      if (!list) return;
+      list.innerHTML = '';
+
+      gateAuditLogs.slice(0, 7).forEach(l => {
+        const isOk = l.status.includes('BERHASIL') || l.status.includes('VALID');
+
+        const div = document.createElement('div');
+        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
+          (isOk ? "bg-emerald-50/70 border-emerald-200 text-emerald-900" : "bg-rose-50 border-rose-200 text-rose-900");
+
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs font-sans text-slate-800">${l.company}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold text-saas-blue border border-slate-200">${l.token}</span>
+            </div>
+            <span class="text-[10px] opacity-75">${l.site} • ${l.time}</span>
+          </div>
+          <span class="text-[10px] font-bold font-mono">${l.status}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==================== 6. FINANCE & PRINTABLE PROFORMA QUOTATION ====================
+    function renderFinanceTable() {
+      const tbody = document.getElementById('financeTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterRFQOrders.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        let statusText = o.dueAmount === 0 ? "LUNAS REKONSILIASI" : "TEMPO SCF 30 HARI";
+        let statusBadge = o.dueAmount === 0 ? "bg-emerald-100 text-emerald-800" : "bg-purple-100 text-purple-800";
+
+        let actionBtn = '';
+        if (o.dueAmount > 0) {
+          actionBtn = `
+            <button onclick="openSettlePaymentModal('${o.rfqCode}')" class="px-3 py-1.5 rounded-lg bg-saas-blue hover:bg-saas-blueHover text-white font-bold text-[10px] transition shadow-sm font-sans">
+              Settle SCF
+            </button>
+          `;
+        } else {
+          actionBtn = `
+            <button onclick="previewQuotationModal('${o.rfqCode}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-saas-dark font-bold text-[10px] transition font-sans inline-flex items-center gap-1">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Proforma
+            </button>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-saas-dark">${o.rfqCode}</td>
+          <td class="py-3 px-4 font-sans font-bold text-saas-dark">${o.company}</td>
+          <td class="py-3 px-4 text-saas-slateText truncate max-w-[180px]">${o.projectSite}</td>
+          <td class="py-3 px-4 font-bold text-saas-dark">${formatRupiah(o.totalContract)}</td>
+          <td class="py-3 px-4 text-emerald-700 font-bold">${formatRupiah(o.paidDP)}</td>
+          <td class="py-3 px-4 font-bold ${o.dueAmount > 0 ? 'text-amber-600' : 'text-slate-400'}">${formatRupiah(o.dueAmount)}</td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusBadge}">${statusText}</span></td>
+          <td class="py-3 px-4 text-center">${actionBtn}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function previewQuotationModal(rfqCode) {
+      const o = masterRFQOrders.find(x => x.rfqCode === rfqCode);
+      if (!o) return;
+
+      document.getElementById('modalRfqCode').innerText = o.rfqCode;
+      document.getElementById('modalRfqDate').innerText = o.date;
+      document.getElementById('modalCompanyName').innerText = o.company;
+      document.getElementById('modalPicDetail').innerText = `PIC: ${o.picName} (${o.phone})`;
+      document.getElementById('modalProjectAddress').innerText = o.projectSite;
+      document.getElementById('modalFleetAccess').innerText = o.fleetAccess;
+
+      const tbody = document.getElementById('modalItemsTbody');
+      tbody.innerHTML = '';
+
+      o.items.forEach(it => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="py-2.5 px-4 font-sans">
+            <span class="font-bold text-saas-dark">${it.name}</span>
+            <div class="text-[10px] text-slate-400">SKU: ${it.sku} • Standar Uji Tarik SNI Valid</div>
+          </td>
+          <td class="py-2.5 px-3 text-center text-slate-700">${it.qty} ${it.unit}</td>
+          <td class="py-2.5 px-4 text-right text-slate-700 font-mono">${formatRupiah(it.rate)}</td>
+          <td class="py-2.5 px-4 text-right font-bold text-saas-dark font-mono">${formatRupiah(it.rate * it.qty)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById('modalSubtotalAmount').innerText = formatRupiah(o.subtotal);
+      document.getElementById('modalDiscountAmount').innerText = o.discount > 0 ? `- ${formatRupiah(o.discount)}` : "Rp 0";
+      document.getElementById('modalTaxAmount').innerText = formatRupiah(o.tax);
+      document.getElementById('modalGrandTotal').innerText = formatRupiah(o.totalContract);
+      document.getElementById('modalPaidAmount').innerText = formatRupiah(o.paidDP);
+      document.getElementById('modalDueAmount').innerText = formatRupiah(o.dueAmount);
+
+      document.getElementById('modalDOTokenText').innerText = `TOKEN: ${o.doToken}`;
+      document.getElementById('modalDOBarcodeImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${o.doToken}`;
+
+      if (o.dueAmount === 0) {
+        document.getElementById('modalRfqBadge').innerText = "FAKTUR LUNAS (SETTLED)";
+        document.getElementById('modalPaymentStatusText').innerText = "LUNAS (100% REKONSILIASI)";
+      } else {
+        document.getElementById('modalRfqBadge').innerText = "SURAT PENAWARAN RESMI";
+        document.getElementById('modalPaymentStatusText').innerText = "DP 30% ALOKASI TERLUNASI";
+      }
+
+      document.getElementById('quotationPrintModal').classList.remove('hidden');
+    }
+
+    function closeQuotationModal() {
+      document.getElementById('quotationPrintModal').classList.add('hidden');
+    }
+
+    // Modal Settle Payment
+    let activeSettleRfqCode = null;
+
+    function openSettlePaymentModal(rfqCode) {
+      const o = masterRFQOrders.find(x => x.rfqCode === rfqCode);
+      if (!o) return;
+
+      activeSettleRfqCode = rfqCode;
+      document.getElementById('settlePoCode').innerText = o.rfqCode;
+      document.getElementById('settleCompanyName').innerText = o.company;
+      document.getElementById('settleTotalCost').innerText = formatRupiah(o.totalContract);
+      document.getElementById('settlePaidDP').innerText = formatRupiah(o.paidDP);
+      document.getElementById('settleRemainingDue').innerText = formatRupiah(o.dueAmount);
+
+      document.getElementById('settlePaymentModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settlePaymentModal').classList.add('hidden');
+      activeSettleRfqCode = null;
+    }
+
+    function confirmSettleOrder() {
+      if (!activeSettleRfqCode) return;
+      const o = masterRFQOrders.find(x => x.rfqCode === activeSettleRfqCode);
+      if (o) {
+        o.paidDP = o.totalContract;
+        o.dueAmount = 0;
+        o.status = "COMPLETED";
+
+        closeSettleModal();
+        renderMasterRfqTable();
+        renderOverviewRfqTable();
+        renderFinanceTable();
+        updateDashboardCounters();
+
+        showToast(`Pelunasan kontrak ${o.rfqCode} (${o.company}) berhasil diselesaikan.`);
+        previewQuotationModal(o.rfqCode);
+      }
+    }
+
+    // ==================== 7. NEW RFQ CREATION MODAL ====================
+    function openNewRfqModal() {
+      document.getElementById('newRfqModal').classList.remove('hidden');
+      calculateNewRfqPrice();
+    }
+
+    function closeNewRfqModal() {
+      document.getElementById('newRfqModal').classList.add('hidden');
+    }
+
+    function calculateNewRfqPrice() {
+      const sku = document.getElementById('newRfqMaterialSelect').value;
+      const qty = parseInt(document.getElementById('newRfqVolumeInput').value) || 50;
+      const item = masterWarehouseStock.find(m => m.id === sku);
+
+      if (!item) return;
+
+      const rate = item.rate;
+      const rawSubtotal = rate * qty;
+      let discRate = 0;
+
+      if (rawSubtotal >= 50000000) discRate = 0.08;
+      else if (rawSubtotal >= 20000000) discRate = 0.05;
+
+      const discountVal = Math.round(rawSubtotal * discRate);
+      const afterDiscount = rawSubtotal - discountVal;
+      const taxVal = Math.round(afterDiscount * 0.11);
+      const grandTotal = afterDiscount + taxVal;
+      const tonnageApprox = ((item.stockTonnage / item.stockQty) * qty).toFixed(1);
+
+      document.getElementById('newRfqTonnageText').innerText = `~${tonnageApprox} Ton`;
+      document.getElementById('newRfqDiscountText').innerText = discRate > 0 ? `- ${formatRupiah(discountVal)}` : "Rp 0";
+      document.getElementById('newRfqGrandTotalText').innerText = formatRupiah(grandTotal);
+
+      return { rawSubtotal, discountVal, taxVal, grandTotal, tonnageApprox, item, qty };
+    }
+
+    function saveNewRfqOrder() {
+      const company = document.getElementById('newRfqCompany').value.trim();
+      const pic = document.getElementById('newRfqPic').value.trim();
+      const phone = document.getElementById('newRfqPhone').value.trim();
+      const access = document.getElementById('newRfqAccessSelect').value;
+
+      if (!company || !pic || !phone) {
+        alert("Lengkapi nama kontraktor, PIC, dan nomor WhatsApp.");
+        return;
+      }
+
+      const calc = calculateNewRfqPrice();
+      const randomRfq = "RFQ-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+      const randomDO = "DO-" + Math.floor(1000 + Math.random() * 9000) + "-B2B";
+      const dpVal = Math.round(calc.grandTotal * 0.3);
+
+      const newOrder = {
+        rfqCode: randomRfq,
+        doToken: randomDO,
+        company: company,
+        picName: pic,
+        phone: phone,
+        projectSite: "Proyek Gedung Klien Baru, Jabodetabek",
+        tonnage: parseFloat(calc.tonnageApprox),
+        fleetAccess: access,
+        items: [
+          { sku: calc.item.id, name: calc.item.name, qty: calc.qty, unit: calc.item.unit, rate: calc.item.rate }
+        ],
+        subtotal: calc.rawSubtotal,
+        discount: calc.discountVal,
+        tax: calc.taxVal,
+        totalContract: calc.grandTotal,
+        paidDP: dpVal,
+        dueAmount: calc.grandTotal - dpVal,
+        status: "DP_VERIFIED",
+        paymentScheme: "DP 30% Alokasi + SCF 30 Hari",
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      masterRFQOrders.unshift(newOrder);
+
+      closeNewRfqModal();
+      renderMasterRfqTable();
+      renderOverviewRfqTable();
+      renderFinanceTable();
+      loadDoOptionsToWeighbridge();
+      updateDashboardCounters();
+
+      showToast(`RFQ ${randomRfq} untuk ${company} resmi diterbitkan!`);
+      previewQuotationModal(randomRfq);
+    }
+
+    // ==================== 8. DASHBOARD COUNTERS & METRICS ====================
+    function updateDashboardCounters() {
+      const totalContracts = masterRFQOrders.reduce((sum, o) => sum + o.totalContract, 0);
+      const totalTonnage = masterRFQOrders.reduce((sum, o) => sum + o.tonnage, 0);
+      const dueAmountSum = masterRFQOrders.reduce((sum, o) => sum + o.dueAmount, 0);
+      const activeCount = masterRFQOrders.filter(o => o.status !== 'COMPLETED').length;
+      const lowStockCount = masterWarehouseStock.filter(i => i.status === 'LOW_STOCK').length;
+
+      document.getElementById('kpiGrossRevenue').innerText = formatRupiah(totalContracts);
+      document.getElementById('topTonnageShipped').innerText = `${totalTonnage.toFixed(1)} Tonase`;
+      document.getElementById('financeDueSummaryCard').innerText = formatRupiah(dueAmountSum > 0 ? dueAmountSum : 2394350000);
+
+      document.getElementById('badgeActiveRFQ').innerText = `${activeCount} Proyek`;
+      document.getElementById('kpiActiveRFQCount').innerText = `${masterRFQOrders.length} Proyek PO`;
+      document.getElementById('badgeLowStockAlert').innerText = `${lowStockCount} Reorder`;
+    }
+  </script>
+
+</body>
+</html>

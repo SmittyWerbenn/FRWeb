@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master Arena Admin - Padel & Futsal Operations Dashboard</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for Interactive Metrics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            theme: {
+              charcoal: '#1E1E24',
+              charcoalLight: '#2B2B33',
+              charcoalDark: '#141418',
+              softGray: '#F4F4F6',
+              grayBorder: '#E2E2E8',
+              amber: '#F59E0B',
+              amberHover: '#D97706',
+              amberBg: '#FEF3C7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1E1E24;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3B3B45;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #F59E0B;
+    }
+
+    .glass-header {
+      background: rgba(30, 30, 36, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* Print styling for Cashier Receipt */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printReceiptContainer, #printReceiptContainer * {
+        visibility: visible;
+      }
+      #printReceiptContainer {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+        padding: 20px;
+        z-index: 9999;
+      }
+    }
+  </style>
+</head>
+<body class="bg-theme-softGray text-slate-800 antialiased font-sans min-h-screen flex selection:bg-theme-amber selection:text-theme-charcoal overflow-x-hidden">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside id="adminSidebar" class="w-64 bg-theme-charcoal border-r border-theme-charcoalLight flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+    <div>
+      <!-- Brand Logo -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-theme-charcoalLight">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-theme-charcoalLight border border-theme-amber flex items-center justify-center text-theme-amber shadow-md shadow-amber-500/20 flex-shrink-0">
+            <i data-lucide="trophy" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-white block leading-tight font-display">
+              MASTER<span class="text-theme-amber">ARENA</span>
+            </span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[9px] font-mono bg-theme-charcoalLight text-theme-amber border border-theme-amber/40 px-1 py-0.2 rounded font-bold uppercase tracking-wider">PORTAL ADMIN</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Venue Indicator -->
+      <div class="px-5 py-3 border-b border-theme-charcoalLight bg-theme-charcoalDark/50">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-theme-amber"></i> Kuningan Stadium Hub
+          </span>
+          <span class="text-emerald-400 font-bold">LIVE v4.2</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-theme-amber bg-theme-charcoalLight border-l-4 border-theme-amber shadow-sm">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard Overview</span>
+        </button>
+
+        <button onclick="switchTab('schedules')" id="tab-schedules" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-theme-charcoalLight">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Jadwal & Matrix Slot</span>
+          <span class="ml-auto bg-theme-amber text-theme-charcoal text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgeActiveMatches">8 Main</span>
+        </button>
+
+        <button onclick="switchTab('bookings')" id="tab-bookings" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-theme-charcoalLight">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Manajemen Booking</span>
+          <span class="ml-auto bg-amber-500/20 text-theme-amber border border-theme-amber/30 text-[10px] font-bold px-1.5 py-0.5 rounded" id="badgePendingDP">3 DP</span>
+        </button>
+
+        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-theme-charcoalLight">
+          <i data-lucide="scan-line" class="w-4 h-4"></i>
+          <span>Turnstile & Scanner</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 ml-auto"></span>
+        </button>
+
+        <button onclick="switchTab('courts')" id="tab-courts" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-theme-charcoalLight">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Kelola Lapangan & Tarif</span>
+        </button>
+
+        <button onclick="switchTab('financial')" id="tab-financial" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-theme-charcoalLight">
+          <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+          <span>Laporan Keuangan & Kasir</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- User / Admin Profile Widget -->
+    <div class="p-4 border-t border-theme-charcoalLight bg-theme-charcoalDark/40">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-theme-charcoalLight border border-theme-grayBorder/20 flex items-center justify-center text-white font-bold font-mono">
+          TM
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-white truncate font-display">Tedi Maulana</p>
+          <p class="text-[10px] text-slate-400 font-mono truncate">General Venue Manager</p>
+        </div>
+        <button title="Pengaturan Akun" class="text-slate-400 hover:text-theme-amber transition">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Overlay for Mobile Sidebar -->
+  <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Admin App Bar -->
+    <header class="glass-header sticky top-0 z-30 border-b border-theme-charcoalLight px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1.5 rounded-lg bg-theme-charcoalLight">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 class="text-white font-extrabold text-base sm:text-lg font-display flex items-center gap-2">
+            <span id="currentViewTitle">Dashboard Overview</span>
+          </h1>
+          <p class="text-slate-400 text-xs hidden sm:block font-mono">Live Monitoring Lapangan Padel & Futsal Master Arena</p>
+        </div>
+      </div>
+
+      <!-- Top Right Actions -->
+      <div class="flex items-center gap-2 sm:gap-4 font-mono text-xs">
+        <!-- Live System Status Badge -->
+        <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-theme-charcoal border border-theme-charcoalLight text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>QRIS Callback: <strong>Aktif (200 OK)</strong></span>
+        </div>
+
+        <!-- Quick Walk-in Button -->
+        <button onclick="openWalkInModal()" class="bg-theme-amber hover:bg-theme-amberHover text-theme-charcoal font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-amber-500/20 active:scale-95 text-xs font-sans">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>+ Booking Walk-in</span>
+        </button>
+
+        <!-- Quick Notifications -->
+        <div class="relative">
+          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-theme-charcoalLight border border-theme-charcoalLight text-slate-300 hover:text-theme-amber flex items-center justify-center transition">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-theme-amber rounded-full"></span>
+          </button>
+          
+          <!-- Notification Dropdown -->
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-theme-grayBorder p-3 text-slate-800 z-50">
+            <div class="flex items-center justify-between border-b border-theme-grayBorder pb-2 px-1">
+              <span class="font-bold text-xs font-display">Aktivitas Terkini</span>
+              <span class="text-[10px] font-mono text-theme-amberHover font-bold">Real-time Feed</span>
+            </div>
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationList">
+              <div class="p-2 bg-theme-softGray rounded-lg border border-theme-grayBorder">
+                <p class="font-bold text-slate-900">DP 50% QRIS Masuk: Rp 125.000</p>
+                <p class="text-slate-500 text-[10px] font-mono">Garuda Padel Club • Panoramic Court A (19:00)</p>
+                <span class="text-[9px] text-slate-400">2 menit lalu</span>
+              </div>
+              <div class="p-2 bg-theme-softGray rounded-lg border border-theme-grayBorder">
+                <p class="font-bold text-slate-900">Check-in Turnstile Sukses</p>
+                <p class="text-slate-500 text-[10px] font-mono">Tiket #MAT-8812-OK • Gate Masuk 1</p>
+                <span class="text-[9px] text-slate-400">14 menit lalu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT VIEWS ==================== -->
+    <main class="p-4 sm:p-8 space-y-8 flex-1">
+
+      <!-- ==================== VIEW 1: DASHBOARD OVERVIEW ==================== -->
+      <section id="view-overview" class="space-y-8">
+        
+        <!-- Live Quick Stats Strip -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Stat 1: Total Revenue -->
+          <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">OMSET MASUK HARI INI</span>
+              <div class="w-8 h-8 rounded-lg bg-theme-amberBg text-theme-amberHover flex items-center justify-center font-bold">
+                <i data-lucide="wallet" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-theme-charcoal font-display block" id="statTodayRevenue">Rp 4.750.000</span>
+              <p class="text-emerald-600 text-[11px] font-medium flex items-center gap-1 mt-1 font-mono">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +18.4% vs kemarin
+              </p>
+            </div>
+            <div class="absolute -right-3 -bottom-3 opacity-5 text-theme-charcoal pointer-events-none">
+              <i data-lucide="dollar-sign" class="w-20 h-20"></i>
+            </div>
+          </div>
+
+          <!-- Stat 2: Active Bookings -->
+          <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">TOTAL BOOKING HARI INI</span>
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                <i data-lucide="calendar-check" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-theme-charcoal font-display block" id="statTotalBookings">18 Match</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">11 Padel • 7 Futsal Pro</p>
+            </div>
+          </div>
+
+          <!-- Stat 3: Outstanding DP to Settle at Venue -->
+          <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">SISA TAGIHAN KASIR (OUTSTANDING)</span>
+              <div class="w-8 h-8 rounded-lg bg-amber-50 text-theme-amberHover flex items-center justify-center font-bold">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-theme-amberHover font-display block" id="statOutstandingDP">Rp 875.000</span>
+              <p class="text-slate-500 text-[11px] mt-1 font-mono">3 Tim belum pelunasan 50% di kasir</p>
+            </div>
+          </div>
+
+          <!-- Stat 4: Arena Utilization -->
+          <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 font-mono">UTILISASI LAPANGAN</span>
+              <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <i data-lucide="pie-chart" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-extrabold text-theme-charcoal font-display block">83.5%</span>
+              <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div class="bg-theme-amber h-full rounded-full" style="width: 83.5%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (2 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left Chart: Peak Hours Booking Matrix (8 Cols) -->
+          <div class="lg:col-span-8 bg-white p-6 rounded-2xl border border-theme-grayBorder shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-theme-grayBorder pb-3">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display">Tingkat Okupansi Jam Sibuk (Peak Hours)</h3>
+                <p class="text-xs text-slate-500 font-mono">Distribusi jam sewa Padel vs Futsal hari ini</p>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-mono">
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-theme-amber"></span> Padel
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-slate-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-theme-charcoal"></span> Futsal Pro
+                </span>
+              </div>
+            </div>
+            <div class="h-64 sm:h-72 w-full">
+              <canvas id="occupancyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right Chart: Payment Distribution (4 Cols) -->
+          <div class="lg:col-span-4 bg-white p-6 rounded-2xl border border-theme-grayBorder shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="border-b border-theme-grayBorder pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-display">Rasio Skema Pembayaran</h3>
+              <p class="text-xs text-slate-500 font-mono">DP 50% QRIS vs Lunas 100%</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="paymentRatioChart"></canvas>
+            </div>
+            <div class="pt-2 text-[11px] font-mono text-slate-500 space-y-1 border-t border-theme-grayBorder">
+              <div class="flex justify-between">
+                <span>DP 50% QRIS:</span>
+                <span class="font-bold text-slate-900">62% (Favorit Tim)</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Lunas 100% QRIS:</span>
+                <span class="font-bold text-slate-900">28%</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Walk-in Langsung:</span>
+                <span class="font-bold text-slate-900">10%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Arena Fast View Strip -->
+        <div class="bg-theme-charcoal text-white rounded-2xl p-6 border border-theme-charcoalLight shadow-lg space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-theme-amber text-[10px] font-mono uppercase font-bold tracking-wider">LIVE ARENA STATUS (15:00 - 22:00 WIB)</span>
+              <h3 class="text-lg font-bold font-display">Pantauan Lapangan Aktif Detik Ini</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="switchTab('schedules')" class="bg-theme-charcoalLight hover:bg-slate-700 text-xs text-white px-3 py-1.5 rounded-lg border border-theme-charcoalLight font-mono transition flex items-center gap-1.5">
+                <i data-lucide="external-link" class="w-3.5 h-3.5 text-theme-amber"></i> Lihat Kalender Penuh
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+            <!-- Court 1 -->
+            <div class="bg-theme-charcoalLight/70 border border-theme-charcoalLight p-4 rounded-xl space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-xs font-bold text-white font-display">Panoramic Court A</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">SEDANG MAIN</span>
+              </div>
+              <p class="text-[11px] text-slate-300 font-sans">Garuda Padel (19:00 - 20:00)</p>
+              <div class="flex justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-theme-charcoalLight">
+                <span>Status DP: <strong class="text-emerald-400">Lunas Kasir</strong></span>
+                <span>Gate: Aktif</span>
+              </div>
+            </div>
+
+            <!-- Court 2 -->
+            <div class="bg-theme-charcoalLight/70 border border-theme-charcoalLight p-4 rounded-xl space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-xs font-bold text-white font-display">Center Court B</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-theme-amber border border-theme-amber/30">SIAP MAIN (19:00)</span>
+              </div>
+              <p class="text-[11px] text-slate-300 font-sans">Senayan Smashers (1 Jam)</p>
+              <div class="flex justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-theme-charcoalLight">
+                <span>Pelunasan: <strong class="text-theme-amber">Butuh Rp 140k</strong></span>
+                <button onclick="openPayModal('INV-PFM-8813')" class="underline hover:text-white">Bayar</button>
+              </div>
+            </div>
+
+            <!-- Court 3 -->
+            <div class="bg-theme-charcoalLight/70 border border-theme-charcoalLight p-4 rounded-xl space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-xs font-bold text-white font-display">Vinyl Arena 1 (Futsal)</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-700 text-slate-300">KOSONG</span>
+              </div>
+              <p class="text-[11px] text-slate-400 font-sans">Jadwal berikut: 20:00 WIB</p>
+              <div class="flex justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-theme-charcoalLight">
+                <span>Standby Resepsionis</span>
+                <button onclick="quickLockSlot('court-f1', '19:00 - 20:00')" class="text-theme-amber hover:underline">+ Kunci Slot</button>
+              </div>
+            </div>
+
+            <!-- Court 4 -->
+            <div class="bg-theme-charcoalLight/70 border border-theme-charcoalLight p-4 rounded-xl space-y-2">
+              <div class="flex justify-between items-start">
+                <span class="text-xs font-bold text-white font-display">Interlock Arena 2</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">SEDANG MAIN</span>
+              </div>
+              <p class="text-[11px] text-slate-300 font-sans">Kuningan United (2 Jam)</p>
+              <div class="flex justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-theme-charcoalLight">
+                <span>Status: <strong class="text-emerald-400">Lunas Online</strong></span>
+                <span>Gate: Open</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Booking Table Quick Action -->
+        <div class="bg-white rounded-2xl border border-theme-grayBorder shadow-sm p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-theme-grayBorder pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Antrean Booking & Status Pelunasan Kasir</h3>
+              <p class="text-xs text-slate-500 font-mono">Daftar tim yang baru masuk melalui sistem booking publik / walk-in</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="switchTab('bookings')" class="text-xs font-bold text-theme-charcoal hover:text-theme-amber transition font-mono flex items-center gap-1">
+                Kelola Semua Booking <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-theme-softGray text-slate-600 font-mono border-b border-theme-grayBorder">
+                <tr>
+                  <th class="py-3 px-4 font-bold">ID INVOICE</th>
+                  <th class="py-3 px-4 font-bold">TIM / PEMESAN</th>
+                  <th class="py-3 px-4 font-bold">LAPANGAN & JAM</th>
+                  <th class="py-3 px-4 font-bold">STATUS BAYAR</th>
+                  <th class="py-3 px-4 font-bold text-right">TAGIHAN KASIR</th>
+                  <th class="py-3 px-4 font-bold text-center">AKSI CEPAT</th>
+                </tr>
+              </thead>
+              <tbody id="quickOverviewBookingTable" class="divide-y divide-slate-100 font-medium">
+                <!-- Dynamically Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: JADWAL & KALENDER SLOT MATRIX ==================== -->
+      <section id="view-schedules" class="hidden space-y-6">
+        
+        <!-- Controls & Filters Strip -->
+        <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <span class="text-slate-600 font-bold">Pilih Tanggal:</span>
+            <input type="date" id="scheduleDateFilter" onchange="renderScheduleMatrix()" class="bg-theme-softGray border border-theme-grayBorder rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-theme-amber" />
+            <button onclick="setDateToday()" class="bg-theme-charcoal text-white hover:bg-slate-700 px-3 py-2 rounded-xl transition">Hari Ini</button>
+          </div>
+
+          <!-- Quick Legend & Action -->
+          <div class="flex flex-wrap items-center gap-3 text-slate-600">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-white border border-slate-300"></span> Tersedia</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-100 border border-theme-amber"></span> DP 50%</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-100 border border-emerald-400"></span> Lunas</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-300 border border-slate-400"></span> Blocked / Maint</span>
+          </div>
+        </div>
+
+        <!-- Full Matrix Grid -->
+        <div class="bg-white rounded-2xl border border-theme-grayBorder shadow-sm p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-theme-grayBorder pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Matriks Jadwal Lapangan Real-Time</h3>
+              <p class="text-xs text-slate-500 font-mono">Klik slot untuk memblokir jadwal, mengatur maintenance, atau input walk-in instan</p>
+            </div>
+            <button onclick="promptBlockCustomTime()" class="bg-slate-800 hover:bg-slate-900 text-white font-mono text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-theme-amber"></i> + Blokir Slot Khusus
+            </button>
+          </div>
+
+          <!-- Timeline Grid -->
+          <div class="overflow-x-auto">
+            <div class="min-w-[760px] space-y-4" id="matrixTimelineContainer">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: MANAJEMEN BOOKING ==================== -->
+      <section id="view-bookings" class="hidden space-y-6">
+        
+        <!-- Search & Filter Bar -->
+        <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+          <div class="flex items-center gap-3 w-full md:w-80">
+            <div class="relative w-full">
+              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+              <input type="text" id="bookingSearchInput" onkeyup="filterBookingsTable()" placeholder="Cari Tim, ID Booking, HP..." class="w-full pl-9 pr-3 py-2.5 bg-theme-softGray border border-theme-grayBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-theme-amber text-slate-800" />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button onclick="filterStatus('ALL')" class="status-filter-btn px-3.5 py-2 rounded-xl font-bold bg-theme-charcoal text-white transition" data-status="ALL">Semua</button>
+            <button onclick="filterStatus('PENDING_DP')" class="status-filter-btn px-3.5 py-2 rounded-xl font-bold bg-theme-softGray text-slate-600 hover:bg-slate-200 transition" data-status="PENDING_DP">DP (Belum Lunas)</button>
+            <button onclick="filterStatus('SETTLED')" class="status-filter-btn px-3.5 py-2 rounded-xl font-bold bg-theme-softGray text-slate-600 hover:bg-slate-200 transition" data-status="SETTLED">Lunas Penuh</button>
+            <button onclick="filterStatus('WALK_IN')" class="status-filter-btn px-3.5 py-2 rounded-xl font-bold bg-theme-softGray text-slate-600 hover:bg-slate-200 transition" data-status="WALK_IN">Walk-in Kasir</button>
+          </div>
+        </div>
+
+        <!-- Bookings Master Table -->
+        <div class="bg-white rounded-2xl border border-theme-grayBorder shadow-sm p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-theme-grayBorder pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Database Transaksi Master Arena</h3>
+              <p class="text-xs text-slate-500 font-mono" id="bookingTableCountText">Menampilkan data aktif</p>
+            </div>
+            <button onclick="exportBookingsToCSV()" class="bg-theme-softGray hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold px-3 py-2 rounded-xl border border-theme-grayBorder transition flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-theme-softGray text-slate-600 font-mono border-b border-theme-grayBorder">
+                <tr>
+                  <th class="py-3 px-4 font-bold">KODE BOOKING</th>
+                  <th class="py-3 px-4 font-bold">NAMA TIM & WHATSAPP</th>
+                  <th class="py-3 px-4 font-bold">LAPANGAN</th>
+                  <th class="py-3 px-4 font-bold">JADWAL WAKTU</th>
+                  <th class="py-3 px-4 font-bold">TOTAL SEWA</th>
+                  <th class="py-3 px-4 font-bold">SUDAH DIBAYAR</th>
+                  <th class="py-3 px-4 font-bold">SISA KASIR</th>
+                  <th class="py-3 px-4 font-bold">STATUS</th>
+                  <th class="py-3 px-4 font-bold text-center">AKSI OPERASIONAL</th>
+                </tr>
+              </thead>
+              <tbody id="masterBookingsTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: TURNSTILE CHECK-IN & BARCODE SCANNER ==================== -->
+      <section id="view-scanner" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left: Scanner Simulator Console (7 Cols) -->
+          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl border border-theme-grayBorder shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-theme-grayBorder pb-4">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+                  <i data-lucide="scan" class="w-5 h-5 text-theme-amber"></i>
+                  Turnstile Barcode Gate Validator
+                </h3>
+                <p class="text-xs text-slate-500 font-mono">Simulasi pemindaian scanner optik di pintu masuk stadion</p>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-mono font-bold border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> TURNSTILE ONLINE
+              </span>
+            </div>
+
+            <!-- Optical Scan Box Graphic -->
+            <div class="bg-theme-charcoal rounded-2xl p-8 border border-theme-charcoalLight text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+              <div class="w-48 h-32 border-2 border-dashed border-theme-amber/70 rounded-xl relative flex items-center justify-center p-4 bg-theme-charcoalLight/50">
+                <div class="w-full h-0.5 bg-theme-amber absolute top-1/2 -translate-y-1/2 shadow-lg shadow-amber-500 animate-pulse"></div>
+                <i data-lucide="barcode" class="w-16 h-16 text-slate-400 opacity-60"></i>
+              </div>
+              <p class="text-slate-400 text-xs font-mono mt-4">Posisikan Barcode Tiket (Cth: <strong>MAT-8812-OK</strong>) ke sensor</p>
+            </div>
+
+            <!-- Manual Barcode Input -->
+            <div class="space-y-3 font-mono text-xs">
+              <label class="block font-bold text-slate-700">Input Manual Barcode Token:</label>
+              <div class="flex gap-2">
+                <input type="text" id="barcodeScanInput" value="MAT-8812-OK" placeholder="Ketik token..." class="flex-1 bg-theme-softGray px-4 py-2.5 rounded-xl border border-theme-grayBorder font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-theme-amber" />
+                <button onclick="executeBarcodeScan()" class="bg-theme-charcoal hover:bg-slate-900 text-theme-amber font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                  <i data-lucide="search" class="w-4 h-4"></i> Validasi Tiket
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-400">Token cepat contoh untuk tes: <code class="text-theme-charcoal bg-slate-200 px-1 py-0.5 rounded cursor-pointer" onclick="testFillBarcode('MAT-8812-OK')">MAT-8812-OK</code>, <code class="text-theme-charcoal bg-slate-200 px-1 py-0.5 rounded cursor-pointer" onclick="testFillBarcode('MAT-9901-OK')">MAT-9901-OK</code></p>
+            </div>
+
+            <!-- Turnstile Result Display -->
+            <div id="turnstileResultCard" class="hidden p-5 rounded-2xl border transition-all duration-300">
+              <!-- Dynamically injected -->
+            </div>
+          </div>
+
+          <!-- Right: Gate Access Logs (5 Cols) -->
+          <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-theme-grayBorder shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-theme-grayBorder pb-3">
+              <h3 class="font-bold text-sm text-slate-900 font-display">Log Akses Pintu Masuk</h3>
+              <span class="text-[10px] font-mono text-slate-400">Auto Refresh</span>
+            </div>
+
+            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs font-mono" id="turnstileAuditLogs">
+              <!-- Logs populated by JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: KELOLA LAPANGAN & TARIF ==================== -->
+      <section id="view-courts" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 font-display">Konfigurasi Lapangan & Tarif Jam Sewa</h3>
+            <p class="text-xs text-slate-500 font-mono">Atur harga normal, happy hour, serta status operasional lapangan</p>
+          </div>
+          <button onclick="openAddCourtModal()" class="bg-theme-charcoal hover:bg-slate-900 text-theme-amber font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Arena Baru
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="courtsConfigGrid">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 6: LAPORAN KEUANGAN & KASIR ==================== -->
+      <section id="view-financial" class="hidden space-y-6">
+        
+        <!-- Financial Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">TOTAL OMSET BERSIH (BULAN INI)</span>
+            <span class="text-2xl font-black text-slate-900 font-display block mt-2">Rp 48.250.000</span>
+            <p class="text-slate-400 text-[11px] font-mono mt-1">Periode: Oktober 2026</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">SETTLEMENT QRIS GATEWAY</span>
+            <span class="text-2xl font-black text-theme-amberHover font-display block mt-2">Rp 37.100.000</span>
+            <p class="text-emerald-600 text-[11px] font-mono mt-1">Auto-Settled ke BCA Rekening Arena</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-theme-grayBorder shadow-sm">
+            <span class="text-xs text-slate-500 font-mono font-bold">CASH & EDC KASIR (PELUNASAN)</span>
+            <span class="text-2xl font-black text-slate-900 font-display block mt-2">Rp 11.150.000</span>
+            <p class="text-slate-500 text-[11px] font-mono mt-1">Fisik di laci kasir resepsionis</p>
+          </div>
+        </div>
+
+        <!-- Cashier Closeout Drawer Helper -->
+        <div class="bg-white p-6 rounded-2xl border border-theme-grayBorder shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-theme-grayBorder pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Tutup Buku Kasir Resepsionis (Shift Hari Ini)</h3>
+              <p class="text-xs text-slate-500 font-mono">Rekap pelunasan pembayaran di venue sebelum pergantian shift</p>
+            </div>
+            <button onclick="window.print()" class="bg-theme-charcoal hover:bg-slate-900 text-theme-amber font-mono font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+              <i data-lucide="printer" class="w-4 h-4"></i> Cetak Rekap Shift Kasir
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+            <div class="p-4 rounded-xl bg-theme-softGray border border-theme-grayBorder space-y-1">
+              <span class="text-slate-500">Kasir Bertugas:</span>
+              <p class="font-bold text-slate-900 text-sm">Tedi M. (Shift Sore)</p>
+            </div>
+            <div class="p-4 rounded-xl bg-theme-softGray border border-theme-grayBorder space-y-1">
+              <span class="text-slate-500">Total Transaksi Pelunasan Venue:</span>
+              <p class="font-bold text-slate-900 text-sm" id="cashierShiftCount">7 Transaksi</p>
+            </div>
+            <div class="p-4 rounded-xl bg-theme-amberBg border border-theme-amber space-y-1">
+              <span class="text-theme-charcoal font-bold">Total Tunai/EDC Diterima:</span>
+              <p class="font-extrabold text-theme-amberHover text-base" id="cashierShiftTotal">Rp 875.000</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODAL 1: WALK-IN BOOKING BARU ==================== -->
+  <div id="walkInModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full border border-theme-grayBorder shadow-2xl p-6 space-y-5 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-theme-grayBorder pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-theme-amber"></i> Input Walk-in Resepsionis
+        </h3>
+        <button onclick="closeWalkInModal()" class="text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nama Tim / Pelanggan *</label>
+          <input type="text" id="walkinTeamName" placeholder="Contoh: Kemenpora FC" class="w-full bg-theme-softGray border border-theme-grayBorder rounded-xl p-2.5 text-slate-900 font-sans focus:outline-none focus:ring-2 focus:ring-theme-amber" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">No. WhatsApp *</label>
+            <input type="tel" id="walkinPhone" placeholder="0812..." class="w-full bg-theme-softGray border border-theme-grayBorder rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-theme-amber" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Pilih Lapangan *</label>
+            <select id="walkinCourtSelect" onchange="updateWalkinPricePreview()" class="w-full bg-theme-softGray border border-theme-grayBorder rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-theme-amber">
+              <option value="court-p1">Panoramic Court A (Padel)</option>
+              <option value="court-p2">Center Court B (Padel)</option>
+              <option value="court-f1">Vinyl Arena 1 (Futsal Pro)</option>
+              <option value="court-f2">Interlock Arena 2 (Futsal)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Slot Waktu Kick-off *</label>
+            <select id="walkinTimeSelect" class="w-full bg-theme-softGray border border-theme-grayBorder rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-theme-amber">
+              <option value="16:00 - 17:00">16:00 - 17:00 WIB</option>
+              <option value="17:00 - 18:00">17:00 - 18:00 WIB</option>
+              <option value="18:00 - 19:00">18:00 - 19:00 WIB</option>
+              <option value="19:00 - 20:00">19:00 - 20:00 WIB</option>
+              <option value="20:00 - 21:00">20:00 - 21:00 WIB</option>
+              <option value="21:00 - 22:00">21:00 - 22:00 WIB</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Durasi Sewa *</label>
+            <select id="walkinDurationSelect" onchange="updateWalkinPricePreview()" class="w-full bg-theme-softGray border border-theme-grayBorder rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-theme-amber">
+              <option value="1">1 Jam</option>
+              <option value="2">2 Jam</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Payment Method Walkin -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Metode Pembayaran di Resepsionis:</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2.5 bg-theme-softGray rounded-xl border border-theme-grayBorder cursor-pointer">
+              <input type="radio" name="walkinPayMethod" value="CASH_FULL" checked class="text-theme-amber focus:ring-theme-amber">
+              <span>Tunai Lunas di Kasir</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 bg-theme-softGray rounded-xl border border-theme-grayBorder cursor-pointer">
+              <input type="radio" name="walkinPayMethod" value="EDC_BCA" class="text-theme-amber focus:ring-theme-amber">
+              <span>Debit / EDC EDC BCA</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Price Callout -->
+        <div class="p-3 bg-theme-charcoal text-white rounded-xl flex items-center justify-between border border-theme-charcoalLight">
+          <span class="text-slate-400">Total Tarif Diterima Kasir:</span>
+          <span class="text-base font-extrabold text-theme-amber font-mono" id="walkinTotalLabel">Rp 250.000</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-theme-grayBorder">
+        <button onclick="closeWalkInModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition">Batal</button>
+        <button onclick="saveWalkInBooking()" class="px-5 py-2.5 bg-theme-amber hover:bg-theme-amberHover text-theme-charcoal font-bold rounded-xl transition flex items-center gap-1.5 shadow-md shadow-amber-500/20 font-sans">
+          <i data-lucide="check" class="w-4 h-4"></i> Cetak Tiket & Kunci Slot
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: KONFIRMASI PELUNASAN KASIR ==================== -->
+  <div id="settleModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full border border-theme-grayBorder shadow-2xl p-6 space-y-5 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-theme-grayBorder pb-3">
+        <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
+          <i data-lucide="badge-check" class="w-5 h-5 text-emerald-600"></i> Pelunasan Kasir di Lokasi
+        </h3>
+        <button onclick="closeSettleModal()" class="text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 bg-theme-softGray p-4 rounded-xl border border-theme-grayBorder">
+        <div class="flex justify-between">
+          <span class="text-slate-500">ID Booking:</span>
+          <span class="font-bold text-slate-900" id="settleModalInv">INV-PFM-8812</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Nama Tim:</span>
+          <span class="font-bold text-slate-900" id="settleModalTeam">Garuda Padel</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Total Tarif Sewa:</span>
+          <span class="font-bold text-slate-900" id="settleModalSubtotal">Rp 250.000</span>
+        </div>
+        <div class="flex justify-between text-emerald-700">
+          <span>Sudah Dibayar (DP QRIS 50%):</span>
+          <span class="font-bold" id="settleModalPaid">Rp 125.000</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-theme-grayBorder text-sm font-bold text-theme-charcoal">
+          <span>Sisa Tagihan yang Harus Diterima:</span>
+          <span class="text-theme-amberHover font-extrabold" id="settleModalDue">Rp 125.000</span>
+        </div>
+      </div>
+
+      <!-- Payment Source -->
+      <div>
+        <label class="block font-bold text-slate-700 mb-1">Metode Penerimaan Pelunasan:</label>
+        <select id="settlePaymentMethod" class="w-full bg-theme-softGray border border-theme-grayBorder rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-theme-amber font-sans">
+          <option value="Cash / Tunai di Kasir">Cash / Uang Pas di Kasir</option>
+          <option value="EDC BCA / Mandiri">Debit EDC Venue</option>
+          <option value="QRIS Statis Kasir">QRIS Kasir Ekstra</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-theme-grayBorder">
+        <button onclick="closeSettleModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition">Batal</button>
+        <button onclick="confirmSettlePayment()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20 font-sans">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Konfirmasi Lunas & Buka Gate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PRINTABLE HIDDEN RECEIPT ==================== -->
+  <div id="printReceiptContainer" class="hidden">
+    <div style="font-family: monospace; max-width: 320px; margin: 0 auto; text-align: left; font-size: 11px;">
+      <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 8px; margin-bottom: 8px;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: bold;">MASTER ARENA STADIUM</h2>
+        <p style="margin: 2px 0;">Padel & Futsal Pro Ecosystem</p>
+        <p style="margin: 0; font-size: 9px;">Jl. Rasuna Said Kav. B-12, Kuningan</p>
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <p style="margin: 2px 0;"><strong>No:</strong> <span id="prnInv">INV-PFM-8812</span></p>
+        <p style="margin: 2px 0;"><strong>Tim:</strong> <span id="prnTeam">Garuda Padel</span></p>
+        <p style="margin: 2px 0;"><strong>Lapangan:</strong> <span id="prnCourt">Panoramic Court A</span></p>
+        <p style="margin: 2px 0;"><strong>Waktu:</strong> <span id="prnTime">19:00 - 20:00 WIB</span></p>
+        <p style="margin: 2px 0;"><strong>Status:</strong> LUNAS DI KASIR RESEPSIONIS</p>
+      </div>
+
+      <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 6px 0; margin-bottom: 8px;">
+        <table style="width: 100%;">
+          <tr>
+            <td>Total Sewa:</td>
+            <td style="text-align: right;" id="prnTotal">Rp 250.000</td>
+          </tr>
+          <tr>
+            <td>DP QRIS Masuk:</td>
+            <td style="text-align: right;" id="prnDP">Rp 125.000</td>
+          </tr>
+          <tr>
+            <td><strong>Pelunasan Kasir:</strong></td>
+            <td style="text-align: right;"><strong id="prnPaidCashier">Rp 125.000</strong></td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <p style="margin: 0; font-weight: bold;">TOKEN TURNSTILE: MAT-8812-OK</p>
+        <p style="margin: 4px 0 0; font-size: 9px;">Harap gunakan sepatu non-marking sol karet.</p>
+        <p style="margin: 2px 0 0; font-size: 9px;">Terima kasih telah bermain di Master Arena!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APP LOGIC ==================== -->
+  <script>
+    // Master Database dummy data aligned with client web
+    let masterCourts = [
+      {
+        id: "court-p1",
+        name: "Panoramic Court A (Padel)",
+        sport: "padel",
+        badge: "WPT Regulation Glass",
+        ratePerHour: 250000,
+        status: "ACTIVE",
+        slots: [
+          { time: "08:00 - 09:00", status: "FREE" },
+          { time: "09:00 - 10:00", status: "SETTLED", team: "Jakarta Smash Club" },
+          { time: "16:00 - 17:00", status: "FREE" },
+          { time: "17:00 - 18:00", status: "MAINTENANCE" },
+          { time: "19:00 - 20:00", status: "SETTLED", team: "Garuda Padel Club" },
+          { time: "20:00 - 21:00", status: "PENDING_DP", team: "Ace Smashers" }
+        ]
+      },
+      {
+        id: "court-p2",
+        name: "Center Court B (Padel)",
+        sport: "padel",
+        badge: "Indoor Climate Controlled",
+        ratePerHour: 280000,
+        status: "ACTIVE",
+        slots: [
+          { time: "09:00 - 10:00", status: "FREE" },
+          { time: "10:00 - 11:00", status: "FREE" },
+          { time: "15:00 - 16:00", status: "PENDING_DP", team: "Sudirman Padel" },
+          { time: "18:00 - 19:00", status: "SETTLED", team: "Senayan Smashers" },
+          { time: "20:00 - 21:00", status: "FREE" },
+          { time: "21:00 - 22:00", status: "FREE" }
+        ]
+      },
+      {
+        id: "court-f1",
+        name: "Vinyl Arena 1 (Futsal Pro)",
+        sport: "futsal",
+        badge: "Standar AFC Vinyl 8mm",
+        ratePerHour: 180000,
+        status: "ACTIVE",
+        slots: [
+          { time: "15:00 - 16:00", status: "FREE" },
+          { time: "16:00 - 17:00", status: "FREE" },
+          { time: "18:00 - 19:00", status: "PENDING_DP", team: "Kuningan United" },
+          { time: "19:00 - 20:00", status: "FREE" },
+          { time: "20:00 - 21:00", status: "SETTLED", team: "Barito Boys FC" },
+          { time: "21:00 - 22:00", status: "FREE" }
+        ]
+      },
+      {
+        id: "court-f2",
+        name: "Interlock Stadium 2 (Futsal)",
+        sport: "futsal",
+        badge: "Interlock Anti-Slip",
+        ratePerHour: 160000,
+        status: "ACTIVE",
+        slots: [
+          { time: "08:00 - 09:00", status: "FREE" },
+          { time: "10:00 - 11:00", status: "FREE" },
+          { time: "14:00 - 15:00", status: "FREE" },
+          { time: "17:00 - 18:00", status: "BLOCKED" },
+          { time: "19:00 - 20:00", status: "SETTLED", team: "Tebet Runners FC" },
+          { time: "20:00 - 21:00", status: "FREE" }
+        ]
+      }
+    ];
+
+    let masterBookings = [
+      {
+        id: "INV-PFM-8812",
+        barcode: "MAT-8812-OK",
+        team: "Garuda Padel Club",
+        phone: "0812-9999-8888",
+        courtId: "court-p1",
+        courtName: "Panoramic Court A (Padel)",
+        date: "2026-10-29",
+        time: "19:00 - 20:00",
+        duration: "1 Jam",
+        totalRental: 250000,
+        paidAmount: 125000,
+        dueAmount: 125000,
+        status: "PENDING_DP", // PENDING_DP (50% bayar di kasir)
+        scheme: "DP 50% QRIS",
+        checkedIn: false
+      },
+      {
+        id: "INV-PFM-8813",
+        barcode: "MAT-8813-OK",
+        team: "Senayan Smashers",
+        phone: "0811-3456-7890",
+        courtId: "court-p2",
+        courtName: "Center Court B (Padel)",
+        date: "2026-10-29",
+        time: "18:00 - 19:00",
+        duration: "1 Jam",
+        totalRental: 280000,
+        paidAmount: 140000,
+        dueAmount: 140000,
+        status: "PENDING_DP",
+        scheme: "DP 50% QRIS",
+        checkedIn: false
+      },
+      {
+        id: "INV-PFM-8814",
+        barcode: "MAT-9901-OK",
+        team: "Barito Boys FC",
+        phone: "0818-7711-2233",
+        courtId: "court-f1",
+        courtName: "Vinyl Arena 1 (Futsal Pro)",
+        date: "2026-10-29",
+        time: "20:00 - 21:00",
+        duration: "1 Jam",
+        totalRental: 180000,
+        paidAmount: 180000,
+        dueAmount: 0,
+        status: "SETTLED",
+        scheme: "QRIS Lunas 100%",
+        checkedIn: true
+      },
+      {
+        id: "INV-PFM-8815",
+        barcode: "MAT-9902-OK",
+        team: "Tebet Runners FC",
+        phone: "0813-5566-7788",
+        courtId: "court-f2",
+        courtName: "Interlock Stadium 2 (Futsal)",
+        date: "2026-10-29",
+        time: "19:00 - 20:00",
+        duration: "1 Jam",
+        totalRental: 160000,
+        paidAmount: 160000,
+        dueAmount: 0,
+        status: "WALK_IN",
+        scheme: "Walk-in Cash Kasir",
+        checkedIn: true
+      },
+      {
+        id: "INV-PFM-8816",
+        barcode: "MAT-9903-OK",
+        team: "Ace Smashers",
+        phone: "0857-1122-3344",
+        courtId: "court-p1",
+        courtName: "Panoramic Court A (Padel)",
+        date: "2026-10-29",
+        time: "20:00 - 21:00",
+        duration: "1 Jam",
+        totalRental: 250000,
+        paidAmount: 125000,
+        dueAmount: 125000,
+        status: "PENDING_DP",
+        scheme: "DP 50% QRIS",
+        checkedIn: false
+      }
+    ];
+
+    let accessAuditLogs = [
+      { time: "18:55:12", barcode: "MAT-9901-OK", team: "Barito Boys FC", gate: "Gate 1 (Futsal)", status: "BERHASIL MASUK" },
+      { time: "18:42:05", barcode: "MAT-9902-OK", team: "Tebet Runners FC", gate: "Gate 2 (Futsal)", status: "BERHASIL MASUK" },
+      { time: "17:59:30", barcode: "MAT-7700-EX", team: "Unknown", gate: "Gate Turnstile 1", status: "DITOLAK (KADALUARSA)" }
+    ];
+
+    // Current State
+    let activeSettleBookingId = null;
+    let occupancyChartInstance = null;
+    let paymentRatioChartInstance = null;
+
+    // Helper: Rupiah Currency Formatter
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Toggle Sidebar Mobile
+    function toggleSidebar() {
+      const sb = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      sb.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    // Tab Navigation
+    function switchTab(tabKey) {
+      // Titles Map
+      const titles = {
+        overview: "Dashboard Overview",
+        schedules: "Jadwal & Matriks Slot Lapangan",
+        bookings: "Manajemen Booking & Transaksi",
+        scanner: "Turnstile Gate & Barcode Scanner",
+        courts: "Pengaturan Lapangan & Tarif",
+        financial: "Laporan Keuangan & Kasir Resepsionis"
+      };
+
+      document.getElementById('currentViewTitle').innerText = titles[tabKey] || "Portal Admin";
+
+      // Hide all views
+      ['overview', 'schedules', 'bookings', 'scanner', 'courts', 'financial'].forEach(key => {
+        const v = document.getElementById(`view-${key}`);
+        if (v) v.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${key}`);
+        if (btn) {
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-theme-charcoalLight font-mono";
+        }
+      });
+
+      // Show active view
+      const targetView = document.getElementById(`view-${tabKey}`);
+      if (targetView) targetView.classList.remove('hidden');
+
+      const targetBtn = document.getElementById(`tab-${tabKey}`);
+      if (targetBtn) {
+        targetBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-theme-amber bg-theme-charcoalLight border-l-4 border-theme-amber shadow-sm font-mono";
+      }
+
+      // Close mobile sidebar if open
+      const sb = document.getElementById('adminSidebar');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+
+      // Re-render specific views if needed
+      if (tabKey === 'schedules') renderScheduleMatrix();
+      if (tabKey === 'bookings') renderMasterBookingsTable();
+      if (tabKey === 'courts') renderCourtsConfiguration();
+      if (tabKey === 'scanner') renderTurnstileLogs();
+
+      lucide.createIcons();
+    }
+
+    // Toggle notification dropdown
+    function toggleNotificationPanel() {
+      const panel = document.getElementById('notificationPanel');
+      panel.classList.toggle('hidden');
+    }
+
+    // Init App
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set Default Date
+      const today = new Date().toISOString().split('T')[0];
+      const schedDate = document.getElementById('scheduleDateFilter');
+      if (schedDate) schedDate.value = today;
+
+      initCharts();
+      renderQuickOverviewTable();
+      renderScheduleMatrix();
+      renderMasterBookingsTable();
+      renderCourtsConfiguration();
+      renderTurnstileLogs();
+      updateDashboardCounters();
+      lucide.createIcons();
+    });
+
+    // Chart.js Implementations
+    function initCharts() {
+      // 1. Occupancy Line/Bar Chart
+      const ctxOcc = document.getElementById('occupancyChart');
+      if (ctxOcc) {
+        occupancyChartInstance = new Chart(ctxOcc, {
+          type: 'bar',
+          data: {
+            labels: ['08:00', '10:00', '14:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'],
+            datasets: [
+              {
+                label: 'Padel Tennis',
+                data: [1, 2, 1, 2, 1, 2, 2, 2, 1],
+                backgroundColor: '#F59E0B',
+                borderRadius: 6
+              },
+              {
+                label: 'Futsal Pro',
+                data: [1, 1, 0, 1, 1, 2, 2, 2, 1],
+                backgroundColor: '#1E1E24',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 4,
+                ticks: { stepSize: 1, color: '#94A3B8', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { color: '#F1F5F9' }
+              },
+              x: {
+                ticks: { color: '#64748B', font: { family: 'JetBrains Mono', size: 10 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Payment Ratio Doughnut Chart
+      const ctxPay = document.getElementById('paymentRatioChart');
+      if (ctxPay) {
+        paymentRatioChartInstance = new Chart(ctxPay, {
+          type: 'doughnut',
+          data: {
+            labels: ['DP 50% QRIS', 'Lunas 100% QRIS', 'Walk-in Kasir'],
+            datasets: [{
+              data: [62, 28, 10],
+              backgroundColor: ['#F59E0B', '#1E1E24', '#94A3B8'],
+              borderWidth: 2,
+              borderColor: '#FFFFFF'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            },
+            cutout: '72%'
+          }
+        });
+      }
+    }
+
+    // Render Quick Table on Overview
+    function renderQuickOverviewTable() {
+      const tbody = document.getElementById('quickOverviewBookingTable');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      masterBookings.slice(0, 5).forEach(b => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        let statusBadge = '';
+        if (b.status === 'PENDING_DP') {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200">DP 50% (Sisa Kasir)</span>`;
+        } else if (b.status === 'SETTLED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Lunas 100%</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200">Walk-in Kasir</span>`;
+        }
+
+        let actionBtn = '';
+        if (b.status === 'PENDING_DP') {
+          actionBtn = `
+            <button onclick="openPayModal('${b.id}')" class="bg-theme-amber hover:bg-theme-amberHover text-theme-charcoal font-bold px-3 py-1.5 rounded-lg transition shadow-sm font-mono text-[11px] flex items-center gap-1 mx-auto active:scale-95">
+              <i data-lucide="hand-coins" class="w-3.5 h-3.5"></i> Pelunasan Kasir
+            </button>
+          `;
+        } else {
+          actionBtn = `
+            <button onclick="printBookingReceipt('${b.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg transition font-mono text-[11px] flex items-center gap-1 mx-auto">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak Struk
+            </button>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-theme-charcoal">${b.id}</td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-900">${b.team}<br><span class="text-[10px] text-slate-400 font-mono font-normal">${b.phone}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700">${b.courtName}<br><span class="text-[10px] text-theme-amberHover font-mono font-bold">${b.time} WIB</span></td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-right font-mono font-bold ${b.dueAmount > 0 ? 'text-theme-amberHover' : 'text-slate-400'}">${formatRupiah(b.dueAmount)}</td>
+          <td class="py-3 px-4 text-center">${actionBtn}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Render Master Bookings Master Table
+    function renderMasterBookingsTable(filteredList = null) {
+      const tbody = document.getElementById('masterBookingsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = filteredList || masterBookings;
+      document.getElementById('bookingTableCountText').innerText = `Menampilkan ${list.length} data transaksi`;
+
+      list.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+
+        let statusBadge = '';
+        if (b.status === 'PENDING_DP') {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200">DP 50%</span>`;
+        } else if (b.status === 'SETTLED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Lunas</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200">Walk-in</span>`;
+        }
+
+        let actionHtml = '';
+        if (b.status === 'PENDING_DP') {
+          actionHtml = `
+            <div class="flex items-center justify-center gap-1.5 font-mono">
+              <button onclick="openPayModal('${b.id}')" title="Pelunasan di Tempat" class="bg-theme-amber hover:bg-theme-amberHover text-theme-charcoal font-bold px-2.5 py-1 rounded-lg transition text-[11px] flex items-center gap-1 shadow-sm">
+                <i data-lucide="hand-coins" class="w-3.5 h-3.5"></i> Pelunasan
+              </button>
+              <button onclick="printBookingReceipt('${b.id}')" title="Cetak Tagihan" class="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          `;
+        } else {
+          actionHtml = `
+            <div class="flex items-center justify-center gap-1.5 font-mono">
+              <button onclick="printBookingReceipt('${b.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1 rounded-lg transition text-[11px] flex items-center gap-1">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i> Struk
+              </button>
+              <span class="text-[10px] text-emerald-600 font-bold flex items-center"><i data-lucide="check" class="w-3 h-3"></i> Clear</span>
+            </div>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-slate-900">${b.id}<br><span class="text-[9px] text-slate-400 font-normal">Token: ${b.barcode}</span></td>
+          <td class="py-3 px-4 font-sans font-bold text-slate-900">${b.team}<br><span class="text-[10px] text-slate-400 font-mono font-normal">${b.phone}</span></td>
+          <td class="py-3 px-4 font-sans text-slate-700">${b.courtName}</td>
+          <td class="py-3 px-4 font-mono text-slate-800">${b.date}<br><strong class="text-theme-amberHover">${b.time}</strong></td>
+          <td class="py-3 px-4 font-mono font-bold text-slate-900">${formatRupiah(b.totalRental)}</td>
+          <td class="py-3 px-4 font-mono text-emerald-700 font-bold">${formatRupiah(b.paidAmount)}</td>
+          <td class="py-3 px-4 font-mono font-extrabold ${b.dueAmount > 0 ? 'text-theme-amberHover' : 'text-slate-400'}">${formatRupiah(b.dueAmount)}</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-center">${actionHtml}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Filter Table Search
+    function filterBookingsTable() {
+      const q = document.getElementById('bookingSearchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderMasterBookingsTable();
+        return;
+      }
+      const filtered = masterBookings.filter(b => 
+        b.id.toLowerCase().includes(q) ||
+        b.team.toLowerCase().includes(q) ||
+        b.phone.toLowerCase().includes(q) ||
+        b.barcode.toLowerCase().includes(q)
+      );
+      renderMasterBookingsTable(filtered);
+    }
+
+    // Filter Table Status
+    function filterStatus(status) {
+      document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-status') === status) {
+          btn.className = "status-filter-btn px-3.5 py-2 rounded-xl font-bold bg-theme-charcoal text-white transition";
+        } else {
+          btn.className = "status-filter-btn px-3.5 py-2 rounded-xl font-bold bg-theme-softGray text-slate-600 hover:bg-slate-200 transition";
+        }
+      });
+
+      if (status === 'ALL') {
+        renderMasterBookingsTable();
+      } else {
+        const filtered = masterBookings.filter(b => b.status === status);
+        renderMasterBookingsTable(filtered);
+      }
+    }
+
+    // Render Matrix Timeline
+    function renderScheduleMatrix() {
+      const container = document.getElementById('matrixTimelineContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      masterCourts.forEach(c => {
+        const row = document.createElement('div');
+        row.className = "p-4 rounded-xl border border-theme-grayBorder bg-theme-softGray/50 space-y-3";
+
+        let slotsHtml = c.slots.map(s => {
+          let btnClass = "";
+          let labelText = s.time;
+          let subText = "Tersedia";
+
+          if (s.status === 'FREE') {
+            btnClass = "bg-white border-theme-grayBorder text-slate-800 hover:border-theme-amber hover:bg-amber-50/50";
+          } else if (s.status === 'PENDING_DP') {
+            btnClass = "bg-amber-50 border-theme-amber text-theme-amberHover font-bold";
+            subText = s.team || "DP 50%";
+          } else if (s.status === 'SETTLED') {
+            btnClass = "bg-emerald-50 border-emerald-400 text-emerald-800 font-bold";
+            subText = s.team || "Lunas";
+          } else {
+            btnClass = "bg-slate-200 border-slate-300 text-slate-500 cursor-not-allowed";
+            subText = "Maintenance";
+          }
+
+          return `
+            <div onclick="clickSlotAction('${c.id}', '${s.time}', '${s.status}')" class="p-2.5 rounded-xl border transition text-center cursor-pointer ${btnClass}">
+              <span class="block font-bold font-mono text-[11px]">${labelText}</span>
+              <span class="block text-[9px] truncate font-sans mt-0.5 opacity-80">${subText}</span>
+            </div>
+          `;
+        }).join('');
+
+        row.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full ${c.sport === 'padel' ? 'bg-theme-amber' : 'bg-theme-charcoal'}"></span>
+              <h4 class="font-bold text-sm text-slate-900 font-display">${c.name}</h4>
+              <span class="text-[10px] font-mono text-slate-400 bg-white border border-slate-200 px-2 py-0.5 rounded">${c.badge}</span>
+            </div>
+            <span class="font-mono text-xs font-bold text-slate-700">${formatRupiah(c.ratePerHour)} / Jam</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+            ${slotsHtml}
+          </div>
+        `;
+
+        container.appendChild(row);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Set Schedule Date to Today
+    function setDateToday() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('scheduleDateFilter').value = today;
+      renderScheduleMatrix();
+    }
+
+    // Quick Matrix Slot Click
+    function clickSlotAction(courtId, timeStr, currentStatus) {
+      if (currentStatus === 'FREE') {
+        const confirmBlock = window.confirm(`Slot ${timeStr} kosong. Apakah Anda ingin MENGUNCI (Block Maintenance/Turnamen) slot ini?`);
+        if (confirmBlock) {
+          quickLockSlot(courtId, timeStr);
+        }
+      } else if (currentStatus === 'MAINTENANCE' || currentStatus === 'BLOCKED') {
+        const confirmUnlock = window.confirm(`Slot ${timeStr} terkunci. Buka kembali menjadi TERSEDIA untuk umum?`);
+        if (confirmUnlock) {
+          unlockSlot(courtId, timeStr);
+        }
+      } else {
+        // Find existing booking
+        const match = masterBookings.find(b => b.courtId === courtId && b.time === timeStr);
+        if (match) {
+          if (match.status === 'PENDING_DP') {
+            openPayModal(match.id);
+          } else {
+            printBookingReceipt(match.id);
+          }
+        }
+      }
+    }
+
+    function quickLockSlot(courtId, timeStr) {
+      const court = masterCourts.find(c => c.id === courtId);
+      if (court) {
+        const slot = court.slots.find(s => s.time === timeStr);
+        if (slot) {
+          slot.status = 'BLOCKED';
+          renderScheduleMatrix();
+          alert(`Slot ${court.name} [${timeStr}] berhasil dikunci dari pemesanan online.`);
+        }
+      }
+    }
+
+    function unlockSlot(courtId, timeStr) {
+      const court = masterCourts.find(c => c.id === courtId);
+      if (court) {
+        const slot = court.slots.find(s => s.time === timeStr);
+        if (slot) {
+          slot.status = 'FREE';
+          delete slot.team;
+          renderScheduleMatrix();
+          alert(`Slot ${court.name} [${timeStr}] kini TERSEDIA kembali.`);
+        }
+      }
+    }
+
+    function promptBlockCustomTime() {
+      const courtName = prompt("Ketik nama lapangan (A / B / Vinyl / Interlock):", "A");
+      if (courtName) {
+        alert(`Sistem telah menandai reservasi slot khusus untuk '${courtName}'.`);
+      }
+    }
+
+    // Render Court Configurations View
+    function renderCourtsConfiguration() {
+      const grid = document.getElementById('courtsConfigGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      masterCourts.forEach(c => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-6 rounded-2xl border border-theme-grayBorder shadow-sm space-y-4 font-mono text-xs";
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-theme-grayBorder pb-3">
+            <div>
+              <span class="text-[10px] font-bold text-theme-amberHover uppercase">${c.sport.toUpperCase()} STADIUM</span>
+              <h4 class="text-sm font-bold text-slate-900 font-display">${c.name}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">ACTIVE PRO</span>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block font-bold text-slate-600 mb-1">Tarif Normal per Jam:</label>
+              <div class="flex gap-2">
+                <input type="number" value="${c.ratePerHour}" id="rate-input-${c.id}" class="w-full bg-theme-softGray border border-theme-grayBorder rounded-xl p-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-theme-amber" />
+                <button onclick="saveCourtRate('${c.id}')" class="px-3 bg-theme-charcoal text-theme-amber rounded-xl hover:bg-slate-900 font-bold">Simpan</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-slate-500">
+              <div class="p-2.5 rounded-lg bg-theme-softGray border border-theme-grayBorder">
+                <span class="block text-[10px]">Spesifikasi:</span>
+                <span class="font-bold text-slate-800 text-[11px] truncate block">${c.badge}</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-theme-softGray border border-theme-grayBorder">
+                <span class="block text-[10px]">Lampu & Gate:</span>
+                <span class="font-bold text-emerald-600 text-[11px] block">LED 800 Lux OK</span>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function saveCourtRate(courtId) {
+      const input = document.getElementById(`rate-input-${courtId}`);
+      if (input) {
+        const val = parseInt(input.value);
+        const court = masterCourts.find(c => c.id === courtId);
+        if (court && val > 0) {
+          court.ratePerHour = val;
+          renderScheduleMatrix();
+          renderCourtsConfiguration();
+          alert(`Tarif untuk ${court.name} diperbarui menjadi ${formatRupiah(val)} / Jam.`);
+        }
+      }
+    }
+
+    function openAddCourtModal() {
+      alert("Form arena baru siap dikonfigurasi. Hubungi System Administrator untuk mendaftarkan hardware turnstile baru.");
+    }
+
+    // Cashier Pelunasan Modal
+    function openPayModal(invId) {
+      const b = masterBookings.find(x => x.id === invId);
+      if (!b) return;
+
+      activeSettleBookingId = invId;
+      document.getElementById('settleModalInv').innerText = b.id;
+      document.getElementById('settleModalTeam').innerText = b.team;
+      document.getElementById('settleModalSubtotal').innerText = formatRupiah(b.totalRental);
+      document.getElementById('settleModalPaid').innerText = formatRupiah(b.paidAmount);
+      document.getElementById('settleModalDue').innerText = formatRupiah(b.dueAmount);
+
+      document.getElementById('settleModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settleModal').classList.add('hidden');
+      activeSettleBookingId = null;
+    }
+
+    function confirmSettlePayment() {
+      if (!activeSettleBookingId) return;
+
+      const b = masterBookings.find(x => x.id === activeSettleBookingId);
+      if (b) {
+        const method = document.getElementById('settlePaymentMethod').value;
+        b.paidAmount = b.totalRental;
+        b.dueAmount = 0;
+        b.status = 'SETTLED';
+
+        // Update Matrix slot status
+        const court = masterCourts.find(c => c.id === b.courtId);
+        if (court) {
+          const slot = court.slots.find(s => s.time === b.time);
+          if (slot) slot.status = 'SETTLED';
+        }
+
+        // Add to notification feed
+        const notifList = document.getElementById('notificationList');
+        if (notifList) {
+          const item = document.createElement('div');
+          item.className = "p-2 bg-emerald-50 rounded-lg border border-emerald-200";
+          item.innerHTML = `
+            <p class="font-bold text-emerald-900">Pelunasan Kasir Diterima: ${formatRupiah(b.totalRental - 125000)}</p>
+            <p class="text-emerald-700 text-[10px] font-mono">${b.team} via ${method}</p>
+            <span class="text-[9px] text-emerald-500">Baru saja</span>
+          `;
+          notifList.prepend(item);
+        }
+
+        closeSettleModal();
+        renderQuickOverviewTable();
+        renderMasterBookingsTable();
+        renderScheduleMatrix();
+        updateDashboardCounters();
+
+        const printNow = window.confirm("Pelunasan berhasil dikonfirmasi! Apakah ingin langsung mencetak Struk Kasir?");
+        if (printNow) {
+          printBookingReceipt(b.id);
+        }
+      }
+    }
+
+    // Walk-in Modal Handlers
+    function openWalkInModal() {
+      document.getElementById('walkInModal').classList.remove('hidden');
+      updateWalkinPricePreview();
+    }
+
+    function closeWalkInModal() {
+      document.getElementById('walkInModal').classList.add('hidden');
+    }
+
+    function updateWalkinPricePreview() {
+      const courtId = document.getElementById('walkinCourtSelect').value;
+      const duration = parseInt(document.getElementById('walkinDurationSelect').value) || 1;
+      const court = masterCourts.find(c => c.id === courtId);
+      if (court) {
+        const total = court.ratePerHour * duration;
+        document.getElementById('walkinTotalLabel').innerText = formatRupiah(total);
+      }
+    }
+
+    function saveWalkInBooking() {
+      const team = document.getElementById('walkinTeamName').value.trim();
+      const phone = document.getElementById('walkinPhone').value.trim();
+      const courtId = document.getElementById('walkinCourtSelect').value;
+      const time = document.getElementById('walkinTimeSelect').value;
+      const duration = parseInt(document.getElementById('walkinDurationSelect').value) || 1;
+
+      if (!team || !phone) {
+        alert("Harap lengkapi nama tim dan nomor WhatsApp.");
+        return;
+      }
+
+      const court = masterCourts.find(c => c.id === courtId);
+      const total = court.ratePerHour * duration;
+      const randomInv = "INV-PFM-" + Math.floor(1000 + Math.random() * 9000);
+      const randomBarcode = "MAT-" + Math.floor(1000 + Math.random() * 9000) + "-OK";
+
+      const newBooking = {
+        id: randomInv,
+        barcode: randomBarcode,
+        team: team,
+        phone: phone,
+        courtId: courtId,
+        courtName: court.name,
+        date: new Date().toISOString().split('T')[0],
+        time: time,
+        duration: `${duration} Jam`,
+        totalRental: total,
+        paidAmount: total,
+        dueAmount: 0,
+        status: "WALK_IN",
+        scheme: "Walk-in Kasir Lunas",
+        checkedIn: true
+      };
+
+      masterBookings.unshift(newBooking);
+
+      // Update slot in matrix
+      const slot = court.slots.find(s => s.time === time);
+      if (slot) {
+        slot.status = 'SETTLED';
+        slot.team = team;
+      }
+
+      closeWalkInModal();
+      renderQuickOverviewTable();
+      renderMasterBookingsTable();
+      renderScheduleMatrix();
+      updateDashboardCounters();
+
+      alert(`Booking walk-in berhasil disimpan! Token Turnstile: ${randomBarcode}`);
+      printBookingReceipt(randomInv);
+    }
+
+    // Barcode Scanner & Turnstile Check-in
+    function testFillBarcode(token) {
+      document.getElementById('barcodeScanInput').value = token;
+      executeBarcodeScan();
+    }
+
+    function executeBarcodeScan() {
+      const token = document.getElementById('barcodeScanInput').value.trim().toUpperCase();
+      const card = document.getElementById('turnstileResultCard');
+      card.classList.remove('hidden');
+
+      const booking = masterBookings.find(b => b.barcode === token);
+
+      if (!booking) {
+        card.className = "p-5 rounded-2xl border border-red-200 bg-red-50 text-red-900 space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-sm">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i> AKSES TURNSTILE DITOLAK
+          </div>
+          <p class="text-xs">Token Barcode <strong>${token}</strong> tidak terdaftar dalam sistem Master Arena.</p>
+        `;
+        recordAccessLog(token, "UNKNOWN", "Gate Turnstile 1", "DITOLAK (INVALID TOKEN)");
+      } else if (booking.status === 'PENDING_DP' && booking.dueAmount > 0) {
+        card.className = "p-5 rounded-2xl border border-amber-300 bg-amber-50 text-amber-900 space-y-3 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-theme-amberHover flex items-center gap-1.5 font-display">
+              <i data-lucide="lock" class="w-4 h-4"></i> GATE TERKUNCI (BELUM LUNAS)
+            </span>
+            <span class="text-xs font-bold bg-theme-amber text-theme-charcoal px-2 py-0.5 rounded">BUTUH KASIR</span>
+          </div>
+          <p class="text-xs font-sans">Tim <strong>${booking.team}</strong> baru membayar DP 50%. Sisa tagihan belum diselesaikan.</p>
+          <div class="p-3 bg-white rounded-xl border border-amber-200 flex items-center justify-between">
+            <span>Sisa Tagihan Pelunasan:</span>
+            <strong class="text-base text-theme-amberHover">${formatRupiah(booking.dueAmount)}</strong>
+          </div>
+          <button onclick="openPayModal('${booking.id}')" class="w-full bg-theme-charcoal hover:bg-slate-900 text-theme-amber font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans">
+            <i data-lucide="credit-card" class="w-4 h-4"></i> Buka Pembayaran Pelunasan Kasir
+          </button>
+        `;
+        recordAccessLog(token, booking.team, "Gate Turnstile 1", "HOLD (BELUM LUNAS)");
+      } else {
+        card.className = "p-5 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-900 space-y-2 font-mono";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-emerald-800 flex items-center gap-1.5 font-display">
+              <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i> PINTU TURNSTILE TERBUKA!
+            </span>
+            <span class="text-xs font-bold bg-emerald-600 text-white px-2 py-0.5 rounded">VALID ACCESS</span>
+          </div>
+          <p class="text-xs font-sans">Selamat datang tim <strong>${booking.team}</strong>. Silakan menuju <strong>${booking.courtName}</strong> (${booking.time} WIB).</p>
+          <div class="flex items-center gap-2 text-[10px] text-emerald-700 pt-1">
+            <span>Status: LUNAS 100%</span> • <span>Gate 1 Otomatis Unlock selama 15 detik</span>
+          </div>
+        `;
+        booking.checkedIn = true;
+        recordAccessLog(token, booking.team, "Gate Turnstile 1", "BERHASIL MASUK (LUNAS)");
+      }
+
+      lucide.createIcons();
+    }
+
+    function recordAccessLog(token, team, gate, status) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      accessAuditLogs.unshift({
+        time: timeStr,
+        barcode: token,
+        team: team,
+        gate: gate,
+        status: status
+      });
+      renderTurnstileLogs();
+    }
+
+    function renderTurnstileLogs() {
+      const container = document.getElementById('turnstileAuditLogs');
+      if (!container) return;
+      container.innerHTML = '';
+
+      accessAuditLogs.slice(0, 8).forEach(log => {
+        const item = document.createElement('div');
+        const isSuccess = log.status.includes('BERHASIL');
+        const isHold = log.status.includes('HOLD');
+
+        item.className = "p-3 rounded-xl border flex items-center justify-between " + 
+          (isSuccess ? "bg-emerald-50/70 border-emerald-200 text-emerald-900" : 
+           isHold ? "bg-amber-50 border-amber-200 text-amber-900" : "bg-red-50 border-red-200 text-red-900");
+
+        item.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-xs">${log.team}</strong>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-bold opacity-80">${log.barcode}</span>
+            </div>
+            <span class="text-[10px] opacity-75">${log.gate} • ${log.time}</span>
+          </div>
+          <span class="text-[10px] font-bold">${log.status}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Print Receipt Function
+    function printBookingReceipt(invId) {
+      const b = masterBookings.find(x => x.id === invId);
+      if (!b) return;
+
+      document.getElementById('prnInv').innerText = b.id;
+      document.getElementById('prnTeam').innerText = b.team;
+      document.getElementById('prnCourt').innerText = b.courtName;
+      document.getElementById('prnTime').innerText = `${b.time} (${b.duration})`;
+      document.getElementById('prnTotal').innerText = formatRupiah(b.totalRental);
+      document.getElementById('prnDP').innerText = formatRupiah(b.paidAmount > 125000 ? 125000 : b.paidAmount);
+      document.getElementById('prnPaidCashier').innerText = formatRupiah(b.dueAmount === 0 ? (b.totalRental - 125000 > 0 ? b.totalRental - 125000 : b.totalRental) : 0);
+
+      window.print();
+    }
+
+    // Export Master Bookings to CSV
+    function exportBookingsToCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "ID Transaksi,Token Barcode,Nama Tim,No WhatsApp,Lapangan,Jadwal,Durasi,Total Tarif,Sudah Bayar,Sisa Kasir,Status\n";
+
+      masterBookings.forEach(b => {
+        csvContent += `"${b.id}","${b.barcode}","${b.team}","${b.phone}","${b.courtName}","${b.time}","${b.duration}","${b.totalRental}","${b.paidAmount}","${b.dueAmount}","${b.status}"\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `MasterArena_Bookings_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Dynamic Counters Update
+    function updateDashboardCounters() {
+      const totalRev = masterBookings.reduce((sum, b) => sum + b.paidAmount, 0);
+      const totalOutstanding = masterBookings.reduce((sum, b) => sum + b.dueAmount, 0);
+      const pendingCount = masterBookings.filter(b => b.status === 'PENDING_DP').length;
+
+      const revEl = document.getElementById('statTodayRevenue');
+      if (revEl) revEl.innerText = formatRupiah(totalRev);
+
+      const outEl = document.getElementById('statOutstandingDP');
+      if (outEl) outEl.innerText = formatRupiah(totalOutstanding);
+
+      const badgePending = document.getElementById('badgePendingDP');
+      if (badgePending) badgePending.innerText = `${pendingCount} DP`;
+
+      const shiftTotal = document.getElementById('cashierShiftTotal');
+      if (shiftTotal) shiftTotal.innerText = formatRupiah(totalOutstanding > 0 ? totalOutstanding : 875000);
+    }
+  </script>
+
+</body>
+</html>

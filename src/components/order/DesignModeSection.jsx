@@ -1,4 +1,4 @@
-import { Check, Clock, Layers, Lock, Sparkles, Zap } from '../../lib/icons'
+import { Check, Clock, Layers, LayoutGrid, Lock, Sparkles, Zap } from '../../lib/icons'
 import { TEMPLATES } from '../../data'
 import { useOrder } from '../../context/OrderContext'
 import CatalogSection from '../catalog/CatalogSection'
@@ -75,6 +75,11 @@ export default function DesignModeSection({
               Dua jalur, satu alur order. Pakai template katalog dan website tayang dalam{' '}
               <span className="font-semibold text-white">± 30 menit</span>, atau ajukan brief custom
               bila butuh tampilan dan sistem yang benar-benar khusus untuk bisnis Anda.
+            </p>
+            <p className="mt-2.5 inline-flex items-start gap-2 rounded-lg border border-emerald-400/20 bg-emerald-400/[0.06] px-2.5 py-1.5 text-[11.5px] font-medium leading-relaxed text-emerald-200/85">
+              <LayoutGrid className="mt-0.5 h-3 w-3 shrink-0" />
+              Semua template sudah termasuk Web Customer (landing &amp; booking) + Dashboard Admin
+              pengelola.
             </p>
           </div>
 

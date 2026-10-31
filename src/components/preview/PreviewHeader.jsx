@@ -1,6 +1,8 @@
 import {
   ArrowUpRight,
   ChevronLeft,
+  Eye,
+  LayoutGrid,
   MessageCircle,
   Monitor,
   RotateCcw,
@@ -16,6 +18,27 @@ const VIEWPORT_OPTIONS = [
 ]
 
 /**
+ * Dua antarmuka yang dibundel dalam setiap paket:
+ * Customer View (halaman jualan) + Admin View (dashboard pengelola).
+ */
+export const VIEW_OPTIONS = [
+  {
+    id: 'customer',
+    label: 'Customer View',
+    short: 'Customer',
+    icon: Eye,
+    hint: 'Customer View — landing page & alur booking yang dilihat pelanggan',
+  },
+  {
+    id: 'admin',
+    label: 'Admin View',
+    short: 'Admin',
+    icon: LayoutGrid,
+    hint: 'Admin View — dashboard pengelola pesanan, jadwal, dan transaksi',
+  },
+]
+
+/**
  * Header tetap di paling atas halaman pratinjau.
  *
  * Bukan overlay lagi: bar ini mengambil ruangnya sendiri (`h-14`) di dalam
@@ -26,6 +49,8 @@ export default function PreviewHeader({
   template,
   viewport,
   onViewportChange,
+  view = 'customer',
+  onViewChange,
   onBack,
   onReload,
   waHref,
@@ -68,26 +93,61 @@ export default function PreviewHeader({
         ) : null}
       </div>
 
-      <div className="hidden shrink-0 items-center gap-0.5 rounded-full border border-white/10 bg-white/[0.04] p-0.5 lg:flex">
-        {VIEWPORT_OPTIONS.map((option) => {
+      {/* Pemilih antarmuka demo: sistem 2-in-1 (Customer View + Admin View) */}
+      <span className="hidden shrink-0 text-[9.5px] font-bold uppercase tracking-[0.14em] text-slate-500 xl:inline">
+        2 antarmuka
+      </span>
+      <div
+        role="group"
+        aria-label="Pilih antarmuka demo: Customer View atau Admin View"
+        className="flex shrink-0 items-center gap-0.5 rounded-full border border-white/10 bg-white/[0.04] p-0.5"
+      >
+        {VIEW_OPTIONS.map((option) => {
           const Icon = option.icon
-          const active = option.id === viewport
+          const active = option.id === view
           return (
             <button
               key={option.id}
               type="button"
-              onClick={() => onViewportChange(option.id)}
+              onClick={() => onViewChange?.(option.id)}
               aria-pressed={active}
-              title={`Tampilan ${option.label}`}
-              className={`grid h-6 w-7 place-items-center rounded-full transition ${
-                active ? 'bg-white text-[#08111f]' : 'text-slate-400 hover:bg-white/10 hover:text-white'
+              aria-label={option.label}
+              title={option.hint}
+              className={`inline-flex h-7 items-center gap-1.5 rounded-full px-1.5 text-[10.5px] font-bold transition sm:px-2.5 ${
+                active
+                  ? 'bg-white text-[#08111f] shadow-sm'
+                  : 'text-slate-400 hover:bg-white/10 hover:text-white'
               }`}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.6 : 2} />
+              <span className="hidden sm:inline">{option.label}</span>
             </button>
           )
         })}
       </div>
+
+      {view === 'customer' && (
+        <div className="hidden shrink-0 items-center gap-0.5 rounded-full border border-white/10 bg-white/[0.04] p-0.5 lg:flex">
+          {VIEWPORT_OPTIONS.map((option) => {
+            const Icon = option.icon
+            const active = option.id === viewport
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => onViewportChange(option.id)}
+                aria-pressed={active}
+                title={`Tampilan ${option.label}`}
+                className={`grid h-6 w-7 place-items-center rounded-full transition ${
+                  active ? 'bg-white text-[#08111f]' : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       <button
         type="button"
