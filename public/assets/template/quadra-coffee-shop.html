@@ -550,6 +550,193 @@
   .bar-cta:hover { background: #fff; }
   .bar-cta:active { transform: scale(0.96); }
 
+  /* ---------- table chip state ---------- */
+  .table-chip.is-idle {
+    opacity: .6;
+    border-style: dashed;
+    color: rgba(42, 29, 23, .55);
+    cursor: not-allowed;
+  }
+  .table-chip.is-idle:hover { background: transparent; border-color: rgba(42, 29, 23, .18); }
+
+  /* ---------- payment method ---------- */
+  .pay-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    width: 100%;
+    padding: 12px 13px;
+    text-align: left;
+    border-radius: 16px;
+    border: 1px solid rgba(42, 29, 23, .14);
+    background: rgba(255, 255, 255, .7);
+    transition: border-color .18s ease, background .18s ease, transform .12s ease;
+  }
+  .pay-opt:active { transform: scale(.995); }
+  .pay-opt[aria-pressed='true'] {
+    border-color: var(--espresso);
+    background: rgba(232, 217, 195, .45);
+    box-shadow: inset 0 0 0 1px var(--espresso);
+  }
+  .pay-mark {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    flex: none;
+    border-radius: 999px;
+    border: 1.5px solid rgba(42, 29, 23, .3);
+    background: #fff;
+  }
+  .pay-opt[aria-pressed='true'] .pay-mark { border-color: var(--clay); background: var(--clay); }
+  .pay-mark svg { width: 11px; height: 11px; opacity: 0; color: #fff; }
+  .pay-opt[aria-pressed='true'] .pay-mark svg { opacity: 1; }
+  .pay-instant {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(47, 125, 88, .14);
+    color: #276849;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- QRIS ---------- */
+  .qris-card {
+    border-radius: 22px;
+    border: 1px solid rgba(42, 29, 23, .12);
+    background: #fff;
+    padding: 16px;
+    box-shadow: 0 20px 44px -34px rgba(42, 29, 23, .55);
+  }
+  .qris-brandbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid rgba(42, 29, 23, .1);
+  }
+  .qris-logo {
+    display: grid;
+    place-items: center;
+    padding: 3px 8px;
+    border-radius: 7px;
+    background: var(--espresso);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .16em;
+  }
+  .qris-qr {
+    width: min(232px, 72vw);
+    margin: 0 auto;
+    padding: 9px;
+    border-radius: 14px;
+    border: 1px solid rgba(42, 29, 23, .14);
+    background: #fff;
+  }
+  .qris-qr canvas { display: block; width: 100%; height: auto; border-radius: 6px; }
+  .qris-timer { font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+  .qris-timer.is-low { color: #B13B26; }
+  .qris-status { display: flex; align-items: center; gap: 8px; }
+  .qris-pulse {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 999px;
+    background: var(--clay);
+    animation: pulseDot 1.5s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { opacity: .3; transform: scale(.8); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+  .qris-sim {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 13px;
+    border: 1px dashed rgba(42, 29, 23, .35);
+    background: rgba(232, 217, 195, .35);
+    font-size: 12px;
+    font-weight: 700;
+    color: #6C452F;
+    transition: background .18s ease, transform .12s ease;
+  }
+  .qris-sim:hover { background: rgba(232, 217, 195, .6); }
+  .qris-sim:active { transform: scale(.985); }
+
+  .pay-check {
+    display: grid;
+    place-items: center;
+    width: 74px;
+    height: 74px;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: rgba(47, 125, 88, .12);
+    color: #2F7D58;
+    animation: checkPop .55s cubic-bezier(.16, 1, .3, 1) both;
+  }
+  .pay-check svg { width: 34px; height: 34px; stroke-dasharray: 40; stroke-dashoffset: 40; animation: checkDraw .5s .16s ease forwards; }
+  @keyframes checkPop { from { transform: scale(.55); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes checkDraw { to { stroke-dashoffset: 0; } }
+
+  /* ---------- E-Receipt ---------- */
+  .receipt {
+    border-radius: 18px;
+    border: 1px solid rgba(42, 29, 23, .1);
+    background: #FFFDF8;
+    padding: 18px 16px 16px;
+    box-shadow: 0 18px 38px -32px rgba(42, 29, 23, .5);
+  }
+  .receipt-brand {
+    text-align: center;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 15px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .receipt-dash {
+    margin: 13px 0;
+    border-top: 1px dashed rgba(42, 29, 23, .28);
+  }
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: rgba(42, 29, 23, .68);
+  }
+  .receipt-row strong { color: var(--espresso); font-weight: 700; }
+  .receipt-item { font-size: 12px; }
+  .receipt-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--espresso);
+  }
+  .stamp-paid {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1.5px solid #2F7D58;
+    color: #2F7D58;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+  }
+
   /* ---------- toast ---------- */
   #toastWrap {
     position: fixed;
@@ -623,25 +810,26 @@
       </span>
     </a>
 
-    <button type="button" class="icon-btn relative order-2 ml-auto flex-none sm:order-4 sm:ml-0" id="cartBtn" aria-label="Buka pesanan" aria-haspopup="dialog">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" class="h-[18px] w-[18px]"><path d="M4 7h16l-1.4 12.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
-      <span id="cartCount" class="absolute -right-1 -top-1 hidden min-w-[18px] rounded-full bg-clay px-1 text-center text-[10px] font-bold leading-[18px] text-white">0</span>
-    </button>
+    <div class="order-2 flex w-full items-center gap-2 sm:ml-auto sm:w-auto sm:flex-none">
+      <button type="button" class="table-chip flex-none" id="tableChip" aria-haspopup="dialog" aria-label="Pilih nomor meja">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4 flex-none"><rect x="3" y="9" width="18" height="4" rx="2"/><path d="M6 13v7M18 13v7M7 9V5"/></svg>
+        <span id="tableChipLabel">Pilih meja</span>
+      </button>
 
-    <div class="order-3 flex w-full items-center gap-2 sm:contents">
-      <div class="seg flex-1 justify-between sm:order-2 sm:ml-auto sm:w-auto sm:flex-none sm:justify-start" role="group" aria-label="Tipe pesanan">
-        <button type="button" class="seg-btn flex-1 justify-center sm:flex-none" id="modeDineBtn" aria-pressed="true" data-mode="dinein">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20v-6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6"/><path d="M2 20h20M7 11V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v5"/></svg>
-          Dine In
+      <div class="seg flex-1 justify-between sm:flex-none sm:justify-start" role="group" aria-label="Tipe pesanan">
+        <button type="button" class="seg-btn flex-1 justify-center sm:flex-none" id="modeDineBtn" aria-pressed="true" aria-label="Dine In" data-mode="dinein">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="flex-none"><path d="M4 20v-6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6"/><path d="M2 20h20M7 11V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v5"/></svg>
+          <span class="hidden sm:inline">Dine In</span>
         </button>
-        <button type="button" class="seg-btn flex-1 justify-center sm:flex-none" id="modeTakeBtn" aria-pressed="false" data-mode="takeaway">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-          Take Away
+        <button type="button" class="seg-btn flex-1 justify-center sm:flex-none" id="modeTakeBtn" aria-pressed="false" aria-label="Take Away" data-mode="takeaway">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="flex-none"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          <span class="hidden sm:inline">Take Away</span>
         </button>
       </div>
-      <button type="button" class="table-chip order-2 flex-none sm:order-3" id="tableChip" aria-haspopup="dialog">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><rect x="3" y="9" width="18" height="4" rx="2"/><path d="M6 13v7M18 13v7M7 9V5"/></svg>
-        <span id="tableChipLabel">Pilih meja</span>
+
+      <button type="button" class="icon-btn relative flex-none" id="cartBtn" aria-label="Buka pesanan" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" class="h-[18px] w-[18px]"><path d="M4 7h16l-1.4 12.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+        <span id="cartCount" class="absolute -right-1 -top-1 hidden min-w-[18px] rounded-full bg-clay px-1 text-center text-[10px] font-bold leading-[18px] text-white">0</span>
       </button>
     </div>
   </div>
@@ -939,9 +1127,13 @@
         <span>Subtotal</span>
         <span id="cartSubtotal" class="font-semibold text-ink tabular-nums">Rp 0</span>
       </div>
-      <div class="mt-1 flex items-center justify-between text-[13px] text-ink/60">
-        <span>Service &amp; pajak</span>
-        <span class="text-[11.5px]">sudah termasuk</span>
+      <div class="mt-1 flex items-center justify-between text-[12.5px] text-ink/60">
+        <span>Service charge <span class="text-ink/40">5%</span></span>
+        <span id="cartService" class="tabular-nums">Rp 0</span>
+      </div>
+      <div class="mt-1 flex items-center justify-between text-[12.5px] text-ink/60">
+        <span>PPN <span class="text-ink/40">10%</span></span>
+        <span id="cartTax" class="tabular-nums">Rp 0</span>
       </div>
       <div class="mt-3 flex items-baseline justify-between border-t border-ink/10 pt-3">
         <span class="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/60">Total</span>
@@ -949,7 +1141,7 @@
       </div>
       <button type="button" class="btn-primary btn-clay mt-4 w-full" id="cartCheckout">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><path d="M4 12h16M13 5l7 7-7 7"/></svg>
-        Lihat pesanan &amp; kirim ke barista
+        Lanjut ke pembayaran
       </button>
       <button type="button" class="mt-2 w-full py-2 text-[11.5px] font-medium text-ink/60 underline decoration-ink/20 underline-offset-4 hover:text-ink/70" id="cartReset">
         Kosongkan pesanan
@@ -972,12 +1164,17 @@
       </button>
     </div>
     <div class="sheet-scroll flex-1 px-5 py-4" id="checkoutBody"></div>
-    <div class="border-t border-ink/10 px-5 py-4">
-      <button type="button" class="btn-primary btn-clay w-full" id="sendWaBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><path d="M20 12a8 8 0 1 1-3.2-6.4"/><path d="M4.5 20l1.2-3.4"/><path d="M15 9h6v6"/></svg>
-        Kirim pesanan via WhatsApp
+    <div class="border-t border-ink/10 bg-cream px-5 py-4">
+      <button type="button" class="btn-primary btn-clay w-full" id="payNowBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg>
+        <span id="payNowLabel">Bayar sekarang</span>
+        <span id="payNowTotal" class="tabular-nums"></span>
       </button>
-      <button type="button" class="btn-ghost mt-2 w-full" id="copyWaBtn">Salin ringkasan pesanan</button>
+      <div class="mt-2 grid grid-cols-2 gap-2">
+        <button type="button" class="btn-ghost" id="sendWaBtn">Kirim ke kasir</button>
+        <button type="button" class="btn-ghost" id="copyWaBtn">Salin ringkasan</button>
+      </div>
+      <p id="payHint" class="mt-2.5 text-center text-[10.5px] leading-snug text-ink/45">Pembayaran di demo ini disimulasikan. Tidak ada transaksi nyata.</p>
     </div>
   </div>
 </div>
@@ -993,6 +1190,76 @@
     <div class="flex gap-2 px-5 pb-5 pt-4">
       <button type="button" class="btn-ghost flex-1" data-close="confirmModal">Batal</button>
       <button type="button" class="btn-primary flex-1" id="confirmOk">Lanjut</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ QRIS PAYMENT ============ -->
+<div class="sheet" id="qrisSheet" role="dialog" aria-modal="true" aria-labelledby="qrisTitle">
+  <div class="sheet-backdrop" data-close="qrisSheet"></div>
+  <div class="sheet-panel sheet-panel--center">
+    <div class="flex items-start justify-between gap-3 border-b border-ink/10 px-5 py-4">
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/60">Pembayaran</p>
+        <h3 id="qrisTitle" class="mt-1 font-display text-xl">Pindai QRIS</h3>
+      </div>
+      <button type="button" class="icon-btn flex-none" data-close="qrisSheet" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-scroll flex-1 px-5 py-4" id="qrisBody"></div>
+    <div class="border-t border-ink/10 bg-cream px-5 py-4">
+      <button type="button" class="btn-primary btn-clay w-full" id="qrisSimulate">Simulasikan pembayaran berhasil</button>
+      <button type="button" class="btn-ghost mt-2 w-full" data-close="qrisSheet">Batalkan pembayaran</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ E-RECEIPT ============ -->
+<div class="sheet" id="receiptSheet" role="dialog" aria-modal="true" aria-labelledby="receiptTitle">
+  <div class="sheet-backdrop" data-close="receiptSheet"></div>
+  <div class="sheet-panel sheet-panel--center">
+    <div class="flex items-start justify-between gap-3 border-b border-ink/10 px-5 py-4">
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/60">Bukti pembayaran</p>
+        <h3 id="receiptTitle" class="mt-1 font-display text-xl">E-receipt</h3>
+      </div>
+      <button type="button" class="icon-btn flex-none" data-close="receiptSheet" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-scroll flex-1 px-5 py-4" id="receiptBody"></div>
+    <div class="border-t border-ink/10 bg-cream px-5 py-4">
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" class="btn-ghost" id="receiptDownload">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><path d="M12 4v10M8 11l4 4 4-4"/><path d="M5 19h14"/></svg>
+          Unduh struk
+        </button>
+        <button type="button" class="btn-ghost" id="receiptPrint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2"/><path d="M7 16h10v4H7z"/></svg>
+          Cetak
+        </button>
+      </div>
+      <button type="button" class="btn-primary btn-clay mt-2 w-full" id="receiptContinue">Lanjut</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SUCCESS ============ -->
+<div class="sheet" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+  <div class="sheet-backdrop" data-close="successModal"></div>
+  <div class="sheet-panel sheet-panel--center" style="width:min(430px,calc(100% - 28px))">
+    <div class="px-6 pt-7 text-center">
+      <span class="pay-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="h-7 w-7"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <h3 id="successTitle" class="mt-4 font-display text-2xl">Pesanan diterima</h3>
+      <p id="successText" class="mt-2 text-[13px] leading-relaxed text-ink/65"></p>
+      <div id="successMeta" class="mt-4 rounded-2xl bg-sand/50 px-4 py-3 text-left text-[12px] text-ink/70"></div>
+    </div>
+    <div class="border-t border-ink/10 px-5 py-4">
+      <button type="button" class="btn-primary w-full" id="successWa">Simpan salinan ke WhatsApp kasir</button>
+      <button type="button" class="btn-ghost mt-2 w-full" id="successDone">Kembali ke menu utama</button>
     </div>
   </div>
 </div>
@@ -1553,8 +1820,11 @@
     filter: 'all',
     cart: [],
     name: '',
-    note: ''
+    note: '',
+    pay: 'qris'
   };
+
+  const FEE = { service: 0.05, tax: 0.10 };
 
   let modal = null;           // item modal working copy
   let pendingConfirm = null;  // callback konfirmasi
@@ -1674,6 +1944,29 @@
       return sum + unitPrice(item, line.sel) * line.qty;
     }, 0);
   }
+  function totals() {
+    const subtotal = cartSubtotal();
+    const service = Math.round(subtotal * FEE.service);
+    const tax = Math.round(subtotal * FEE.tax);
+    return { subtotal: subtotal, service: service, tax: tax, total: subtotal + service + tax };
+  }
+  function breakdownHTML(t) {
+    return '' +
+      '<div class="receipt-row"><span>Subtotal</span><span>' + money(t.subtotal) + '</span></div>' +
+      '<div class="receipt-row"><span>Service charge 5%</span><span>' + money(t.service) + '</span></div>' +
+      '<div class="receipt-row"><span>PPN 10%</span><span>' + money(t.tax) + '</span></div>';
+  }
+  function payOptHTML(id, title, desc) {
+    const on = state.pay === id;
+    return '<button type="button" class="pay-opt" data-pay="' + id + '" aria-pressed="' + on + '">' +
+      '<span class="pay-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>' +
+      '<span class="min-w-0 flex-1">' +
+        '<span class="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold">' + title +
+          (id === 'qris' ? '<span class="pay-instant">Instan</span>' : '') + '</span>' +
+        '<span class="mt-0.5 block text-[11px] leading-snug text-ink/60">' + desc + '</span>' +
+      '</span>' +
+    '</button>';
+  }
 
   /* ============================================================
      RENDER: MENU
@@ -1766,15 +2059,21 @@
 
     if (state.mode === 'dinein') {
       chip.style.display = '';
+      chip.disabled = false;
+      chip.classList.remove('is-idle');
       chipLabel.textContent = state.table ? tableLabel(state.table) : 'Pilih meja';
       chip.classList.toggle('is-set', !!state.table);
+      chip.setAttribute('aria-label', state.table ? 'Meja terpilih ' + tableLabel(state.table) + ', ketuk untuk ganti' : 'Pilih nomor meja');
       barTable.textContent = state.table ? tableLabel(state.table) + ' · ' + AREAS[areaOf(state.table)].label : 'Meja belum dipilih';
       barTableBtn.classList.toggle('is-warn', !state.table);
       barMode.textContent = 'Dine in';
     } else {
-      chip.style.display = 'none';
-      chipLabel.textContent = 'Take away';
+      chip.style.display = '';
+      chip.disabled = true;
       chip.classList.remove('is-set');
+      chip.classList.add('is-idle');
+      chipLabel.textContent = 'Ambil di bar';
+      chip.setAttribute('aria-label', 'Take away, ambil sendiri di bar');
       barTable.textContent = 'Pickup di bar';
       barTableBtn.classList.remove('is-warn');
       barMode.textContent = 'Take away';
@@ -1971,6 +2270,8 @@
         '</div>';
       footer.classList.add('opacity-40', 'pointer-events-none');
       $('#cartSubtotal').textContent = 'Rp 0';
+      $('#cartService').textContent = 'Rp 0';
+      $('#cartTax').textContent = 'Rp 0';
       $('#cartTotal').textContent = 'Rp 0';
       return;
     }
@@ -2007,8 +2308,11 @@
         '</div>';
     }).join('');
 
-    $('#cartSubtotal').textContent = money(cartSubtotal());
-    $('#cartTotal').textContent = money(cartSubtotal());
+    const t = totals();
+    $('#cartSubtotal').textContent = money(t.subtotal);
+    $('#cartService').textContent = money(t.service);
+    $('#cartTax').textContent = money(t.tax);
+    $('#cartTotal').textContent = money(t.total);
     $('#cartCheckout').disabled = !count;
   }
 
@@ -2054,7 +2358,11 @@
         ' — ' + money(unitPrice(item, line.sel) * line.qty));
       if (line.note) lines.push('     Catatan: ' + line.note);
     });
-    lines.push('- Total: ' + money(cartSubtotal()));
+    const t = totals();
+    lines.push('- Subtotal: ' + money(t.subtotal));
+    lines.push('- Service 5%: ' + money(t.service) + ' | PPN 10%: ' + money(t.tax));
+    lines.push('- Total: ' + money(t.total));
+    lines.push('- Pembayaran: ' + (state.pay === 'qris' ? 'QRIS (sudah dibayar)' : 'Tunai/kartu di kasir'));
     if (state.roast) lines.push('- Preferensi roast: ' + ROAST_LABEL[state.roast]);
     if (state.note) lines.push('- Catatan: ' + state.note);
     lines.push('Terima kasih!');
@@ -2098,9 +2406,19 @@
 
       '<div class="mt-4">' + rows + '</div>' +
 
-      '<div class="mt-2 flex items-baseline justify-between border-t border-ink/15 pt-3">' +
-        '<span class="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/60">Total</span>' +
-        '<span class="font-display text-2xl tabular-nums">' + money(cartSubtotal()) + '</span>' +
+      '<div class="mt-2 border-t border-ink/15 pt-3">' + breakdownHTML(totals()) + '</div>' +
+
+      '<div class="mt-3 flex items-baseline justify-between rounded-2xl bg-sand/55 px-3.5 py-2.5">' +
+        '<span class="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink/65">Total bayar</span>' +
+        '<span class="font-display text-2xl tabular-nums" id="chkTotal">' + money(totals().total) + '</span>' +
+      '</div>' +
+
+      '<div class="mt-5">' +
+        '<p class="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink/60">Metode pembayaran</p>' +
+        '<div class="mt-2 space-y-2">' +
+          payOptHTML('qris', 'QRIS', 'GoPay, OVO, DANA, ShopeePay, mobile banking · terkonfirmasi otomatis') +
+          payOptHTML('cash', 'Bayar di kasir', 'Tunai atau kartu debit/kredit saat pesanan diantar') +
+        '</div>' +
       '</div>' +
 
       '<div class="mt-5">' +
@@ -2117,8 +2435,18 @@
 
       '<p class="mt-4 flex items-start gap-2 rounded-xl bg-sand/50 px-3 py-2.5 text-[11.5px] leading-snug text-ink/60">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="mt-0.5 h-3.5 w-3.5 flex-none"><path d="M12 8v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>' +
-        'Pesanan diteruskan ke WhatsApp barista. Pembayaran dilakukan di kasir setelah pesanan dikonfirmasi.' +
+        '<span>' + (state.pay === 'qris'
+          ? 'Pembayaran QRIS pada demo ini disimulasikan penuh: QR tampil, status menunggu, lalu struk elektronik terbit.'
+          : 'Pesanan dicatat dulu, pembayaran tunai/kartu dilakukan di kasir. Struk elektronik tetap diterbitkan.') + '</span>' +
       '</p>';
+    const payLabel = $('#payNowLabel');
+    if (payLabel) payLabel.textContent = state.pay === 'qris' ? 'Bayar dengan QRIS' : 'Konfirmasi & bayar di kasir';
+    const payTotal = $('#payNowTotal');
+    if (payTotal) payTotal.textContent = money(totals().total);
+    $('#payNowBtn').disabled = dine && !state.table;
+    $('#payHint').textContent = dine && !state.table
+      ? 'Pilih nomor meja dulu sebelum melanjutkan.'
+      : 'Harga sudah termasuk service charge 5% dan PPN 10%.';
   }
 
   function openCheckout() {
@@ -2130,6 +2458,32 @@
     }
     renderCheckout();
     openSheet('checkoutModal');
+  }
+
+  function syncCheckoutInputs() {
+    const nameEl = $('#chkName');
+    const noteEl = $('#chkNote');
+    if (nameEl) state.name = nameEl.value.trim().slice(0, 60);
+    if (noteEl) state.note = noteEl.value.trim().slice(0, 240);
+    save();
+  }
+
+  function payNow() {
+    syncCheckoutInputs();
+    if (state.mode === 'dinein' && !state.table) {
+      toast('Nomor meja belum dipilih.');
+      return;
+    }
+    closeSheet('checkoutModal');
+    if (state.pay === 'qris') {
+      openQris();
+      return;
+    }
+    const o = buildOrder(false);
+    lastOrder = o;
+    closeSheet('cartDrawer');
+    openReceipt(o);
+    toast('Tunjukkan struk ini di kasir untuk pembayaran.');
   }
 
   function sendWa() {
@@ -2174,8 +2528,296 @@
   }
 
   /* ============================================================
-     TABLE SHEET
+     PEMBAYARAN QRIS + STRUK ELEKTRONIK
      ============================================================ */
+  let lastOrder = null;
+  let qrisTimerId = null;
+
+  function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function drawQr(cv, seed) {
+    const n = 29, pad = 3, size = 240, cell = (size - pad * 2) / n;
+    cv.width = size; cv.height = size;
+    const ctx = cv.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, size, size);
+    let rnd = hashStr(seed) || 1;
+    function next() {
+      rnd ^= rnd << 13; rnd ^= rnd >>> 17; rnd ^= rnd << 5; rnd >>>= 0;
+      return rnd / 4294967296;
+    }
+    function inFinder(x, y) {
+      return (x < 8 && y < 8) || (x > n - 9 && y < 8) || (x < 8 && y > n - 9);
+    }
+    ctx.fillStyle = '#12100E';
+    for (let y = 0; y < n; y++) {
+      for (let x = 0; x < n; x++) {
+        if (inFinder(x, y)) continue;
+        if (next() > 0.5) ctx.fillRect(pad + x * cell, pad + y * cell, cell - 0.4, cell - 0.4);
+      }
+    }
+    [[0, 0], [n - 7, 0], [0, n - 7]].forEach(function (p) {
+      const px = pad + p[0] * cell, py = pad + p[1] * cell, w = 7 * cell;
+      ctx.fillStyle = '#12100E'; ctx.fillRect(px, py, w, w);
+      ctx.fillStyle = '#fff'; ctx.fillRect(px + cell, py + cell, w - 2 * cell, w - 2 * cell);
+      ctx.fillStyle = '#12100E'; ctx.fillRect(px + 2 * cell, py + 2 * cell, w - 4 * cell, w - 4 * cell);
+    });
+  }
+
+  function orderNo() {
+    const d = new Date();
+    const stamp = String(d.getFullYear()).slice(2) + pad(d.getMonth() + 1) + pad(d.getDate());
+    const rnd = String(hashStr(String(Date.now()) + navigator.userAgent.length) % 10000);
+    return 'QD-' + stamp + '-' + ('0000' + rnd).slice(-4);
+  }
+
+  function fmtClock(d) {
+    return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+  }
+  function fmtDate(d) {
+    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function buildOrder(paid) {
+    const t = totals();
+    const dine = state.mode === 'dinein';
+    return {
+      no: orderNo(),
+      at: new Date(),
+      paid: !!paid,
+      mode: state.mode,
+      place: dine ? tableLabel(state.table) : 'Ambil di bar',
+      areaLabel: dine ? AREAS[areaOf(state.table)].label : 'Pickup counter',
+      items: state.cart.map(function (line) {
+        const item = MENU_BY_ID[line.id];
+        return {
+          name: item.name,
+          qty: line.qty,
+          price: unitPrice(item, line.sel) * line.qty,
+          summary: selectionSummary(item, line.sel),
+          note: line.note || ''
+        };
+      }),
+      totals: t,
+      name: state.name,
+      note: state.note,
+      pay: state.pay
+    };
+  }
+
+  function buildReceiptText(o) {
+    const out = [];
+    out.push('QUADRA COFFEE — SENOPATI');
+    out.push('Jl. Senopati Raya No. 27, Jakarta Selatan');
+    out.push('--------------------------------');
+    out.push('No. Pesanan : ' + o.no);
+    out.push('Waktu       : ' + fmtDate(o.at) + ' ' + fmtClock(o.at));
+    out.push('Tipe        : ' + (o.mode === 'dinein' ? 'Dine in' : 'Take away'));
+    out.push(o.mode === 'dinein' ? 'Meja        : ' + o.place + ' (' + o.areaLabel + ')' : 'Pickup      : ' + o.place);
+    if (o.name) out.push('Nama        : ' + o.name);
+    out.push('--------------------------------');
+    o.items.forEach(function (it) {
+      out.push(it.name + ' x' + it.qty);
+      if (it.summary) out.push('  ' + it.summary);
+      if (it.note) out.push('  Catatan: ' + it.note);
+      out.push('  Rp ' + money(it.price).replace('Rp ', ''));
+    });
+    out.push('--------------------------------');
+    out.push('Subtotal    : ' + money(o.totals.subtotal));
+    out.push('Service 5%  : ' + money(o.totals.service));
+    out.push('PPN 10%     : ' + money(o.totals.tax));
+    out.push('TOTAL       : ' + money(o.totals.total));
+    out.push('Pembayaran  : ' + (o.pay === 'qris' ? 'QRIS — LUNAS' : 'Tunai/kartu di kasir'));
+    if (o.note) out.push('Catatan     : ' + o.note);
+    out.push('--------------------------------');
+    out.push('Terima kasih, sampai jumpa lagi!');
+    return out.join('\n');
+  }
+
+  function receiptHTML(o) {
+    const rows = o.items.map(function (it) {
+      return '<div class="receipt-row receipt-item mt-2"><span class="min-w-0"><strong>' + esc(it.name) + '</strong> ×' + it.qty +
+        (it.summary ? '<span class="mt-0.5 block text-[10.5px] text-ink/55">' + esc(it.summary) + '</span>' : '') +
+        (it.note ? '<span class="mt-0.5 block text-[10.5px] italic text-ink/50">' + esc(it.note) + '</span>' : '') +
+        '</span><span class="flex-none">' + money(it.price) + '</span></div>';
+    }).join('');
+    return '' +
+      '<div class="receipt">' +
+        '<p class="receipt-brand">Quadra Coffee</p>' +
+        '<p class="mt-1 text-center text-[10px] uppercase tracking-[0.2em] text-ink/45">Struk Elektronik</p>' +
+        '<div class="receipt-dash"></div>' +
+        '<div class="receipt-row"><span>No. pesanan</span><span><strong>' + esc(o.no) + '</strong></span></div>' +
+        '<div class="receipt-row"><span>Waktu</span><span>' + fmtDate(o.at) + ' · ' + fmtClock(o.at) + '</span></div>' +
+        '<div class="receipt-row"><span>Tipe</span><span>' + (o.mode === 'dinein' ? 'Dine in' : 'Take away') + '</span></div>' +
+        '<div class="receipt-row"><span>' + (o.mode === 'dinein' ? 'Meja' : 'Pickup') + '</span><span><strong>' + esc(o.place) + '</strong> · ' + esc(o.areaLabel) + '</span></div>' +
+        (o.name ? '<div class="receipt-row"><span>Nama</span><span>' + esc(o.name) + '</span></div>' : '') +
+        '<div class="receipt-dash"></div>' +
+        rows +
+        '<div class="receipt-dash"></div>' +
+        breakdownHTML(o.totals) +
+        '<div class="receipt-dash"></div>' +
+        '<div class="receipt-total"><span>Total</span><span>' + money(o.totals.total) + '</span></div>' +
+        '<div class="receipt-dash"></div>' +
+        '<div class="flex items-center justify-between gap-2">' +
+          '<span class="text-[10px] uppercase tracking-[0.14em] text-ink/45">' + (o.pay === 'qris' ? 'QRIS dinamis' : 'Bayar di kasir') + '</span>' +
+          '<span class="stamp-paid" style="' + (o.paid ? '' : 'border-color:#C08A3E;color:#A5732C;') + '">' +
+            (o.paid ? 'Lunas' : 'Belum dibayar') +
+          '</span>' +
+        '</div>' +
+        (o.note ? '<p class="mt-3 rounded-lg bg-sand/45 px-2.5 py-2 text-[10.5px] leading-snug text-ink/60">Catatan: ' + esc(o.note) + '</p>' : '') +
+        '<p class="mt-3 text-center text-[9.5px] uppercase tracking-[0.16em] text-ink/40">Terima kasih · quadra.coffee</p>' +
+      '</div>';
+  }
+
+  function openQris() {
+    const o = buildOrder(false);
+    lastOrder = o;
+    const t = o.totals;
+    $('#qrisBody').innerHTML = '' +
+      '<div class="qris-card">' +
+        '<div class="qris-brandbar">' +
+          '<span class="qris-logo">QRIS</span>' +
+          '<div class="min-w-0 flex-1">' +
+            '<p class="text-[11px] font-bold leading-tight tracking-wide">QUADRA COFFEE SENOPATI</p>' +
+            '<p class="text-[9.5px] text-ink/50">NMID ID2024' + String(hashStr(o.no) % 100000000).padStart(8, '0') + '</p>' +
+          '</div>' +
+          '<span class="rounded-full bg-sand/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-ink/60">Dinamis</span>' +
+        '</div>' +
+        '<div class="qris-qr mt-3"><canvas id="qrisCanvas" width="240" height="240" role="img" aria-label="Kode QRIS untuk pembayaran ' + money(t.total) + '"></canvas></div>' +
+        '<p class="mt-3 text-center text-[10px] uppercase tracking-[0.16em] text-ink/45">Total pembayaran</p>' +
+        '<p class="mt-1 text-center font-display text-2xl tabular-nums">' + money(t.total) + '</p>' +
+        '<div class="mt-3 flex items-center justify-between rounded-xl bg-sand/40 px-3 py-2 text-[11px]">' +
+          '<span class="text-ink/60">' + esc(o.no) + '</span>' +
+          '<span id="qrisTimer" class="qris-timer font-bold">05:00</span>' +
+        '</div>' +
+        '<p class="qris-status mt-3 text-[11.5px] text-ink/65"><span class="qris-pulse"></span><span id="qrisStatus">Menunggu pembayaran dari aplikasi e-wallet Anda…</span></p>' +
+      '</div>' +
+      '<p class="mt-3 text-center text-[10.5px] leading-snug text-ink/45">Demo interaktif: kode QR di atas dibuat khusus untuk sesi ini, tidak terhubung ke payment gateway sungguhan.</p>';
+    const cv = $('#qrisCanvas');
+    if (cv) drawQr(cv, o.no + '|' + t.total);
+    startQrisTimer(300);
+    openSheet('qrisSheet');
+  }
+
+  function startQrisTimer(seconds) {
+    stopQrisTimer();
+    let left = seconds;
+    const el = $('#qrisTimer');
+    function tick() {
+      if (!el || !el.isConnected) { stopQrisTimer(); return; }
+      const m = Math.floor(left / 60), s = left % 60;
+      el.textContent = pad(m) + ':' + pad(s);
+      el.classList.toggle('is-low', left <= 60);
+      if (left <= 0) {
+        stopQrisTimer();
+        const st = $('#qrisStatus');
+        if (st) st.textContent = 'Waktu habis — ketuk simulasi untuk memperbarui kode.';
+        return;
+      }
+      left -= 1;
+    }
+    tick();
+    qrisTimerId = window.setInterval(tick, 1000);
+  }
+  function stopQrisTimer() {
+    if (qrisTimerId) { window.clearInterval(qrisTimerId); qrisTimerId = null; }
+  }
+
+  function markPaid() {
+    stopQrisTimer();
+    const o = lastOrder || buildOrder(true);
+    o.paid = true;
+    lastOrder = o;
+    $('#qrisBody').innerHTML = '' +
+      '<div class="py-6 text-center">' +
+        '<span class="pay-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>' +
+        '<p class="mt-4 font-display text-xl">Pembayaran diterima</p>' +
+        '<p class="mt-1 text-[12.5px] text-ink/60">' + money(o.totals.total) + ' · QRIS dinamis</p>' +
+        '<p class="mt-3 text-[11px] text-ink/45">Menyiapkan struk elektronik…</p>' +
+      '</div>';
+    $('#qrisSimulate').disabled = true;
+    vibrate(18);
+    window.setTimeout(function () {
+      closeSheet('qrisSheet');
+      $('#qrisSimulate').disabled = false;
+      openReceipt(o);
+    }, 950);
+  }
+
+  function openReceipt(o) {
+    $('#receiptBody').innerHTML = receiptHTML(o);
+    $('#receiptDownload').textContent = 'Unduh struk';
+    openSheet('receiptSheet');
+  }
+
+  function downloadReceipt() {
+    const o = lastOrder;
+    if (!o) return;
+    const blob = new Blob([buildReceiptText(o)], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'struk-' + o.no + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+    toast('Struk diunduh.');
+  }
+
+  function printReceipt() {
+    const o = lastOrder;
+    if (!o) return;
+    const w = window.open('', '_blank', 'width=420,height=680');
+    if (!w) { toast('Popup diblokir. Gunakan unduh struk.'); return; }
+    w.document.write('<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Struk ' + o.no + '</title>' +
+      '<style>body{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#12100E;padding:16px;white-space:pre-wrap;line-height:1.55}</style>' +
+      '</head><body>' + esc(buildReceiptText(o)) + '</body></html>');
+    w.document.close();
+    w.focus();
+    window.setTimeout(function () { try { w.print(); } catch (e) {} }, 250);
+  }
+
+  function showSuccess(o) {
+    const eta = o.mode === 'dinein' ? '8–12 menit' : '6–10 menit';
+    $('#successTitle').textContent = o.paid ? 'Pesanan diterima' : 'Pesanan dicatat';
+    $('#successText').textContent = o.mode === 'dinein'
+      ? 'Pesanan Anda di ' + o.place + ' sudah masuk ke barista. Estimasi penyajian ' + eta + '.'
+      : 'Pesanan take away Anda sudah masuk ke barista. Silakan tunggu panggilan di bar, estimasi ' + eta + '.';
+    $('#successMeta').innerHTML = '' +
+      '<div class="flex items-center justify-between"><span class="text-ink/55">No. pesanan</span><span class="font-semibold">' + esc(o.no) + '</span></div>' +
+      '<div class="flex items-center justify-between"><span class="text-ink/55">' + (o.paid ? 'Total dibayar' : 'Total tagihan') + '</span><span class="font-semibold">' + money(o.totals.total) + '</span></div>' +
+      '<div class="flex items-center justify-between"><span class="text-ink/55">Metode</span><span class="font-semibold">' + (o.pay === 'qris' ? 'QRIS · Lunas' : 'Bayar di kasir') + '</span></div>' +
+      '<div class="flex items-center justify-between"><span class="text-ink/55">Estimasi</span><span class="font-semibold">' + eta + '</span></div>';
+    openSheet('successModal');
+  }
+
+  function successWa() {
+    const o = lastOrder;
+    if (!o) return;
+    const text = 'Halo Quadra Coffee, saya sudah pesan lewat self-order.\n\n' + buildReceiptText(o);
+    window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  }
+
+  function finishOrder() {
+    closeSheet('successModal');
+    closeSheet('receiptSheet');
+    closeSheet('cartDrawer');
+    closeSheet('checkoutModal');
+    state.cart = [];
+    state.note = '';
+    save();
+    renderCart();
+    renderBar();
+    renderChrome();
+    toast('Terima kasih! Meja ' + (state.mode === 'dinein' && state.table ? tableLabel(state.table) : 'Anda') + ' siap dipesan kembali.');
+  }
+
+
   function renderTableSheet() {
     const grid = $('#tableGrid');
     const area = AREAS[state.area];
@@ -2261,6 +2903,7 @@
   function closeSheet(id) {
     const el = document.getElementById(id);
     if (!el) return;
+    if (id === 'qrisSheet') stopQrisTimer();
     el.classList.remove('is-open');
     el.setAttribute('aria-hidden', 'true');
     const anyOpen = $$('.sheet.is-open').length > 0;
@@ -2437,11 +3080,28 @@
     /* checkout */
     $('#sendWaBtn').addEventListener('click', sendWa);
     $('#copyWaBtn').addEventListener('click', copySummary);
+    $('#payNowBtn').addEventListener('click', payNow);
+    $('#qrisSimulate').addEventListener('click', markPaid);
+    $('#receiptDownload').addEventListener('click', downloadReceipt);
+    $('#receiptPrint').addEventListener('click', printReceipt);
+    $('#receiptContinue').addEventListener('click', function () {
+      if (lastOrder) showSuccess(lastOrder);
+    });
+    $('#successWa').addEventListener('click', successWa);
+    $('#successDone').addEventListener('click', finishOrder);
 
     $('#checkoutBody').addEventListener('click', function (e) {
       if (e.target.closest('#checkoutChangeMode')) {
         closeSheet('checkoutModal');
         setMode(state.mode === 'dinein' ? 'takeaway' : 'dinein');
+        return;
+      }
+      const payBtn = e.target.closest('[data-pay]');
+      if (payBtn) {
+        state.pay = payBtn.dataset.pay;
+        save();
+        renderCheckout();
+        vibrate(6);
       }
     });
 
@@ -2475,6 +3135,9 @@
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       if ($('#confirmModal').classList.contains('is-open')) { closeSheet('confirmModal'); return; }
+      if ($('#successModal').classList.contains('is-open')) { closeSheet('successModal'); return; }
+      if ($('#receiptSheet').classList.contains('is-open')) { closeSheet('receiptSheet'); return; }
+      if ($('#qrisSheet').classList.contains('is-open')) { closeSheet('qrisSheet'); return; }
       if ($('#checkoutModal').classList.contains('is-open')) { closeSheet('checkoutModal'); return; }
       if ($('#itemModal').classList.contains('is-open')) { closeSheet('itemModal'); return; }
       if ($('#cartDrawer').classList.contains('is-open')) { closeSheet('cartDrawer'); return; }
