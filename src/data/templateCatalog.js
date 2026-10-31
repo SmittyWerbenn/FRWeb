@@ -24,7 +24,7 @@ const RAW_TEMPLATES = [
   { id: 'cateringpro-box', name: 'CateringPro Box', category: 'fnb', categoryLabel: 'F&B', features: ['Kalkulator pax dinamis', 'Kustom lauk', 'Jadwal kirim'], accentColor: '#F97316', description: 'Kalkulator pemesanan paket catering event & harian.' },
   { id: 'directbumbu-frozendirect', name: 'DirectBumbu / FrozenDirect', category: 'fnb', categoryLabel: 'F&B', features: ['Toko D2C tanpa fee ojol', 'Ongkir otomatis', 'Checkout WA'], accentColor: '#14B8A6', description: 'Jual langsung makanan beku & bumbu siap saji.' },
   { id: 'fnb-wabisabi-omakase', name: 'Kaze Omakase', category: 'fnb', categoryLabel: 'F&B', features: ['Omakase counter 10 seat', 'Reservasi tenang', 'Pre-payment'], accentColor: '#78716C', description: 'Tampilan premium dining bernuansa Jepang modern.' },
-  { id: 'quadra-coffee-shop', name: 'Quadra Coffee Shop', category: 'fnb', categoryLabel: 'F&B', features: ['Menu signature interaktif', 'Reservasi slow bar', 'Takeaway via WA'], accentColor: '#B45309', description: 'Showcase coffee shop artisan & order takeaway.' },
+  { id: 'quadra-coffee-shop', name: 'Quadra Coffee Shop', category: 'fnb', categoryLabel: 'F&B', features: ['Self-order dine in + take away', 'Pilih meja & beans', 'Checkout WA barista'], accentColor: '#B45309', description: 'Coffee shop artisan dengan self-order dine-in, nomor meja, dan kustomisasi seduhan.' },
 
   // Online Store & Retail
   { id: 'customcraft-furniture', name: 'CustomCraft Furniture', category: 'retail', categoryLabel: 'Online Store', features: ['Galeri portofolio', 'Simulator ukuran bahan', 'Brief custom'], accentColor: '#84CC16', description: 'Katalog custom furniture & interior workshop.' },
