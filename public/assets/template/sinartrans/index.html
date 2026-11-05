@@ -31,10 +31,22 @@
         }
       })(window.location);
       window.__SNT_DEMO_BASE__ = SNT_BASE;
+      window.__SNT_PORTAL__ = "public";
+      // Router basename = folder ini, jadi normalisasi path dokumen
+      // (/assets/template/sinartrans/index.html) ke root basename supaya
+      // route "/" langsung cocok dan tidak jatuh ke catch-all.
+      try {
+        var p = window.location.pathname;
+        if (/\/index\.html$/.test(p)) {
+          window.history.replaceState(null, "", p.replace(/\/index\.html$/, "/"));
+        }
+      } catch (e) {
+        /* abaikan bila History API diblokir */
+      }
     </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./assets/index-CKa-st9O.js"></script>
+    <script type="module" src="./assets/index-CKJZ5sIO.js"></script>
   </body>
 </html>
