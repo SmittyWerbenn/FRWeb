@@ -12,6 +12,30 @@ const BASE = import.meta.env.BASE_URL || '/'
 
 const assetUrl = (path) => `${BASE.replace(/\/+$/, '/')}${path.replace(/^\/+/, '')}`
 
+export const SINARTRANS_VIEW_OPTIONS = [
+  {
+    id: 'customer',
+    label: 'Customer Site',
+    short: 'Customer',
+    icon: 'eye',
+    hint: 'Customer Site — situs publik: cek ongkir, lacak resi, company profile',
+  },
+  {
+    id: 'driver',
+    label: 'Driver Site',
+    short: 'Driver',
+    icon: 'truck',
+    hint: 'Driver Site — portal kurir: login driver, tugas pengiriman, update status',
+  },
+  {
+    id: 'admin',
+    label: 'Admin Site',
+    short: 'Admin',
+    icon: 'layout',
+    hint: 'Admin Site — dashboard operasional: pengiriman, armada, klien, klaim',
+  },
+]
+
 const RAW_TEMPLATES = [
   // Sport & Club
   { id: 'padel-futsal-master', name: 'Padel & Futsal Master', category: 'sports', categoryLabel: 'Sport & Club', features: ['Booking lapangan real-time', 'DP QRIS', 'Invoice otomatis'], accentColor: '#10B981', badge: 'Populer', description: 'Solusi booking lapangan olahraga anti double-booking.' },
@@ -39,8 +63,8 @@ const RAW_TEMPLATES = [
   { id: 'autocare-detailing', name: 'AutoCare Detailing & Wash', category: 'service', categoryLabel: 'Corporate & Service', features: ['Booking servis berkala', 'Paket coating', 'Input plat nopol'], accentColor: '#3B82F6', description: 'Sistem booking antrean salon mobil & detailing.' },
   { id: 'petcare-clinic', name: 'PetCare Clinic', category: 'service', categoryLabel: 'Corporate & Service', features: ['Reservasi grooming', 'Kalender vet', 'Riwayat vaksin'], accentColor: '#10B981', description: 'Klinik hewan peliharaan, grooming & pet hotel.' },
   { id: 'rentalarmada-express', name: 'RentalArmada Express', category: 'service', categoryLabel: 'Corporate & Service', features: ['Ketersediaan armada', 'Kalkulator luar kota', 'Upload KTP/SIM'], accentColor: '#F59E0B', description: 'Sewa mobil harian & bulanan siap lepas kunci.' },
-  { id: 'sinartrans-customer', name: 'Sinartrans Logistics — Customer Site', category: 'service', categoryLabel: 'Corporate & Service', features: ['Cek tarif ongkir & lacak resi', 'Portal client & tracking publik', 'Konten company profile bilingual'], accentColor: '#DC2626', badge: 'Baru', description: 'Situs publik ekspedisi: cek ongkir, lacak resi, dan company profile — hasil rebrand dari Sinartrans Logistics.', allowSameOrigin: true, htmlPath: assetUrl('assets/template/sinartrans/index.html'), adminHtmlPath: assetUrl('assets/template/sinartrans/admin.html'), thumbnail: assetUrl('assets/template/thumbs/sinartrans-customer.jpg') },
-  { id: 'sinartrans-admin', name: 'Sinartrans Logistics — Admin Site', category: 'service', categoryLabel: 'Corporate & Service', features: ['Dashboard operasional pengiriman', 'Kelola armada, klaim & audit log', 'RBAC superadmin/admin/viewer'], accentColor: '#0F172A', badge: '2-in-1', description: 'Portal admin ekspedisi: pengiriman, armada, klien, mitra, klaim, dan audit log dalam satu dashboard.', allowSameOrigin: true, htmlPath: assetUrl('assets/template/sinartrans/admin.html'), adminHtmlPath: assetUrl('assets/template/sinartrans/admin.html'), thumbnail: assetUrl('assets/template/thumbs/sinartrans-admin.jpg') },
+  { id: 'sinartrans-customer', name: 'Sinartrans Logistics — Customer Site', category: 'service', categoryLabel: 'Corporate & Service', features: ['Cek tarif ongkir & lacak resi', 'Portal client & tracking publik', 'Konten company profile bilingual'], accentColor: '#DC2626', badge: 'Baru', description: 'Situs publik ekspedisi: cek ongkir, lacak resi, dan company profile — hasil rebrand dari Sinartrans Logistics.', allowSameOrigin: true, htmlPath: assetUrl('assets/template/sinartrans/index.html'), driverHtmlPath: assetUrl('assets/template/sinartrans/driver.html'), adminHtmlPath: assetUrl('assets/template/sinartrans/admin.html'), thumbnail: assetUrl('assets/template/thumbs/sinartrans-customer.jpg'), viewOptions: SINARTRANS_VIEW_OPTIONS },
+  { id: 'sinartrans-admin', name: 'Sinartrans Logistics — Admin Site', category: 'service', categoryLabel: 'Corporate & Service', features: ['Dashboard operasional pengiriman', 'Kelola armada, klaim & audit log', 'RBAC superadmin/admin/viewer'], accentColor: '#0F172A', badge: '2-in-1', description: 'Portal admin ekspedisi: pengiriman, armada, klien, mitra, klaim, dan audit log dalam satu dashboard.', allowSameOrigin: true, htmlPath: assetUrl('assets/template/sinartrans/admin.html'), driverHtmlPath: assetUrl('assets/template/sinartrans/driver.html'), adminHtmlPath: assetUrl('assets/template/sinartrans/admin.html'), thumbnail: assetUrl('assets/template/thumbs/sinartrans-admin.jpg'), viewOptions: SINARTRANS_VIEW_OPTIONS },
   { id: 'fortis-realty', name: 'Fortis Realty', category: 'service', categoryLabel: 'Corporate & Service', features: ['Listing properti premium', 'Simulasi KPR', 'Booking jadwal survei'], accentColor: '#0EA5E9', description: 'Kantor broker properti residensial & komersial.' },
   { id: 'agency-brutalist-atelier', name: 'Studio//Raw', category: 'service', categoryLabel: 'Corporate & Service', features: ['Brutalist grid', 'Case study tebal', 'Booking discovery call'], accentColor: '#E11D48', description: 'Desain agensi berkarakter berani & editorial.' },
 

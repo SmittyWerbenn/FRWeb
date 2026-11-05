@@ -5,8 +5,15 @@ import {
   LayoutGrid,
   MessageCircle,
   RotateCcw,
+  Truck,
 } from '../../lib/icons'
 import { getCategoryLabel } from '../../data'
+
+/**
+ * Peta ikon untuk opsi antarmuka template. Dipakai saat entri katalog
+ * mendefinisikan `viewOptions` sendiri (mis. Sinartrans: Customer/Driver/Admin).
+ */
+const VIEW_ICONS = { eye: Eye, layout: LayoutGrid, truck: Truck }
 
 /**
  * Dua antarmuka yang dibundel dalam setiap paket:
@@ -30,6 +37,18 @@ export const VIEW_OPTIONS = [
 ]
 
 /**
+ * Normalisasi opsi antarmuka: entri katalog boleh mengirim `viewOptions`
+ * ringan (`icon` berupa nama string) yang dipetakan ke komponen lucide.
+ */
+export function resolveViewOptions(options) {
+  if (!Array.isArray(options) || options.length === 0) return VIEW_OPTIONS
+  return options.map((option) => ({
+    ...option,
+    icon: typeof option.icon === 'string' ? VIEW_ICONS[option.icon] ?? Eye : option.icon ?? Eye,
+  }))
+}
+
+/**
  * Header tetap di paling atas halaman pratinjau.
  *
  * Bukan overlay lagi: bar ini mengambil ruangnya sendiri (`h-14`) di dalam
@@ -45,9 +64,11 @@ export default function PreviewHeader({
   waHref,
   onUseTemplate,
   htmlPath,
+  viewOptions,
 }) {
   const accent = template?.theme?.accent ?? template?.accentColor ?? '#818cf8'
   const categoryLabel = getCategoryLabel(template?.category)
+  const options = resolveViewOptions(viewOptions)
 
   return (
     <header
@@ -82,16 +103,16 @@ export default function PreviewHeader({
         ) : null}
       </div>
 
-      {/* Pemilih antarmuka demo: sistem 2-in-1 (Customer View + Admin View) */}
+      {/* Pemilih antarmuka demo: jumlah tab mengikuti entri katalog */}
       <span className="hidden shrink-0 text-[9.5px] font-bold uppercase tracking-[0.14em] text-slate-500 xl:inline">
-        2 antarmuka
+        {options.length} antarmuka
       </span>
       <div
         role="group"
-        aria-label="Pilih antarmuka demo: Customer View atau Admin View"
+        aria-label="Pilih antarmuka demo template"
         className="flex shrink-0 items-center gap-0.5 rounded-full border border-white/10 bg-white/[0.04] p-0.5"
       >
-        {VIEW_OPTIONS.map((option) => {
+        {options.map((option) => {
           const Icon = option.icon
           const active = option.id === view
           return (

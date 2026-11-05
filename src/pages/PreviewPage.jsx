@@ -34,12 +34,35 @@ const IFRAME_SANDBOX = [
 const IFRAME_SANDBOX_OPEN = `${IFRAME_SANDBOX} allow-same-origin`
 
 const SLOW_AFTER_MS = 8000
-const VIEW_IDS = ['customer', 'admin']
+const DEFAULT_VIEW_IDS = ['customer', 'admin']
 
-function readViewFromUrl() {
-  if (typeof window === 'undefined') return 'customer'
+function viewIdsFor(template) {
+  const options = template?.viewOptions
+  if (!Array.isArray(options) || options.length === 0) return DEFAULT_VIEW_IDS
+  return options.map((option) => option.id)
+}
+
+function readViewFromUrl(allowed) {
+  if (typeof window === 'undefined') return allowed[0]
   const value = new URLSearchParams(window.location.search).get('view')
-  return VIEW_IDS.includes(value) ? value : 'customer'
+  return allowed.includes(value) ? value : allowed[0]
+}
+
+/**
+ * Petakan view aktif ke file antarmuka pada template.
+ *
+ * Sinartrans membundel tiga antarmuka dalam satu SPA dan router-nya berbasis
+ * path (BrowserRouter), jadi portal tidak bisa dipilih dari query string.
+ * Tiap portal punya entry HTML tipis yang menyetel `window.__SNT_PORTAL__`
+ * sebelum bundle dimuat: index.html (customer), driver.html (kurir),
+ * admin.html (admin). Template biasa: customer/admin seperti semula.
+ */
+function resolveViewPath(template, view) {
+  if (!template) return null
+  const driverPath = template.driverHtmlPath
+  if (view === 'driver' && driverPath) return driverPath
+  if (view === 'admin' || view === 'admin-driver') return template.adminHtmlPath
+  return template.htmlPath
 }
 
 /**
@@ -51,14 +74,16 @@ function readViewFromUrl() {
 export default function PreviewPage({ slug }) {
   const template = TEMPLATES_BY_ID[slug] ?? null
   const { selectTemplate } = useOrder()
-  const [view, setView] = useState(readViewFromUrl)
+  const viewIds = useMemo(() => viewIdsFor(template), [template])
+  const [view, setView] = useState(() => readViewFromUrl(viewIdsFor(template)))
+  const viewLabel = template?.viewOptions?.find((option) => option.id === view)?.label
   const [frameState, setFrameState] = useState('loading')
   const [slow, setSlow] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
 
   // Pratinjau selalu lebar penuh: tidak ada lagi simulator viewport, jadi
   // halaman template memakai seluruh ruang iframe.
-  const activePath = template ? (view === 'admin' ? template.adminHtmlPath : template.htmlPath) : null
+  const activePath = resolveViewPath(template, view)
 
   // Sandbox longgar hanya untuk entri yang menandai `allowSameOrigin` (SPA
   // multi-halaman). Entri lain tetap di origin opak.
@@ -79,9 +104,8 @@ export default function PreviewPage({ slug }) {
   useEffect(() => {
     if (!template) return undefined
     const previousTitle = document.title
-    document.title = `${template.name} — ${
-      view === 'admin' ? 'Admin Dashboard' : 'Live Preview'
-    } | FRWeb`
+    const viewLabel = template.viewOptions?.find((option) => option.id === view)?.label
+    document.title = `${template.name} — ${viewLabel ?? 'Live Preview'} | FRWeb`
 
     const robots = document.createElement('meta')
     robots.setAttribute('name', 'robots')
@@ -138,19 +162,23 @@ export default function PreviewPage({ slug }) {
     }
   }, [template, activePath, reloadKey])
 
-  const handleViewChange = useCallback((next) => {
-    if (!VIEW_IDS.includes(next)) return
-    setView(next)
-    setSlow(false)
-    setFrameState('loading')
-    if (typeof window === 'undefined') return
-    const url = new URL(window.location.href)
-    if (next === 'admin') url.searchParams.set('view', 'admin')
-    else url.searchParams.delete('view')
-    // Bersihkan parameter lama `?viewport=` dari tautan yang masih tersebar.
-    url.searchParams.delete('viewport')
-    window.history.replaceState(window.history.state, '', url)
-  }, [])
+  const handleViewChange = useCallback(
+    (next) => {
+      if (!viewIds.includes(next)) return
+      setView(next)
+      setSlow(false)
+      setFrameState('loading')
+      if (typeof window === 'undefined') return
+      const url = new URL(window.location.href)
+      // View default tidak menuliskan parameter agar URL tetap ringkas.
+      if (next === viewIds[0]) url.searchParams.delete('view')
+      else url.searchParams.set('view', next)
+      // Bersihkan parameter lama `?viewport=` dari tautan yang masih tersebar.
+      url.searchParams.delete('viewport')
+      window.history.replaceState(window.history.state, '', url)
+    },
+    [viewIds],
+  )
 
   const handleReload = useCallback(() => {
     setSlow(false)
@@ -180,6 +208,7 @@ export default function PreviewPage({ slug }) {
         waHref={waHref}
         onUseTemplate={handleUseTemplate}
         htmlPath={activePath}
+        viewOptions={template.viewOptions}
       />
 
       <div className="flex min-h-0 w-full flex-1 items-stretch justify-center bg-[#05070d]">
@@ -194,9 +223,11 @@ export default function PreviewPage({ slug }) {
                 <span className="grid h-11 w-11 place-items-center rounded-full border border-amber-300/25 bg-amber-300/[0.06]">
                   <ShieldCheck className="h-5 w-5 text-amber-200" />
                 </span>
-                <p className="text-[13px] font-bold text-white">Dashboard admin belum dapat dimuat</p>
+                <p className="text-[13px] font-bold text-white">
+                  {viewLabel ?? 'Antarmuka'} belum dapat dimuat
+                </p>
                 <p className="max-w-sm text-[11.5px] leading-relaxed text-slate-400">
-                  File dashboard template ini tidak merespons. Muat ulang, atau kembali ke Customer View
+                  File antarmuka template ini tidak merespons. Muat ulang, atau kembali ke Customer Site
                   untuk melihat halaman pelanggannya.
                 </p>
                 <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
@@ -213,7 +244,7 @@ export default function PreviewPage({ slug }) {
                     onClick={() => handleViewChange('customer')}
                     className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-[11px] font-bold text-[#08111f] transition hover:brightness-95"
                   >
-                    Buka Customer View
+                    Buka Customer Site
                   </button>
                 </div>
               </div>
@@ -222,7 +253,7 @@ export default function PreviewPage({ slug }) {
             <iframe
               key={`${template.id}-${view}-${reloadKey}`}
               src={activePath}
-              title={`${view === 'admin' ? 'Admin dashboard' : 'Live preview'} ${template.name}`}
+              title={`${viewLabel ?? 'Live preview'} ${template.name}`}
               sandbox={frameSandbox}
               loading="eager"
               referrerPolicy="no-referrer"

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/assets/template/sinartrans/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/template/sinartrans/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1733" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <meta name="description" content="Portal driver Sinartrans Logistics — login kurir, tugas pengiriman, dan update status." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" crossorigin href="/assets/template/sinartrans/assets/index-CIbjlCFu.css" />
+    <title>Portal Driver | Sinartrans Logistics</title>
+    <script type="text/javascript">
+      // Demo ini dilayani dari subfolder /assets/template/sinartrans/ di
+      // frel.cloud. Semua URL aset (logo, wasm) memakai prefiks ini.
+      window.__SNT_DEMO_BASE__ = "/assets/template/sinartrans";
+      // Entry khusus Portal Driver.
+      // Router SPA berbasis path (BrowserRouter), jadi portal kurir dipilih
+      // lewat flag ini (bukan query string): detectPortal() membaca
+      // window.__SNT_PORTAL__ sebelum fallback ke hostname.
+      window.__SNT_PORTAL__ = "driver";
+      try {
+        var base = window.location.pathname.replace(/\/driver\.html$/, "").replace(/\/$/, "");
+        if (window.location.pathname.indexOf("/login") === -1) {
+          window.history.replaceState(null, "", base + "/login");
+        }
+      } catch (e) {
+        /* abaikan bila History API diblokir */
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/assets/template/sinartrans/assets/index-GgrD5ptT.js"></script>
+  </body>
+</html>
