@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sinartrans Logistics</title>
+    <script type="text/javascript">
+      // SPA fallback untuk hosting statis tanpa rewrite (GitHub Pages / mirror
+      // subfolder frel.cloud). Deep link seperti
+      // /assets/template/sinartrans/admin/login dilayani sebagai 404, lalu
+      // diarahkan kembali ke index.html dengan path asli dikemas di query.
+      var l = window.location;
+      var BASE = "/assets/template/sinartrans";
+      if (l.pathname.indexOf(BASE + "/") === 0) {
+        var rest = l.pathname.slice(BASE.length + 1);
+        l.replace(
+          l.origin + BASE + "/index.html?/" + rest.replace(/&/g, "~and~") +
+          (l.search ? "&" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+          l.hash,
+        );
+      } else {
+        l.replace(l.origin + BASE + "/index.html");
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -33,7 +33,7 @@ export default function NotFoundPage({ slug = '' }) {
               . Kemungkinan tautan salah ketik atau template sudah diganti versi barunya.
             </>
           ) : (
-            'Tautan mungkin sudah berubah. Kembali ke katalog untuk melihat 25 template siap go-live.'
+            'Tautan mungkin sudah berubah. Kembali ke katalog untuk melihat 26 template siap go-live.'
           )}
         </p>
 

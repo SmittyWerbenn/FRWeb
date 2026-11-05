@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/assets/template/sinartrans/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/template/sinartrans/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1733" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <meta name="description" content="Portal admin Sinartrans Logistics — pengelolaan pengiriman, armada, klaim, dan laporan operasional." />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Portal Admin | Sinartrans Logistics</title>
+    <script type="text/javascript">
+      // Demo ini dilayani dari subfolder /assets/template/sinartrans/ di
+      // frel.cloud. Semua URL aset (logo, wasm) memakai prefiks ini.
+      window.__SNT_DEMO_BASE__ = "/assets/template/sinartrans";
+      // Entry khusus Portal Admin.
+      // BASE_URL SPA tetap relatif (BASE_URL bundle di-override ke path folder ini),
+      // tapi portal dipaksa "admin" supaya route admin berada di root basename
+      // (mis. /login, /pengiriman) dan tidak diredirect ke subdomain admin.
+      window.__SNT_PORTAL__ = "admin";
+      // Router basename = BASE_URL (folder ini). Arahkan ke /login di dalam
+      // basename tersebut SEBELUM bundle dimuat, supaya SPA mount pada Login.
+      window.__SNT_ADMIN_ENTRY__ = "./login";
+      try {
+        var base = window.location.pathname.replace(/\/admin\.html$/, "").replace(/\/$/, "");
+        if (window.location.pathname.indexOf("/login") === -1) {
+          window.history.replaceState(null, "", base + "/login");
+        }
+      } catch (e) {
+        /* abaikan bila History API diblokir */
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/assets/template/sinartrans/assets/index-GgrD5ptT.js"></script>
+  </body>
+</html>

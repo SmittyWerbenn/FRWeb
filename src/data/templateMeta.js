@@ -178,12 +178,20 @@ export const TEMPLATE_META = {
     badgeLabel: 'Baru',
     skin: 'cyber',
   },
-  'sinar-trans-express': {
-    industry: 'Ekspedisi & kargo',
+  'sinartrans-customer': {
+    industry: 'Ekspedisi & logistik',
     variantStyle: 'Logistics Corporate Bold',
-    colorPalette: ['#1A1211', '#DC2626', '#F59E0B', '#FEF2F2'],
-    layoutType: 'Rate checker + tracking timeline',
+    colorPalette: ['#253B6D', '#EE2229', '#0F172A', '#F8FAFC'],
+    layoutType: 'Company profile + cek ongkir + tracking',
     badgeLabel: 'Baru',
+    skin: 'default',
+  },
+  'sinartrans-admin': {
+    industry: 'Ekspedisi & logistik',
+    variantStyle: 'Operations Dashboard',
+    colorPalette: ['#0B1733', '#EE2229', '#1E293B', '#F8FAFC'],
+    layoutType: 'Dashboard operasional + RBAC',
+    badgeLabel: '2-in-1',
     skin: 'default',
   },
   'fortis-realty': {

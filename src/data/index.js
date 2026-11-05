@@ -13,7 +13,7 @@ const SKIN_FALLBACK = 'default'
 
 /**
  * Konten visual (theme, brand, konten section) yang dipakai renderer React
- * di hero & halaman order. Katalog 25 template menjadi sumber kebenaran untuk
+ * di hero & halaman order. Katalog 26 template menjadi sumber kebenaran untuk
  * nama, kategori, fitur, dan file HTML live preview.
  */
 const RICH_TEMPLATES = [
@@ -46,7 +46,7 @@ const fallbackTheme = (item) => ({
 })
 
 /**
- * Katalog final 25 template. Urutan mengikuti `TEMPLATE_CATALOG` (per kategori),
+ * Katalog final 26 template. Urutan mengikuti `TEMPLATE_CATALOG` (per kategori),
  * tiap entri digabung dengan konten visual bila tersedia.
  */
 export const TEMPLATES = TEMPLATE_CATALOG.map((item) => {

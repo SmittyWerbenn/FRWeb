@@ -1,5 +1,5 @@
 /**
- * Dataset katalog template FRWeb — 25 template dengan file HTML statis mandiri.
+ * Dataset katalog template FRWeb — 26 template dengan file HTML statis mandiri.
  * Sumber file: `public/assets/template/[id].html` (di-copy dari paket desain),
  * thumbnail representatif: `public/assets/template/thumbs/[id].jpg` (screenshot nyata).
  *
@@ -39,7 +39,8 @@ const RAW_TEMPLATES = [
   { id: 'autocare-detailing', name: 'AutoCare Detailing & Wash', category: 'service', categoryLabel: 'Corporate & Service', features: ['Booking servis berkala', 'Paket coating', 'Input plat nopol'], accentColor: '#3B82F6', description: 'Sistem booking antrean salon mobil & detailing.' },
   { id: 'petcare-clinic', name: 'PetCare Clinic', category: 'service', categoryLabel: 'Corporate & Service', features: ['Reservasi grooming', 'Kalender vet', 'Riwayat vaksin'], accentColor: '#10B981', description: 'Klinik hewan peliharaan, grooming & pet hotel.' },
   { id: 'rentalarmada-express', name: 'RentalArmada Express', category: 'service', categoryLabel: 'Corporate & Service', features: ['Ketersediaan armada', 'Kalkulator luar kota', 'Upload KTP/SIM'], accentColor: '#F59E0B', description: 'Sewa mobil harian & bulanan siap lepas kunci.' },
-  { id: 'sinar-trans-express', name: 'Sinar Trans Express', category: 'service', categoryLabel: 'Corporate & Service', features: ['Cek tarif ongkir', 'Live tracking resi', 'Request pickup cargo'], accentColor: '#DC2626', description: 'Jasa ekspedisi kargo darat, laut, dan udara.' },
+  { id: 'sinartrans-customer', name: 'Sinartrans Logistics — Customer Site', category: 'service', categoryLabel: 'Corporate & Service', features: ['Cek tarif ongkir & lacak resi', 'Portal client & tracking publik', 'Konten company profile bilingual'], accentColor: '#DC2626', badge: 'Baru', description: 'Situs publik ekspedisi: cek ongkir, lacak resi, dan company profile — hasil rebrand dari Sinartrans Logistics.', allowSameOrigin: true, htmlPath: assetUrl('assets/template/sinartrans/index.html'), adminHtmlPath: assetUrl('assets/template/sinartrans/admin.html'), thumbnail: assetUrl('assets/template/thumbs/sinartrans-customer.jpg') },
+  { id: 'sinartrans-admin', name: 'Sinartrans Logistics — Admin Site', category: 'service', categoryLabel: 'Corporate & Service', features: ['Dashboard operasional pengiriman', 'Kelola armada, klaim & audit log', 'RBAC superadmin/admin/viewer'], accentColor: '#0F172A', badge: '2-in-1', description: 'Portal admin ekspedisi: pengiriman, armada, klien, mitra, klaim, dan audit log dalam satu dashboard.', allowSameOrigin: true, htmlPath: assetUrl('assets/template/sinartrans/admin.html'), adminHtmlPath: assetUrl('assets/template/sinartrans/admin.html'), thumbnail: assetUrl('assets/template/thumbs/sinartrans-admin.jpg') },
   { id: 'fortis-realty', name: 'Fortis Realty', category: 'service', categoryLabel: 'Corporate & Service', features: ['Listing properti premium', 'Simulasi KPR', 'Booking jadwal survei'], accentColor: '#0EA5E9', description: 'Kantor broker properti residensial & komersial.' },
   { id: 'agency-brutalist-atelier', name: 'Studio//Raw', category: 'service', categoryLabel: 'Corporate & Service', features: ['Brutalist grid', 'Case study tebal', 'Booking discovery call'], accentColor: '#E11D48', description: 'Desain agensi berkarakter berani & editorial.' },
 
@@ -51,10 +52,10 @@ const RAW_TEMPLATES = [
 
 export const TEMPLATE_CATALOG = RAW_TEMPLATES.map((item) => ({
   ...item,
-  htmlPath: assetUrl(`assets/template/${item.id}.html`),
-  adminHtmlPath: assetUrl(`assets/template/${item.id}-dashboard.html`),
-  liveUrl: assetUrl(`assets/template/${item.id}.html`),
-  thumbnail: assetUrl(`assets/template/thumbs/${item.id}.jpg`),
+  htmlPath: item.htmlPath ?? assetUrl(`assets/template/${item.id}.html`),
+  adminHtmlPath: item.adminHtmlPath ?? assetUrl(`assets/template/${item.id}-dashboard.html`),
+  liveUrl: item.htmlPath ?? assetUrl(`assets/template/${item.id}.html`),
+  thumbnail: item.thumbnail ?? assetUrl(`assets/template/thumbs/${item.id}.jpg`),
 }))
 
 export const TEMPLATE_CATALOG_BY_ID = Object.fromEntries(

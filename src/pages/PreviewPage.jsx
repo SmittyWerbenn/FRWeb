@@ -22,6 +22,17 @@ const IFRAME_SANDBOX = [
   'allow-downloads',
 ].join(' ')
 
+/**
+ * Template multi-halaman (SPA dengan bundler sendiri) memuat CSS/JS lewat path
+ * relatif dan memakai History API. Di origin opak, loader modul diblokir
+ * browser sehingga halaman tampil kosong. Untuk entri yang menandai
+ * `allowSameOrigin: true` di katalog, sandbox dilonggarkan sesuai slug itu saja.
+ *
+ * Risiko: iframe dapat membaca `parent.document`. Dibatasi hanya ke slug yang
+ * memang memerlukannya.
+ */
+const IFRAME_SANDBOX_OPEN = `${IFRAME_SANDBOX} allow-same-origin`
+
 const SLOW_AFTER_MS = 8000
 const VIEW_IDS = ['customer', 'admin']
 
@@ -48,6 +59,10 @@ export default function PreviewPage({ slug }) {
   // Pratinjau selalu lebar penuh: tidak ada lagi simulator viewport, jadi
   // halaman template memakai seluruh ruang iframe.
   const activePath = template ? (view === 'admin' ? template.adminHtmlPath : template.htmlPath) : null
+
+  // Sandbox longgar hanya untuk entri yang menandai `allowSameOrigin` (SPA
+  // multi-halaman). Entri lain tetap di origin opak.
+  const frameSandbox = template?.allowSameOrigin ? IFRAME_SANDBOX_OPEN : IFRAME_SANDBOX
 
   const waHref = useMemo(
     () =>
@@ -208,7 +223,7 @@ export default function PreviewPage({ slug }) {
               key={`${template.id}-${view}-${reloadKey}`}
               src={activePath}
               title={`${view === 'admin' ? 'Admin dashboard' : 'Live preview'} ${template.name}`}
-              sandbox={IFRAME_SANDBOX}
+              sandbox={frameSandbox}
               loading="eager"
               referrerPolicy="no-referrer"
               allow="fullscreen"

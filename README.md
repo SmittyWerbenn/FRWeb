@@ -30,10 +30,10 @@ sebagai pesan WhatsApp yang sudah terformat.
 3. **Domain input + validator live** — TLD `.com`, `.id`, `.co.id`, `.net`, sanitasi input,
    deteksi TLD yang ikut diketik, simulasi ketersediaan (deterministik, tanpa jaringan),
    rekomendasi alternatif bila domain "terpakai".
-4. **Katalog 25 template / 5 kategori** — tiap kategori punya varian visual berlawanan
+4. **Katalog 26 template / 5 kategori** — tiap kategori punya varian visual berlawanan
    (Neon Athletic vs Luxury Country Club, Warm Dining vs Wabi-sabi, Brutalist Grid vs
    Glass Bento, Editorial vs Cyberpunk Spec Grid). Card menampilkan color dots, badge,
-   layout type, dan thumbnail yang auto-scroll saat hover. Filter tab: Semua (25),
+   layout type, dan thumbnail yang auto-scroll saat hover. Filter tab: Semua (26),
    Sport & Club (4), F&B (5), Corporate & Service (7), Online Store (6),
    Event & Hospitality (3) + pencarian.
    Tombol **Live Demo** membuka **halaman pratinjau penuh** di route tersendiri
@@ -49,7 +49,7 @@ sebagai pesan WhatsApp yang sudah terformat.
    `Halo tim FRWeb, saya ingin setup website go-live 30 menit.` + `*Detail Pesanan:*`
    (Paket, Domain, Template) + permintaan aktivasi & pembayaran.
 8. **SEO** — meta OG/Twitter, canonical, JSON-LD (Organization, WebSite, Service + OfferCatalog
-   4 paket, ItemList 25 template, FAQPage), `robots.txt`, `sitemap.xml`.
+   4 paket, ItemList 26 template, FAQPage), `robots.txt`, `sitemap.xml`.
 
 ## Struktur
 
@@ -63,7 +63,7 @@ src/
 ├── data/
 │   ├── plans.js                 # 4 paket + harga + spesifikasi
 │   ├── categories.js            # 5 kategori katalog
-│   ├── index.js                 # agregasi 25 template + metadata + search index
+│   ├── index.js                 # agregasi 26 template + metadata + search index
 │   ├── templateMeta.js          # variantStyle, colorPalette, layoutType, badgeLabel, skin
 │   └── templates/               # data template per kategori (4 varian kontras di variants.js)
 ├── styles/theme.css             # skin preview (.pv-skin-*) + tilt frame hero

@@ -22,14 +22,14 @@ const SANDBOX =
 const TEMPLATE_ICON = {
   'padel-futsal-master': Activity,
   'quadra-coffee-shop': Coffee,
-  'sinar-trans-express': Truck,
+  'sinartrans-customer': Truck,
   'fine-wo': Sparkles,
 }
 
 const SHORT_LABEL = {
   'padel-futsal-master': 'Padel & Futsal',
   'quadra-coffee-shop': 'Quadra Coffee',
-  'sinar-trans-express': 'Sinar Trans',
+  'sinartrans-customer': 'Sinartrans',
   'fine-wo': 'Fine WO',
 }
 

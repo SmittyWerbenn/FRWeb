@@ -8,7 +8,7 @@ import Stepper from '../order/Stepper'
 const VALUES = [
   'Tanpa ribet teknis & tanpa coding',
   'SSL, domain, dan hosting disiapkan',
-  '25 template siap pakai, 5 kategori industri',
+  '26 template siap pakai, 5 kategori industri',
   'Go-live hari ini, bukan minggu depan',
 ]
 
@@ -22,7 +22,7 @@ const STATS = [
 const SHOWCASE_IDS = [
   'padel-futsal-master',
   'quadra-coffee-shop',
-  'sinar-trans-express',
+  'sinartrans-customer',
   'fine-wo',
 ]
 
