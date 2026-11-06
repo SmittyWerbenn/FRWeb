@@ -1294,6 +1294,213 @@
   const WA_NUMBER = '6285778185971';
   const STORE_KEY = 'quadra.selforder.v1';
 
+  /* ============================================================
+     SINKRONISASI REAL-TIME KE ADMIN DASHBOARD
+     ------------------------------------------------------------
+     Customer site & dashboard berjalan di origin yang sama, jadi cukup
+     pakai Web Storage + BroadcastChannel. `window.QuadraSync` dipakai
+     ulang oleh dashboard (lihat file -dashboard.html) agar skema,
+     nomor pesanan, dan agregasi meja identik di kedua sisi.
+     ============================================================ */
+  const SYNC_VERSION = 1;
+  const ORDERS_KEY = 'quadra_orders_db';
+  const TABLES_KEY = 'quadra_tables_state';
+  const CHANNEL_NAME = 'quadra_sync_channel';
+
+  const AREA_LABEL = { indoor: 'Indoor', outdoor: 'Outdoor', slowbar: 'Slow Bar' };
+  const TABLE_AREA = { 1: 'indoor', 2: 'indoor', 3: 'indoor', 4: 'indoor', 5: 'indoor', 6: 'indoor', 7: 'indoor', 8: 'indoor', 9: 'indoor', 10: 'indoor', 11: 'outdoor', 12: 'outdoor', 13: 'outdoor', 14: 'outdoor', 15: 'outdoor', 16: 'outdoor', 17: 'outdoor', 18: 'outdoor', 19: 'slowbar', 20: 'slowbar', 21: 'slowbar', 22: 'slowbar', 23: 'slowbar', 24: 'slowbar', 25: 'slowbar' };
+  const TABLE_CAPACITY = { 1: 2, 2: 2, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 2, 10: 2, 11: 4, 12: 4, 13: 4, 14: 4, 15: 2, 16: 2, 17: 6, 18: 6, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1, 24: 1, 25: 1 };
+  const ORDER_STATUS_FLOW = ['NEW', 'PREPARING', 'SERVED', 'COMPLETED'];
+  const ORDER_STATUS_LABEL = { NEW: 'Pesanan Masuk', PREPARING: 'Sedang Dibuat', SERVED: 'Siap / Disajikan', COMPLETED: 'Selesai' };
+  const TABLE_STATUS_LABEL = { available: 'Tersedia', occupied: 'Terisi', reserved: 'Dipesan', cleaning: 'Dibersihkan' };
+  const DEFAULT_ADMIN_PIN = 'quadra24';
+
+  const sync = (function () {
+    let channel = null;
+    try { if (typeof BroadcastChannel === 'function') channel = new BroadcastChannel(CHANNEL_NAME); } catch (e) { channel = null; }
+
+    function safeParse(raw, fallback) {
+      try { const v = JSON.parse(raw); return v == null ? fallback : v; } catch (e) { return fallback; }
+    }
+    function readList(key) {
+      try { const v = safeParse(localStorage.getItem(key), null); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+    }
+    function writeList(key, list) {
+      try { localStorage.setItem(key, JSON.stringify(list)); return true; } catch (e) { return false; }
+    }
+    function emit(type, payload) {
+      const event = Object.assign({ type: type, version: SYNC_VERSION, source: 'customer', at: new Date().toISOString() }, payload || {});
+      if (channel) { try { channel.postMessage(event); } catch (e) { /* channel ditutup */ } }
+      try { localStorage.setItem('quadra_sync_ping', JSON.stringify({ type: type, at: event.at, n: Math.random() })); } catch (e) { /* fallback storage event saja */ }
+      return event;
+    }
+    function normalizeFee(rate) {
+      const n = Number(rate);
+      if (!Number.isFinite(n) || n <= 0) return 0;
+      if (n >= 1) return n / 100;
+      return n > 0.15 ? n / 100 : n;
+    }
+    function readOrders() {
+      return readList(ORDERS_KEY).filter(function (o) { return o && typeof o === 'object' && o.orderId; })
+        .map(function (o) { return Object.assign({}, o, { items: Array.isArray(o.items) ? o.items : [] }); })
+        .sort(function (a, b) { return String(b.createdAt || '').localeCompare(String(a.createdAt || '')); });
+    }
+    function writeOrders(list) { return writeList(ORDERS_KEY, Array.isArray(list) ? list : []); }
+    function readTables() { return readList(TABLES_KEY).filter(function (t) { return t && typeof t === 'object' && t.tableNumber != null; }); }
+    function writeTables(list) { return writeList(TABLES_KEY, Array.isArray(list) ? list : []); }
+    function upsertOrder(order) {
+      const list = readOrders();
+      const idx = list.findIndex(function (o) { return o.orderId === order.orderId; });
+      if (idx >= 0) list[idx] = Object.assign({}, list[idx], order); else list.unshift(order);
+      writeOrders(list);
+      return order;
+    }
+    function orderId() {
+      const d = new Date();
+      const stamp = String(d.getFullYear()).slice(2) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+      let seq = 1;
+      try { seq = Number(localStorage.getItem('quadra_orders_seq') || '0') + 1; localStorage.setItem('quadra_orders_seq', String(seq)); } catch (e) { /* noop */ }
+      const rnd = String(Math.floor(Math.random() * 9000) + 1000);
+      return 'QDR-' + stamp + '-' + (String(seq).padStart(4, '0')) + '-' + rnd;
+    }
+    /** Konversi order customer -> bentuk transaksi dashboard + status meja. */
+    function toAdmin(order, existingTables) {
+      const label = String(order.tableNumber || 'Meja 07');
+      const m = /(\d+)/.exec(label);
+      const number = m ? Number(m[1]) : 7;
+      const area = order.area || AREA_LABEL[TABLE_AREA[number]] || 'Indoor';
+      const items = (order.items || []).map(function (it) {
+        const qty = Math.max(1, Math.round(Number(it.qty) || 1));
+        const price = Number(it.price) || 0;
+        return { name: String(it.name || 'Menu'), variant: String(it.variant || ''), qty: qty, price: price, lineTotal: price * qty };
+      });
+      const subtotal = Number.isFinite(order.subtotal) ? order.subtotal : items.reduce(function (s, it) { return s + it.lineTotal; }, 0);
+      const serviceFee = Number.isFinite(order.serviceFee) ? order.serviceFee : Math.round(subtotal * 0.05);
+      const tax = Number.isFinite(order.tax) ? order.tax : Math.round(subtotal * 0.10);
+      const totalAmount = Number.isFinite(order.totalAmount) ? order.totalAmount : subtotal + serviceFee + tax;
+      const customer = order.customerName || (order.orderType === 'take_away' ? 'Take Away' : label);
+      const statusNote = ORDER_STATUS_FLOW.indexOf(order.orderStatus) >= 0 ? order.orderStatus : 'NEW';
+
+      const tables = (existingTables || readTables()).slice();
+      const idx = tables.findIndex(function (t) { return Number(t.tableNumber) === number; });
+      const prev = idx >= 0 ? tables[idx] : {};
+      const table = Object.assign({
+        tableNumber: number, label: label, area: area, capacity: TABLE_CAPACITY[number] || 4,
+        status: 'available', orderId: null, guestCount: 0, seatedAt: null,
+      }, prev);
+      const nextStatus = order.orderStatus === 'COMPLETED' ? 'cleaning' : 'occupied';
+      table.status = nextStatus;
+      table.orderId = order.orderId;
+      table.area = area;
+      table.guestCount = table.guestCount || Math.max(1, Math.min(table.capacity || 4, items.reduce(function (s, it) { return s + it.qty; }, 0)));
+      if (!table.seatedAt) table.seatedAt = order.createdAt || new Date().toISOString();
+      if (nextStatus === 'available' || nextStatus === 'cleaning') { table.orderId = null; table.guestCount = 0; table.seatedAt = null; }
+      if (idx >= 0) tables[idx] = table; else tables.push(table);
+      tables.sort(function (a, b) { return Number(a.tableNumber) - Number(b.tableNumber); });
+
+      const type = order.orderType === 'take_away' ? 'TAKEAWAY' : (order.area === 'Slow Bar' ? 'SLOWBAR' : 'DINE_IN');
+      const tx = {
+        orderId: order.orderId,
+        invoice: order.orderId,
+        token: order.orderId,
+        customer: customer,
+        phone: order.customerPhone || '-',
+        type: type,
+        tableNumber: label,
+        area: area,
+        itemsSummary: items.map(function (it) { return it.qty + 'x ' + it.name; }).join(', '),
+        items: items,
+        time: order.createdAt || new Date().toISOString(),
+        subtotal: subtotal,
+        serviceFee: serviceFee,
+        tax: tax,
+        total: totalAmount,
+        method: order.paymentMethod === 'QRIS' ? 'QRIS Instant' : 'Tunai/Kartu Kasir',
+        paymentStatus: order.paymentStatus || (order.paymentMethod === 'QRIS' ? 'PAID' : 'PENDING'),
+        note: order.customerNotes || '',
+        status: statusNote === 'COMPLETED' ? 'SELESAI' : 'LUNAS',
+        orderStatus: statusNote,
+      };
+      return { tx: tx, table: table, tables: tables, number: number, area: area, label: label };
+    }
+    /** Simpan pesanan baru atau pembaruan pesanan + status meja terkait. */
+    function persist(order, options) {
+      const opts = options || {};
+      const existing = readOrders();
+      const prior = existing.filter(function (o) { return o.orderId === order.orderId; })[0];
+      const merged = Object.assign({}, prior || {}, order);
+      const packed = toAdmin(merged, readTables());
+      merged.items = packed.tx.items;
+      if (!Number.isFinite(merged.subtotal)) merged.subtotal = packed.tx.subtotal;
+      if (!Number.isFinite(merged.serviceFee)) merged.serviceFee = packed.tx.serviceFee;
+      if (!Number.isFinite(merged.tax)) merged.tax = packed.tx.tax;
+      if (!Number.isFinite(merged.totalAmount)) merged.totalAmount = packed.tx.total;
+      upsertOrder(merged);
+      writeTables(packed.tables);
+      if (!opts.silent) {
+        emit(prior ? 'ORDER_UPDATED' : 'ORDER_CREATED', { order: merged, transaction: packed.tx, table: packed.table, tables: packed.tables, status: merged.orderStatus, paid: merged.paymentStatus === 'PAID' });
+      }
+      return packed;
+    }
+    /** Simpan pesanan yang diproses kasir langsung dari dashboard. */
+    function pushExternalOrder(order, options) { return persist(order, options); }
+    function setOrderStatus(orderId, status) {
+      const list = readOrders();
+      const order = list.filter(function (o) { return o.orderId === orderId; })[0];
+      if (!order) return null;
+      order.orderStatus = status;
+      if (status === 'COMPLETED') { order.paymentStatus = 'PAID'; order.completedAt = new Date().toISOString(); }
+      return persist(order, { silent: true });
+    }
+    function buildOrder(fields) {
+      const f = fields || {};
+      const items = (f.items || []).map(function (it) {
+        return { name: String(it.name || 'Menu'), variant: String(it.variant || ''), qty: Math.max(1, Math.round(Number(it.qty) || 1)), price: Number(it.price) || 0 };
+      });
+      const orders = readOrders();
+      const prior = f.orderId ? orders.filter(function (o) { return o.orderId === f.orderId; })[0] : null;
+      const subtotal = Number.isFinite(f.subtotal) ? f.subtotal : items.reduce(function (s, it) { return s + it.price * it.qty; }, 0);
+      const serviceFee = Number.isFinite(f.serviceFee) ? f.serviceFee : Math.round(subtotal * (Number.isFinite(f.serviceRate) ? normalizeFee(f.serviceRate) : 0.05));
+      const tax = Number.isFinite(f.tax) ? f.tax : Math.round(subtotal * (Number.isFinite(f.taxRate) ? normalizeFee(f.taxRate) : 0.10));
+      return Object.assign({
+        orderId: orderId(), tableNumber: 'Meja 07', area: 'Indoor', orderType: 'dine_in',
+        customerName: '', customerPhone: '', customerNotes: '',
+        items: [], subtotal: subtotal, serviceFee: serviceFee, tax: tax,
+        totalAmount: subtotal + serviceFee + tax,
+        paymentMethod: 'QRIS', paymentStatus: 'PENDING', orderStatus: 'NEW',
+        createdAt: (prior && prior.createdAt) || new Date().toISOString(),
+      }, prior || {}, f, { items: items, subtotal: subtotal, serviceFee: serviceFee, tax: tax });
+    }
+    function clearOrders() {
+      writeOrders([]);
+      writeTables([]);
+      emit('DB_RESET', {});
+    }
+    return {
+      VERSION: SYNC_VERSION, ORDERS_KEY: ORDERS_KEY, TABLES_KEY: TABLES_KEY, CHANNEL_NAME: CHANNEL_NAME,
+      ORDER_STATUS_FLOW: ORDER_STATUS_FLOW, ORDER_STATUS_LABEL: ORDER_STATUS_LABEL,
+      TABLE_STATUS_LABEL: TABLE_STATUS_LABEL, DEFAULT_ADMIN_PIN: DEFAULT_ADMIN_PIN,
+      channel: function () { return channel; },
+      emit: emit, readOrders: readOrders, readTables: readTables, upsertOrder: upsertOrder,
+      setOrderStatus: setOrderStatus, buildOrder: buildOrder, orderId: orderId, toAdmin: toAdmin,
+      persist: persist, pushExternalOrder: pushExternalOrder, clearOrders: clearOrders,
+      subscribe: function (handler) {
+        if (channel) channel.addEventListener('message', function (ev) { handler(ev.data || {}); });
+        window.addEventListener('storage', function (ev) {
+          if (!ev.key || [ORDERS_KEY, TABLES_KEY, 'quadra_sync_ping'].indexOf(ev.key) < 0) return;
+          handler({ type: ev.key === 'quadra_sync_ping' ? (safeParse(ev.newValue, {}) || {}).type || 'EXTERNAL_CHANGE' : 'EXTERNAL_CHANGE', storageKey: ev.key, source: 'storage' });
+        });
+      },
+    };
+  })();
+
+  /* Ekspos ke global: dashboard memuat helper yang sama supaya jalur
+     bangun/persist pesanan tidak menyimpang antar kedua file. */
+  window.QuadraSync = sync;
+  window.QuadraOrderStatusFlow = ORDER_STATUS_FLOW;
+  window.QuadraOrderStatusLabel = ORDER_STATUS_LABEL;
+  window.QuadraTableStatusLabel = TABLE_STATUS_LABEL;
+
   const IMG = {
     v60: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Tasty_Coffee_pourover_V60_bloom_2025.jpg/960px-Tasty_Coffee_pourover_V60_bloom_2025.jpg',
     hario: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Coffee_pour_over_using_Hario_cone.jpg/960px-Coffee_pour_over_using_Hario_cone.jpg',
@@ -2499,6 +2706,8 @@
     }
     const o = buildOrder(false);
     lastOrder = o;
+    /* Bayar di kasir: pesanan tetap masuk antrean, hanya statusnya belum lunas. */
+    publishOrder(o);
     closeSheet('cartDrawer');
     openReceipt(o);
     toast('Tunjukkan struk ini di kasir untuk pembayaran.');
@@ -2586,13 +2795,6 @@
     });
   }
 
-  function orderNo() {
-    const d = new Date();
-    const stamp = String(d.getFullYear()).slice(2) + pad(d.getMonth() + 1) + pad(d.getDate());
-    const rnd = String(hashStr(String(Date.now()) + navigator.userAgent.length) % 10000);
-    return 'QD-' + stamp + '-' + ('0000' + rnd).slice(-4);
-  }
-
   function fmtClock(d) {
     return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
   }
@@ -2603,28 +2805,67 @@
   function buildOrder(paid) {
     const t = totals();
     const dine = state.mode === 'dinein';
+    const areaKey = areaOf(state.table);
+    const items = state.cart.map(function (line) {
+      const item = MENU_BY_ID[line.id];
+      return {
+        name: item.name,
+        qty: line.qty,
+        price: unitPrice(item, line.sel) * line.qty,
+        variant: selectionSummary(item, line.sel),
+        summary: selectionSummary(item, line.sel),
+        note: line.note || ''
+      };
+    });
+    const note = [state.note].filter(Boolean).join(' · ');
+    /* Satu pesanan = satu orderId yang stabil sampai lunas, supaya struk,
+       unduhan, dan baris di dashboard selalu merujuk pesanan yang sama. */
+    const orderId = (lastOrder && lastOrder.no) ? lastOrder.no : sync.orderId();
     return {
-      no: orderNo(),
+      no: orderId,
       at: new Date(),
       paid: !!paid,
       mode: state.mode,
       place: dine ? tableLabel(state.table) : 'Ambil di bar',
-      areaLabel: dine ? AREAS[areaOf(state.table)].label : 'Pickup counter',
-      items: state.cart.map(function (line) {
-        const item = MENU_BY_ID[line.id];
-        return {
-          name: item.name,
-          qty: line.qty,
-          price: unitPrice(item, line.sel) * line.qty,
-          summary: selectionSummary(item, line.sel),
-          note: line.note || ''
-        };
-      }),
+      areaLabel: dine ? AREAS[areaKey].label : 'Pickup counter',
+      items: items,
       totals: t,
       name: state.name,
       note: state.note,
-      pay: state.pay
+      pay: state.pay,
+      /* Bagian yang mengikuti schema sinkronisasi ke dashboard admin. */
+      sync: {
+        orderId: orderId,
+        tableNumber: dine ? (tableLabel(state.table) || 'Meja 07') : 'Take Away',
+        area: dine ? AREAS[areaKey].label : 'Pickup counter',
+        orderType: dine ? 'dine_in' : 'take_away',
+        customerName: state.name || '',
+        customerPhone: '',
+        customerNotes: note,
+        items: items.map(function (it) {
+          return { name: it.name, variant: it.variant, qty: it.qty, price: it.price };
+        }),
+        subtotal: t.subtotal,
+        tax: t.tax,
+        serviceFee: t.service,
+        totalAmount: t.total,
+        paymentMethod: state.pay === 'qris' ? 'QRIS' : 'Cash',
+        paymentStatus: paid ? 'PAID' : 'PENDING',
+        orderStatus: 'NEW',
+        createdAt: new Date().toISOString()
+      }
     };
+  }
+
+  /** Terbitkan pesanan ke dashboard: storage ditulis lebih dulu, baru event. */
+  function publishOrder(o) {
+    try {
+      sync.persist(o.sync, { silent: false });
+    } catch (e) {
+      try {
+        sync.emit('ORDER_CREATED', { order: o.sync, transaction: sync.toAdmin(o.sync).tx });
+      } catch (e2) { /* private mode / storage penuh: antrean tetap jalan di memori */ }
+    }
   }
 
   function buildReceiptText(o) {
@@ -2688,7 +2929,53 @@
         '</div>' +
         (o.note ? '<p class="mt-3 rounded-lg bg-sand/45 px-2.5 py-2 text-[10.5px] leading-snug text-ink/60">Catatan: ' + esc(o.note) + '</p>' : '') +
         '<p class="mt-3 text-center text-[9.5px] uppercase tracking-[0.16em] text-ink/40">Terima kasih · quadra.coffee</p>' +
+      '</div>' +
+      orderTrackerHTML(o);
+  }
+
+  /**
+   * Pelacak status pesanan — diperbarui langsung saat barista menekan
+   * "Langkah Berikutnya" di dashboard (BroadcastChannel/storage event).
+   */
+  function orderTrackerHTML(o) {
+    const status = (o.sync && o.sync.orderStatus) || 'NEW';
+    const idx = Math.max(0, ORDER_STATUS_FLOW.indexOf(status));
+    const steps = ORDER_STATUS_FLOW.map(function (key, i) {
+      const done = i <= idx;
+      const dot = done ? 'background:#12100E;border-color:#12100E;color:#F6EFE3' : 'background:transparent;border-color:#C9B79C;color:#8C7A66';
+      return '<div class="flex items-center gap-2" style="flex:1">' +
+        '<span style="width:20px;height:20px;border-radius:9999px;border:1.5px solid;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;' + dot + '">' + (i + 1) + '</span>' +
+        '<span class="text-[9.5px] leading-tight" style="color:' + (done ? '#12100E' : '#9A8874') + '">' + ORDER_STATUS_LABEL[key] + '</span>' +
       '</div>';
+    }).join('');
+    return '<div id="orderTracker" data-order="' + esc(o.no) + '" class="mt-3 rounded-xl border border-sand/70 bg-white/70 px-3 py-2.5">' +
+      '<p class="text-[9.5px] uppercase tracking-[0.16em] text-ink/45 mb-2">Status pesanan · live dari barista</p>' +
+      '<div class="flex items-center gap-1.5">' + steps + '</div>' +
+      '<p id="orderTrackerNote" class="mt-2 text-[10px] text-ink/55">Pesanan sudah masuk antrean barista.</p>' +
+    '</div>';
+  }
+
+  /** Terapkan status terbaru tanpa membangun ulang seluruh struk. */
+  function applyOrderStatus(orderId, status) {
+    const box = document.getElementById('orderTracker');
+    if (!box || box.getAttribute('data-order') !== orderId) return;
+    const idx = Math.max(0, ORDER_STATUS_FLOW.indexOf(status));
+    const dots = box.querySelectorAll('div[style*="flex:1"]');
+    dots.forEach(function (row, i) {
+      const dot = row.querySelector('span');
+      const lbl = row.querySelectorAll('span')[1];
+      const done = i <= idx;
+      if (dot) {
+        dot.style.background = done ? '#12100E' : 'transparent';
+        dot.style.borderColor = done ? '#12100E' : '#C9B79C';
+        dot.style.color = done ? '#F6EFE3' : '#8C7A66';
+      }
+      if (lbl) lbl.style.color = done ? '#12100E' : '#9A8874';
+    });
+    const note = document.getElementById('orderTrackerNote');
+    if (note) note.textContent = 'Status terbaru: ' + (ORDER_STATUS_LABEL[status] || status);
+    if (status === 'SERVED') toast('Pesanan Anda siap — silakan ambil di bar.');
+    if (status === 'COMPLETED') toast('Pesanan selesai. Terima kasih!');
   }
 
   function openQris() {
@@ -2749,7 +3036,12 @@
     stopQrisTimer();
     const o = lastOrder || buildOrder(true);
     o.paid = true;
+    o.sync.paymentStatus = 'PAID';
+    o.sync.orderStatus = 'NEW';
+    o.sync.createdAt = o.sync.createdAt || new Date().toISOString();
     lastOrder = o;
+    /* Titik sinkronisasi: pembayaran lunas -> pesanan langsung masuk antrean barista. */
+    publishOrder(o);
     $('#qrisBody').innerHTML = '' +
       '<div class="py-6 text-center">' +
         '<span class="pay-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>' +
@@ -3208,6 +3500,24 @@
     syncHeaderVar();
     window.addEventListener('resize', syncHeaderVar);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncHeaderVar);
+    subscribeSync();
+  }
+
+  /* ============================================================
+     LANGGANAN SINKRONISASI (dari dashboard / tab customer lain)
+     ============================================================ */
+  function subscribeSync() {
+    sync.subscribe(function (ev) {
+      if (!ev || !ev.type) return;
+      if (ev.type === 'STATUS_UPDATED' || ev.type === 'ORDER_UPDATED') {
+        const order = ev.order || {};
+        if (!lastOrder || order.orderId !== lastOrder.no) return;
+        lastOrder.sync.orderStatus = order.orderStatus || ev.status || lastOrder.sync.orderStatus;
+        if (order.paymentStatus) lastOrder.sync.paymentStatus = order.paymentStatus;
+        if (ev.status === 'COMPLETED') lastOrder.paid = true;
+        applyOrderStatus(lastOrder.no, lastOrder.sync.orderStatus);
+      }
+    });
   }
 
   if (document.readyState === 'loading') {

@@ -290,9 +290,14 @@
         </button>
 
         <button onclick="switchTab('kds')" id="tab-kds" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
-          <i data-lucide="tv-2" class="w-4 h-4"></i>
+          <i data-lucide="flame" class="w-4 h-4"></i>
           <span>Barista Live KDS</span>
           <span class="ml-auto bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="badgeQueueCount">5 Cup</span>
+        </button>
+        <button onclick="switchTab('tables')" id="tab-tables" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="armchair" class="w-4 h-4"></i>
+          <span>Status Meja Live</span>
+          <span class="ml-auto bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="tablesOccupiedBadge">0 Terisi</span>
         </button>
 
         <button onclick="switchTab('slowbar')" id="tab-slowbar" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
@@ -391,8 +396,9 @@
 
         <!-- Notification Dropdown Trigger -->
         <div class="relative">
-          <button onclick="toggleNotificationPanel()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-cyan-400 flex items-center justify-center transition">
+          <button onclick="toggleNotificationPanel()" class="relative w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-cyan-400 flex items-center justify-center transition">
             <i data-lucide="bell" class="w-4 h-4"></i>
+            <span id="bellBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-lab-slate900">1</span>
             <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-gold-400 rounded-full animate-ping"></span>
           </button>
 
@@ -485,6 +491,22 @@
                 <div class="bg-cyan-600 h-full rounded-full" style="width: 98%"></div>
               </div>
               <p class="text-stone-500 text-[10.5px] mt-1 tracking-wide">Rentang SCA Golden Cup Standard</p>
+            </div>
+          </div>
+
+          <!-- KPI 5: Meja Terisi (dari customer site) -->
+          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">MEJA TERISI (LIVE)</span>
+              <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-700 flex items-center justify-center font-bold border border-cyan-200">
+                <i data-lucide="armchair" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <span class="text-2xl font-semibold text-cyan-700 font-display block tabular-nums tracking-tight" id="kpiTablesOccupied">0 Meja Terisi</span>
+              <button onclick="switchTab('tables')" class="text-cyan-600 hover:text-cyan-800 text-[11.5px] font-semibold mt-1 flex items-center gap-1">
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i> Lihat status meja
+              </button>
             </div>
           </div>
         </div>
@@ -581,6 +603,24 @@
       </section>
 
       <!-- ==================== VIEW 3: SLOW BAR 4-SEAT COUNTER SCHEDULER ==================== -->
+      <section id="view-tables" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 font-display">Status Meja Real-Time</h3>
+            <p class="text-xs text-stone-500 font-mono">Meja berubah menjadi "Terisi" otomatis begitu tamu menyelesaikan pembayaran di customer site</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono px-2.5 py-1.5 rounded-xl bg-stone-100 border border-stone-200 text-stone-600">Tersedia</span>
+            <span class="text-[10px] font-mono px-2.5 py-1.5 rounded-xl bg-cyan-50 border border-cyan-300 text-cyan-800">Terisi</span>
+            <span class="text-[10px] font-mono px-2.5 py-1.5 rounded-xl bg-gold-50 border border-gold-300 text-gold-800">Dibersihkan</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" id="tableStateGrid">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 3b: SLOW BAR 4-SEAT COUNTER SCHEDULER ==================== -->
       <section id="view-slowbar" class="hidden space-y-6">
         
         <!-- Shift Selector & Date -->
@@ -952,6 +992,96 @@
       { time: "13:40:22", token: "INVALID-CUP", customer: "Unknown Visitor", item: "-", status: "DITOLAK (TIDAK DITEMUKAN)" }
     ];
 
+    /* ============================================================
+       SINKRONISASI REAL-TIME DENGAN CUSTOMER SITE
+       ------------------------------------------------------------
+       Helper yang sama sudah dimuat customer site (window.QuadraSync).
+       Jika file ini dibuka berdiri sendiri (mis. diuji terpisah),
+       salinan minimal di bawah dipakai supaya kontrak tetap identik.
+       ============================================================ */
+    var QuadraSync = window.QuadraSync || (function () {
+      const ORDERS_KEY = 'quadra_orders_db';
+      const TABLES_KEY = 'quadra_tables_state';
+      const CHANNEL_NAME = 'quadra_sync_channel';
+      const FLOW = ['NEW', 'PREPARING', 'SERVED', 'COMPLETED'];
+      let channel = null;
+      try { if (typeof BroadcastChannel === 'function') channel = new BroadcastChannel(CHANNEL_NAME); } catch (e) { channel = null; }
+      function readList(key) {
+        try { const v = JSON.parse(localStorage.getItem(key)); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+      }
+      function writeList(key, list) { try { localStorage.setItem(key, JSON.stringify(list)); } catch (e) { /* noop */ } }
+      function emit(type, payload) {
+        const ev = Object.assign({ type: type, version: 1, source: 'admin', at: new Date().toISOString() }, payload || {});
+        if (channel) { try { channel.postMessage(ev); } catch (e) { /* closed */ } }
+        try { localStorage.setItem('quadra_sync_ping', JSON.stringify({ type: type, at: ev.at, n: Math.random() })); } catch (e) { /* noop */ }
+        return ev;
+      }
+      function readOrders() {
+        return readList(ORDERS_KEY).filter(o => o && o.orderId)
+          .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+      }
+      function readTables() { return readList(TABLES_KEY).filter(t => t && t.tableNumber != null); }
+      function upsertOrder(order) {
+        const list = readOrders();
+        const i = list.findIndex(o => o.orderId === order.orderId);
+        if (i >= 0) list[i] = Object.assign({}, list[i], order); else list.unshift(order);
+        writeList(ORDERS_KEY, list);
+        return order;
+      }
+      return {
+        VERSION: 1, ORDERS_KEY: ORDERS_KEY, TABLES_KEY: TABLES_KEY, CHANNEL_NAME: CHANNEL_NAME,
+        ORDER_STATUS_FLOW: FLOW,
+        ORDER_STATUS_LABEL: { NEW: 'Pesanan Masuk', PREPARING: 'Sedang Dibuat', SERVED: 'Siap / Disajikan', COMPLETED: 'Selesai' },
+        TABLE_STATUS_LABEL: { available: 'Tersedia', occupied: 'Terisi', reserved: 'Dipesan', cleaning: 'Dibersihkan' },
+        emit: emit, readOrders: readOrders, readTables: readTables, upsertOrder: upsertOrder,
+        setOrderStatus: function (orderId, status) { return setSyncOrderStatus(orderId, status); },
+        writeList: writeList,
+        subscribe: function (handler) {
+          if (channel) channel.addEventListener('message', function (ev) { handler(ev.data || {}); });
+          window.addEventListener('storage', function (ev) {
+            if (!ev.key || [ORDERS_KEY, TABLES_KEY, 'quadra_sync_ping'].indexOf(ev.key) < 0) return;
+            handler({ type: 'EXTERNAL_CHANGE', storageKey: ev.key, source: 'storage' });
+          });
+        },
+      };
+    })();
+
+    /** Perbarui status pesanan + teruskan event ke customer site. */
+    function setSyncOrderStatus(orderId, status) {
+      const shared = window.QuadraSync;
+      /* Bila helper customer tersedia (halaman dibuka satu origin), pakai itu:
+         versi customer juga menurunkan ulang status meja (COMPLETED -> cleaning). */
+      if (shared && shared !== QuadraSync && typeof shared.setOrderStatus === 'function') {
+        const res = shared.setOrderStatus(orderId, status);
+        if (res) return (window.QuadraSync.readOrders() || []).find(function (o) { return o.orderId === orderId; }) || res;
+      }
+      const list = QuadraSync.readOrders();
+      const order = list.find(o => o.orderId === orderId);
+      if (!order) return null;
+      order.orderStatus = status;
+      if (status === 'COMPLETED') { order.paymentStatus = 'PAID'; order.completedAt = new Date().toISOString(); }
+      QuadraSync.upsertOrder(order);
+      /* Meja mengikuti alur pesanan: COMPLETED -> dibersihkan, selain itu terisi. */
+      const tables = QuadraSync.readTables();
+      const m = /(\d+)/.exec(String(order.tableNumber || ''));
+      const num = m ? Number(m[1]) : null;
+      const ti = num == null ? -1 : tables.findIndex(t => Number(t.tableNumber) === num);
+      if (ti >= 0) {
+        const closed = status === 'COMPLETED';
+        tables[ti].status = closed ? 'cleaning' : 'occupied';
+        tables[ti].orderId = closed ? null : order.orderId;
+        tables[ti].guestCount = closed ? 0 : (tables[ti].guestCount || 1);
+        if (closed) tables[ti].seatedAt = null;
+        QuadraSync.writeList(QuadraSync.TABLES_KEY, tables);
+      }
+      QuadraSync.emit('STATUS_UPDATED', { order: order, status: status, orderId: orderId, tables: QuadraSync.readTables() });
+      return order;
+    }
+
+    /** Ambil pesanan customer dari storage (bentuk QuadraOrder apa adanya). */
+    function syncOrders() { return QuadraSync.readOrders(); }
+    function syncTables() { return QuadraSync.readTables(); }
+
     // POS Cart State
     let posCart = [
       { id: "sig-1", name: "Quadra Aerocano Citrus Flambé", price: 38000, qty: 1 },
@@ -978,6 +1108,7 @@
       const titles = {
         overview: "Overview & Lab Analytics",
         kds: "Barista Live KDS Queue",
+        tables: "Status Meja Real-Time",
         slowbar: "Slow Bar 4-Seat Counter Scheduler",
         inventory: "Single Origin & Roast Micro-Lot Hub",
         scanner: "Pickup Barcode Scanner Validator",
@@ -987,7 +1118,7 @@
 
       document.getElementById('currentViewTitle').innerText = titles[tabKey] || "Quadra Coffee Lab Console";
 
-      ['overview', 'kds', 'slowbar', 'inventory', 'scanner', 'pos', 'transactions'].forEach(k => {
+      ['overview', 'kds', 'tables', 'slowbar', 'inventory', 'scanner', 'pos', 'transactions'].forEach(k => {
         const v = document.getElementById(`view-${k}`);
         if (v) v.classList.add('hidden');
 
@@ -1012,6 +1143,7 @@
 
       if (tabKey === 'overview') { renderSlowbarLiveStrip(); initCharts(); }
       if (tabKey === 'kds') renderKDSColumns();
+      if (tabKey === 'tables') renderTableGrid();
       if (tabKey === 'slowbar') renderSlowbarScheduler();
       if (tabKey === 'inventory') renderSingleOriginLots();
       if (tabKey === 'scanner') renderPickupLogs();
@@ -1022,7 +1154,9 @@
     }
 
     function toggleNotificationPanel() {
-      document.getElementById('notificationPanel').classList.toggle('hidden');
+      const panel = document.getElementById('notificationPanel');
+      panel.classList.toggle('hidden');
+      if (!panel.classList.contains('hidden')) clearNewOrderFlag();
     }
 
     function showToast(msg) {
@@ -1137,27 +1271,61 @@
     }
 
     // ==================== 2. BARISTA LIVE KDS (KITCHEN DISPLAY) ====================
+    /** Bentuk kartu KDS dari pesanan customer yang tersinkron. */
+    function syncedKDSOrder(o) {
+      const items = (o.items || []).map(it => `${it.qty}x ${it.name}${it.variant ? ' (' + it.variant + ')' : ''}`);
+      const isTakeaway = o.orderType === 'take_away';
+      return {
+        id: o.orderId,
+        token: o.orderId,
+        customer: o.customerName || (isTakeaway ? 'Take Away' : (o.tableNumber || 'Tamu Quadra')),
+        type: isTakeaway ? 'TAKEAWAY' : (o.area === 'Slow Bar' ? 'SLOWBAR' : 'DINE_IN'),
+        tableNumber: o.tableNumber,
+        area: o.area,
+        items: items.length ? items : ['(tanpa item)'],
+        notes: o.customerNotes || '-',
+        timeIn: (function () {
+          try { return new Date(o.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':'); } catch (e) { return '--:--'; }
+        })(),
+        status: QuadraSync.ORDER_STATUS_FLOW.indexOf(o.orderStatus) >= 0 ? o.orderStatus : 'NEW',
+        total: o.totalAmount,
+        paymentMethod: o.paymentMethod,
+        paymentStatus: o.paymentStatus,
+        fromCustomer: true,
+      };
+    }
+
+    /** Pesanan customer yang belum selesai — sumber kolom KDS real-time. */
+    function liveKDSSource() {
+      const synced = syncOrders().map(syncedKDSOrder);
+      const syncedIds = new Set(synced.map(o => o.id));
+      const local = masterKDSOrders.filter(o => !syncedIds.has(o.id));
+      return synced.concat(local);
+    }
+
     function renderKDSColumns() {
       const container = document.getElementById('kdsColumnsContainer');
       if (!container) return;
       container.innerHTML = '';
 
+      const source = liveKDSSource();
       const cols = [
-        { key: "INCOMING", title: "1. Pesanan Masuk (Queue)", border: "border-slate-300", headerBg: "bg-slate-100 text-slate-800" },
-        { key: "BREWING", title: "2. Seduh / Steaming", border: "border-cyan-300", headerBg: "bg-cyan-50 text-cyan-800" },
-        { key: "READY", title: "3. Siap di Pickup Bar", border: "border-amber-300", headerBg: "bg-amber-50 text-amber-900" },
+        { key: "NEW", title: "1. Pesanan Masuk (Queue)", border: "border-slate-300", headerBg: "bg-slate-100 text-slate-800" },
+        { key: "PREPARING", title: "2. Seduh / Steaming", border: "border-cyan-300", headerBg: "bg-cyan-50 text-cyan-800" },
+        { key: "SERVED", title: "3. Siap di Pickup Bar", border: "border-amber-300", headerBg: "bg-amber-50 text-amber-900" },
         { key: "COMPLETED", title: "4. Selesai (Picked Up)", border: "border-emerald-300", headerBg: "bg-emerald-50 text-emerald-800" }
       ];
 
       cols.forEach(col => {
-        const ordersInCol = masterKDSOrders.filter(o => o.status === col.key);
+        const ordersInCol = source.filter(o => o.status === col.key);
 
         let cardsHtml = ordersInCol.map(o => `
-          <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-2.5 font-mono text-xs">
+          <div class="bg-white p-4 rounded-2xl border ${o.fromCustomer && col.key === 'NEW' ? 'border-cyan-300 ring-2 ring-cyan-200/60' : 'border-stone-200'} shadow-sm space-y-2.5 font-mono text-xs">
             <div class="flex justify-between items-start">
               <div>
                 <span class="text-[10px] text-stone-400 font-bold">${o.id} • ${o.timeIn}</span>
                 <h4 class="font-bold text-slate-900 text-sm font-sans">${o.customer}</h4>
+                ${o.fromCustomer && o.tableNumber ? `<span class="text-[10px] text-cyan-700 font-sans">${o.tableNumber} • ${o.area || ''}</span>` : ''}
               </div>
               <span class="px-2 py-0.5 rounded text-[9px] font-bold ${o.type === 'SLOWBAR' ? 'bg-gold-100 text-gold-800 border border-gold-300' : 'bg-cyan-50 text-cyan-800 border border-cyan-200'}">
                 ${o.type}
@@ -1168,6 +1336,12 @@
               ${o.items.map(it => `<p class="font-bold text-slate-800 text-[11px]">${it}</p>`).join('')}
               <p class="text-[10px] text-cyan-700 italic font-mono pt-1 border-t border-stone-200">Notes: ${o.notes}</p>
             </div>
+
+            ${o.fromCustomer && o.total ? `
+              <div class="flex items-center justify-between text-[10px] font-sans">
+                <span class="text-stone-500">${o.paymentMethod === 'QRIS' ? 'QRIS' : 'Kasir'} • ${o.paymentStatus === 'PAID' ? 'LUNAS' : 'BELUM BAYAR'}</span>
+                <span class="font-bold text-slate-900">${formatRupiah(o.total)}</span>
+              </div>` : ''}
 
             <div class="flex items-center justify-between pt-1">
               <span class="text-[10px] text-stone-400">${o.token}</span>
@@ -1204,6 +1378,22 @@
     }
 
     function advanceKDSOrder(orderId) {
+      /* Pesanan dari customer site: majukan lewat penyimpanan bersama
+         supaya tab customer ikut ter-update seketika. */
+      const synced = syncOrders().find(o => o.orderId === orderId);
+      if (synced) {
+        const flow = QuadraSync.ORDER_STATUS_FLOW;
+        const cur = flow.indexOf(synced.orderStatus) >= 0 ? flow.indexOf(synced.orderStatus) : 0;
+        if (cur < flow.length - 1) {
+          const next = flow[cur + 1];
+          setSyncOrderStatus(orderId, next);
+          if (next === 'SERVED') showToast(`Pesanan ${synced.customerName || synced.tableNumber} SIAP di Pickup Bar!`);
+          else showToast(`Pesanan ${orderId} berlanjut ke: ${next}`);
+          refreshSyncedViews();
+        }
+        return;
+      }
+
       const o = masterKDSOrders.find(x => x.id === orderId);
       if (!o) return;
 
@@ -1689,6 +1879,30 @@
         status: "BREWING"
       });
 
+      // Tulis juga ke penyimpanan bersama supaya pesanan kasir tampil
+      // di antrean yang sama dengan pesanan customer site.
+      try {
+        QuadraSync.upsertOrder({
+          orderId: randomInv,
+          tableNumber: 'Kasir POS',
+          area: 'Pickup counter',
+          orderType: 'take_away',
+          customerName: name,
+          customerPhone: phone,
+          customerNotes: notes,
+          items: posCart.map(i => ({ name: i.name, variant: '', qty: i.qty, price: i.price })),
+          subtotal: calc.subtotal,
+          serviceFee: 0,
+          tax: calc.tax,
+          totalAmount: calc.grandTotal,
+          paymentMethod: 'Cash',
+          paymentStatus: 'PAID',
+          orderStatus: 'PREPARING',
+          createdAt: new Date().toISOString(),
+        });
+        QuadraSync.emit('ORDER_CREATED', { order: { orderId: randomInv, customerName: name, tableNumber: 'Kasir POS', orderType: 'take_away', paymentMethod: 'Cash', paymentStatus: 'PAID', totalAmount: calc.grandTotal, items: posCart.map(i => ({ qty: i.qty, name: i.name })) } });
+      } catch (e) { /* storage penuh / private mode */ }
+
       // Add to Master Transactions
       masterTransactions.unshift({
         invoice: randomInv,
@@ -1775,7 +1989,7 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      const list = filteredList || masterTransactions;
+      const list = filteredList || allTransactions();
       document.getElementById('txCountLabel').innerText = `Menampilkan ${list.length} transaksi kopi`;
 
       list.forEach(tx => {
@@ -1785,9 +1999,9 @@
         tr.innerHTML = `
           <td class="py-3 px-4 font-bold text-slate-900">${tx.invoice}<br><span class="text-[9px] text-stone-400 font-normal">Token: ${tx.token}</span></td>
           <td class="py-3 px-4 font-sans font-bold text-slate-800">${tx.customer}<br><span class="text-[10px] text-stone-500 font-mono font-normal">${tx.phone}</span></td>
-          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tx.type === 'SLOWBAR' ? 'bg-gold-100 text-gold-800' : 'bg-cyan-50 text-cyan-800'}">${tx.type}</span></td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tx.type === 'SLOWBAR' ? 'bg-gold-100 text-gold-800' : (tx.type === 'DINE_IN' ? 'bg-emerald-50 text-emerald-800' : 'bg-cyan-50 text-cyan-800')}">${tx.type}</span></td>
           <td class="py-3 px-4 font-sans text-slate-700 max-w-[200px] truncate" title="${tx.itemsSummary}">${tx.itemsSummary}</td>
-          <td class="py-3 px-4 font-mono text-slate-600">${tx.time}</td>
+          <td class="py-3 px-4 font-mono text-slate-600">${formatTxTime(tx.time)}</td>
           <td class="py-3 px-4 font-black text-slate-900">${formatRupiah(tx.total)}</td>
           <td class="py-3 px-4 text-emerald-700 font-bold">${tx.method}</td>
           <td class="py-3 px-4 text-center">
@@ -1802,17 +2016,44 @@
       lucide.createIcons();
     }
 
+    /** Jam lokal singkat dari ISO timestamp (data customer) atau string lama. */
+    function formatTxTime(value) {
+      if (!value) return '--:-- WIB';
+      if (typeof value === 'string' && value.indexOf('WIB') >= 0) return value;
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return String(value);
+      return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':') + ' WIB';
+    }
+
+    /** Gabungan transaksi bawaan dashboard + pesanan dari customer site. */
+    function allTransactions() {
+      const synced = syncOrders().map(o => ({
+        invoice: o.orderId, token: o.orderId,
+        customer: o.customerName || (o.orderType === 'take_away' ? 'Take Away' : (o.tableNumber || 'Tamu Quadra')),
+        phone: o.customerPhone || '-',
+        type: o.orderType === 'take_away' ? 'TAKEAWAY' : (o.area === 'Slow Bar' ? 'SLOWBAR' : 'DINE_IN'),
+        itemsSummary: (o.items || []).map(it => `${it.qty}x ${it.name}`).join(', '),
+        time: o.createdAt,
+        subtotal: o.subtotal, tax: o.tax, total: o.totalAmount,
+        method: o.paymentMethod === 'QRIS' ? 'QRIS Instant' : 'Tunai/Kartu Kasir',
+        status: o.orderStatus === 'COMPLETED' ? 'SELESAI' : (o.paymentStatus === 'PAID' ? 'LUNAS' : 'BELUM BAYAR'),
+        fromCustomer: true,
+      }));
+      const syncedIds = new Set(synced.map(t => t.invoice));
+      return synced.concat(masterTransactions.filter(t => !syncedIds.has(t.invoice)));
+    }
+
     function filterTransactionsTable() {
       const q = document.getElementById('txSearchInput').value.toLowerCase().trim();
       if (!q) {
         renderMasterTxTable();
         return;
       }
-      const filtered = masterTransactions.filter(t => 
-        t.invoice.toLowerCase().includes(q) ||
-        t.customer.toLowerCase().includes(q) ||
-        t.token.toLowerCase().includes(q) ||
-        t.phone.toLowerCase().includes(q)
+      const filtered = allTransactions().filter(t =>
+        String(t.invoice || '').toLowerCase().includes(q) ||
+        String(t.customer || '').toLowerCase().includes(q) ||
+        String(t.token || '').toLowerCase().includes(q) ||
+        String(t.phone || '').toLowerCase().includes(q)
       );
       renderMasterTxTable(filtered);
     }
@@ -1874,14 +2115,127 @@
 
     // ==================== 8. DASHBOARD COUNTERS ====================
     function updateDashboardCounters() {
-      const totalRev = masterTransactions.reduce((acc, t) => acc + t.total, 0);
-      const activeQueueCount = masterKDSOrders.filter(o => o.status !== 'COMPLETED').length;
+      const synced = syncOrders();
+      const paidSynced = synced.filter(o => o.paymentStatus === 'PAID' || o.orderStatus === 'COMPLETED');
+      const totalRev = masterTransactions.reduce((acc, t) => acc + t.total, 0)
+        + paidSynced.reduce((acc, o) => acc + (Number(o.totalAmount) || 0), 0);
+      const activeQueueCount = liveKDSSource().filter(o => o.status !== 'COMPLETED').length;
       const bookedStools = masterSlowbarStools.filter(s => s.status !== 'AVAILABLE').length;
+      const occupiedTables = syncTables().filter(t => t.status === 'occupied').length;
 
       document.getElementById('kpiRevenue').innerText = formatRupiah(totalRev);
       document.getElementById('badgeQueueCount').innerText = `${activeQueueCount} Cup`;
       document.getElementById('badgeSlowbarSeats').innerText = `${bookedStools} Stool Booked`;
       document.getElementById('kpiSlowbarActive').innerText = `${bookedStools} / 4 Stool`;
+      const tbl = document.getElementById('kpiTablesOccupied');
+      if (tbl) tbl.innerText = `${occupiedTables} Meja Terisi`;
+      const cup = document.getElementById('kpiCupsSold');
+      if (cup) {
+        const localCups = masterTransactions.length;
+        const syncedCups = synced.reduce((acc, o) => acc + (o.items || []).reduce((s, it) => s + (Number(it.qty) || 0), 0), 0);
+        cup.innerText = `${198 + syncedCups} Cangkir`;
+      }
+    }
+
+    // ==================== 8b. NOTIFIKASI & MEJA REAL-TIME ====================
+    /** Tulis satu baris ke feed notifikasi dashboard. */
+    function pushNotification(title, detail, tone) {
+      const feed = document.getElementById('notificationFeed');
+      if (!feed) return;
+      const cls = tone === 'gold' ? 'bg-gold-50/80 border-gold-200' : 'bg-cyan-50/70 border-cyan-100';
+      const el = document.createElement('div');
+      el.className = `p-2.5 ${cls} rounded-xl border`;
+      el.innerHTML = `
+        <p class="font-bold text-slate-900">${title}</p>
+        <p class="text-slate-500 text-[10px] font-mono">${detail}</p>
+        <span class="text-[9px] ${tone === 'gold' ? 'text-gold-700' : 'text-cyan-700'} font-bold">baru saja</span>
+      `;
+      feed.prepend(el);
+      while (feed.children.length > 12) feed.removeChild(feed.lastElementChild);
+    }
+
+    /** Badge merah + lonceng ketika ada pesanan baru dari customer site. */
+    function flagNewOrder() {
+      const bell = document.getElementById('bellBadge');
+      if (bell) bell.classList.remove('hidden');
+    }
+    function clearNewOrderFlag() {
+      const bell = document.getElementById('bellBadge');
+      if (bell) bell.classList.add('hidden');
+    }
+
+    /**
+     * Bunyi notifikasi "New Order" tanpa file audio eksternal:
+     * dua nada pendek dari Web Audio API, dengan getar di perangkat mobile.
+     */
+    function playNewOrderChime() {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        const ctx = new Ctx();
+        [880, 1320].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          const start = ctx.currentTime + i * 0.18;
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.25, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.16);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(start); osc.stop(start + 0.18);
+        });
+        window.setTimeout(function () { try { ctx.close(); } catch (e) { /* noop */ } }, 900);
+      } catch (e) { /* autoplay diblokir sebelum interaksi user */ }
+      try { if (navigator.vibrate) navigator.vibrate([40, 60, 40]); } catch (e) { /* noop */ }
+    }
+
+    /** Grid status meja: tersedia / terisi / dipesan / dibersihkan. */
+    function renderTableGrid() {
+      const grid = document.getElementById('tableStateGrid');
+      if (!grid) return;
+      const tables = syncTables();
+      const badge = document.getElementById('tablesOccupiedBadge');
+      if (badge) badge.innerText = `${tables.filter(t => t.status === 'occupied').length} Terisi`;
+      if (!tables.length) {
+        grid.innerHTML = '<p class="col-span-full text-center text-xs italic text-stone-400 py-6 font-mono">Belum ada meja yang aktif. Pesanan dari customer site akan mengisi status meja di sini secara otomatis.</p>';
+        return;
+      }
+      const tone = {
+        occupied: 'bg-cyan-50 border-cyan-300 text-cyan-900',
+        reserved: 'bg-slate-900 border-slate-700 text-cyan-300',
+        cleaning: 'bg-gold-50 border-gold-300 text-gold-900',
+        available: 'bg-white border-stone-200 text-stone-500',
+      };
+      grid.innerHTML = tables.map(t => `
+        <div class="p-3 rounded-2xl border-2 ${tone[t.status] || tone.available} space-y-1 font-mono text-[11px]">
+          <div class="flex items-center justify-between">
+            <span class="font-bold">${t.label || ('Meja ' + t.tableNumber)}</span>
+            <span class="text-[9px] uppercase tracking-wider">${(QuadraSync.TABLE_STATUS_LABEL[t.status] || t.status)}</span>
+          </div>
+          <p class="text-[10px] opacity-80">${t.area || '-'} • ${t.capacity || '-'} kursi</p>
+          ${t.status === 'occupied' ? `<p class="text-[10px] font-sans truncate">${t.orderId || '-'} • ${t.guestCount || 0} tamu</p>` : ''}
+        </div>
+      `).join('');
+    }
+
+    /** Segarkan semua tampilan yang bergantung pada data tersinkron. */
+    function refreshSyncedViews() {
+      renderKDSColumns();
+      updateDashboardCounters();
+      renderTableGrid();
+      const active = document.querySelector('#view-transactions:not(.hidden)');
+      if (active) renderMasterTxTable();
+    }
+
+    /** Pesan suara status "Siap" dibacakan bila browser mendukung. */
+    function announceReady(text) {
+      try {
+        if (!window.speechSynthesis) return;
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'id-ID'; u.rate = 1.05;
+        window.speechSynthesis.speak(u);
+      } catch (e) { /* noop */ }
     }
 
     // ==================== 9. INITIALIZATION ====================
@@ -1908,9 +2262,36 @@
       renderPOSMenuOptions();
       updatePOSCartUI();
       renderMasterTxTable();
+      renderTableGrid();
       updateDashboardCounters();
+      subscribeSync();
 
       if (window.lucide) lucide.createIcons();
+    }
+
+    /** Terima event dari customer site (BroadcastChannel / storage event). */
+    function subscribeSync() {
+      QuadraSync.subscribe(function (ev) {
+        if (!ev || !ev.type) return;
+        if (ev.type === 'ORDER_CREATED') {
+          const order = ev.order || {};
+          const who = order.customerName || order.tableNumber || (order.orderType === 'take_away' ? 'Take Away' : 'Tamu Quadra');
+          const itemsTxt = (order.items || []).map(i => `${i.qty}x ${i.name}`).join(', ');
+          pushNotification('Pesanan Baru dari Customer', `${who} • ${itemsTxt} • ${order.paymentMethod || 'QRIS'} ${order.paymentStatus === 'PAID' ? 'LUNAS' : 'BELUM BAYAR'}`);
+          playNewOrderChime();
+          flagNewOrder();
+          showToast(`Pesanan baru ${order.orderId} dari ${who} masuk ke antrean!`);
+          refreshSyncedViews();
+          return;
+        }
+        if (ev.type === 'STATUS_UPDATED' || ev.type === 'ORDER_UPDATED' || ev.type === 'ORDER_CREATED') {
+          refreshSyncedViews();
+          return;
+        }
+        if (ev.type === 'DB_RESET' || ev.type === 'EXTERNAL_CHANGE') {
+          refreshSyncedViews();
+        }
+      });
     }
 
     if (document.readyState === 'loading') {
