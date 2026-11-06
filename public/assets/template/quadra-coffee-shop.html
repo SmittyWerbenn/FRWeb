@@ -437,8 +437,10 @@
   @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
   @keyframes slideUp { from { transform: translateY(26px); opacity: .4 } to { transform: translateY(0); opacity: 1 } }
   @keyframes slideLeft { from { transform: translateX(30px); opacity: .4 } to { transform: translateX(0); opacity: 1 } }
-  @keyframes popIn { from { transform: translate(-50%, -50%) scale(.96); opacity: 0 } to { transform: translate(-50%, -50%) scale(1); opacity: 1 } }
-  @media (min-width: 640px) { @keyframes popIn { from { transform: scale(.96); opacity: 0 } to { transform: scale(1); opacity: 1 } } }
+  /* Panel terpusat memakai inset:0 + margin:auto, jadi animasinya TIDAK boleh
+     memakai translate(-50%,-50%) — kalau tidak, panel terdorong keluar layar
+     di mobile (animation-fill-mode: both menahan transform akhir). */
+  @keyframes popIn { from { transform: scale(.96); opacity: 0 } to { transform: scale(1); opacity: 1 } }
   @media (min-width: 640px) { .sheet-panel--bottom { animation-name: popInBottom; } }
   @keyframes popInBottom { from { transform: translateX(-50%) translateY(18px); opacity: .4 } to { transform: translateX(-50%) translateY(0); opacity: 1 } }
 
