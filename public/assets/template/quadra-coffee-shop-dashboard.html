@@ -727,21 +727,50 @@
           </div>
         </div>
 
-        <!-- Header denah + legenda -->
+        <!-- ============ CINEMA-STYLE SEATING MAP: SCREEN BAR + CONTROLS ============ -->
         <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
-            <h3 class="font-bold text-base text-slate-900 font-display">Denah Visual 10 Meja — Floor Plan Real-Time</h3>
-            <p class="text-xs text-stone-500 font-mono">4 stool slow bar • 5 meja indoor lounge • 1 meja outdoor terrace. Meja otomatis merah saat ada pesanan masuk.</p>
+            <h3 class="font-bold text-base text-slate-900 font-display">Denah Meja Live — Cinema Seating &amp; F&amp;B Floor Map</h3>
+            <p class="text-xs text-stone-500 font-mono">4 bar stool slow bar • 5 meja indoor lounge • 5 meja outdoor terrace. Hover untuk detail, klik meja untuk aksi cepat.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 text-[13px] font-mono">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Hijau — Tersedia</span>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-rose-950 border border-rose-800 text-rose-300 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Merah — Terisi</span>
+            <button onclick="setFloorFilter('all')" id="floorFilterAll" class="floor-filter-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 font-bold transition">Semua</button>
+            <button onclick="setFloorFilter('available')" id="floorFilterAvailable" class="floor-filter-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-emerald-700 font-bold transition"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Tersedia</button>
+            <button onclick="setFloorFilter('occupied')" id="floorFilterOccupied" class="floor-filter-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-rose-200 text-rose-700 font-bold transition"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Terisi</button>
           </div>
         </div>
 
         <!-- Denah -->
-        <div class="bg-white rounded-3xl border border-cyan-100 shadow-sm p-5 sm:p-7 space-y-7" id="floorPlanWrap">
+        <div class="bg-white rounded-3xl border border-cyan-100 shadow-sm p-5 sm:p-7 space-y-0 overflow-hidden" id="floorPlanWrap">
           <!-- Populated via JS -->
+        </div>
+
+        <!-- ============ OFF-CANVAS DETAIL DRAWER: MEJA TERISI ============ -->
+        <div id="tableDetailScrim" onclick="closeTableDrawer()" class="hidden fixed inset-0 z-[65] bg-black/50 backdrop-blur-sm"></div>
+        <aside id="tableDetailDrawer" class="fixed top-0 right-0 z-[66] h-full w-full sm:w-[420px] max-w-full bg-white shadow-2xl border-l border-stone-200 translate-x-full transition-transform duration-300 ease-out flex flex-col" style="height:100dvh;">
+          <header id="tableDetailHeader" class="flex items-start justify-between gap-3 px-6 pt-6 pb-4 border-b border-stone-200"></header>
+          <div id="tableDetailBody" class="flex-1 overflow-y-auto px-6 py-5 space-y-4"></div>
+          <footer id="tableDetailFooter" class="border-t border-stone-200 px-6 py-4 space-y-2 bg-stone-50"></footer>
+        </aside>
+
+        <!-- ============ MODAL: MEJA HIJAU (KONFIRMASI CEPAT) ============ -->
+        <div id="tableQuickModal" class="hidden fixed inset-0 z-[70] items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div class="bg-white rounded-3xl shadow-2xl border border-emerald-100 w-full max-w-sm p-6 space-y-4">
+            <div class="flex items-start justify-between border-b border-emerald-50 pb-3">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 font-display" id="quickModalTitle">Meja Tersedia</h3>
+                <p class="text-[13px] font-mono text-emerald-700 font-bold inline-flex items-center gap-1.5 mt-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Siap menerima tamu</p>
+              </div>
+              <button onclick="closeQuickTableModal()" class="text-stone-500 hover:text-rose-600 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <p class="text-[14px] text-stone-600 font-sans" id="quickModalMeta">-</p>
+            <div class="flex items-center gap-2 pt-1">
+              <button type="button" onclick="closeQuickTableModal()" class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl transition">Tutup</button>
+              <button type="button" id="quickModalPosBtn" onclick="openPosForTable()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+                <i data-lucide="plus" class="w-4 h-4"></i> Buka Kasir POS
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Panel pesanan masuk dari customer site -->
@@ -1691,18 +1720,24 @@
     // ==================== 2. DENAH 10 MEJA — BIOSKOP, 2 WARNA ====================
     const TABLE_TONE = {
       available: {
-        card: 'bg-emerald-50 border-emerald-400 hover:border-emerald-600 hover:shadow-md',
-        badge: 'bg-emerald-600 text-white',
-        chair: 'text-emerald-500',
+        seat: 'text-emerald-600',
+        seatFill: 'fill-emerald-500/25 stroke-emerald-600',
+        table: 'bg-emerald-500 border-emerald-700 text-white',
+        ring: 'border-emerald-500/60 bg-emerald-50/60',
         dot: 'bg-emerald-500',
+        badge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
       },
       occupied: {
-        card: 'bg-rose-50 border-rose-400',
-        badge: 'bg-rose-600 text-white',
-        chair: 'text-rose-500',
+        seat: 'text-rose-600',
+        seatFill: 'fill-rose-500/25 stroke-rose-600',
+        table: 'bg-rose-600 border-rose-800 text-white',
+        ring: 'border-rose-500/60 bg-rose-50/60',
         dot: 'bg-rose-500',
+        badge: 'bg-rose-100 text-rose-800 border-rose-300',
       },
     };
+
+    let floorFilter = 'all';
 
     function floorState() {
       const tables = floorTables().map(t => Object.assign({}, t));
@@ -1716,76 +1751,290 @@
       return tables;
     }
 
-    /** Kursi melengkung ala bioskop menghadap meja. */
-    function chairRow(count) {
-      let out = '';
-      for (let i = 0; i < count; i++) {
-        out += '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 20v-3a6 6 0 0 1 12 0v3"/><path d="M6 17h12"/></svg>';
-      }
-      return out;
+    /* Node kursi tunggal (SVG stool melengkung) untuk dibaca grid. */
+    function seatSvgSVG(toneClass) {
+      return `<svg viewBox="0 0 24 24" class="w-[18px] h-[18px] ${toneClass}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 20v-3a6 6 0 0 1 12 0v3"/><path d="M6 17h12"/></svg>`;
     }
 
+    /* ============================================================
+       CINEMA-STYLE SEATING MAP
+       - Zona 1: Slow Bar Counter (stool mengikuti lengkungan bar)
+       - Zona 2: Indoor Lounge  (meja + seating pod melingkar)
+       - Zona 3: Outdoor Terrace
+       Rincian/tombol TIDAK lagi di dalam meja — keluar via drawer/modal.
+       ============================================================ */
     function renderFloorPlan() {
       const wrap = document.getElementById('floorPlanWrap');
       if (!wrap) return;
 
       const tables = floorState();
-      const zones = [
-        { key: 'bar', title: 'Slow Bar Counter', icon: 'armchair', desc: 'Stool bar menghadap barista' },
-        { key: 'indoor', title: 'Indoor Lounge', icon: 'sofa', desc: 'Meja indoor ber-AC' },
-        { key: 'outdoor', title: 'Outdoor Terrace', icon: 'trees', desc: 'Meja teras terbuka' },
-      ];
+      const availCount = tables.filter(t => t.displayStatus === 'available').length;
+      const occCount = tables.filter(t => t.displayStatus === 'occupied').length;
+      const isBarred = (st) => floorFilter !== 'all' && st !== floorFilter;
+      const faded = 'opacity-25 grayscale pointer-events-none';
 
       let html = '';
-      html += '<div class="mb-2 rounded-2xl border-2 border-dashed border-cyan-300 bg-gradient-to-r from-slate-900 to-slate-800 py-3 text-center">';
-      html += '<p class="text-white font-display font-bold tracking-[0.2em] text-xs sm:text-sm">SLOW BAR &amp; ESPRESSO COUNTER</p>';
-      html += '</div>';
 
-      zones.forEach(zone => {
-        const items = tables.filter(t => t.zone === zone.key);
-        if (!items.length) return;
-        html += '<div class="space-y-4">';
-        html += `<div class="flex items-center gap-2"><i data-lucide="${zone.icon}" class="w-4 h-4 text-cyan-600"></i><h4 class="font-bold text-sm text-slate-900 font-display">${zone.title}</h4><span class="text-[13px] font-mono text-stone-500">${zone.desc}</span></div>`;
-        html += '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">';
-        items.forEach(t => { html += tableCardHtml(t); });
-        html += '</div></div>';
+      /* ---- 1. CURVED SCREEN BAR (titik orientasi) ---- */
+      html += `
+        <div class="relative mb-1">
+          <div class="absolute inset-x-8 -bottom-3 h-8 bg-[#5c3a21]/25 blur-2xl rounded-full pointer-events-none"></div>
+          <div class="relative bg-gradient-to-b from-[#3c2415] via-[#5c3a21] to-[#2c1810] rounded-b-[100px] pt-5 pb-9 px-6 text-center shadow-[0_18px_40px_-18px_rgba(92,58,33,0.85)] border border-[#7a5230]/60">
+            <span class="inline-flex items-center gap-2 text-amber-300/90 text-[11px] font-mono uppercase font-bold tracking-[0.34em]">
+              <i data-lucide="coffee" class="w-3.5 h-3.5"></i> Screen / Focus Point
+            </span>
+            <p class="mt-1.5 text-white font-display font-bold tracking-[0.16em] text-sm sm:text-base">☕ SLOW BAR &amp; ESPRESSO COUNTER AREA</p>
+          </div>
+        </div>
+
+        <!-- ---- 2. LEGEND BAR STANDAR BIOSKOP ---- -->
+        <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 py-4 border-b border-stone-200 text-[13px] font-mono font-bold">
+          <span class="inline-flex items-center gap-2 text-stone-700"><span class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-emerald-700 inline-flex items-center justify-center shadow-sm"></span> Hijau: Meja Tersedia</span>
+          <span class="inline-flex items-center gap-2 text-stone-700"><span class="relative w-6 h-6 rounded-full bg-rose-600 border-2 border-rose-800 inline-flex items-center justify-center shadow-sm"><span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-rose-400 animate-ping"></span><span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-rose-300"></span></span> Merah: Meja Terisi (Occupied)</span>
+          <span class="inline-flex items-center gap-2 text-stone-700"><span class="w-6 h-6 rounded-full border-[3px] border-amber-500 bg-white shadow-sm"></span> Border Highlight: Meja Terpilih</span>
+        </div>
+
+        <div class="pt-6 space-y-8">`;
+
+      /* ---- 3. ZONA 1: SLOW BAR COUNTER (4 stool mengikuti lengkungan) ---- */
+      const barTables = tables.filter(t => t.zone === 'bar');
+      html += `
+        <section>
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="armchair" class="w-4 h-4 text-[#5c3a21]"></i>
+            <h4 class="font-bold text-sm text-slate-900 font-display">Slow Bar Counter</h4>
+            <span class="text-[13px] font-mono text-stone-500">Stool 01–04 · menghadap barista</span>
+          </div>
+          <div class="rounded-b-[70px] rounded-t-2xl border border-[#c9a227]/40 bg-gradient-to-b from-[#f5ebe0] to-white px-4 pt-4 pb-8">
+            <div class="grid grid-cols-4 gap-3 sm:gap-6 max-w-3xl mx-auto">`;
+      barTables.forEach(t => {
+        const tone = TABLE_TONE[t.displayStatus];
+        const seatTone = t.displayStatus === 'occupied' ? 'text-rose-600' : 'text-emerald-600';
+        html += `
+              <div class="flex flex-col items-center gap-1.5 ${isBarred(t.displayStatus) ? faded : ''}">
+                <button type="button" onclick="openTablePanel(${t.tableNumber})" data-table-node="${t.tableNumber}" data-tone="${t.displayStatus}"
+                  class="group relative z-10 w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 shadow-sm ${tone.table} flex items-center justify-center font-mono font-bold text-[13px] tracking-wide hover:scale-110 hover:shadow-md transition-all cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-400/60">
+                  ${t.code.replace('STOOL-', 'B-')}
+                  ${t.displayStatus === 'occupied' ? '<span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-rose-300 border border-white animate-pulse"></span>' : ''}
+                </button>
+                <div class="flex items-center gap-0.5 ${seatTone}">${seatSvgSVG('').repeat(2)}</div>
+              </div>`;
       });
+      html += `
+            </div>
+          </div>
+        </section>`;
+
+      /* ---- 4. ZONA 2: INDOOR LOUNGE (meja + seating pod melingkar) ---- */
+      html += renderPodZone('Indoor Lounge', 'sofa', 'Meja T-01–T-05 · ber-AC, tempat duduk melingkar', tables.filter(t => t.zone === 'indoor'), faded, isBarred);
+
+      /* ---- 5. ZONA 3: OUTDOOR TERRACE ---- */
+      html += renderPodZone('Outdoor Terrace', 'trees', 'Meja teras OUT-06–OUT-10 · santai di udara terbuka', tables.filter(t => t.zone === 'outdoor'), faded, isBarred);
+
+      html += `
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-2 mt-6 pt-4 border-t border-stone-200 font-mono text-[13px]">
+          <span class="text-stone-600">🟢 <strong class="text-emerald-700">${availCount} tersedia</strong> · 🔴 <strong class="text-rose-700">${occCount} terisi</strong> · Total ${tables.length} meja</span>
+          <span class="text-stone-400">Klik meja untuk lihat rincian / aksi cepat</span>
+        </div>`;
 
       wrap.innerHTML = html;
+      paintSeatRings();
       lucide.createIcons();
     }
 
-    function tableCardHtml(t) {
-      const tone = TABLE_TONE[t.displayStatus] || TABLE_TONE.available;
+    /* Zona meja keliling: meja di tengah + kursi melingkar sesuai kapasitas. */
+    function renderPodZone(title, icon, desc, items, faded, isBarred) {
+      if (!items.length) return '';
+      let out = `
+        <section>
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="${icon}" class="w-4 h-4 text-[#5c3a21]"></i>
+            <h4 class="font-bold text-sm text-slate-900 font-display">${title}</h4>
+            <span class="text-[13px] font-mono text-stone-500">${desc}</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 sm:gap-6">`;
+      items.forEach(t => { out += podHtml(t, faded, isBarred); });
+      out += `</div></section>`;
+      return out;
+    }
+
+    /* Satu pod: kursi melingkar + meja di tengah (label nomor saja). */
+    function podHtml(t, faded, isBarred) {
+      const tone = TABLE_TONE[t.displayStatus];
+      const seats = Math.min(Number(t.capacity) || 4, 6);
+      const code = t.zone === 'outdoor' ? t.code.replace('MEJA-', 'OUT-') : t.code.replace('MEJA-', 'T-');
       const isOcc = t.displayStatus === 'occupied';
-      const seats = Math.min(Number(t.capacity) || 2, 6);
-      let body = '';
-      if (isOcc) {
-        body = `
-          <div class="mt-2 space-y-1 text-center">
-            <p class="text-[14px] font-mono text-rose-700 font-bold">Duduk: ${seatDuration(t.seatedAt)}</p>
-            <p class="text-[19px] font-black text-rose-800 font-display tabular-nums">${formatRupiah(t.bill)}</p>
-            ${t.guestName ? `<p class="text-[13px] font-mono text-stone-500 truncate">${t.guestName}</p>` : ''}
-          </div>
-          <button onclick="event.stopPropagation();clearTable(${t.tableNumber})" class="mt-2 w-full bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 font-bold py-2 rounded-xl transition text-[14px] font-sans">Selesaikan &amp; Kosongkan Meja</button>`;
-      } else {
-        body = `
-          <div class="mt-2 space-y-1 text-center">
-            <p class="text-[14px] font-mono text-emerald-700 font-bold">${t.pax} • ${t.area}</p>
-            <p class="text-[15px] font-bold text-emerald-800 font-sans">Kosong / Tersedia</p>
-          </div>
-          <button onclick="event.stopPropagation();posFromTable(${t.tableNumber})" class="mt-2 w-full bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold py-2 rounded-xl transition text-[14px] font-sans">Mulai Pesanan di Meja Ini</button>`;
-      }
+      const ringCls = isOcc ? tone.ring + ' border-dashed' : 'border-transparent';
       return `
-        <div class="rounded-3xl border-2 p-3 transition ${tone.card} ${!isOcc ? 'cursor-pointer' : ''}" ${!isOcc ? `onclick="posFromTable(${t.tableNumber})"` : ''}>
-          <div class="flex items-center justify-between">
-            <span class="${tone.badge} text-[14px] font-bold px-2 py-0.5 rounded-full font-mono">${t.code}</span>
-            <span class="w-2.5 h-2.5 rounded-full ${tone.dot}"></span>
-          </div>
-          <div class="flex justify-center gap-1 mt-2 ${tone.chair}">${chairRow(seats)}</div>
-          <p class="text-center text-[20px] font-bold text-slate-900 mt-1 font-display leading-tight">${t.label}</p>
-          ${body}
+        <div class="flex items-center justify-center ${isBarred(t.displayStatus) ? faded : ''}">
+          <button type="button" onclick="openTablePanel(${t.tableNumber})" data-table-node="${t.tableNumber}" data-tone="${t.displayStatus}"
+            class="group relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 ${ringCls} flex items-center justify-center transition-all hover:scale-110 hover:shadow-md cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-400/60"
+            title="${t.label} • ${t.pax}">
+            <span class="absolute inset-0 rounded-full"><span class="seat-ring" data-seats="${seats}"></span></span>
+            <span class="relative z-10 w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 shadow-sm ${tone.table} flex items-center justify-center font-mono font-bold text-[12px] sm:text-[13px] tracking-wide">
+              ${code}
+              ${isOcc ? '<span class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-rose-300 border border-white animate-pulse"></span>' : ''}
+            </span>
+          </button>
         </div>`;
+    }
+
+    /* Gambar kursi melingkar mengelilingi meja via JS (SVG pods). */
+    function paintSeatRings() {
+      document.querySelectorAll('.seat-ring').forEach(ring => {
+        const n = Number(ring.getAttribute('data-seats')) || 4;
+        const occupied = !!ring.closest('.group') && !!ring.closest('.group').querySelector('.bg-rose-300');
+        const cls = occupied ? 'text-rose-600' : 'text-emerald-600';
+        const r = 42; const cx = 50, cy = 50;
+        let svg = '<svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full ' + cls + '" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round">';
+        for (let i = 0; i < n; i++) {
+          const ang = (Math.PI * 2 * i) / n - Math.PI / 2;
+          const x = cx + r * Math.cos(ang);
+          const y = cy + r * Math.sin(ang);
+          svg += '<g transform="translate(' + (x - 8).toFixed(1) + ',' + (y - 8).toFixed(1) + ')">' +
+            '<path d="M4 14v-2.4a4 4 0 0 1 8 0V14"/><path d="M4 11.6h8"/></g>';
+        }
+        svg += '</svg>';
+        ring.innerHTML = svg;
+      });
+    }
+
+    /* ============================================================
+       INTERAKSI MEJA: MERAH -> DRAWER, HIJAU -> MODAL CEPAT
+       ============================================================ */
+    let pendingTableNumber = null;
+
+    function openTablePanel(number) {
+      const t = floorState().find(x => Number(x.tableNumber) === Number(number));
+      if (!t) return;
+      if (t.displayStatus === 'occupied') openTableDrawer(t);
+      else openQuickTableModal(t);
+    }
+
+    function openTableDrawer(t) {
+      const order = t.activeOrder;
+      const items = (order && order.items) ? order.items : [{ name: 'Bill Berjalan (Dine In)', qty: 1, price: t.bill }];
+      const billTotal = order ? (Number(order.totalAmount) || t.bill) : t.bill;
+      const zoneLabel = (t.area || '') + ' - ' + (t.pax || '');
+      const header = document.getElementById('tableDetailHeader');
+      const body = document.getElementById('tableDetailBody');
+      const footer = document.getElementById('tableDetailFooter');
+      if (!header || !body || !footer) return;
+
+      header.innerHTML = `
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
+            <span class="text-[12px] font-mono uppercase tracking-widest text-rose-600 font-bold">Meja Terisi</span>
+          </div>
+          <h3 class="font-bold text-lg text-slate-900 font-display mt-1 truncate">${t.label} <span class="text-stone-400 font-mono text-sm">(${zoneLabel})</span></h3>
+          <p class="text-[13px] font-mono text-stone-600 mt-0.5">Terisi • Durasi Duduk: <strong class="text-rose-700">${seatDuration(t.seatedAt)}</strong></p>
+        </div>
+        <button onclick="closeTableDrawer()" class="text-stone-500 hover:text-rose-600 transition flex-shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>`;
+
+      body.innerHTML = `
+        <div class="rounded-2xl border border-stone-200 bg-stone-50 p-4 space-y-1.5">
+          <div class="flex items-center justify-between text-[13px] font-mono">
+            <span class="text-stone-500">Tamu</span><span class="font-bold text-slate-900">${t.guestName || 'Tamu Walk-in'}</span>
+          </div>
+          <div class="flex items-center justify-between text-[13px] font-mono">
+            <span class="text-stone-500">Kode Meja</span><span class="font-bold text-slate-900">${t.code}</span>
+          </div>
+          <div class="flex items-center justify-between text-[13px] font-mono">
+            <span class="text-stone-500">Kapasitas</span><span class="font-bold text-slate-900">${t.pax}</span>
+          </div>
+        </div>
+        <div>
+          <p class="text-[12px] font-mono uppercase tracking-widest text-stone-500 font-bold mb-2">Rincian Order</p>
+          <div class="space-y-1.5">
+            ${items.map(i => `
+            <div class="flex items-start justify-between gap-3 text-[14px] font-sans">
+              <span class="text-slate-700"><strong class="font-mono">${i.qty || 1}×</strong> ${i.name}${i.variant ? '<span class="block text-[12px] text-stone-400">' + i.variant + '</span>' : ''}</span>
+              <span class="font-mono tabular-nums text-slate-900 flex-shrink-0">${(i.price && i.qty) ? formatRupiah(i.price * i.qty) : (i.price ? formatRupiah(i.price) : '')}</span>
+            </div>`).join('')}
+          </div>
+        </div>
+        <div class="rounded-2xl bg-[#2c1810] text-white p-4 flex items-center justify-between">
+          <span class="text-[13px] font-mono uppercase tracking-widest text-amber-200/90 font-bold">Total Tagihan</span>
+          <span class="text-xl font-black font-display tabular-nums">${formatRupiah(billTotal)}</span>
+        </div>`;
+
+      footer.innerHTML = `
+        <button onclick="reprintTableBill(${t.tableNumber})" class="w-full bg-white hover:bg-stone-100 text-slate-900 border-2 border-stone-300 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+          <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk Ulang
+        </button>
+        <button onclick="clearTable(${t.tableNumber})" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Selesaikan &amp; Kosongkan Meja
+        </button>`;
+
+      const scrim = document.getElementById('tableDetailScrim');
+      const drawer = document.getElementById('tableDetailDrawer');
+      if (scrim) scrim.classList.remove('hidden');
+      if (drawer) drawer.classList.remove('translate-x-full');
+      lucide.createIcons();
+    }
+
+    function closeTableDrawer() {
+      const scrim = document.getElementById('tableDetailScrim');
+      const drawer = document.getElementById('tableDetailDrawer');
+      if (scrim) scrim.classList.add('hidden');
+      if (drawer) drawer.classList.add('translate-x-full');
+    }
+
+    function reprintTableBill(number) {
+      const t = tableByNumber(number);
+      if (!t || !t.orderId) { showToast('Tidak ada bill aktif untuk meja ini.'); return; }
+      const order = syncOrders().find(o => o.orderId === t.orderId);
+      if (!order) { showToast('Data pesanan tidak ditemukan.'); return; }
+      const container = document.getElementById('printableThermalSlip');
+      if (container) {
+        container.style.maxWidth = '302px';
+        container.innerHTML = receiptHtml(order, true);
+      }
+      closeTableDrawer();
+      showToast('Mencetak struk ulang ' + t.label + ' (80mm)…');
+      window.setTimeout(() => window.print(), 140);
+    }
+
+    function openQuickTableModal(t) {
+      pendingTableNumber = Number(t.tableNumber);
+      const title = document.getElementById('quickModalTitle');
+      const meta = document.getElementById('quickModalMeta');
+      const btn = document.getElementById('quickModalPosBtn');
+      if (title) title.innerText = t.label + ' Tersedia';
+      if (meta) meta.innerText = (t.area || '') + ' • ' + (t.pax || '') + ' • Kode ' + t.code;
+      if (btn) btn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> Buka Kasir POS untuk ' + t.code;
+      const m = document.getElementById('tableQuickModal');
+      if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+      lucide.createIcons();
+    }
+
+    function closeQuickTableModal() {
+      const m = document.getElementById('tableQuickModal');
+      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    }
+
+    function openPosForTable() {
+      const n = pendingTableNumber;
+      closeQuickTableModal();
+      if (n) posFromTable(n);
+    }
+
+    function setFloorFilter(kind) {
+      floorFilter = kind;
+      const map = { all: 'floorFilterAll', available: 'floorFilterAvailable', occupied: 'floorFilterOccupied' };
+      Object.keys(map).forEach(k => {
+        const el = document.getElementById(map[k]);
+        if (!el) return;
+        const active = k === kind;
+        el.classList.toggle('bg-emerald-950', active);
+        el.classList.toggle('border-emerald-800', active);
+        el.classList.toggle('text-emerald-300', active);
+        el.classList.toggle('bg-white', !active);
+        el.classList.toggle('shadow-sm', active);
+      });
+      renderFloorPlan();
     }
 
     function renderTableGrid() {
@@ -1795,20 +2044,10 @@
       const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
       setTxt('tableStatsAvailable', available);
       setTxt('tableStatsOccupied', occupied);
-      setTxt('tableStatsReserved', 0);
+      setTxt('tableStatsReserved', tables.length);
       const badge = document.getElementById('tablesOccupiedBadge');
       if (badge) badge.innerText = occupied + ' Terisi';
       renderWavePanel();
-    }
-
-    function openTableBill(number) {
-      const t = floorState().find(x => Number(x.tableNumber) === Number(number));
-      if (!t) return;
-      if (t.displayStatus === 'occupied') {
-        showToast(`${t.label}: ${t.guestName || 'Tamu'} — bill ${formatRupiah(t.bill)}, ${seatDuration(t.seatedAt)}.`);
-      } else {
-        posFromTable(number);
-      }
     }
 
     function clearTable(number) {
@@ -1816,6 +2055,7 @@
       if (!t) return;
       if (t.orderId) setSyncOrderStatus(t.orderId, 'COMPLETED');
       setTableStatus(number, 'available');
+      closeTableDrawer();
       showToast(`${t.label} dikosongkan — meja kembali hijau.`);
       renderTableGrid();
       renderFloorPlan();
