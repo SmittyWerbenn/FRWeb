@@ -1798,13 +1798,19 @@
     }
     function menuById(id) { return readMenuMaster().find(m => m.id === id) || null; }
 
-    /** HPP = Σ (qty × harga beli per satuan dasar master stok). */
+    /** HPP = Σ (qty × harga beli per satuan dasar master stok).
+       Cost diklem ke harga blueprint (dengan toleransi 2×) agar data
+       localStorage lama yang korup tidak menghasilkan HPP/margin minus. */
     function calcHPP(recipe) {
       if (!Array.isArray(recipe)) return 0;
       const stock = stockItems();
+      const bpById = {};
+      STOCK_BLUEPRINT.forEach(b => { bpById[b.id] = b.cost; });
       return recipe.reduce((sum, r) => {
         const s = stock.find(x => x.id === r.stockId);
-        const cost = s ? Number(s.cost) || 0 : 0;
+        let cost = s ? Number(s.cost) || 0 : 0;
+        const ref = bpById[r.stockId];
+        if (ref && (!(cost > 0) || cost > ref * 2)) cost = ref;
         return sum + (Number(r.qty) || 0) * cost;
       }, 0);
     }
@@ -1826,9 +1832,23 @@
       saved.forEach(s => { byId[s.id] = s; });
       return STOCK_BLUEPRINT.map(bp => Object.assign({}, bp, byId[bp.id] || {}));
     }
+    /* Schema guard: bila data lama di localStorage tidak kompatibel
+       (mis. `cost` tersimpan sebagai total faktur / satuan berbeda),
+       paksa re-seed dari blueprint agar HPP tidak meledak. */
+    function stockDataLooksStale(saved) {
+      if (!Array.isArray(saved) || !saved.length) return false;
+      const valid = new Set(STOCK_BLUEPRINT.map(b => b.id));
+      return saved.some(s => s.id && !valid.has(s.id)) || STOCK_BLUEPRINT.some(bp => {
+        const row = saved.find(s => s.id === bp.id);
+        if (!row) return true;
+        const c = Number(row.cost);
+        /* Harga beli per satuan dasar tak mungkin ≤ 0 dan tak mungkin > 10× blueprint */
+        return !(c > 0) || c > bp.cost * 10;
+      });
+    }
     function seedStock() {
       const existing = QuadraSync.readStock();
-      if (existing.length) return stockItems();
+      if (existing.length && !stockDataLooksStale(existing)) return stockItems();
       const seeded = STOCK_BLUEPRINT.map(bp => Object.assign({}, bp, { physical: bp.system, waste: 0, note: '', updatedAt: null }));
       QuadraSync.writeStock(seeded);
       return stockItems();
