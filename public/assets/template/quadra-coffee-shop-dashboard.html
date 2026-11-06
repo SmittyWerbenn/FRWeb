@@ -312,11 +312,6 @@
           <span>Stock Opname</span>
           <span class="ml-auto hidden bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="stockAlertBadge">!</span>
         </button>
-
-        <button onclick="switchTab('analytics')" id="tab-analytics" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
-          <i data-lucide="trending-up" class="w-4 h-4"></i>
-          <span>Laba Rugi &amp; Analytics</span>
-        </button>
       </nav>
     </div>
 
@@ -506,6 +501,84 @@
             <div class="mt-3">
               <span class="text-2xl font-semibold text-cyan-700 font-display block tabular-nums tracking-tight" id="kpiTablesOccupied">0 / 10 Meja Terisi</span>
               <p class="text-slate-500 text-[11.5px] mt-1 tabular-nums">Denah 10 meja real-time</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 font-display">Laporan Laba Rugi &amp; Business Intelligence</h3>
+            <p class="text-xs text-stone-500 font-mono">Ringkasan finansial harian, produk terlaris, retensi tamu &amp; performa multi-outlet.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <div id="pnlOutletSlot"></div>
+            <button onclick="exportPnLCSV()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 text-xs font-mono font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-cyan-900/50">
+              <i data-lucide="download" class="w-4 h-4"></i> Ekspor Laporan (CSV)
+            </button>
+          </div>
+        </div>
+
+        <!-- P&L Statement -->
+        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-cyan-900/40 shadow-xl space-y-5">
+          <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">PROFIT &amp; LOSS — HARI INI</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
+              <span class="text-slate-400 text-[10px] uppercase tracking-wider">Total Omzet</span>
+              <p class="font-bold text-white text-2xl font-display tabular-nums" id="plRevenue">Rp 0</p>
+            </div>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
+              <span class="text-slate-400 text-[10px] uppercase tracking-wider">HPP (COGS 34%)</span>
+              <p class="font-bold text-rose-300 text-2xl font-display tabular-nums" id="plCogs">Rp 0</p>
+            </div>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
+              <span class="text-slate-400 text-[10px] uppercase tracking-wider">Beban Operasional</span>
+              <p class="font-bold text-amber-300 text-2xl font-display tabular-nums" id="plOpex">Rp 0</p>
+            </div>
+            <div class="bg-gradient-to-br from-cyan-600/30 to-gold-500/20 border border-cyan-400/40 p-4 rounded-2xl space-y-1 font-mono text-xs">
+              <span class="text-cyan-200 text-[10px] uppercase tracking-wider">Laba Bersih</span>
+              <p class="font-bold text-white text-2xl font-display tabular-nums" id="plNet">Rp 0</p>
+              <span class="text-emerald-300 text-[10px]">Margin <strong id="plMargin">0%</strong></span>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-[10px] font-mono text-slate-400"><span>Laba Kotor <strong class="text-white" id="plGross">Rp 0</strong></span><span>Nota: <strong class="text-white" id="plTxCount">0</strong> transaksi • rata-rata <strong class="text-white" id="plAvg">Rp 0</strong></span></div>
+            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+              <div id="plGrossBar" class="bg-gradient-to-r from-cyan-500 to-gold-400 h-full rounded-full transition-all" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Top Selling -->
+          <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+            <div class="border-b border-cyan-50 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-display">🔥 Produk Terlaris (Top Selling)</h3>
+              <p class="text-xs text-stone-500 font-mono">Berdasarkan akumulasi qty seluruh transaksi lunas.</p>
+            </div>
+            <div class="space-y-3.5" id="topSellersList"></div>
+          </div>
+
+          <!-- KYC / Retention & Outlet -->
+          <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+            <div class="border-b border-cyan-50 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-display">💚 Retensi Tamu &amp; Multi-Outlet</h3>
+              <p class="text-xs text-stone-500 font-mono">Metrik pelanggan &amp; sebaran outlet Quadra Coffee Lab.</p>
+            </div>
+            <div class="space-y-3" id="kycMetrics"></div>
+            <div class="grid grid-cols-3 gap-3 pt-2">
+              <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 text-center">
+                <p class="text-[10px] font-mono text-cyan-700 uppercase">Senopati</p>
+                <p class="text-lg font-black text-slate-900 font-display">Flagship</p>
+              </div>
+              <div class="bg-gold-50 border border-gold-300 rounded-2xl p-3 text-center">
+                <p class="text-[10px] font-mono text-gold-700 uppercase">Kemang</p>
+                <p class="text-lg font-black text-slate-900 font-display">Slow Bar</p>
+              </div>
+              <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-center">
+                <p class="text-[10px] font-mono text-emerald-700 uppercase">BSD</p>
+                <p class="text-lg font-black text-slate-900 font-display">Roastery</p>
+              </div>
             </div>
           </div>
         </div>
@@ -905,84 +978,7 @@
 
       </section>
       <!-- ==================== VIEW 6: LABA RUGI & BUSINESS INTELLIGENCE (SUPERADMIN) ==================== -->
-      <section id="view-analytics" class="hidden space-y-6">
-
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h3 class="font-bold text-base text-slate-900 font-display">Laporan Laba Rugi &amp; Business Intelligence</h3>
-            <p class="text-xs text-stone-500 font-mono">Ringkasan finansial harian, produk terlaris, retensi tamu &amp; performa multi-outlet.</p>
-          </div>
-          <button onclick="exportPnLCSV()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 text-xs font-mono font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-cyan-900/50">
-            <i data-lucide="download" class="w-4 h-4"></i> Ekspor Laporan (CSV)
-          </button>
-        </div>
-
-        <!-- P&L Statement -->
-        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-cyan-900/40 shadow-xl space-y-5">
-          <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">PROFIT &amp; LOSS — HARI INI</span>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[10px] uppercase tracking-wider">Total Omzet</span>
-              <p class="font-bold text-white text-2xl font-display tabular-nums" id="plRevenue">Rp 0</p>
-            </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[10px] uppercase tracking-wider">HPP (COGS 34%)</span>
-              <p class="font-bold text-rose-300 text-2xl font-display tabular-nums" id="plCogs">Rp 0</p>
-            </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[10px] uppercase tracking-wider">Beban Operasional</span>
-              <p class="font-bold text-amber-300 text-2xl font-display tabular-nums" id="plOpex">Rp 0</p>
-            </div>
-            <div class="bg-gradient-to-br from-cyan-600/30 to-gold-500/20 border border-cyan-400/40 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-cyan-200 text-[10px] uppercase tracking-wider">Laba Bersih</span>
-              <p class="font-bold text-white text-2xl font-display tabular-nums" id="plNet">Rp 0</p>
-              <span class="text-emerald-300 text-[10px]">Margin <strong id="plMargin">0%</strong></span>
-            </div>
-          </div>
-
-          <div class="space-y-1.5">
-            <div class="flex justify-between text-[10px] font-mono text-slate-400"><span>Laba Kotor <strong class="text-white" id="plGross">Rp 0</strong></span><span>Nota: <strong class="text-white" id="plTxCount">0</strong> transaksi • rata-rata <strong class="text-white" id="plAvg">Rp 0</strong></span></div>
-            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
-              <div id="plGrossBar" class="bg-gradient-to-r from-cyan-500 to-gold-400 h-full rounded-full transition-all" style="width:0%"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Top Selling -->
-          <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
-            <div class="border-b border-cyan-50 pb-3">
-              <h3 class="font-bold text-base text-slate-900 font-display">🔥 Produk Terlaris (Top Selling)</h3>
-              <p class="text-xs text-stone-500 font-mono">Berdasarkan akumulasi qty seluruh transaksi lunas.</p>
-            </div>
-            <div class="space-y-3.5" id="topSellersList"></div>
-          </div>
-
-          <!-- KYC / Retention & Outlet -->
-          <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
-            <div class="border-b border-cyan-50 pb-3">
-              <h3 class="font-bold text-base text-slate-900 font-display">💚 Retensi Tamu &amp; Multi-Outlet</h3>
-              <p class="text-xs text-stone-500 font-mono">Metrik pelanggan &amp; sebaran outlet Quadra Coffee Lab.</p>
-            </div>
-            <div class="space-y-3" id="kycMetrics"></div>
-            <div class="grid grid-cols-3 gap-3 pt-2">
-              <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 text-center">
-                <p class="text-[10px] font-mono text-cyan-700 uppercase">Senopati</p>
-                <p class="text-lg font-black text-slate-900 font-display">Flagship</p>
-              </div>
-              <div class="bg-gold-50 border border-gold-300 rounded-2xl p-3 text-center">
-                <p class="text-[10px] font-mono text-gold-700 uppercase">Kemang</p>
-                <p class="text-lg font-black text-slate-900 font-display">Slow Bar</p>
-              </div>
-              <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-center">
-                <p class="text-[10px] font-mono text-emerald-700 uppercase">BSD</p>
-                <p class="text-lg font-black text-slate-900 font-display">Roastery</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </section>
+      <!-- VIEW ANALYTICS sudah digabung ke Overview (menu tunggal: Overview & Lab Analytics) -->
       <!-- ==================== VIEW 7: TRANSAKSI & EXPORT CSV ==================== -->
       <section id="view-transactions" class="hidden space-y-6">
         
@@ -1210,26 +1206,26 @@
 
     /* Seed transaksi historis (Database Transaksi & P&L Superadmin). */
     const SEED_TRANSACTIONS = [
-      { invoice: "QDR-202611-9001", token: "MEJA-03", customer: "Tedi Mahendra", phone: "081299998888", type: "DINE_IN", itemsSummary: "2x Quadra Aerocano Citrus, 1x Butter Croissant", time: "08:42 WIB", subtotal: 104000, tax: 10400, service: 5200, total: 119600, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9002", token: "MEJA-07", customer: "Nadia Hutagalung", phone: "081134567890", type: "DINE_IN", itemsSummary: "1x Oat Pistachio Cloud Latte, 1x Kyoto Cold Drip", time: "09:15 WIB", subtotal: 87000, tax: 8700, service: 4350, total: 100050, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9003", token: "STOOL-02", customer: "Bima Santoso", phone: "081355667788", type: "DINE_IN", itemsSummary: "Slow Bar Tasting Flight (Colombia Pink Bourbon)", time: "09:30 WIB", subtotal: 85000, tax: 8500, service: 4250, total: 97750, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9004", token: "A-01", customer: "Agung Pratama", phone: "081722334411", type: "TAKE_AWAY", itemsSummary: "Kolombia Pink Bourbon Origami + Croissant", time: "10:05 WIB", subtotal: 120000, tax: 12000, service: 0, total: 132000, method: "Tunai", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9005", token: "MEJA-05", customer: "Clara Wijaya", phone: "081566778899", type: "DINE_IN", itemsSummary: "2x Truffle Mushroom Toast, 2x Matcha Latte", time: "10:40 WIB", subtotal: 196000, tax: 19600, service: 9800, total: 225400, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9006", token: "MEJA-01", customer: "Rizky Kurniawan", phone: "081788990011", type: "DINE_IN", itemsSummary: "1x Beef Rice Bowl, 1x Signature Cold Brew Tonic", time: "11:12 WIB", subtotal: 102000, tax: 10200, service: 5100, total: 117300, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9007", token: "A-02", customer: "Sinta Marlina", phone: "081911223344", type: "TAKE_AWAY", itemsSummary: "4x Oat Pistachio Cloud Latte", time: "11:35 WIB", subtotal: 240000, tax: 24000, service: 0, total: 264000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9008", token: "MEJA-08", customer: "Hendra Gunawan", phone: "081233445566", type: "DINE_IN", itemsSummary: "1x Panama Geisha Boquete V60, 1x Pain au Chocolat", time: "12:20 WIB", subtotal: 93000, tax: 9300, service: 4650, total: 106950, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9009", token: "MEJA-02", customer: "Maya Puspita", phone: "081877665544", type: "DINE_IN", itemsSummary: "1x Smoked Chicken Panini, 1x Matcha Latte", time: "12:55 WIB", subtotal: 95000, tax: 9500, service: 4750, total: 109250, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9010", token: "STOOL-01", customer: "Yusuf Ramadhan", phone: "081655443322", type: "DINE_IN", itemsSummary: "1x Ethiopia Yirgacheffe Syphon, 1x Cinnamon Roll", time: "13:10 WIB", subtotal: 120000, tax: 12000, service: 6000, total: 138000, method: "Tunai", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9011", token: "MEJA-04", customer: "Dewi Lestari", phone: "081344556677", type: "DINE_IN", itemsSummary: "2x Aerocano Citrus, 1x Cinnamon Roll Lab", time: "13:48 WIB", subtotal: 190000, tax: 19000, service: 9500, total: 218500, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9012", token: "A-03", customer: "Fajar Nugroho", phone: "081255667788", type: "TAKE_AWAY", itemsSummary: "2x Cold Brew Tonic, 1x Butter Croissant", time: "14:05 WIB", subtotal: 90000, tax: 9000, service: 0, total: 99000, method: "Tunai", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9013", token: "MEJA-09", customer: "Anisa Rahmawati", phone: "081999887766", type: "DINE_IN", itemsSummary: "2x Kyoto Cold Drip 18-Hours, 1x Truffle Toast", time: "14:32 WIB", subtotal: 148000, tax: 14800, service: 7400, total: 170200, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9014", token: "MEJA-06", customer: "Bagus Setiawan", phone: "081666778899", type: "DINE_IN", itemsSummary: "1x Paket Duo Espresso, 1x Pain au Chocolat", time: "15:10 WIB", subtotal: 92000, tax: 9200, service: 4600, total: 105800, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9015", token: "MEJA-10", customer: "Intan Permata", phone: "081777889900", type: "DINE_IN", itemsSummary: "2x Beef Rice Bowl, 2x Matcha Latte, 1x Croissant", time: "15:45 WIB", subtotal: 290000, tax: 29000, service: 14500, total: 333500, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9016", token: "A-04", customer: "Galih Pratama", phone: "081888990011", type: "TAKE_AWAY", itemsSummary: "2x Oat Latte, 1x Kyoto Cold Drip", time: "16:02 WIB", subtotal: 129000, tax: 12900, service: 0, total: 141900, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9017", token: "MEJA-07", customer: "Putri Anggraini", phone: "081999001122", type: "DINE_IN", itemsSummary: "1x Tasting Flight, 1x Cinnamon Roll Lab", time: "16:38 WIB", subtotal: 204000, tax: 20400, service: 10200, total: 234600, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9018", token: "STOOL-03", customer: "Rangga Aditya", phone: "081222334455", type: "DINE_IN", itemsSummary: "1x Macchiato, 1x Croissant, 1x Cold Brew Tonic", time: "17:05 WIB", subtotal: 180000, tax: 18000, service: 9000, total: 207000, method: "Tunai", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9019", token: "MEJA-05", customer: "Vina Oktaviani", phone: "081333221100", type: "DINE_IN", itemsSummary: "3x Truffle Mushroom Toast, 2x Aerocano Citrus", time: "17:40 WIB", subtotal: 260000, tax: 26000, service: 13000, total: 299000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9020", token: "A-05", customer: "Doni Saputra", phone: "081444332211", type: "TAKE_AWAY", itemsSummary: "2x Matcha Latte, 1x Butter Croissant", time: "18:02 WIB", subtotal: 96000, tax: 9600, service: 0, total: 105600, method: "Tunai", status: "LUNAS", date: todayISO() }
+      { invoice: "QDR-202611-9001", outlet: "Senopati Flagship", token: "MEJA-03", customer: "Tedi Mahendra", phone: "081299998888", type: "DINE_IN", itemsSummary: "2x Quadra Aerocano Citrus, 1x Butter Croissant", time: "08:42 WIB", subtotal: 104000, tax: 10400, service: 5200, total: 119600, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9002", outlet: "Kemang Slow Bar", token: "MEJA-07", customer: "Nadia Hutagalung", phone: "081134567890", type: "DINE_IN", itemsSummary: "1x Oat Pistachio Cloud Latte, 1x Kyoto Cold Drip", time: "09:15 WIB", subtotal: 87000, tax: 8700, service: 4350, total: 100050, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9003", outlet: "BSD Roastery", token: "STOOL-02", customer: "Bima Santoso", phone: "081355667788", type: "DINE_IN", itemsSummary: "Slow Bar Tasting Flight (Colombia Pink Bourbon)", time: "09:30 WIB", subtotal: 85000, tax: 8500, service: 4250, total: 97750, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9004", outlet: "Senopati Flagship", token: "A-01", customer: "Agung Pratama", phone: "081722334411", type: "TAKE_AWAY", itemsSummary: "Kolombia Pink Bourbon Origami + Croissant", time: "10:05 WIB", subtotal: 120000, tax: 12000, service: 0, total: 132000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9005", outlet: "Kemang Slow Bar", token: "MEJA-05", customer: "Clara Wijaya", phone: "081566778899", type: "DINE_IN", itemsSummary: "2x Truffle Mushroom Toast, 2x Matcha Latte", time: "10:40 WIB", subtotal: 196000, tax: 19600, service: 9800, total: 225400, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9006", outlet: "BSD Roastery", token: "MEJA-01", customer: "Rizky Kurniawan", phone: "081788990011", type: "DINE_IN", itemsSummary: "1x Beef Rice Bowl, 1x Signature Cold Brew Tonic", time: "11:12 WIB", subtotal: 102000, tax: 10200, service: 5100, total: 117300, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9007", outlet: "Senopati Flagship", token: "A-02", customer: "Sinta Marlina", phone: "081911223344", type: "TAKE_AWAY", itemsSummary: "4x Oat Pistachio Cloud Latte", time: "11:35 WIB", subtotal: 240000, tax: 24000, service: 0, total: 264000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9008", outlet: "Kemang Slow Bar", token: "MEJA-08", customer: "Hendra Gunawan", phone: "081233445566", type: "DINE_IN", itemsSummary: "1x Panama Geisha Boquete V60, 1x Pain au Chocolat", time: "12:20 WIB", subtotal: 93000, tax: 9300, service: 4650, total: 106950, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9009", outlet: "BSD Roastery", token: "MEJA-02", customer: "Maya Puspita", phone: "081877665544", type: "DINE_IN", itemsSummary: "1x Smoked Chicken Panini, 1x Matcha Latte", time: "12:55 WIB", subtotal: 95000, tax: 9500, service: 4750, total: 109250, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9010", outlet: "BSD Roastery", token: "STOOL-01", customer: "Yusuf Ramadhan", phone: "081655443322", type: "DINE_IN", itemsSummary: "1x Ethiopia Yirgacheffe Syphon, 1x Cinnamon Roll", time: "13:10 WIB", subtotal: 120000, tax: 12000, service: 6000, total: 138000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9011", outlet: "Senopati Flagship", token: "MEJA-04", customer: "Dewi Lestari", phone: "081344556677", type: "DINE_IN", itemsSummary: "2x Aerocano Citrus, 1x Cinnamon Roll Lab", time: "13:48 WIB", subtotal: 190000, tax: 19000, service: 9500, total: 218500, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9012", outlet: "Kemang Slow Bar", token: "A-03", customer: "Fajar Nugroho", phone: "081255667788", type: "TAKE_AWAY", itemsSummary: "2x Cold Brew Tonic, 1x Butter Croissant", time: "14:05 WIB", subtotal: 90000, tax: 9000, service: 0, total: 99000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9013", outlet: "BSD Roastery", token: "MEJA-09", customer: "Anisa Rahmawati", phone: "081999887766", type: "DINE_IN", itemsSummary: "2x Kyoto Cold Drip 18-Hours, 1x Truffle Toast", time: "14:32 WIB", subtotal: 148000, tax: 14800, service: 7400, total: 170200, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9014", outlet: "Senopati Flagship", token: "MEJA-06", customer: "Bagus Setiawan", phone: "081666778899", type: "DINE_IN", itemsSummary: "1x Paket Duo Espresso, 1x Pain au Chocolat", time: "15:10 WIB", subtotal: 92000, tax: 9200, service: 4600, total: 105800, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9015", outlet: "Kemang Slow Bar", token: "MEJA-10", customer: "Intan Permata", phone: "081777889900", type: "DINE_IN", itemsSummary: "2x Beef Rice Bowl, 2x Matcha Latte, 1x Croissant", time: "15:45 WIB", subtotal: 290000, tax: 29000, service: 14500, total: 333500, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9016", outlet: "BSD Roastery", token: "A-04", customer: "Galih Pratama", phone: "081888990011", type: "TAKE_AWAY", itemsSummary: "2x Oat Latte, 1x Kyoto Cold Drip", time: "16:02 WIB", subtotal: 129000, tax: 12900, service: 0, total: 141900, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9017", outlet: "Senopati Flagship", token: "MEJA-07", customer: "Putri Anggraini", phone: "081999001122", type: "DINE_IN", itemsSummary: "1x Tasting Flight, 1x Cinnamon Roll Lab", time: "16:38 WIB", subtotal: 204000, tax: 20400, service: 10200, total: 234600, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9018", outlet: "Kemang Slow Bar", token: "STOOL-03", customer: "Rangga Aditya", phone: "081222334455", type: "DINE_IN", itemsSummary: "1x Macchiato, 1x Croissant, 1x Cold Brew Tonic", time: "17:05 WIB", subtotal: 180000, tax: 18000, service: 9000, total: 207000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9019", outlet: "BSD Roastery", token: "MEJA-05", customer: "Vina Oktaviani", phone: "081333221100", type: "DINE_IN", itemsSummary: "3x Truffle Mushroom Toast, 2x Aerocano Citrus", time: "17:40 WIB", subtotal: 260000, tax: 26000, service: 13000, total: 299000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9020", outlet: "BSD Roastery", token: "A-05", customer: "Doni Saputra", phone: "081444332211", type: "TAKE_AWAY", itemsSummary: "2x Matcha Latte, 1x Butter Croissant", time: "18:02 WIB", subtotal: 96000, tax: 9600, service: 0, total: 105600, method: "Tunai", status: "LUNAS", date: todayISO() }
     ];
 
     /* Seed stok bahan baku (Stock Opname). */
@@ -1510,12 +1506,12 @@
        Kasir      -> operasional: Denah Meja, POS, Stock Opname.
        ============================================================ */
     const ROLE_MENU = {
-      superadmin: ['overview', 'analytics', 'transactions'],
+      superadmin: ['overview', 'transactions'],
       kasir: ['tables', 'pos', 'stock']
     };
     const ROLE_LABEL = { superadmin: 'Superadmin', kasir: 'Kasir' };
     const ROLE_DEFAULT_TAB = { superadmin: 'overview', kasir: 'tables' };
-    const ALL_TABS = ['overview', 'tables', 'pos', 'stock', 'analytics', 'transactions'];
+    const ALL_TABS = ['overview', 'tables', 'pos', 'stock', 'transactions'];
 
     function hasAccess(tabKey) {
       return (ROLE_MENU[currentRole] || []).indexOf(tabKey) >= 0;
@@ -1566,7 +1562,6 @@
         tables: "Denah Meja Live",
         pos: "Kasir Barista POS",
         stock: "Stock Opname Bahan Baku",
-        analytics: "Laba Rugi & Business Intelligence",
         transactions: "Database Transaksi & Ekspor CSV"
       };
 
@@ -1597,11 +1592,10 @@
         toggleSidebar();
       }
 
-      if (tabKey === 'overview') { initCharts(); updateDashboardCounters(); }
+      if (tabKey === 'overview') { initCharts(); updateDashboardCounters(); renderAnalytics(); }
       if (tabKey === 'tables') { renderTableGrid(); renderFloorPlan(); }
       if (tabKey === 'pos') { renderPOSMenuOptions(); renderPOSCategoryFilters(); renderPOSFloorPicker(); updatePOSCartUI(); renderPOSDisplay(); }
       if (tabKey === 'stock') renderStockOpname();
-      if (tabKey === 'analytics') renderAnalytics();
       if (tabKey === 'transactions') renderMasterTxTable();
 
       lucide.createIcons();
@@ -2299,6 +2293,17 @@
     let txDateFilter = '';
     let transaksiLog = [];
 
+    /* Outlet Quadra Coffee Lab (untuk filter Laba Rugi / BI) */
+    const OUTLET_NAMES = ['Senopati Flagship', 'Kemang Slow Bar', 'BSD Roastery'];
+    let pnlOutlet = 'ALL';
+    function setPnlOutlet(v) { pnlOutlet = v; renderAnalytics(); }
+
+    function outletSelectMarkup() {
+      const opts = ['<option value="ALL">Semua Outlet (3)</option>']
+        .concat(OUTLET_NAMES.map(o => `<option value="${o}">${o}</option>`)).join('');
+      return `<select id="pnlOutletSelect" onchange="setPnlOutlet(this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 text-[11px] font-mono rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-400">${opts}</select>`;
+    }
+
     function recordTransaction(order) {
       transaksiLog.unshift({
         invoice: order.orderId, token: order.orderType === 'dine_in' ? (order.tableNumber || '-') : (order.queueNumber || '-'),
@@ -2320,8 +2325,21 @@
         time: new Date(o.createdAt || Date.now()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
         subtotal: o.subtotal || 0, tax: o.tax || 0, service: o.serviceFee || 0, total: o.totalAmount || 0,
         method: o.paymentMethod || 'QRIS', status: o.paymentStatus === 'PAID' ? 'LUNAS' : 'PENDING', date: (o.createdAt || '').slice(0, 10),
+        outlet: o.outlet || OUTLET_NAMES[0],
       }));
-      return live.concat(transaksiLog).concat(SEED_TRANSACTIONS);
+      return live
+        .concat(transaksiLog.map(t => Object.assign({ outlet: OUTLET_NAMES[0] }, t)))
+        .concat(SEED_TRANSACTIONS);
+    }
+
+    /** Daftar outlet Quadra Coffee Lab. */
+    function outletList() { return OUTLET_NAMES.slice(); }
+
+    /** Filter transaksi sesuai outlet aktif ('ALL' = semua outlet). */
+    function txByOutlet(list) {
+      const cur = (typeof pnlOutlet !== 'undefined') ? pnlOutlet : 'ALL';
+      if (!cur || cur === 'ALL') return list;
+      return list.filter(t => (t.outlet || OUTLET_NAMES[0]) === cur);
     }
 
     function applyTxFilters(list) {
@@ -2410,7 +2428,7 @@
 
     /* ==================== SUPERADMIN: P&L & ANALYTICS ==================== */
     function pnlSummary(period) {
-      const all = allTransactions().filter(t => t.status === 'LUNAS');
+      const all = txByOutlet(allTransactions()).filter(t => t.status === 'LUNAS');
       const revenue = all.reduce((n, t) => n + Number(t.total || 0), 0);
       const cogs = Math.round(revenue * 0.34);
       const gross = revenue - cogs;
@@ -2421,7 +2439,7 @@
 
     function topSellers() {
       const counts = {};
-      allTransactions().forEach(t => {
+      txByOutlet(allTransactions()).forEach(t => {
         if (t.itemsSummary && t.itemsSummary !== '-') {
           String(t.itemsSummary).split(',').forEach(seg => {
             const m = /(\d+)x\s+(.+)/.exec(seg.trim());
@@ -2434,6 +2452,12 @@
 
     function renderAnalytics() {
       if (currentRole !== 'superadmin') return;
+      const slot = document.getElementById('pnlOutletSlot');
+      if (slot) {
+        slot.innerHTML = outletSelectMarkup();
+        const sel = document.getElementById('pnlOutletSelect');
+        if (sel) sel.value = pnlOutlet;
+      }
       const p = pnlSummary('daily');
       const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
       setTxt('plRevenue', formatRupiah(p.revenue));
@@ -2461,17 +2485,18 @@
 
       const kycWrap = document.getElementById('kycMetrics');
       if (kycWrap) {
-        const all = allTransactions();
+        const all = txByOutlet(allTransactions());
         const dine = all.filter(t => t.type === 'DINE_IN').length;
         const take = all.filter(t => t.type === 'TAKE_AWAY').length;
         const qris = all.filter(t => /QRIS/i.test(t.method)).length;
         const retention = all.length ? Math.round((all.length - 1) / all.length * 100) : 0;
+        const outletInfo = (pnlOutlet && pnlOutlet !== 'ALL') ? pnlOutlet : '3 Outlet';
         kycWrap.innerHTML = `
           <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Rasio Dine In : Take Away</span><strong class="text-slate-900">${dine} : ${take}</strong></div>
           <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Pembayaran QRIS / Non-tunai</span><strong class="text-cyan-700">${qris} / ${all.length}</strong></div>
           <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Estimasi Retensi Tamu</span><strong class="text-emerald-700">${retention}%</strong></div>
           <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">SKU Aktif di Katalog</span><strong class="text-slate-900">${masterMenu.length}</strong></div>
-          <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Outlet Aktif</span><strong class="text-slate-900">3 Outlet</strong></div>`;
+          <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Outlet Aktif</span><strong class="text-slate-900">${outletInfo}</strong></div>`;
       }
     }
 
@@ -2506,7 +2531,7 @@
       if (q) q.innerText = syncOrders().filter(o => o.orderStatus !== 'COMPLETED').length + ' Antrean';
       const lowBadge = document.getElementById('stockAlertBadge');
       if (lowBadge) lowBadge.classList.toggle('hidden', lowStockCount() === 0);
-      if (document.getElementById('view-analytics') && !document.getElementById('view-analytics').classList.contains('hidden')) renderAnalytics();
+      if (document.getElementById('view-overview') && !document.getElementById('view-overview').classList.contains('hidden')) renderAnalytics();
     }
 
     function pushNotification(title, detail, tone) {
