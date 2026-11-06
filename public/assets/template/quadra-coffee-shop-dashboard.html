@@ -26,109 +26,138 @@
             mono: ['"Inter"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
           },
           colors: {
-            /* Accent utama: Emerald modern (menggantikan clay/cyan hangat) */
+            /* ===== ARTISAN WARM LIGHT PALETTE =====
+               Putih bersih + cokelat kopi (roasted espresso).
+               Ramp slate/stone dipakai sebagai TEXT-first ramp:
+               step rendah = terang (background), step tinggi = gelap (teks). */
+            /* Espresso: Deep Roasted Coffee (aksen cokelat utama) */
+            espresso: {
+              50: '#f5ebe0',   // soft latte wash
+              100: '#efe6dd',  // latte wash lebih dalam
+              200: '#e3d3c4',  // border hangat
+              300: '#d3b8a3',
+              400: '#a9825f',
+              500: '#6f4e37',  // warm mocha coffee
+              600: '#5c3a21',  // aksen tombol aktif / hover
+              700: '#3c2415',  // pill aktif / teks tegas
+              800: '#2c1810',  // deep roasted espresso
+              900: '#24140e',  // sidebar solid
+              950: '#1a0e0a',
+            },
+            /* Alias lama 'lab' -> surface light theme */
+            lab: {
+              bg: '#f8fafc',      // page background: cool light grey
+              slate900: '#24140e', // sidebar deep espresso
+              slate850: '#2c1810',
+              slate800: '#3c2415',
+              card: '#ffffff',     // kartu kerja putih bersih
+              line: '#e7e5e4',     // border stone-200
+            },
+            /* Accent utama: toleransi class lama cyan -> mocha/espresso */
             cyan: {
-              50: '#022c22',   // tint gelap (chip/kartu aksen)
-              100: '#064e3b',
-              200: '#6ee7b7',
-              300: '#6ee7b7',  // teks aksen terang di atas dark
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',  // tombol checkout/aktif
-              700: '#34d399',  // dipakai sebagai teks -> terang
-              800: '#6ee7b7',
-              900: '#a7f3d0',
+              50: '#f5ebe0',   // chip latte
+              100: '#efe6dd',
+              200: '#d3b8a3',
+              300: '#a9825f',  // teks aksen hangat
+              400: '#a9825f',
+              500: '#6f4e37',
+              600: '#5c3a21',  // tombol aktif
+              700: '#3c2415',  // teks tegas cokelat
+              800: '#2c1810',
+              900: '#24140e',
             },
-            /* Aksen sekunder: emerald (hijau roastery) */
+            /* Accent sekunder: toleransi class lama gold -> caramel/mocha */
             gold: {
-              50: '#022c22',
-              100: '#064e3b',
-              200: '#065f46',
-              300: '#6ee7b7',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#34d399',  // dipakai sebagai teks -> terang
-              700: '#6ee7b7',
-              800: '#a7f3d0',
-              900: '#d1fae5',
+              50: '#f5ebe0',
+              100: '#efe6dd',
+              200: '#e3d3c4',
+              300: '#d3b8a3',
+              400: '#a9825f',
+              500: '#8a6544', // caramel
+              600: '#6f4e37',
+              700: '#5c3a21',
+              800: '#2c1810',
+              900: '#24140e',
             },
-            /* Netral utama: Modern Dark Slate (zinc, homogen) */
+            /* Netral utama: TEXT-first (900 = espresso gelap untuk headline/nominal) */
             slate: {
-              50: '#fafafa',
-              100: '#f4f4f5',
-              200: '#e4e4e7',
-              300: '#d4d4d8',
-              400: '#a1a1aa',
-              500: '#71717a',
-              600: '#52525b',
-              700: '#3f3f46',
-              750: '#2d2d33',
-              800: '#27272a',
-              850: '#1f1f23',
-              900: '#18181b',
-              950: '#09090b',
+              50: '#f8fafc',   // page background cool light grey
+              100: '#f1f5f9',  // chip/pill tracker
+              200: '#e2e8f0',  // border tipis
+              300: '#cbd5e1',  // border tegas
+              400: '#a8a29e',  // placeholder / teks redup (warm)
+              500: '#78716c',  // teks sekunder (warm)
+              600: '#57534e',  // teks sekunder tegas
+              700: '#44403c',  // teks isi
+              750: '#3a2418',
+              800: '#3c2415',  // hover panel gelap hangat
+              850: '#33200f',
+              900: '#2c1810',  // deep roasted espresso (headline/nominal/nomor meja)
+              950: '#24140e',  // sidebar solid
             },
-            /* Stone -> ramp dark yang sama (kartu kerja jadi gelap, bukan krem) */
+            /* Stone: ramp hangat netral selaras light theme */
             stone: {
-              50: '#141417',   // panel/field gelap
-              100: '#1c1c20',  // tombol sekunder gelap
-              200: '#27272a',  // garis border
-              300: '#3f3f46',
-              400: '#71717a',  // teks sekunder redup
-              500: '#a1a1aa',  // teks sekunder
-              600: '#d4d4d8',  // teks terang
-              700: '#e4e4e7',
-              800: '#f4f4f5',
-              900: '#fafafa',
+              50: '#fafaf9',   // surface lembut / field input
+              100: '#f5f5f4',  // pill switcher bg
+              200: '#e7e5e4',  // border kartu
+              300: '#d6d3d1',  // border input tegas
+              400: '#a8a29e',  // placeholder
+              500: '#78716c',  // teks sekunder
+              600: '#57534e',
+              700: '#44403c',
+              800: '#292524',
+              900: '#1c1917',
+              950: '#0c0a09',
             },
-            /* Success: emerald (step tinggi = teks terang di atas dark) */
+            /* Success: emerald (hijau meja kosong / bayar sukses) */
             emerald: {
-              50: '#022c22',   // badge hijau gelap
-              100: '#064e3b',
-              200: '#065f46',
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
               300: '#6ee7b7',
               400: '#34d399',
               500: '#10b981',
-              600: '#34d399',  // dipakai sebagai teks -> terang
-              700: '#6ee7b7',
-              800: '#a7f3d0',
-              900: '#d1fae5',
+              600: '#059669',  // tombol aksi solid
+              700: '#047857',  // teks hijau di atas emerald-50
+              800: '#065f46',
+              900: '#064e3b',
               950: '#022c22',
             },
-            /* Danger: rose */
+            /* Danger: rose (merah meja terisi) */
             rose: {
-              50: '#4c0519',   // badge merah gelap
-              100: '#881337',
-              200: '#9f1239',
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              200: '#fecdd3',
               300: '#fda4af',
               400: '#fb7185',
               500: '#f43f5e',
-              600: '#fb7185',  // dipakai sebagai teks -> terang
-              700: '#fda4af',
-              800: '#fecdd3',
+              600: '#e11d48',
+              700: '#be123c',  // teks merah di atas rose-50
+              800: '#9f1239',
               900: '#881337',
               950: '#4c0519',
             },
-            /* Warning: amber */
+            /* Warning: amber (caramel highlight) */
             amber: {
-              50: '#451a03',
-              100: '#78350f',
-              200: '#92400e',
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
               300: '#fcd34d',
               400: '#fbbf24',
               500: '#f59e0b',
-              600: '#fcd34d',  // dipakai sebagai teks -> terang
-              700: '#fde68a',
-              800: '#fef3c7',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
               900: '#78350f',
             },
-            lab: {
-              bg: '#09090b',      // zinc-950 page background
-              slate900: '#18181b', // panel/card
-              slate850: '#1f1f23',
-              slate800: '#27272a',
-              card: '#18181b',
-              line: '#27272a',
+            /* Caramel: untuk menu aktif sidebar (bg-amber-900/40 -> solid) */
+            caramel: {
+              50: '#f5ebe0',
+              100: '#efe6dd',
+              300: '#d3b8a3',
+              500: '#8a6544',
+              700: '#5c3a21',
+              900: '#2c1810',
             }
           },
           boxShadow: {
@@ -141,14 +170,15 @@
 
   <style>
     :root {
-      --ink: #fafafa;          /* teks utama terang di atas dark */
-      --espresso: #e4e4e7;     /* teks body terang */
-      --cream: #09090b;        /* page background: zinc-950 */
-      --sand: #27272a;         /* garis/border zinc-800 */
-      --clay: #10b981;         /* aksen emerald */
-      --clay-deep: #059669;    /* emerald 600 */
-      --honey: #34d399;        /* emerald 400 */
-      --card: #18181b;         /* kartu zinc-900 */
+      --ink: #2c1810;          /* deep roasted espresso: teks judul/nominal */
+      --espresso: #44403c;     /* teks body stone-700 */
+      --cream: #f8fafc;        /* page background: cool light grey */
+      --sand: #e7e5e4;         /* garis/border stone-200 */
+      --clay: #6f4e37;         /* warm mocha coffee */
+      --clay-deep: #5c3a21;    /* aksen tombol aktif/hover */
+      --honey: #a9825f;        /* caramel terang */
+      --card: #ffffff;         /* kartu kerja putih bersih */
+      --latte: #f5ebe0;        /* soft latte wash */
     }
 
     html { -webkit-text-size-adjust: 100%; font-size: 17px; }
@@ -162,11 +192,9 @@
       -moz-osx-font-smoothing: grayscale;
       letter-spacing: -0.006em;
       line-height: 1.55;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-      background-size: 180px 180px;
     }
 
-    /* Kartu kerja dark slate agar homogen dengan background */
+    /* Kartu kerja putih bersih */
     body .bg-white { background-color: var(--card); }
 
     /* Tipografi */
@@ -182,8 +210,8 @@
     }
     h1, h2, h3 { text-wrap: balance; }
 
-    ::selection { background: #065f46; color: #ecfdf5; }
-    :focus-visible { outline: 2px solid rgba(16, 185, 129, 0.65); outline-offset: 2px; }
+    ::selection { background: #efe6dd; color: #2c1810; }
+    :focus-visible { outline: 2px solid rgba(92, 58, 33, 0.55); outline-offset: 2px; }
 
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
@@ -194,7 +222,7 @@
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: #3f3f46;
+      background: #d6d3d1;
       border-radius: 999px;
       border: 2px solid transparent;
       background-clip: content-box;
@@ -205,12 +233,12 @@
     }
 
     .glass-nav {
-      background: rgba(9, 9, 11, 0.94);
+      background: rgba(248, 250, 252, 0.92);
       backdrop-filter: blur(16px) saturate(140%);
       -webkit-backdrop-filter: blur(16px) saturate(140%);
     }
     .gold-gradient-tag {
-      background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+      background: linear-gradient(135deg, #d3b8a3 0%, #6f4e37 100%);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -249,7 +277,7 @@
     }
   </style>
 </head>
-<body class="bg-lab-bg text-slate-100 antialiased font-sans min-h-screen flex selection:bg-emerald-500/30 selection:text-emerald-100 overflow-x-hidden">
+<body class="bg-lab-bg text-stone-700 antialiased font-sans min-h-screen flex selection:bg-espresso-100 selection:text-espresso-900 overflow-x-hidden">
 
   <!-- ==================== SIDEBAR ==================== -->
   <aside id="adminSidebar" class="w-64 bg-lab-slate900 border-r border-slate-800 flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-50 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
@@ -291,7 +319,7 @@
 
       <!-- Navigation Tabs (RBAC: menu disaring sesuai role aktif) -->
       <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
-        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-cyan-300 bg-slate-800 border-l-4 border-cyan-400 shadow-sm">
+        <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-amber-200 bg-amber-900/40 border-l-4 border-amber-500 shadow-sm">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
           <span>Overview &amp; Lab Analytics</span>
         </button>
@@ -334,12 +362,12 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 to-gold-500 flex items-center justify-center text-slate-950 font-bold text-xs font-mono shadow-sm">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-espresso-600 to-gold-500 flex items-center justify-center text-white font-bold text-xs font-mono shadow-sm">
           QR
         </div>
         <div class="flex-1 min-w-0 font-sans">
           <p class="text-xs font-bold text-white truncate font-display">Quadra Operations</p>
-          <p class="text-[13px] text-slate-400 font-mono truncate">Role aktif: <span id="roleBadgeHeader">Superadmin</span></p>
+          <p class="text-[13px] text-slate-500 font-mono truncate">Role aktif: <span id="roleBadgeHeader">Superadmin</span></p>
         </div>
         <button onclick="showToast('Sesi operasional disinkronkan')" title="Kalibrasi Mesin" class="text-slate-400 hover:text-cyan-400 transition">
           <i data-lucide="sliders" class="w-4 h-4"></i>
@@ -357,36 +385,36 @@
     <!-- Top Announcement Bar -->
     <div class="bg-slate-950 text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-cyan-900/40 font-mono gap-1">
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center px-2 py-0.5 rounded text-[13px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">QUADRA POS &amp; ERP</span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[13px] font-bold bg-amber-400/15 text-amber-200 border border-amber-400/40">QUADRA POS &amp; ERP</span>
         <span>Denah 10 Meja Live • Stock Opname Harian • Sinkron Real-Time dengan Customer Site</span>
       </div>
       <div class="flex items-center gap-3 text-[14px] text-slate-400">
-        <span>Shift Aktif: <strong class="text-cyan-400">Afternoon (12:00 – 17:00)</strong></span>
+        <span>Shift Aktif: <strong class="text-amber-300">Afternoon (12:00 – 17:00)</strong></span>
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
         <span>Sync: <strong class="text-gold-400">BroadcastChannel Aktif</strong></span>
       </div>
     </div>
 
     <!-- Header Navigation Bar -->
-    <header class="glass-nav sticky top-0 z-30 border-b border-cyan-900/50 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+    <header class="glass-nav sticky top-0 z-30 border-b border-stone-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <button onclick="toggleSidebar()" class="md:hidden text-slate-300 hover:text-white p-1.5 rounded-lg bg-slate-800">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
         <div>
-          <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
+          <h1 class="text-slate-900 font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
             <span id="currentViewTitle">Overview & Lab Analytics</span>
           </h1>
-          <p class="text-slate-400 text-xs hidden sm:block font-mono">Floor Plan 10 Meja, POS Dual Display, Stock Opname &amp; Sync Real-Time</p>
+          <p class="text-slate-500 text-xs hidden sm:block font-mono">Floor Plan 10 Meja, POS Dual Display, Stock Opname &amp; Sync Real-Time</p>
         </div>
       </div>
 
       <!-- Quick Actions Right -->
       <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
         <!-- Live Shift Indicator -->
-        <div class="hidden lg:flex items-center bg-slate-850 border border-slate-750 px-3 py-1.5 rounded-xl text-slate-300">
-          <span class="w-2 h-2 rounded-full bg-cyan-400 mr-2 animate-pulse"></span>
-          <span>Antrean Customer: <strong class="text-white" id="badgeQueueCount">0 Antrean</strong></span>
+        <div class="hidden lg:flex items-center bg-stone-100 border border-stone-200 px-3 py-1.5 rounded-xl text-slate-600">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+          <span>Antrean Customer: <strong class="text-slate-900" id="badgeQueueCount">0 Antrean</strong></span>
         </div>
 
         <!-- Quick POS Order Button -->
@@ -397,26 +425,26 @@
 
         <!-- Notification Dropdown Trigger -->
         <div class="relative">
-          <button onclick="toggleNotificationPanel()" class="relative w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-cyan-400 flex items-center justify-center transition">
+          <button onclick="toggleNotificationPanel()" class="relative w-9 h-9 rounded-xl bg-stone-100 border border-stone-200 text-slate-500 hover:text-cyan-700 flex items-center justify-center transition">
             <i data-lucide="bell" class="w-4 h-4"></i>
-            <span id="bellBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[13px] font-bold rounded-full flex items-center justify-center border-2 border-lab-slate900">1</span>
+            <span id="bellBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[13px] font-bold rounded-full flex items-center justify-center border-2 border-white">1</span>
             <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-gold-400 rounded-full animate-ping"></span>
           </button>
 
           <!-- Notification Dropdown Panel -->
-          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-cyan-100 p-3 text-slate-100 z-50 font-sans">
-            <div class="flex items-center justify-between border-b border-cyan-50 pb-2 px-1">
+          <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-stone-200 p-3 text-stone-700 z-50 font-sans">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-2 px-1">
               <span class="font-bold text-xs font-display">Aktivitas Barista Bar</span>
-              <span class="text-[13px] font-mono text-cyan-600 font-bold">Auto-Sync</span>
+              <span class="text-[13px] font-mono text-cyan-700 font-bold">Auto-Sync</span>
             </div>
             <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
               <div class="p-2.5 bg-cyan-50/70 rounded-xl border border-cyan-100">
-                <p class="font-bold text-slate-50">Pesanan Baru dari Customer Site</p>
+                <p class="font-bold text-slate-900">Pesanan Baru dari Customer Site</p>
                 <p class="text-slate-500 text-[13px] font-mono">Meja 03 • Tedi Mahendra (Dine In)</p>
                 <span class="text-[12px] text-cyan-700 font-bold">1 menit lalu</span>
               </div>
               <div class="p-2.5 bg-gold-50/80 rounded-xl border border-gold-200">
-                <p class="font-bold text-slate-50">Stok Menipis — Perlu Restock</p>
+                <p class="font-bold text-slate-900">Stok Menipis — Perlu Restock</p>
                 <p class="text-slate-500 text-[13px] font-mono">Fresh Milk tersisa 6 L (minimum 10 L)</p>
                 <span class="text-[12px] text-gold-700 font-bold">12 menit lalu</span>
               </div>
@@ -443,7 +471,7 @@
               </div>
             </div>
             <div class="mt-3">
-              <span class="text-2xl font-semibold text-slate-50 font-display block tabular-nums tracking-tight" id="kpiRevenue">Rp 8.420.000</span>
+              <span class="text-2xl font-semibold text-slate-900 font-display block tabular-nums tracking-tight" id="kpiRevenue">Rp 8.420.000</span>
               <p class="text-emerald-600 text-[11.5px] font-semibold flex items-center gap-1 mt-1 tabular-nums">
                 <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +18.4% vs kemarin
               </p>
@@ -459,7 +487,7 @@
               </div>
             </div>
             <div class="mt-3">
-              <span class="text-2xl font-semibold text-slate-50 font-display block tabular-nums tracking-tight" id="kpiCupsSold">198 Cangkir</span>
+              <span class="text-2xl font-semibold text-slate-900 font-display block tabular-nums tracking-tight" id="kpiCupsSold">198 Cangkir</span>
               <p class="text-slate-500 text-[11.5px] mt-1 tabular-nums">Kanal POS Kasir &amp; self-order customer</p>
             </div>
           </div>
@@ -487,7 +515,7 @@
               </div>
             </div>
             <div class="mt-3">
-              <span class="text-2xl font-semibold text-slate-50 font-display block tabular-nums tracking-tight">1.35% (98% Acc)</span>
+              <span class="text-2xl font-semibold text-slate-900 font-display block tabular-nums tracking-tight">1.35% (98% Acc)</span>
               <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
                 <div class="bg-cyan-600 h-full rounded-full" style="width: 98%"></div>
               </div>
@@ -512,7 +540,7 @@
 
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 class="font-bold text-base text-slate-50 font-display">Laporan Laba Rugi &amp; Business Intelligence</h3>
+            <h3 class="font-bold text-base text-slate-900 font-display">Laporan Laba Rugi &amp; Business Intelligence</h3>
             <p class="text-xs text-stone-500 font-mono">Ringkasan finansial harian, produk terlaris, retensi tamu &amp; performa multi-outlet.</p>
           </div>
           <div class="flex items-center gap-2">
@@ -558,7 +586,7 @@
           <!-- Top Selling -->
           <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
             <div class="border-b border-cyan-50 pb-3">
-              <h3 class="font-bold text-base text-slate-50 font-display">🔥 Produk Terlaris (Top Selling)</h3>
+              <h3 class="font-bold text-base text-slate-900 font-display">🔥 Produk Terlaris (Top Selling)</h3>
               <p class="text-xs text-stone-500 font-mono">Berdasarkan akumulasi qty seluruh transaksi lunas.</p>
             </div>
             <div class="space-y-3.5" id="topSellersList"></div>
@@ -567,22 +595,22 @@
           <!-- KYC / Retention & Outlet -->
           <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
             <div class="border-b border-cyan-50 pb-3">
-              <h3 class="font-bold text-base text-slate-50 font-display">💚 Retensi Tamu &amp; Multi-Outlet</h3>
+              <h3 class="font-bold text-base text-slate-900 font-display">💚 Retensi Tamu &amp; Multi-Outlet</h3>
               <p class="text-xs text-stone-500 font-mono">Metrik pelanggan &amp; sebaran outlet Quadra Coffee Lab.</p>
             </div>
             <div class="space-y-3" id="kycMetrics"></div>
             <div class="grid grid-cols-3 gap-3 pt-2">
               <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 text-center">
                 <p class="text-[13px] font-mono text-cyan-700 uppercase">Senopati</p>
-                <p class="text-lg font-black text-slate-50 font-display">Flagship</p>
+                <p class="text-lg font-black text-slate-900 font-display">Flagship</p>
               </div>
               <div class="bg-gold-50 border border-gold-300 rounded-2xl p-3 text-center">
                 <p class="text-[13px] font-mono text-gold-700 uppercase">Kemang</p>
-                <p class="text-lg font-black text-slate-50 font-display">Slow Bar</p>
+                <p class="text-lg font-black text-slate-900 font-display">Slow Bar</p>
               </div>
               <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-center">
                 <p class="text-[13px] font-mono text-emerald-700 uppercase">BSD</p>
-                <p class="text-lg font-black text-slate-50 font-display">Roastery</p>
+                <p class="text-lg font-black text-slate-900 font-display">Roastery</p>
               </div>
             </div>
           </div>
@@ -594,14 +622,14 @@
           <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-cyan-50 pb-3">
               <div>
-                <h3 class="font-bold text-base text-slate-50 font-display">Tingkat Penjualan Cangkir per Jam (Jam Sibuk)</h3>
+                <h3 class="font-bold text-base text-slate-900 font-display">Tingkat Penjualan Cangkir per Jam (Jam Sibuk)</h3>
                 <p class="text-xs text-stone-500 font-mono">Distribusi Take Away Cepat vs Kursi Slow Bar Manual Brew</p>
               </div>
               <div class="flex items-center gap-3 text-xs font-mono">
-                <span class="inline-flex items-center gap-1.5 text-slate-400">
+                <span class="inline-flex items-center gap-1.5 text-slate-500">
                   <span class="w-2.5 h-2.5 rounded-full bg-cyan-600"></span> Take Away
                 </span>
-                <span class="inline-flex items-center gap-1.5 text-slate-400">
+                <span class="inline-flex items-center gap-1.5 text-slate-500">
                   <span class="w-2.5 h-2.5 rounded-full bg-gold-500"></span> Dine In / Slow Bar
                 </span>
               </div>
@@ -614,7 +642,7 @@
           <!-- Right: Menu Category Sales Breakdown Doughnut Chart (4 Cols) -->
           <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4 flex flex-col justify-between">
             <div class="border-b border-cyan-50 pb-3">
-              <h3 class="font-bold text-base text-slate-50 font-display">Rasio Penjualan Menu Lab</h3>
+              <h3 class="font-bold text-base text-slate-900 font-display">Rasio Penjualan Menu Lab</h3>
               <p class="text-xs text-stone-500 font-mono">Signature Cold Brew vs Slow Bar vs Latte</p>
             </div>
             <div class="h-56 relative flex items-center justify-center">
@@ -623,7 +651,7 @@
             <div class="pt-2 text-[14px] font-mono text-slate-500 space-y-1 border-t border-cyan-50">
               <div class="flex justify-between">
                 <span>Espresso Bar:</span>
-                <strong class="text-slate-50 font-mono">48% (95 Cup)</strong>
+                <strong class="text-slate-900 font-mono">48% (95 Cup)</strong>
               </div>
               <div class="flex justify-between">
                 <span>Manual Brew Single Origin:</span>
@@ -644,7 +672,7 @@
               <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">AUDIT FINANSIAL &amp; PERFORMA OPERASIONAL</span>
               <h3 class="text-lg font-bold font-display mt-0.5">Snapshot Ringkasan Harian Quadra Coffee Lab</h3>
             </div>
-            <button onclick="switchTab('transactions')" class="bg-cyan-600/30 hover:bg-cyan-600 text-xs text-cyan-300 hover:text-white px-3.5 py-2 rounded-xl border border-cyan-400/40 transition flex items-center gap-1.5 font-mono">
+            <button onclick="switchTab('transactions')" class="bg-espresso-700/60 hover:bg-espresso-600 text-xs text-espresso-50 hover:text-white px-3.5 py-2 rounded-xl border border-espresso-500/60 transition font-bold inline-flex items-center gap-1.5">
               <span>Buka Database Transaksi</span>
               <i data-lucide="chevron-right" class="w-4 h-4 text-gold-400"></i>
             </button>
@@ -707,7 +735,7 @@
         <!-- Header denah + legenda -->
         <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
-            <h3 class="font-bold text-base text-slate-50 font-display">Denah Visual 10 Meja — Floor Plan Real-Time</h3>
+            <h3 class="font-bold text-base text-slate-900 font-display">Denah Visual 10 Meja — Floor Plan Real-Time</h3>
             <p class="text-xs text-stone-500 font-mono">4 stool slow bar • 5 meja indoor lounge • 1 meja outdoor terrace. Meja otomatis merah saat ada pesanan masuk.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 text-[13px] font-mono">
@@ -767,7 +795,7 @@
         <div class="bg-white p-5 sm:p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cyan-50 pb-4">
             <div>
-              <h3 class="font-bold text-base text-slate-50 font-display">Stock Opname Bahan Baku Harian</h3>
+              <h3 class="font-bold text-base text-slate-900 font-display">Stock Opname Bahan Baku Harian</h3>
               <p class="text-xs text-stone-500 font-mono">Bandingkan stok sistem vs hitungan fisik. Selisih otomatis dicatat sebagai waste.</p>
             </div>
             <button onclick="exportStockCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
@@ -793,7 +821,7 @@
           </div>
 
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-cyan-50">
-            <p class="text-[14px] text-stone-500 font-mono">Terakhir disimpan: <strong id="stockSavedAt" class="text-slate-100">—</strong></p>
+            <p class="text-[14px] text-stone-500 font-mono">Terakhir disimpan: <strong id="stockSavedAt" class="text-slate-700">—</strong></p>
             <button onclick="saveStockOpname()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 px-5 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
               <i data-lucide="save" class="w-4 h-4"></i> Simpan Hasil Opname
             </button>
@@ -808,7 +836,7 @@
         <div class="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 border border-cyan-900/40 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div class="flex flex-wrap items-center gap-4">
             <div class="flex items-center gap-3">
-              <span class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 to-gold-500 flex items-center justify-center text-slate-950 font-bold text-xs font-mono">AR</span>
+              <span class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-espresso-600 to-gold-500 flex items-center justify-center text-white font-bold text-xs font-mono">AR</span>
               <div class="font-sans">
                 <p class="text-xs font-bold text-white font-display">Barista Ari</p>
                 <p class="text-[13px] text-slate-400 font-mono">Shift Pagi • 08:00 – 17:00 WIB</p>
@@ -837,7 +865,7 @@
           <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-cyan-100 shadow-sm space-y-5 font-sans">
             <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
               <div>
-                <h3 class="font-bold text-base text-slate-50 font-display">Kasir Barista POS Terminal</h3>
+                <h3 class="font-bold text-base text-slate-900 font-display">Kasir Barista POS Terminal</h3>
                 <p class="text-xs text-stone-500 font-mono">Pilih menu, atur tipe order, lalu selesaikan transaksi untuk mencetak struk kasir.</p>
               </div>
               <span class="text-[13px] font-mono font-bold bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200">POS ACTIVE</span>
@@ -846,20 +874,20 @@
             <!-- Customer Data for Order -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
               <div>
-                <label class="block font-bold text-slate-300 mb-1">Nama Tamu / Pemesan</label>
-                <input type="text" id="posCustomerName" placeholder="Nama tamu" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                <label class="block font-bold text-slate-600 mb-1">Nama Tamu / Pemesan</label>
+                <input type="text" id="posCustomerName" placeholder="Nama tamu" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
               </div>
               <div>
-                <label class="block font-bold text-slate-300 mb-1">No. WhatsApp</label>
-                <input type="tel" id="posCustomerPhone" placeholder="08xxxxxxxxxx" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                <label class="block font-bold text-slate-600 mb-1">No. WhatsApp</label>
+                <input type="tel" id="posCustomerPhone" placeholder="08xxxxxxxxxx" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
               </div>
             </div>
 
             <!-- Search + Kategori -->
             <div class="space-y-2.5">
               <div class="relative">
-                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-400"></i>
-                <input type="text" id="posMenuSearch" oninput="onPOSSearchInput(this.value)" placeholder="Cari menu kopi, pastry, atau makanan..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-500"></i>
+                <input type="text" id="posMenuSearch" oninput="onPOSSearchInput(this.value)" placeholder="Cari menu kopi, pastry, atau makanan..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
               </div>
               <div class="flex flex-wrap gap-2" id="posCategoryFilters">
                 <!-- Populated via JS -->
@@ -868,7 +896,7 @@
 
             <!-- Quick Add Menu Grid -->
             <div>
-              <span class="text-xs font-bold text-slate-300 mb-2 block font-mono">Katalog Menu (klik untuk customizer):</span>
+              <span class="text-xs font-bold text-slate-600 mb-2 block font-mono">Katalog Menu (klik untuk customizer):</span>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="posMenuSelectionGrid">
                 <!-- Injected via JS -->
               </div>
@@ -880,22 +908,22 @@
 
             <!-- Tipe Order & Pilih Meja -->
             <div class="space-y-2.5 pb-3 border-b border-cyan-50">
-              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Tipe Pesanan</span>
+              <span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Tipe Pesanan</span>
               <div class="flex items-center gap-2">
                 <button id="posTypeDineIn" onclick="setPOSOrderType('dine_in')" class="flex-1 px-3 py-2 rounded-xl font-bold text-[14px] transition font-mono">Dine In</button>
                 <button id="posTypeTakeAway" onclick="setPOSOrderType('take_away')" class="flex-1 px-3 py-2 rounded-xl font-bold text-[14px] transition font-mono">Take Away</button>
               </div>
 
               <div id="posTableRow">
-                <label class="block font-bold text-slate-300 mt-1">Pilih Meja (hanya meja hijau/kosong) *</label>
-                <select id="posTableSelect" onchange="onPOSTableSelect(this.value)" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                <label class="block font-bold text-slate-600 mt-1">Pilih Meja (hanya meja hijau/kosong) *</label>
+                <select id="posTableSelect" onchange="onPOSTableSelect(this.value)" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
                   <!-- Injected via JS -->
                 </select>
                 <p class="text-[13px]" id="posTableInfo"></p>
               </div>
 
               <div id="posQueueRow" class="hidden">
-                <label class="block font-bold text-slate-300 mt-1">Nomor Antrean (Take Away)</label>
+                <label class="block font-bold text-slate-600 mt-1">Nomor Antrean (Take Away)</label>
                 <div class="w-full bg-gold-50 border border-gold-300 rounded-xl p-3 text-center">
                   <span class="text-2xl font-black text-gold-700 font-display" id="posQueueNumber">A-01</span>
                   <p class="text-[13px] text-stone-500 mt-0.5">Nomor antrean otomatis untuk pesanan bawa pulang</p>
@@ -904,7 +932,7 @@
             </div>
 
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Item dalam Tagihan</span>
+              <span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Item dalam Tagihan</span>
               <span class="text-[13px] font-bold bg-gold-100 text-gold-800 px-2 py-0.5 rounded border border-gold-300" id="posSelectedTableLabel">Belum dipilih</span>
             </div>
 
@@ -917,17 +945,17 @@
             <div class="p-4 bg-cyan-50/70 rounded-2xl border border-cyan-200 space-y-1.5">
               <div class="flex justify-between text-[15px] text-stone-600">
                 <span>Subtotal:</span>
-                <span class="font-bold text-slate-50 tabular-nums" id="posSubtotalText">Rp 0</span>
+                <span class="font-bold text-slate-900 tabular-nums" id="posSubtotalText">Rp 0</span>
               </div>
               <div class="flex justify-between text-[15px] text-stone-600">
                 <span>PB1 Resto (10%):</span>
-                <span class="font-bold text-slate-50 tabular-nums" id="posTaxText">Rp 0</span>
+                <span class="font-bold text-slate-900 tabular-nums" id="posTaxText">Rp 0</span>
               </div>
               <div class="flex justify-between text-[15px] text-stone-600">
                 <span>Service Dine In (5%):</span>
-                <span class="font-bold text-slate-50 tabular-nums" id="posServiceText">Rp 0</span>
+                <span class="font-bold text-slate-900 tabular-nums" id="posServiceText">Rp 0</span>
               </div>
-              <div class="flex justify-between items-baseline pt-1.5 border-t border-cyan-200/80 text-[16px] font-black text-slate-50">
+              <div class="flex justify-between items-baseline pt-1.5 border-t border-cyan-200/80 text-[16px] font-black text-slate-900">
                 <span>Total Bayar Bersih:</span>
                 <span class="text-cyan-700 text-[26px] font-black tabular-nums leading-none" id="posGrandTotalText">Rp 0</span>
               </div>
@@ -935,7 +963,7 @@
 
             <!-- Metode Pembayaran -->
             <div class="space-y-2.5">
-              <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Metode Pembayaran</span>
+              <span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Metode Pembayaran</span>
               <div class="flex items-center gap-2">
                 <button id="posPayCash" onclick="setPOSPaymentMethod('Cash')" class="pos-pay-btn flex-1 px-2 py-2 rounded-xl font-bold text-[14px] transition font-mono">Tunai</button>
                 <button id="posPayQRIS" onclick="setPOSPaymentMethod('QRIS')" class="pos-pay-btn flex-1 px-2 py-2 rounded-xl font-bold text-[14px] transition font-mono">QRIS</button>
@@ -944,9 +972,9 @@
 
               <!-- Kalkulator kembalian tunai -->
               <div id="posCashRow" class="space-y-1.5">
-                <label class="block font-bold text-[15px] text-slate-300">Uang Diterima (Tunai)</label>
-                <input type="number" id="posCashInput" oninput="onPOSCashInput(this.value)" placeholder="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 font-bold text-[18px] tabular-nums focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-                <p id="posCashChange" class="font-bold text-[19px] tabular-nums text-stone-400">Isi nominal uang diterima</p>
+                <label class="block font-bold text-[15px] text-slate-600">Uang Diterima (Tunai)</label>
+                <input type="number" id="posCashInput" oninput="onPOSCashInput(this.value)" placeholder="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold text-[18px] tabular-nums focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                <p id="posCashChange" class="font-bold text-[19px] tabular-nums text-stone-500">Isi nominal uang diterima</p>
               </div>
 
               <!-- QRIS simulasi -->
@@ -969,7 +997,7 @@
                 <button onclick="openPrintBillModal()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-[14px] font-mono">
                   <i data-lucide="printer" class="w-4 h-4 text-cyan-300"></i> 🖨️ Cetak Struk
                 </button>
-                <button onclick="completePOSOrder()" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
+                <button onclick="completePOSOrder()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 active:scale-95 font-sans border border-emerald-500">
                   <i data-lucide="check-circle" class="w-4 h-4"></i> ✅ Selesaikan
                 </button>
               </div>
@@ -990,12 +1018,12 @@
         <!-- Filter Header -->
         <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
           <div class="relative w-full md:w-80">
-            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-400"></i>
-            <input type="text" id="txSearchInput" onkeyup="filterTransactionsTable()" placeholder="Cari Nama Cup, Invoice, WhatsApp..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-500"></i>
+            <input type="text" id="txSearchInput" onkeyup="filterTransactionsTable()" placeholder="Cari Nama Cup, Invoice, WhatsApp..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
           </div>
 
           <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-            <input type="date" id="txDateFilter" onchange="filterTxDate(this.value)" class="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-slate-300 font-bold" />
+            <input type="date" id="txDateFilter" onchange="filterTxDate(this.value)" class="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-slate-600 font-bold" />
             <button onclick="filterTxType('ALL')" class="tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-900 text-white transition" data-type="ALL">Semua</button>
             <button onclick="filterTxType('DINE_IN')" class="tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-type="DINE_IN">Dine In</button>
             <button onclick="filterTxType('TAKEAWAY')" class="tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-type="TAKEAWAY">Take Away</button>
@@ -1006,7 +1034,7 @@
         <div class="bg-white rounded-3xl border border-cyan-100 shadow-sm p-6 space-y-4">
           <div class="flex items-center justify-between border-b border-cyan-50 pb-4">
             <div>
-              <h3 class="font-bold text-base text-slate-50 font-display">Database Transaksi Quadra Coffee Lab</h3>
+              <h3 class="font-bold text-base text-slate-900 font-display">Database Transaksi Quadra Coffee Lab</h3>
               <p class="text-xs text-stone-500 font-mono" id="txCountLabel">Menampilkan seluruh transaksi tersimpan</p>
             </div>
             <button onclick="exportTransactionsCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
@@ -1048,10 +1076,10 @@
     <div class="bg-white rounded-3xl shadow-2xl border border-cyan-100 w-full max-w-md p-6 space-y-4">
       <div class="flex items-start justify-between border-b border-cyan-50 pb-3">
         <div>
-          <h3 class="font-bold text-base text-slate-50 font-display" id="itemModalTitle">Menu</h3>
+          <h3 class="font-bold text-base text-slate-900 font-display" id="itemModalTitle">Menu</h3>
           <p class="text-[14px] font-mono text-cyan-700 font-bold" id="itemModalPrice">Rp 0</p>
         </div>
-        <button onclick="closeItemCustomizer()" class="text-stone-400 hover:text-rose-600 transition">
+        <button onclick="closeItemCustomizer()" class="text-stone-500 hover:text-rose-600 transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -1060,8 +1088,8 @@
 
       <div class="space-y-3 font-mono text-xs">
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Pilihan Susu</label>
-          <select id="itemMilk" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          <label class="block font-bold text-slate-600 mb-1">Pilihan Susu</label>
+          <select id="itemMilk" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
             <option value="Fresh Milk">Fresh Milk</option>
             <option value="Oatmilk">Oatmilk</option>
             <option value="Almond Milk">Almond Milk</option>
@@ -1070,16 +1098,16 @@
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Sugar Level</label>
-            <select id="itemSugar" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
+            <label class="block font-bold text-slate-600 mb-1">Sugar Level</label>
+            <select id="itemSugar" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
               <option value="Normal">Normal</option>
               <option value="Less">Less Sugar</option>
               <option value="No Sugar">No Sugar</option>
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Ice Level</label>
-            <select id="itemIce" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
+            <label class="block font-bold text-slate-600 mb-1">Ice Level</label>
+            <select id="itemIce" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
               <option value="Normal">Normal</option>
               <option value="Less">Less Ice</option>
               <option value="No Ice">No Ice</option>
@@ -1088,12 +1116,12 @@
           </div>
         </div>
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Notes Barista</label>
-          <input type="text" id="itemNotes" placeholder="cth: extra shot, tanpa whipped cream" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          <label class="block font-bold text-slate-600 mb-1">Notes Barista</label>
+          <input type="text" id="itemNotes" placeholder="cth: extra shot, tanpa whipped cream" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
         </div>
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Jumlah (Qty)</label>
-          <input type="number" id="itemQty" min="1" value="1" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          <label class="block font-bold text-slate-600 mb-1">Jumlah (Qty)</label>
+          <input type="number" id="itemQty" min="1" value="1" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
         </div>
       </div>
 
@@ -1111,10 +1139,10 @@
     <div class="bg-white rounded-3xl shadow-2xl border border-rose-100 w-full max-w-sm p-6 space-y-4">
       <div class="flex items-start justify-between border-b border-rose-50 pb-3">
         <div>
-          <h3 class="font-bold text-base text-slate-50 font-display">Void / Cancel Transaksi</h3>
+          <h3 class="font-bold text-base text-slate-900 font-display">Void / Cancel Transaksi</h3>
           <p class="text-[14px] font-mono text-stone-500 mt-0.5">Otorisasi PIN Supervisor (hanya 4 digit)</p>
         </div>
-        <button onclick="closeVoidPin()" class="text-stone-400 hover:text-rose-600 transition">
+        <button onclick="closeVoidPin()" class="text-stone-500 hover:text-rose-600 transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -1125,8 +1153,8 @@
       </div>
 
       <div class="space-y-2">
-        <label class="block text-xs font-bold text-slate-300 font-mono">PIN Supervisor</label>
-        <input type="password" id="voidPinInput" inputmode="numeric" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter')submitVoidPin()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-center text-2xl tracking-[0.5em] text-slate-50 font-black focus:outline-none focus:ring-2 focus:ring-rose-400" />
+        <label class="block text-xs font-bold text-slate-600 font-mono">PIN Supervisor</label>
+        <input type="password" id="voidPinInput" inputmode="numeric" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter')submitVoidPin()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-center text-2xl tracking-[0.5em] text-slate-900 font-black focus:outline-none focus:ring-2 focus:ring-rose-400" />
         <p id="voidPinError" class="hidden text-[14px] text-rose-600 font-bold font-mono"></p>
       </div>
 
@@ -1144,10 +1172,10 @@
     <div class="bg-white rounded-3xl shadow-2xl border border-cyan-100 w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 space-y-4">
       <div class="flex items-start justify-between border-b border-cyan-50 pb-3">
         <div>
-          <h3 class="font-bold text-base text-slate-50 font-display">🖨️ Cetak Struk (Print Bill)</h3>
+          <h3 class="font-bold text-base text-slate-900 font-display">🖨️ Cetak Struk (Print Bill)</h3>
           <p class="text-[14px] font-mono text-stone-500 mt-0.5">Pilih lebar kertas printer thermal.</p>
         </div>
-        <button onclick="closePrintBillModal()" class="text-stone-400 hover:text-rose-600 transition">
+        <button onclick="closePrintBillModal()" class="text-stone-500 hover:text-rose-600 transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -1588,7 +1616,7 @@
 
       const activeBtn = document.getElementById(`tab-${tabKey}`);
       if (activeBtn) {
-        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-cyan-300 bg-slate-800 border-l-4 border-cyan-400 shadow-sm font-mono";
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-amber-200 bg-amber-900/40 border-l-4 border-amber-500 shadow-sm font-mono";
         activeBtn.classList.remove('hidden');
       }
 
@@ -1633,16 +1661,16 @@
           data: {
             labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
             datasets: [
-              { label: 'Take Away (Cups)', data: [18, 26, 22, 24, 28, 20, 12], backgroundColor: '#059669', borderRadius: 6 },
-              { label: 'Dine In / Slow Bar (Cups)', data: [12, 18, 22, 24, 26, 30, 18], backgroundColor: '#34d399', borderRadius: 6 }
+              { label: 'Take Away (Cups)', data: [18, 26, 22, 24, 28, 20, 12], backgroundColor: '#6f4e37', borderRadius: 6 },
+              { label: 'Dine In / Slow Bar (Cups)', data: [12, 18, 22, 24, 26, 30, 18], backgroundColor: '#c9a227', borderRadius: 6 }
             ]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-              y: { beginAtZero: true, max: 40, ticks: { stepSize: 10, color: '#a1a1aa', font: { family: 'Plus Jakarta Sans', size: 10 } }, grid: { color: '#27272a' } },
-              x: { ticks: { color: '#a1a1aa', font: { family: 'Plus Jakarta Sans', size: 10 } }, grid: { display: false } }
+              y: { beginAtZero: true, max: 40, ticks: { stepSize: 10, color: '#78716c', font: { family: 'Plus Jakarta Sans', size: 10 } }, grid: { color: '#e7e5e4' } },
+              x: { ticks: { color: '#78716c', font: { family: 'Plus Jakarta Sans', size: 10 } }, grid: { display: false } }
             }
           }
         });
@@ -1654,7 +1682,7 @@
           type: 'doughnut',
           data: {
             labels: ['Espresso Bar', 'Manual Brew', 'Pastry & Food'],
-            datasets: [{ data: [46, 30, 24], backgroundColor: ['#059669', '#34d399', '#a1a1aa'], borderWidth: 2, borderColor: '#18181b' }]
+            datasets: [{ data: [46, 30, 24], backgroundColor: ['#2c1810', '#6f4e37', '#c9a227'], borderWidth: 2, borderColor: '#ffffff' }]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
@@ -1722,7 +1750,7 @@
         const items = tables.filter(t => t.zone === zone.key);
         if (!items.length) return;
         html += '<div class="space-y-4">';
-        html += `<div class="flex items-center gap-2"><i data-lucide="${zone.icon}" class="w-4 h-4 text-cyan-600"></i><h4 class="font-bold text-sm text-slate-50 font-display">${zone.title}</h4><span class="text-[13px] font-mono text-stone-400">${zone.desc}</span></div>`;
+        html += `<div class="flex items-center gap-2"><i data-lucide="${zone.icon}" class="w-4 h-4 text-cyan-600"></i><h4 class="font-bold text-sm text-slate-900 font-display">${zone.title}</h4><span class="text-[13px] font-mono text-stone-500">${zone.desc}</span></div>`;
         html += '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">';
         items.forEach(t => { html += tableCardHtml(t); });
         html += '</div></div>';
@@ -1760,7 +1788,7 @@
             <span class="w-2.5 h-2.5 rounded-full ${tone.dot}"></span>
           </div>
           <div class="flex justify-center gap-1 mt-2 ${tone.chair}">${chairRow(seats)}</div>
-          <p class="text-center text-[20px] font-bold text-slate-50 mt-1 font-display leading-tight">${t.label}</p>
+          <p class="text-center text-[20px] font-bold text-slate-900 mt-1 font-display leading-tight">${t.label}</p>
           ${body}
         </div>`;
     }
@@ -1837,11 +1865,11 @@
       const grid = document.getElementById('posMenuSelectionGrid');
       if (!grid) return;
       const list = posFilteredMenu();
-      if (!list.length) { grid.innerHTML = '<p class="text-xs text-stone-400 font-mono col-span-2">Menu tidak ditemukan.</p>'; return; }
+      if (!list.length) { grid.innerHTML = '<p class="text-xs text-stone-500 font-mono col-span-2">Menu tidak ditemukan.</p>'; return; }
       grid.innerHTML = list.map(m => `
         <button onclick="openItemCustomizer('${m.id}')" class="text-left bg-stone-50 hover:bg-cyan-50 border border-stone-200 hover:border-cyan-300 rounded-2xl p-3 transition space-y-1">
           <div class="flex items-start justify-between gap-2">
-            <span class="text-[17px] font-bold text-slate-50 leading-tight font-sans">${m.name}</span>
+            <span class="text-[17px] font-bold text-slate-900 leading-tight font-sans">${m.name}</span>
             <span class="text-[13px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-1.5 py-0.5 rounded whitespace-nowrap">${m.category === 'Promo' ? '🔥 Promo' : m.category}</span>
           </div>
           <p class="text-[15px] text-stone-500 leading-snug">${m.desc}</p>
@@ -1942,18 +1970,18 @@
           return `
             <div class="flex items-start justify-between gap-2 pt-2.5">
               <div class="min-w-0">
-                <p class="font-bold text-slate-50 text-[15px] truncate">${it.name}</p>
+                <p class="font-bold text-slate-900 text-[15px] truncate">${it.name}</p>
                 <p class="text-[14px] text-stone-500 truncate">${it.variant || '-'}${it.note ? ' • ' + it.note : ''}</p>
                 <p class="text-[14px] text-cyan-700 font-bold tabular-nums">${formatRupiah(it.price)} × ${it.qty}</p>
               </div>
               <div class="flex items-center gap-1.5 flex-shrink-0">
-                <button onclick="changePOSQty(${i},-1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-300 font-bold text-[15px]">−</button>
-                <span class="w-6 text-center font-bold text-slate-50 text-[15px] tabular-nums">${it.qty}</span>
-                <button onclick="changePOSQty(${i},1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-300 font-bold text-[15px]">+</button>
+                <button onclick="changePOSQty(${i},-1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-600 font-bold text-[15px]">−</button>
+                <span class="w-6 text-center font-bold text-slate-900 text-[15px] tabular-nums">${it.qty}</span>
+                <button onclick="changePOSQty(${i},1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-600 font-bold text-[15px]">+</button>
                 <button onclick="changePOSQty(${i},-999)" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[15px] ml-1">×</button>
               </div>
             </div>`;
-        }).join('') || '<p class="text-[14px] text-stone-400 py-3">Tagihan masih kosong — pilih menu di katalog.</p>';
+        }).join('') || '<p class="text-[14px] text-stone-500 py-3">Tagihan masih kosong — pilih menu di katalog.</p>';
       }
       const calc = currentPOSCalc();
       const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
@@ -1996,7 +2024,7 @@
       const el = document.getElementById('posCashChange');
       if (!el) return;
       const calc = currentPOSCalc();
-      if (!posCashReceived) { el.className = 'font-bold text-stone-400'; el.innerText = 'Isi nominal uang diterima'; return; }
+      if (!posCashReceived) { el.className = 'font-bold text-stone-500'; el.innerText = 'Isi nominal uang diterima'; return; }
       const change = posCashReceived - calc.total;
       if (change < 0) { el.className = 'font-bold text-rose-600'; el.innerText = 'Kurang ' + formatRupiah(Math.abs(change)); }
       else { el.className = 'font-bold text-emerald-600'; el.innerText = 'Kembalian ' + formatRupiah(change); }
@@ -2220,21 +2248,21 @@
         const physical = s.physical != null ? s.physical : s.system;
         const diff = Number((Number(physical) - Number(s.system)).toFixed(3));
         const low = Number(s.system) < Number(s.min);
-        const diffCls = diff < 0 ? 'text-rose-600' : (diff > 0 ? 'text-emerald-600' : 'text-stone-400');
+        const diffCls = diff < 0 ? 'text-rose-600' : (diff > 0 ? 'text-emerald-600' : 'text-stone-500');
         return `
           <tr class="${low ? 'bg-amber-50/50' : ''}">
             <td class="py-3 px-4">
-              <span class="font-bold text-slate-50">${s.name}</span>
+              <span class="font-bold text-slate-900">${s.name}</span>
               ${low ? '<span class="ml-2 text-[12px] font-bold bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.5 rounded">MENIPIS</span>' : ''}
-              <span class="block text-[13px] text-stone-400">Satuan: ${s.unit} • Min: ${s.min}</span>
+              <span class="block text-[13px] text-stone-500">Satuan: ${s.unit} • Min: ${s.min}</span>
             </td>
-            <td class="py-3 px-4 text-right font-bold text-slate-100">${s.system}</td>
+            <td class="py-3 px-4 text-right font-bold text-slate-700">${s.system}</td>
             <td class="py-3 px-4 text-right">
-              <input type="number" step="0.001" value="${physical}" oninput="updateStockPhysical('${s.id}', this.value)" class="w-24 bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-right text-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <input type="number" step="0.001" value="${physical}" oninput="updateStockPhysical('${s.id}', this.value)" class="w-24 bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-right text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
             </td>
             <td class="py-3 px-4 text-right font-bold ${diffCls}" id="stockDiff-${s.id}">${diff > 0 ? '+' : ''}${diff}</td>
             <td class="py-3 px-4">
-              <input type="text" value="${s.note || ''}" placeholder="Catatan waste / sebab selisih" oninput="updateStockNote('${s.id}', this.value)" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              <input type="text" value="${s.note || ''}" placeholder="Catatan waste / sebab selisih" oninput="updateStockNote('${s.id}', this.value)" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
             </td>
           </tr>`;
       }).join('');
@@ -2262,7 +2290,7 @@
       QuadraSync.writeStock(list);
       const diff = Number((Number(s.physical) - Number(s.system)).toFixed(3));
       const el = document.getElementById('stockDiff-' + id);
-      if (el) { el.innerText = (diff > 0 ? '+' : '') + diff; el.className = 'py-3 px-4 text-right font-bold ' + (diff < 0 ? 'text-rose-600' : (diff > 0 ? 'text-emerald-600' : 'text-stone-400')); }
+      if (el) { el.innerText = (diff > 0 ? '+' : '') + diff; el.className = 'py-3 px-4 text-right font-bold ' + (diff < 0 ? 'text-rose-600' : (diff > 0 ? 'text-emerald-600' : 'text-stone-500')); }
     }
     function updateStockNote(id, value) {
       const list = stockItems();
@@ -2359,16 +2387,16 @@
       const body = document.getElementById('masterTxTableBody');
       if (!body) return;
       const list = filteredList || allTransactions();
-      if (!list.length) { body.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-stone-400">Tidak ada transaksi.</td></tr>'; }
+      if (!list.length) { body.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-stone-500">Tidak ada transaksi.</td></tr>'; }
       else {
         body.innerHTML = list.map(t => `
           <tr class="hover:bg-cyan-50/40">
-            <td class="py-3 px-4"><span class="font-bold text-slate-50">${t.invoice}</span><span class="block text-[13px] text-stone-400">${t.token}</span></td>
-            <td class="py-3 px-4"><span class="font-bold text-slate-100">${t.customer}</span><span class="block text-[13px] text-stone-400">${t.phone}</span></td>
+            <td class="py-3 px-4"><span class="font-bold text-slate-900">${t.invoice}</span><span class="block text-[13px] text-stone-500">${t.token}</span></td>
+            <td class="py-3 px-4"><span class="font-bold text-slate-700">${t.customer}</span><span class="block text-[13px] text-stone-500">${t.phone}</span></td>
             <td class="py-3 px-4"><span class="text-[13px] font-bold px-2 py-0.5 rounded ${t.type === 'DINE_IN' ? 'bg-cyan-50 text-cyan-700 border border-cyan-200' : 'bg-gold-100 text-gold-800 border border-gold-300'}">${t.type === 'DINE_IN' ? 'Dine In' : 'Take Away'}</span></td>
             <td class="py-3 px-4 text-stone-600">${t.itemsSummary}</td>
             <td class="py-3 px-4 text-stone-500">${t.time}</td>
-            <td class="py-3 px-4 font-bold text-slate-50">${formatRupiah(t.total)}</td>
+            <td class="py-3 px-4 font-bold text-slate-900">${formatRupiah(t.total)}</td>
             <td class="py-3 px-4">${t.method}</td>
             <td class="py-3 px-4 text-center"><button onclick="reprintTxSlip('${t.invoice}')" class="text-cyan-600 hover:text-cyan-800" title="Cetak ulang"><i data-lucide="printer" class="w-4 h-4 mx-auto"></i></button></td>
           </tr>`).join('');
@@ -2483,9 +2511,9 @@
         const max = top.length ? top[0].qty : 1;
         topWrap.innerHTML = top.map((t, i) => `
           <div class="space-y-1">
-            <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-300 font-bold">${i + 1}. ${t.name}</span><span class="text-slate-50 font-bold">${t.qty} terjual</span></div>
+            <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-600 font-bold">${i + 1}. ${t.name}</span><span class="text-slate-900 font-bold">${t.qty} terjual</span></div>
             <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div class="bg-gradient-to-r from-cyan-500 to-gold-400 h-full rounded-full" style="width:${Math.round((t.qty / max) * 100)}%"></div></div>
-          </div>`).join('') || '<p class="text-[14px] text-stone-400">Belum ada data penjualan.</p>';
+          </div>`).join('') || '<p class="text-[14px] text-stone-500">Belum ada data penjualan.</p>';
       }
 
       const kycWrap = document.getElementById('kycMetrics');
@@ -2497,11 +2525,11 @@
         const retention = all.length ? Math.round((all.length - 1) / all.length * 100) : 0;
         const outletInfo = (pnlOutlet && pnlOutlet !== 'ALL') ? pnlOutlet : '3 Outlet';
         kycWrap.innerHTML = `
-          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Rasio Dine In : Take Away</span><strong class="text-slate-50">${dine} : ${take}</strong></div>
+          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Rasio Dine In : Take Away</span><strong class="text-slate-900">${dine} : ${take}</strong></div>
           <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Pembayaran QRIS / Non-tunai</span><strong class="text-cyan-700">${qris} / ${all.length}</strong></div>
           <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Estimasi Retensi Tamu</span><strong class="text-emerald-700">${retention}%</strong></div>
-          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">SKU Aktif di Katalog</span><strong class="text-slate-50">${masterMenu.length}</strong></div>
-          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Outlet Aktif</span><strong class="text-slate-50">${outletInfo}</strong></div>`;
+          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">SKU Aktif di Katalog</span><strong class="text-slate-900">${masterMenu.length}</strong></div>
+          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Outlet Aktif</span><strong class="text-slate-900">${outletInfo}</strong></div>`;
       }
     }
 
@@ -2545,7 +2573,7 @@
       const colors = { cyan: 'bg-cyan-50/70 border-cyan-100', gold: 'bg-gold-50/80 border-gold-200', rose: 'bg-rose-50/80 border-rose-200' };
       const div = document.createElement('div');
       div.className = `p-2.5 rounded-xl border ${colors[tone] || colors.cyan}`;
-      div.innerHTML = `<p class="font-bold text-slate-50">${title}</p><p class="text-slate-500 text-[13px] font-mono">${detail}</p><span class="text-[12px] text-cyan-700 font-bold">baru saja</span>`;
+      div.innerHTML = `<p class="font-bold text-slate-900">${title}</p><p class="text-slate-500 text-[13px] font-mono">${detail}</p><span class="text-[12px] text-cyan-700 font-bold">baru saja</span>`;
       feed.insertBefore(div, feed.firstChild);
     }
 
