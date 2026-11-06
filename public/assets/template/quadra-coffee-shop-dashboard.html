@@ -7,10 +7,10 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Fraunces (display) + Plus Jakarta Sans (UI) — sama dengan customer site -->
+  <!-- Google Fonts: Inter (UI + angka tabular) + Plus Jakarta Sans (UI) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Chart.js -->
@@ -21,9 +21,9 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
-            display: ['"Fraunces"', 'Georgia', 'serif'],
-            mono: ['Arial', 'Helvetica', 'system-ui', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', '"Inter"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            display: ['"Inter"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"Inter"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
           },
           colors: {
             /* Sand -> Clay: pengganti cyan, mengikuti palet cream + terracotta customer site */
@@ -150,13 +150,14 @@
     html { -webkit-text-size-adjust: 100%; font-size: 17px; }
 
     body {
-      font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
-      font-size: 18px;
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
       background-color: var(--cream);
       color: var(--espresso);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       letter-spacing: -0.006em;
+      line-height: 1.55;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
       background-size: 180px 180px;
     }
@@ -166,14 +167,14 @@
 
     /* Tipografi */
     .font-display {
-      font-family: 'Fraunces', Georgia, serif;
-      font-optical-sizing: auto;
-      letter-spacing: -0.018em;
+      font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      letter-spacing: -0.014em;
+      font-weight: 600;
     }
     .font-mono {
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 0.012em;
+      letter-spacing: -0.006em;
     }
     h1, h2, h3 { text-wrap: balance; }
 
@@ -910,21 +911,21 @@
 
             <!-- Subtotal & Grand Total -->
             <div class="p-4 bg-cyan-50/70 rounded-2xl border border-cyan-200 space-y-1.5">
-              <div class="flex justify-between text-stone-600">
+              <div class="flex justify-between text-[15px] text-stone-600">
                 <span>Subtotal:</span>
-                <span class="font-bold text-slate-900" id="posSubtotalText">Rp 0</span>
+                <span class="font-bold text-slate-900 tabular-nums" id="posSubtotalText">Rp 0</span>
               </div>
-              <div class="flex justify-between text-stone-600">
+              <div class="flex justify-between text-[15px] text-stone-600">
                 <span>PB1 Resto (10%):</span>
-                <span class="font-bold text-slate-900" id="posTaxText">Rp 0</span>
+                <span class="font-bold text-slate-900 tabular-nums" id="posTaxText">Rp 0</span>
               </div>
-              <div class="flex justify-between text-stone-600">
+              <div class="flex justify-between text-[15px] text-stone-600">
                 <span>Service Dine In (5%):</span>
-                <span class="font-bold text-slate-900" id="posServiceText">Rp 0</span>
+                <span class="font-bold text-slate-900 tabular-nums" id="posServiceText">Rp 0</span>
               </div>
-              <div class="flex justify-between pt-1 border-t border-cyan-200/80 text-sm font-black text-slate-900">
+              <div class="flex justify-between items-baseline pt-1.5 border-t border-cyan-200/80 text-[16px] font-black text-slate-900">
                 <span>Total Bayar Bersih:</span>
-                <span class="text-cyan-700 text-base" id="posGrandTotalText">Rp 0</span>
+                <span class="text-cyan-700 text-[26px] font-black tabular-nums leading-none" id="posGrandTotalText">Rp 0</span>
               </div>
             </div>
 
@@ -939,9 +940,9 @@
 
               <!-- Kalkulator kembalian tunai -->
               <div id="posCashRow" class="space-y-1.5">
-                <label class="block font-bold text-slate-700">Uang Diterima (Tunai)</label>
-                <input type="number" id="posCashInput" oninput="onPOSCashInput(this.value)" placeholder="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-                <p id="posCashChange" class="font-bold text-stone-400">Isi nominal uang diterima</p>
+                <label class="block font-bold text-[15px] text-slate-700">Uang Diterima (Tunai)</label>
+                <input type="number" id="posCashInput" oninput="onPOSCashInput(this.value)" placeholder="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold text-[18px] tabular-nums focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                <p id="posCashChange" class="font-bold text-[19px] tabular-nums text-stone-400">Isi nominal uang diterima</p>
               </div>
 
               <!-- QRIS simulasi -->
@@ -1735,27 +1736,27 @@
       if (isOcc) {
         body = `
           <div class="mt-2 space-y-1 text-center">
-            <p class="text-[12px] font-mono text-rose-700 font-bold">Duduk: ${seatDuration(t.seatedAt)}</p>
-            <p class="text-sm font-black text-rose-800 font-display">${formatRupiah(t.bill)}</p>
-            ${t.guestName ? `<p class="text-[12px] font-mono text-stone-500 truncate">${t.guestName}</p>` : ''}
+            <p class="text-[14px] font-mono text-rose-700 font-bold">Duduk: ${seatDuration(t.seatedAt)}</p>
+            <p class="text-[19px] font-black text-rose-800 font-display tabular-nums">${formatRupiah(t.bill)}</p>
+            ${t.guestName ? `<p class="text-[13px] font-mono text-stone-500 truncate">${t.guestName}</p>` : ''}
           </div>
-          <button onclick="event.stopPropagation();clearTable(${t.tableNumber})" class="mt-2 w-full bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 font-bold py-2 rounded-xl transition text-[13px] font-sans">Selesaikan &amp; Kosongkan Meja</button>`;
+          <button onclick="event.stopPropagation();clearTable(${t.tableNumber})" class="mt-2 w-full bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 font-bold py-2 rounded-xl transition text-[14px] font-sans">Selesaikan &amp; Kosongkan Meja</button>`;
       } else {
         body = `
           <div class="mt-2 space-y-1 text-center">
-            <p class="text-[13px] font-mono text-emerald-700 font-bold">${t.pax} • ${t.area}</p>
-            <p class="text-[14px] font-bold text-emerald-800 font-sans">Kosong / Tersedia</p>
+            <p class="text-[14px] font-mono text-emerald-700 font-bold">${t.pax} • ${t.area}</p>
+            <p class="text-[15px] font-bold text-emerald-800 font-sans">Kosong / Tersedia</p>
           </div>
-          <button onclick="event.stopPropagation();posFromTable(${t.tableNumber})" class="mt-2 w-full bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold py-2 rounded-xl transition text-[13px] font-sans">Mulai Pesanan di Meja Ini</button>`;
+          <button onclick="event.stopPropagation();posFromTable(${t.tableNumber})" class="mt-2 w-full bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold py-2 rounded-xl transition text-[14px] font-sans">Mulai Pesanan di Meja Ini</button>`;
       }
       return `
         <div class="rounded-3xl border-2 p-3 transition ${tone.card} ${!isOcc ? 'cursor-pointer' : ''}" ${!isOcc ? `onclick="posFromTable(${t.tableNumber})"` : ''}>
           <div class="flex items-center justify-between">
-            <span class="${tone.badge} text-[12px] font-bold px-2 py-0.5 rounded-full font-mono">${t.code}</span>
+            <span class="${tone.badge} text-[14px] font-bold px-2 py-0.5 rounded-full font-mono">${t.code}</span>
             <span class="w-2.5 h-2.5 rounded-full ${tone.dot}"></span>
           </div>
           <div class="flex justify-center gap-1 mt-2 ${tone.chair}">${chairRow(seats)}</div>
-          <p class="text-center text-[14px] font-bold text-slate-900 mt-1 font-display leading-tight">${t.label}</p>
+          <p class="text-center text-[20px] font-bold text-slate-900 mt-1 font-display leading-tight">${t.label}</p>
           ${body}
         </div>`;
     }
@@ -1836,11 +1837,11 @@
       grid.innerHTML = list.map(m => `
         <button onclick="openItemCustomizer('${m.id}')" class="text-left bg-stone-50 hover:bg-cyan-50 border border-stone-200 hover:border-cyan-300 rounded-2xl p-3 transition space-y-1">
           <div class="flex items-start justify-between gap-2">
-            <span class="text-[14px] font-bold text-slate-900 leading-tight font-sans">${m.name}</span>
-            <span class="text-[12px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-1.5 py-0.5 rounded whitespace-nowrap">${m.category === 'Promo' ? '🔥 Promo' : m.category}</span>
+            <span class="text-[17px] font-bold text-slate-900 leading-tight font-sans">${m.name}</span>
+            <span class="text-[13px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-1.5 py-0.5 rounded whitespace-nowrap">${m.category === 'Promo' ? '🔥 Promo' : m.category}</span>
           </div>
-          <p class="text-[13px] text-stone-500 leading-snug">${m.desc}</p>
-          <p class="text-xs font-black text-cyan-700 font-mono">${formatRupiah(m.price)}</p>
+          <p class="text-[15px] text-stone-500 leading-snug">${m.desc}</p>
+          <p class="text-[19px] font-black text-cyan-800 font-mono">${formatRupiah(m.price)}</p>
         </button>`).join('');
     }
 
@@ -1937,15 +1938,15 @@
           return `
             <div class="flex items-start justify-between gap-2 pt-2.5">
               <div class="min-w-0">
-                <p class="font-bold text-slate-900 text-[14px] truncate">${it.name}</p>
-                <p class="text-[13px] text-stone-500 truncate">${it.variant || '-'}${it.note ? ' • ' + it.note : ''}</p>
-                <p class="text-[13px] text-cyan-700 font-bold">${formatRupiah(it.price)} × ${it.qty}</p>
+                <p class="font-bold text-slate-900 text-[15px] truncate">${it.name}</p>
+                <p class="text-[14px] text-stone-500 truncate">${it.variant || '-'}${it.note ? ' • ' + it.note : ''}</p>
+                <p class="text-[14px] text-cyan-700 font-bold tabular-nums">${formatRupiah(it.price)} × ${it.qty}</p>
               </div>
               <div class="flex items-center gap-1.5 flex-shrink-0">
-                <button onclick="changePOSQty(${i},-1)" class="w-6 h-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 font-bold">−</button>
-                <span class="w-5 text-center font-bold text-slate-900">${it.qty}</span>
-                <button onclick="changePOSQty(${i},1)" class="w-6 h-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 font-bold">+</button>
-                <button onclick="changePOSQty(${i},-999)" class="w-6 h-6 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold ml-1">×</button>
+                <button onclick="changePOSQty(${i},-1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 font-bold text-[15px]">−</button>
+                <span class="w-6 text-center font-bold text-slate-900 text-[15px] tabular-nums">${it.qty}</span>
+                <button onclick="changePOSQty(${i},1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 font-bold text-[15px]">+</button>
+                <button onclick="changePOSQty(${i},-999)" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[15px] ml-1">×</button>
               </div>
             </div>`;
         }).join('') || '<p class="text-[14px] text-stone-400 py-3">Tagihan masih kosong — pilih menu di katalog.</p>';
@@ -2170,13 +2171,13 @@
 
     function receiptHtml(order, thermal) {
       const items = (order.items || []).map(i =>
-        `<tr><td style="padding:1px 0;">${i.qty}× ${i.name}${i.variant ? '<br><span style="font-size:9px;color:#6E5843;">' + i.variant + '</span>' : ''}</td><td style="text-align:right;vertical-align:top;">${formatRupiah(i.price * i.qty)}</td></tr>`
+        `<tr><td style="padding:1px 0;">${i.qty}× ${i.name}${i.variant ? '<br><span style="font-size:10px;color:#6E5843;">' + i.variant + '</span>' : ''}</td><td style="text-align:right;vertical-align:top;">${formatRupiah(i.price * i.qty)}</td></tr>`
       ).join('');
       const inner = `
         <div style="text-align:center;border-bottom:2px dashed #C1673F;padding-bottom:8px;margin-bottom:8px;">
-          <h2 style="margin:0;font-size:15px;font-weight:800;font-family:'Fraunces',Georgia,serif;">QUADRA COFFEE LAB</h2>
-          <p style="margin:2px 0;font-size:10px;color:#6E5843;">Specialty Roastery &amp; Slow Bar</p>
-          <p style="margin:0;font-size:9px;color:#6E5843;">Jl. Senopati No. 42, Kebayoran Baru, Jaksel</p>
+          <h2 style="margin:0;font-size:16px;font-weight:800;font-family:'Inter','Plus Jakarta Sans',system-ui,sans-serif;">QUADRA COFFEE LAB</h2>
+          <p style="margin:2px 0;font-size:11px;color:#6E5843;">Specialty Roastery &amp; Slow Bar</p>
+          <p style="margin:0;font-size:10px;color:#6E5843;">Jl. Senopati No. 42, Kebayoran Baru, Jaksel</p>
         </div>
         <div style="margin-bottom:8px;">
           <p style="margin:2px 0;"><strong>No:</strong> ${order.orderId}</p>
@@ -2186,24 +2187,24 @@
           <p style="margin:2px 0;"><strong>Waktu:</strong> ${new Date(order.createdAt).toLocaleString('id-ID')}</p>
         </div>
         <div style="border-top:1px dashed #D6C1A4;border-bottom:1px dashed #D6C1A4;padding:6px 0;margin-bottom:8px;">
-          <table style="width:100%;font-size:11px;">${items}</table>
+          <table style="width:100%;font-size:12px;">${items}</table>
         </div>
         <div style="margin-bottom:8px;">
-          <table style="width:100%;font-size:11px;">
+          <table style="width:100%;font-size:12px;">
             <tr><td>Subtotal:</td><td style="text-align:right;">${formatRupiah(order.subtotal)}</td></tr>
             <tr><td>PB1 Resto 10%:</td><td style="text-align:right;">${formatRupiah(order.tax)}</td></tr>
             <tr><td>Service 5%:</td><td style="text-align:right;">${formatRupiah(order.serviceFee)}</td></tr>
-            <tr style="font-size:13px;font-weight:bold;"><td>TOTAL:</td><td style="text-align:right;color:#A9552F;">${formatRupiah(order.totalAmount)}</td></tr>
+            <tr style="font-size:15px;font-weight:bold;"><td>TOTAL:</td><td style="text-align:right;color:#A9552F;">${formatRupiah(order.totalAmount)}</td></tr>
           </table>
         </div>
         <div style="text-align:center;margin-top:10px;">
           <p style="margin:0;font-weight:bold;">Metode: ${order.paymentMethod}</p>
-          <p style="margin:3px 0 0;font-size:9px;color:#6E5843;">Terima kasih — Enjoy your specialty coffee extraction!</p>
+          <p style="margin:3px 0 0;font-size:10px;color:#6E5843;">Terima kasih — Enjoy your specialty coffee extraction!</p>
         </div>`;
       if (thermal) {
-        return `<div style="font-family:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;text-align:left;font-size:11px;color:#2A1D17;">${inner}</div>`;
+        return `<div style="font-family:'Inter','Plus Jakarta Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums;text-align:left;font-size:12px;color:#2A1D17;">${inner}</div>`;
       }
-      return `<div style="font-family:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;max-width:300px;margin:0 auto;text-align:left;font-size:11px;color:#2A1D17;background:#FFFCF6;padding:14px;border:1px solid #E8D9C3;border-radius:12px;">${inner}</div>`;
+      return `<div style="font-family:'Inter','Plus Jakarta Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums;max-width:300px;margin:0 auto;text-align:left;font-size:12px;color:#2A1D17;background:#FFFCF6;padding:14px;border:1px solid #E8D9C3;border-radius:12px;">${inner}</div>`;
     }
 
     /* ==================== STOCK OPNAME ==================== */
@@ -2395,10 +2396,10 @@
       const container = document.getElementById('printableThermalSlip');
       if (container) {
         container.style.maxWidth = '302px';
-        container.innerHTML = `<div style="font-family:ui-monospace,'Menlo','Consolas',monospace;font-size:11px;color:#2A1D17;text-align:left;">
+        container.innerHTML = `<div style="font-family:'Inter','Plus Jakarta Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums;font-size:12px;color:#2A1D17;text-align:left;">
           <div style="text-align:center;border-bottom:2px dashed #C1673F;padding-bottom:8px;margin-bottom:8px;">
-            <h2 style="margin:0;font-size:15px;font-weight:800;font-family:'Fraunces',Georgia,serif;">QUADRA COFFEE LAB</h2>
-            <p style="margin:2px 0;font-size:10px;color:#6E5843;">Reprint Struk</p>
+            <h2 style="margin:0;font-size:16px;font-weight:800;font-family:'Inter','Plus Jakarta Sans',system-ui,sans-serif;">QUADRA COFFEE LAB</h2>
+            <p style="margin:2px 0;font-size:11px;color:#6E5843;">Reprint Struk</p>
           </div>
           <p style="margin:2px 0;"><strong>No:</strong> ${t.invoice}</p>
           <p style="margin:2px 0;"><strong>Nama:</strong> ${t.customer}</p>
@@ -2406,7 +2407,7 @@
           <p style="margin:2px 0;"><strong>Menu:</strong> ${t.itemsSummary}</p>
           <p style="margin:2px 0;"><strong>Waktu:</strong> ${t.time}</p>
           <div style="border-top:1px dashed #D6C1A4;margin-top:8px;padding-top:6px;">
-            <p style="margin:2px 0;font-size:13px;font-weight:bold;">TOTAL: ${formatRupiah(t.total)}</p>
+            <p style="margin:2px 0;font-size:15px;font-weight:bold;">TOTAL: ${formatRupiah(t.total)}</p>
             <p style="margin:2px 0;">Metode: ${t.method}</p>
           </div>
         </div>`;

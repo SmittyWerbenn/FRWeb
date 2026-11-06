@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23171210'/%3E%3Cpath d='M43 45l6 7' stroke='%23C1673F' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='31' cy='31' r='13' fill='none' stroke='%23F6EEE2' stroke-width='6'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -25,7 +25,7 @@
           olive: '#77795C'
         },
         fontFamily: {
-          display: ['Fraunces', 'Georgia', 'serif'],
+          display: ['Inter', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
           sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif']
         },
         boxShadow: {
@@ -48,8 +48,9 @@
   * { -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; font-size: 17px; }
   body {
-    font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
-    font-size: 17px;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
     background-color: var(--cream);
     color: var(--ink);
     padding-bottom: calc(112px + env(safe-area-inset-bottom));
@@ -65,7 +66,7 @@
     mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.25'/%3E%3C/svg%3E");
   }
-  .font-display { font-family: 'Fraunces', Georgia, serif; }
+  .font-display { font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-weight: 600; letter-spacing: -0.014em; }
   .eyebrow {
     display: inline-flex;
     align-items: center;
@@ -265,7 +266,7 @@
     padding: 9px 16px;
     border-radius: 999px;
     border: 1px solid var(--line);
-    font-size: 0.8125rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #6B5B4E;
     background: rgba(255, 255, 255, 0.45);
@@ -333,7 +334,7 @@
     gap: 5px;
     padding: 5px 9px;
     border-radius: 999px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -351,7 +352,7 @@
     gap: 4px;
     padding: 3px 8px;
     border-radius: 999px;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: #7A6553;
@@ -366,7 +367,7 @@
     border-radius: 999px;
     background: var(--espresso);
     color: var(--cream);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     transition: transform .12s ease, background .2s ease;
   }
@@ -381,7 +382,7 @@
     border-radius: 999px;
     border: 1px solid rgba(246, 238, 226, 0.28);
     color: rgba(246, 238, 226, 0.78);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 600;
     transition: background .2s ease, color .2s ease, border-color .2s ease;
   }
@@ -460,7 +461,7 @@
     transition: transform .12s ease, border-color .2s ease, background .2s ease;
   }
   /* Angka/nominal memakai font standar (Arial) */
-  .tabular-nums { font-family: Arial, Helvetica, system-ui, sans-serif; }
+  .tabular-nums { font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
   .table-btn:hover { border-color: var(--clay); }
   .table-btn:active { transform: scale(0.95); }
   .table-btn[aria-pressed='true'] {
@@ -718,7 +719,8 @@
   }
   .receipt-brand {
     text-align: center;
-    font-family: 'Fraunces', Georgia, serif;
+    font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 700;
     font-size: 15px;
     letter-spacing: .18em;
     text-transform: uppercase;
@@ -736,13 +738,14 @@
     color: rgba(42, 29, 23, .68);
   }
   .receipt-row strong { color: var(--espresso); font-weight: 700; }
-  .receipt-item { font-size: 12px; }
+  .receipt-item { font-size: 13px; }
   .receipt-total {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font-size: 14px;
+    font-size: 17px;
     font-weight: 800;
+    font-variant-numeric: tabular-nums;
     color: var(--espresso);
   }
   .stamp-paid {
@@ -1142,21 +1145,21 @@
     <div class="sheet-scroll flex-1 px-5 py-4" id="cartBody"></div>
 
     <div class="border-t border-ink/10 bg-cream px-5 py-4" id="cartFooter">
-      <div class="flex items-center justify-between text-[13px] text-ink/60">
+      <div class="flex items-center justify-between text-[15px] text-ink/60">
         <span>Subtotal</span>
         <span id="cartSubtotal" class="font-semibold text-ink tabular-nums">Rp 0</span>
       </div>
-      <div class="mt-1 flex items-center justify-between text-[12.5px] text-ink/60">
+      <div class="mt-1 flex items-center justify-between text-[14px] text-ink/60">
         <span>Service charge <span class="text-ink/40">5%</span></span>
         <span id="cartService" class="tabular-nums">Rp 0</span>
       </div>
-      <div class="mt-1 flex items-center justify-between text-[12.5px] text-ink/60">
+      <div class="mt-1 flex items-center justify-between text-[14px] text-ink/60">
         <span>PPN <span class="text-ink/40">10%</span></span>
         <span id="cartTax" class="tabular-nums">Rp 0</span>
       </div>
       <div class="mt-3 flex items-baseline justify-between border-t border-ink/10 pt-3">
-        <span class="text-[14px] font-semibold uppercase tracking-[0.16em] text-ink/60">Total</span>
-        <span id="cartTotal" class="font-display text-2xl tabular-nums">Rp 0</span>
+        <span class="text-[15px] font-semibold uppercase tracking-[0.16em] text-ink/60">Total</span>
+        <span id="cartTotal" class="font-display text-[26px] font-bold tabular-nums">Rp 0</span>
       </div>
       <button type="button" class="btn-primary btn-clay mt-4 w-full" id="cartCheckout">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-4 w-4"><path d="M4 12h16M13 5l7 7-7 7"/></svg>
@@ -2217,11 +2220,11 @@
         '</button>' +
         '<div class="card-body">' +
           '<div class="flex items-start justify-between gap-2">' +
-            '<h3 class="font-display text-[17px] leading-tight sm:text-[19px]">' + esc(item.name) + '</h3>' +
-            '<span class="flex-none pt-1 text-[13px] font-semibold tabular-nums sm:text-[14px]">' + priceTag(item) + '</span>' +
+            '<h3 class="font-display text-[20px] leading-tight sm:text-[23px]">' + esc(item.name) + '</h3>' +
+            '<span class="flex-none pt-1 text-[16px] font-bold tabular-nums sm:text-[18px]">' + priceTag(item) + '</span>' +
           '</div>' +
-          '<p class="text-[12.5px] leading-snug text-ink/60">' + esc(item.meta || '') + '</p>' +
-          (item.featured ? '<p class="hidden text-[12.5px] leading-relaxed text-ink/60 sm:block">' + esc(item.desc) + '</p>' : '') +
+          '<p class="text-[14px] leading-snug text-ink/60">' + esc(item.meta || '') + '</p>' +
+          (item.featured ? '<p class="hidden text-[14px] leading-relaxed text-ink/60 sm:block">' + esc(item.desc) + '</p>' : '') +
           '<div class="flex flex-wrap gap-1.5">' + notes + '</div>' +
           '<div class="mt-auto flex items-center justify-between gap-2 pt-1">' +
             '<span class="text-[13px] font-semibold uppercase tracking-[0.12em] text-ink/35">' +
@@ -2980,7 +2983,7 @@
     const w = window.open('', '_blank', 'width=420,height=680');
     if (!w) { toast('Popup diblokir. Gunakan unduh struk.'); return; }
     w.document.write('<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Struk ' + o.no + '</title>' +
-      '<style>body{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#12100E;padding:16px;white-space:pre-wrap;line-height:1.55}</style>' +
+      '<style>body{font-family:\'Inter\',\'Plus Jakarta Sans\',system-ui,sans-serif;font-variant-numeric:tabular-nums;font-size:13px;color:#12100E;padding:16px;white-space:pre-wrap;line-height:1.55}</style>' +
       '</head><body>' + esc(buildReceiptText(o)) + '</body></html>');
     w.document.close();
     w.focus();
