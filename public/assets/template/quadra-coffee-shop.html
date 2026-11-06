@@ -1278,8 +1278,7 @@
       <div id="successMeta" class="mt-4 rounded-2xl bg-sand/50 px-4 py-3 text-left text-[12px] text-ink/70"></div>
     </div>
     <div class="border-t border-ink/10 px-5 py-4">
-      <button type="button" class="btn-primary w-full" id="successWa">Simpan salinan ke WhatsApp kasir</button>
-      <button type="button" class="btn-ghost mt-2 w-full" id="successDone">Kembali ke menu utama</button>
+      <button type="button" class="btn-primary w-full" id="successDone">Kembali ke menu utama</button>
     </div>
   </div>
 </div>
@@ -3108,13 +3107,6 @@
     openSheet('successModal');
   }
 
-  function successWa() {
-    const o = lastOrder;
-    if (!o) return;
-    const text = 'Halo Quadra Coffee, saya sudah pesan lewat self-order.\n\n' + buildReceiptText(o);
-    window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
-  }
-
   function finishOrder() {
     closeSheet('successModal');
     closeSheet('receiptSheet');
@@ -3399,7 +3391,6 @@
     $('#receiptContinue').addEventListener('click', function () {
       if (lastOrder) showSuccess(lastOrder);
     });
-    $('#successWa').addEventListener('click', successWa);
     $('#successDone').addEventListener('click', finishOrder);
 
     $('#checkoutBody').addEventListener('click', function (e) {
