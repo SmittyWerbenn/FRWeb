@@ -306,7 +306,7 @@
             <i data-lucide="map-pin" class="w-4 h-4 text-gold-400"></i>
           </span>
           <div class="min-w-0">
-            <p class="text-[13px] font-mono uppercase tracking-wider text-slate-500 leading-none mb-1.5">Outlet Aktif</p>
+            <p class="text-[14px] font-mono uppercase tracking-wider text-slate-500 leading-none mb-1.5">Outlet Aktif</p>
             <p class="text-base font-semibold text-stone-100 tracking-wide leading-tight truncate font-display">Senopati Flagship</p>
           </div>
         </div>
@@ -347,8 +347,8 @@
     <div class="p-4 border-t border-slate-800 bg-slate-950/50 space-y-3">
       <div>
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[13px] font-mono font-bold text-slate-400 uppercase tracking-wider">Mode Akses</span>
-          <span class="text-[12px] font-mono font-bold text-cyan-300" id="currentRoleHint">Akses audit &amp; analitik finansial</span>
+          <span class="text-[14px] font-mono font-bold text-slate-400 uppercase tracking-wider">Mode Akses</span>
+          <span class="text-[14px] font-mono font-bold text-cyan-300" id="currentRoleHint">Akses audit &amp; analitik finansial</span>
         </div>
         <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-700 rounded-xl p-1">
           <button id="rolePillSuperadmin" onclick="setRole('superadmin')" class="flex-1 px-3 py-1.5 rounded-lg font-bold text-[14px] transition bg-cyan-600 text-white shadow-sm">Superadmin</button>
@@ -357,12 +357,12 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-espresso-600 to-gold-500 flex items-center justify-center text-white font-bold text-xs font-mono shadow-sm">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-espresso-600 to-gold-500 flex items-center justify-center text-white font-bold text-[14px] font-mono shadow-sm">
           QR
         </div>
         <div class="flex-1 min-w-0 font-sans">
-          <p class="text-xs font-bold text-white truncate font-display">Quadra Operations</p>
-          <p class="text-[13px] text-slate-500 font-mono truncate">Role aktif: <span id="roleBadgeHeader">Superadmin</span></p>
+          <p class="text-[14px] font-bold text-white truncate font-display">Quadra Operations</p>
+          <p class="text-[14px] text-slate-500 font-mono truncate">Role aktif: <span id="roleBadgeHeader">Superadmin</span></p>
         </div>
         <button onclick="showToast('Sesi operasional disinkronkan')" title="Kalibrasi Mesin" class="text-slate-400 hover:text-cyan-400 transition">
           <i data-lucide="sliders" class="w-4 h-4"></i>
@@ -378,9 +378,9 @@
   <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
 
     <!-- Top Announcement Bar -->
-    <div class="bg-slate-950 text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-cyan-900/40 font-mono gap-1">
+    <div class="bg-slate-950 text-slate-300 text-[14px] py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-cyan-900/40 font-mono gap-1">
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center px-2 py-0.5 rounded text-[13px] font-bold bg-amber-400/15 text-amber-200 border border-amber-400/40">QUADRA POS &amp; ERP</span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[14px] font-bold bg-amber-400/15 text-amber-200 border border-amber-400/40">QUADRA POS &amp; ERP</span>
         <span>Denah 10 Meja Live • Stock Opname Harian • Sinkron Real-Time dengan Customer Site</span>
       </div>
       <div class="flex items-center gap-3 text-[14px] text-slate-400">
@@ -400,14 +400,14 @@
           <h1 class="text-slate-900 font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
             <span id="currentViewTitle">Report Summary &amp; Profit / Loss</span>
           </h1>
-          <p class="text-slate-500 text-xs hidden sm:block font-mono">Floor Plan 10 Meja, POS Dual Display, Stock Opname &amp; Sync Real-Time</p>
+          <p class="text-slate-500 text-[14px] hidden sm:block font-mono">Floor Plan 10 Meja, POS Dual Display, Stock Opname &amp; Sync Real-Time</p>
         </div>
       </div>
 
       <!-- Quick Actions Right -->
-      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-xs">
+      <div class="flex items-center gap-2 sm:gap-3.5 font-mono text-[14px]">
         <!-- Live Shift Indicator -->
-        <div class="hidden lg:flex items-center bg-stone-100 border border-stone-200 px-3 py-1.5 rounded-xl text-slate-600">
+        <div class="hidden lg:flex items-center bg-stone-100 border border-stone-200 px-3 py-1.5 rounded-xl text-slate-600 text-[14px]">
           <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
           <span>Antrean Customer: <strong class="text-slate-900" id="badgeQueueCount">0 Antrean</strong></span>
         </div>
@@ -429,19 +429,19 @@
           <!-- Notification Dropdown Panel -->
           <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-stone-200 p-3 text-stone-700 z-50 font-sans">
             <div class="flex items-center justify-between border-b border-stone-100 pb-2 px-1">
-              <span class="font-bold text-xs font-display">Aktivitas Barista Bar</span>
-              <span class="text-[13px] font-mono text-cyan-700 font-bold">Auto-Sync</span>
+              <span class="font-bold text-[14px] font-display">Aktivitas Barista Bar</span>
+              <span class="text-[14px] font-mono text-cyan-700 font-bold">Auto-Sync</span>
             </div>
-            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-xs" id="notificationFeed">
+            <div class="space-y-2 mt-2 max-h-64 overflow-y-auto text-[14px]" id="notificationFeed">
               <div class="p-2.5 bg-cyan-50/70 rounded-xl border border-cyan-100">
                 <p class="font-bold text-slate-900">Pesanan Baru dari Customer Site</p>
-                <p class="text-slate-500 text-[13px] font-mono">Meja 03 • Tedi Mahendra (Dine In)</p>
-                <span class="text-[12px] text-cyan-700 font-bold">1 menit lalu</span>
+                <p class="text-slate-500 text-[14px] font-mono">Meja 03 • Tedi Mahendra (Dine In)</p>
+                <span class="text-[13px] text-cyan-700 font-bold">1 menit lalu</span>
               </div>
               <div class="p-2.5 bg-gold-50/80 rounded-xl border border-gold-200">
                 <p class="font-bold text-slate-900">Stok Menipis — Perlu Restock</p>
-                <p class="text-slate-500 text-[13px] font-mono">Fresh Milk tersisa 6 L (minimum 10 L)</p>
-                <span class="text-[12px] text-gold-700 font-bold">12 menit lalu</span>
+                <p class="text-slate-500 text-[14px] font-mono">Fresh Milk tersisa 6 L (minimum 10 L)</p>
+                <span class="text-[13px] text-gold-700 font-bold">12 menit lalu</span>
               </div>
             </div>
           </div>
@@ -460,7 +460,7 @@
           <!-- KPI 1: Gross Omset -->
           <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
             <div class="flex items-center justify-between">
-              <span class="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">OMSET LAB & BAR HARI INI</span>
+              <span class="text-[14px] font-semibold uppercase tracking-[0.14em] text-slate-500">OMSET LAB & BAR HARI INI</span>
               <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold border border-cyan-200">
                 <i data-lucide="wallet" class="w-4 h-4"></i>
               </div>
@@ -476,42 +476,42 @@
           <!-- KPI 2: Total Cups Sold -->
           <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
             <div class="flex items-center justify-between">
-              <span class="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">TOTAL CANGKIR TERSEDUR</span>
+              <span class="text-[14px] font-semibold uppercase tracking-[0.14em] text-slate-500">TOTAL CANGKIR TERSEDUR</span>
               <div class="w-8 h-8 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center font-bold border border-gold-300">
                 <i data-lucide="coffee" class="w-4 h-4"></i>
               </div>
             </div>
             <div class="mt-3">
               <span class="text-2xl font-semibold text-slate-900 font-display block tabular-nums tracking-tight" id="kpiCupsSold">198 Cangkir</span>
-              <p class="text-slate-500 text-[11.5px] mt-1 tabular-nums">Kanal POS Kasir &amp; self-order customer</p>
+              <p class="text-slate-500 text-[14px] mt-1 tabular-nums">Kanal POS Kasir &amp; self-order customer</p>
             </div>
           </div>
 
           <!-- KPI 3: Total Transaksi -->
           <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
             <div class="flex items-center justify-between">
-              <span class="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">TOTAL TRANSAKSI TERCATAT</span>
+              <span class="text-[14px] font-semibold uppercase tracking-[0.14em] text-slate-500">TOTAL TRANSAKSI TERCATAT</span>
               <div class="w-8 h-8 rounded-xl bg-slate-900 text-gold-300 flex items-center justify-center font-bold">
                 <i data-lucide="receipt" class="w-4 h-4"></i>
               </div>
             </div>
             <div class="mt-3">
               <span class="text-2xl font-semibold text-gold-600 font-display block tabular-nums tracking-tight" id="kpiTotalTx">0 Transaksi</span>
-              <p class="text-slate-500 text-[11.5px] mt-1 tabular-nums">Kasir POS + self-order customer site</p>
+              <p class="text-slate-500 text-[14px] mt-1 tabular-nums">Kasir POS + self-order customer site</p>
             </div>
           </div>
 
           <!-- KPI 4: Meja Terisi (dari customer site & POS) -->
           <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
             <div class="flex items-center justify-between">
-              <span class="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">MEJA TERISI (LIVE)</span>
+              <span class="text-[14px] font-semibold uppercase tracking-[0.14em] text-slate-500">MEJA TERISI (LIVE)</span>
               <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-700 flex items-center justify-center font-bold border border-cyan-200">
                 <i data-lucide="armchair" class="w-4 h-4"></i>
               </div>
             </div>
             <div class="mt-3">
               <span class="text-2xl font-semibold text-cyan-700 font-display block tabular-nums tracking-tight" id="kpiTablesOccupied">0 / 10 Meja Terisi</span>
-              <p class="text-slate-500 text-[11.5px] mt-1 tabular-nums">Denah 10 meja real-time</p>
+              <p class="text-slate-500 text-[14px] mt-1 tabular-nums">Denah 10 meja real-time</p>
             </div>
           </div>
         </div>
@@ -519,11 +519,11 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 class="font-bold text-base text-slate-900 font-display">Laporan Laba Rugi &amp; Business Intelligence</h3>
-            <p class="text-xs text-stone-500 font-mono">Ringkasan finansial harian, produk terlaris, retensi tamu &amp; performa multi-outlet.</p>
+            <p class="text-[14px] text-stone-500 font-mono">Ringkasan finansial harian, produk terlaris, retensi tamu &amp; performa multi-outlet.</p>
           </div>
           <div class="flex items-center gap-2">
             <div id="pnlOutletSlot"></div>
-            <button onclick="exportPnLCSV()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 text-xs font-mono font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-cyan-900/50">
+            <button onclick="exportPnLCSV()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 text-[14px] font-mono font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-cyan-900/50">
               <i data-lucide="download" class="w-4 h-4"></i> Ekspor Laporan (CSV)
             </button>
           </div>
@@ -531,29 +531,29 @@
 
         <!-- P&L Statement -->
         <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-cyan-900/40 shadow-xl space-y-5">
-          <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">PROFIT &amp; LOSS — HARI INI</span>
+          <span class="text-gold-400 text-[14px] font-mono uppercase font-bold tracking-widest">PROFIT &amp; LOSS — HARI INI</span>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[13px] uppercase tracking-wider">Total Omzet</span>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+              <span class="text-slate-400 text-[14px] uppercase tracking-wider">Total Omzet</span>
               <p class="font-bold text-white text-2xl font-display tabular-nums" id="plRevenue">Rp 0</p>
             </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[13px] uppercase tracking-wider">HPP (COGS 34%)</span>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+              <span class="text-slate-400 text-[14px] uppercase tracking-wider">HPP (COGS 34%)</span>
               <p class="font-bold text-rose-300 text-2xl font-display tabular-nums" id="plCogs">Rp 0</p>
             </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[13px] uppercase tracking-wider">Beban Operasional</span>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+              <span class="text-slate-400 text-[14px] uppercase tracking-wider">Beban Operasional</span>
               <p class="font-bold text-amber-300 text-2xl font-display tabular-nums" id="plOpex">Rp 0</p>
             </div>
-            <div class="bg-gradient-to-br from-cyan-600/30 to-gold-500/20 border border-cyan-400/40 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-cyan-200 text-[13px] uppercase tracking-wider">Laba Bersih</span>
+            <div class="bg-gradient-to-br from-cyan-600/30 to-gold-500/20 border border-cyan-400/40 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+              <span class="text-cyan-200 text-[14px] uppercase tracking-wider">Laba Bersih</span>
               <p class="font-bold text-white text-2xl font-display tabular-nums" id="plNet">Rp 0</p>
-              <span class="text-emerald-300 text-[13px]">Margin <strong id="plMargin">0%</strong></span>
+              <span class="text-emerald-300 text-[14px]">Margin <strong id="plMargin">0%</strong></span>
             </div>
           </div>
 
           <div class="space-y-1.5">
-            <div class="flex justify-between text-[13px] font-mono text-slate-400"><span>Laba Kotor <strong class="text-white" id="plGross">Rp 0</strong></span><span>Nota: <strong class="text-white" id="plTxCount">0</strong> transaksi • rata-rata <strong class="text-white" id="plAvg">Rp 0</strong></span></div>
+            <div class="flex justify-between text-[14px] font-mono text-slate-400"><span>Laba Kotor <strong class="text-white" id="plGross">Rp 0</strong></span><span>Nota: <strong class="text-white" id="plTxCount">0</strong> transaksi • rata-rata <strong class="text-white" id="plAvg">Rp 0</strong></span></div>
             <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
               <div id="plGrossBar" class="bg-gradient-to-r from-cyan-500 to-gold-400 h-full rounded-full transition-all" style="width:0%"></div>
             </div>
@@ -565,7 +565,7 @@
           <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
             <div class="border-b border-cyan-50 pb-3">
               <h3 class="font-bold text-base text-slate-900 font-display">🔥 Produk Terlaris (Top Selling)</h3>
-              <p class="text-xs text-stone-500 font-mono">Berdasarkan akumulasi qty seluruh transaksi lunas.</p>
+              <p class="text-[14px] text-stone-500 font-mono">Berdasarkan akumulasi qty seluruh transaksi lunas.</p>
             </div>
             <div class="space-y-3.5" id="topSellersList"></div>
           </div>
@@ -574,20 +574,20 @@
           <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
             <div class="border-b border-cyan-50 pb-3">
               <h3 class="font-bold text-base text-slate-900 font-display">💚 Retensi Tamu &amp; Multi-Outlet</h3>
-              <p class="text-xs text-stone-500 font-mono">Metrik pelanggan &amp; sebaran outlet Quadra Coffee Lab.</p>
+              <p class="text-[14px] text-stone-500 font-mono">Metrik pelanggan &amp; sebaran outlet Quadra Coffee Lab.</p>
             </div>
             <div class="space-y-3" id="kycMetrics"></div>
             <div class="grid grid-cols-3 gap-3 pt-2">
               <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 text-center">
-                <p class="text-[13px] font-mono text-cyan-700 uppercase">Senopati</p>
+                <p class="text-[14px] font-mono text-cyan-700 uppercase">Senopati</p>
                 <p class="text-lg font-black text-slate-900 font-display">Flagship</p>
               </div>
               <div class="bg-gold-50 border border-gold-300 rounded-2xl p-3 text-center">
-                <p class="text-[13px] font-mono text-gold-700 uppercase">Kemang</p>
+                <p class="text-[14px] font-mono text-gold-700 uppercase">Kemang</p>
                 <p class="text-lg font-black text-slate-900 font-display">Slow Bar</p>
               </div>
               <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-center">
-                <p class="text-[13px] font-mono text-emerald-700 uppercase">BSD</p>
+                <p class="text-[14px] font-mono text-emerald-700 uppercase">BSD</p>
                 <p class="text-lg font-black text-slate-900 font-display">Roastery</p>
               </div>
             </div>
@@ -601,9 +601,9 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-cyan-50 pb-3">
               <div>
                 <h3 class="font-bold text-base text-slate-900 font-display">Tingkat Penjualan Cangkir per Jam (Jam Sibuk)</h3>
-                <p class="text-xs text-stone-500 font-mono">Distribusi Take Away Cepat vs Kursi Slow Bar Manual Brew</p>
+                <p class="text-[14px] text-stone-500 font-mono">Distribusi Take Away Cepat vs Kursi Slow Bar Manual Brew</p>
               </div>
-              <div class="flex items-center gap-3 text-xs font-mono">
+              <div class="flex items-center gap-3 text-[14px] font-mono">
                 <span class="inline-flex items-center gap-1.5 text-slate-500">
                   <span class="w-2.5 h-2.5 rounded-full bg-cyan-600"></span> Take Away
                 </span>
@@ -621,7 +621,7 @@
           <div class="lg:col-span-4 bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4 flex flex-col justify-between">
             <div class="border-b border-cyan-50 pb-3">
               <h3 class="font-bold text-base text-slate-900 font-display">Rasio Penjualan Menu Lab</h3>
-              <p class="text-xs text-stone-500 font-mono">Signature Cold Brew vs Slow Bar vs Latte</p>
+              <p class="text-[14px] text-stone-500 font-mono">Signature Cold Brew vs Slow Bar vs Latte</p>
             </div>
             <div class="h-56 relative flex items-center justify-center">
               <canvas id="beverageRatioChart"></canvas>
@@ -647,35 +647,35 @@
         <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-cyan-900/40 shadow-xl space-y-5" data-role-only="superadmin">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">AUDIT FINANSIAL &amp; PERFORMA OPERASIONAL</span>
+              <span class="text-gold-400 text-[14px] font-mono uppercase font-bold tracking-widest">AUDIT FINANSIAL &amp; PERFORMA OPERASIONAL</span>
               <h3 class="text-lg font-bold font-display mt-0.5">Snapshot Ringkasan Harian Quadra Coffee Lab</h3>
             </div>
-            <button onclick="switchTab('transactions')" class="bg-espresso-700/60 hover:bg-espresso-600 text-xs text-espresso-50 hover:text-white px-3.5 py-2 rounded-xl border border-espresso-500/60 transition font-bold inline-flex items-center gap-1.5">
+            <button onclick="switchTab('transactions')" class="bg-espresso-700/60 hover:bg-espresso-600 text-[14px] text-espresso-50 hover:text-white px-3.5 py-2 rounded-xl border border-espresso-500/60 transition font-bold inline-flex items-center gap-1.5">
               <span>Buka Database Transaksi</span>
               <i data-lucide="chevron-right" class="w-4 h-4 text-gold-400"></i>
             </button>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[13px] uppercase tracking-wider">Omzet Hari Ini</span>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+              <span class="text-slate-400 text-[14px] uppercase tracking-wider">Omzet Hari Ini</span>
               <p class="font-bold text-white text-lg font-display" id="auditRevenue">Rp 0</p>
-              <span class="text-emerald-400 text-[13px]">Semua kanal penjualan</span>
+              <span class="text-emerald-400 text-[14px]">Semua kanal penjualan</span>
             </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[13px] uppercase tracking-wider">Transaksi Tercatat</span>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+              <span class="text-slate-400 text-[14px] uppercase tracking-wider">Transaksi Tercatat</span>
               <p class="font-bold text-white text-lg font-display" id="auditTxCount">0</p>
-              <span class="text-cyan-300 text-[13px]">POS kasir &amp; self-order</span>
+              <span class="text-cyan-300 text-[14px]">POS kasir &amp; self-order</span>
             </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[13px] uppercase tracking-wider">Meja Terisi</span>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+              <span class="text-slate-400 text-[14px] uppercase tracking-wider">Meja Terisi</span>
               <p class="font-bold text-white text-lg font-display" id="auditTables">0 / 10</p>
-              <span class="text-gold-400 text-[13px]">Denah real-time</span>
+              <span class="text-gold-400 text-[14px]">Denah real-time</span>
             </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
-              <span class="text-slate-400 text-[13px] uppercase tracking-wider">Rata-rata / Transaksi</span>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+              <span class="text-slate-400 text-[14px] uppercase tracking-wider">Rata-rata / Transaksi</span>
               <p class="font-bold text-white text-lg font-display" id="auditAvg">Rp 0</p>
-              <span class="text-cyan-300 text-[13px]">Nilai bill rata-rata</span>
+              <span class="text-cyan-300 text-[14px]">Nilai bill rata-rata</span>
             </div>
           </div>
         </div>
@@ -690,21 +690,21 @@
           <div class="bg-white p-4 rounded-3xl border border-emerald-200 shadow-sm flex items-center gap-3">
             <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200"><i data-lucide="circle-check" class="w-5 h-5"></i></span>
             <div>
-              <span class="text-[13px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Tersedia</span>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Tersedia</span>
               <span class="text-xl font-bold text-emerald-700 font-display" id="tableStatsAvailable">0</span>
             </div>
           </div>
           <div class="bg-white p-4 rounded-3xl border border-rose-200 shadow-sm flex items-center gap-3">
             <span class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-200"><i data-lucide="users" class="w-5 h-5"></i></span>
             <div>
-              <span class="text-[13px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Terisi</span>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Terisi</span>
               <span class="text-xl font-bold text-rose-700 font-display" id="tableStatsOccupied">0</span>
             </div>
           </div>
           <div class="bg-white p-4 rounded-3xl border border-cyan-200 shadow-sm flex items-center gap-3">
             <span class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-700 flex items-center justify-center border border-cyan-200"><i data-lucide="layout-grid" class="w-5 h-5"></i></span>
             <div>
-              <span class="text-[13px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Total Meja</span>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Total Meja</span>
               <span class="text-xl font-bold text-cyan-700 font-display" id="tableStatsReserved">10</span>
             </div>
           </div>
@@ -714,9 +714,9 @@
         <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
             <h3 class="font-bold text-base text-slate-900 font-display">Denah Meja Live — Cinema Seating &amp; F&amp;B Floor Map</h3>
-            <p class="text-xs text-stone-500 font-mono">4 bar stool slow bar • 5 meja indoor lounge • 5 meja outdoor terrace. Hover untuk detail, klik meja untuk aksi cepat.</p>
+            <p class="text-[14px] text-stone-500 font-mono">4 bar stool slow bar • 5 meja indoor lounge • 5 meja outdoor terrace. Hover untuk detail, klik meja untuk aksi cepat.</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2 text-[13px] font-mono">
+          <div class="flex flex-wrap items-center gap-2 text-[14px] font-mono">
             <button onclick="setFloorFilter('all')" id="floorFilterAll" class="floor-filter-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 font-bold transition">Semua</button>
             <button onclick="setFloorFilter('available')" id="floorFilterAvailable" class="floor-filter-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-emerald-700 font-bold transition"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Tersedia</button>
             <button onclick="setFloorFilter('occupied')" id="floorFilterOccupied" class="floor-filter-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-rose-200 text-rose-700 font-bold transition"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Terisi</button>
@@ -742,7 +742,7 @@
             <div class="flex items-start justify-between border-b border-emerald-50 pb-3">
               <div>
                 <h3 class="font-bold text-base text-slate-900 font-display" id="quickModalTitle">Meja Tersedia</h3>
-                <p class="text-[13px] font-mono text-emerald-700 font-bold inline-flex items-center gap-1.5 mt-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Siap menerima tamu</p>
+                <p class="text-[14px] font-mono text-emerald-700 font-bold inline-flex items-center gap-1.5 mt-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Siap menerima tamu</p>
               </div>
               <button onclick="closeQuickTableModal()" class="text-stone-500 hover:text-rose-600 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
@@ -760,7 +760,7 @@
         <div class="bg-slate-900 text-white rounded-3xl p-6 border border-cyan-900/40 shadow-xl space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">SELF-ORDER WAVE DARI CUSTOMER SITE</span>
+              <span class="text-gold-400 text-[14px] font-mono uppercase font-bold tracking-widest">SELF-ORDER WAVE DARI CUSTOMER SITE</span>
               <h3 class="text-lg font-bold font-display mt-0.5">Pesanan Masuk Belum Selesai</h3>
             </div>
             <span class="bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[14px] font-bold px-3 py-1.5 rounded-xl font-mono" id="waveCountBadge">0 Pesanan</span>
@@ -779,21 +779,21 @@
           <div class="bg-white p-4 rounded-3xl border border-amber-200 shadow-sm flex items-center gap-3">
             <span class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200"><i data-lucide="alert-triangle" class="w-5 h-5"></i></span>
             <div>
-              <span class="text-[13px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Item Menipis</span>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Item Menipis</span>
               <span class="text-xl font-bold text-amber-700 font-display" id="stockStatsLow">0</span>
             </div>
           </div>
           <div class="bg-white p-4 rounded-3xl border border-rose-200 shadow-sm flex items-center gap-3">
             <span class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-200"><i data-lucide="package-x" class="w-5 h-5"></i></span>
             <div>
-              <span class="text-[13px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Total Selisih (Waste)</span>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Total Selisih (Waste)</span>
               <span class="text-xl font-bold text-rose-700 font-display" id="stockStatsWaste">0</span>
             </div>
           </div>
           <div class="bg-white p-4 rounded-3xl border border-emerald-200 shadow-sm flex items-center gap-3">
             <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200"><i data-lucide="clipboard-check" class="w-5 h-5"></i></span>
             <div>
-              <span class="text-[13px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Status Opname</span>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Status Opname</span>
               <span class="text-base font-bold text-emerald-700 font-display" id="stockStatsStatus">Belum Diisi</span>
             </div>
           </div>
@@ -803,15 +803,15 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cyan-50 pb-4">
             <div>
               <h3 class="font-bold text-base text-slate-900 font-display">Stock Opname Bahan Baku Harian</h3>
-              <p class="text-xs text-stone-500 font-mono">Bandingkan stok sistem vs hitungan fisik. Selisih otomatis dicatat sebagai waste.</p>
+              <p class="text-[14px] text-stone-500 font-mono">Bandingkan stok sistem vs hitungan fisik. Selisih otomatis dicatat sebagai waste.</p>
             </div>
-            <button onclick="exportStockCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+            <button onclick="exportStockCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-[14px] font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
               <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
             </button>
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs font-mono">
+            <table class="w-full text-left text-[14px] font-mono">
               <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
                 <tr>
                   <th class="py-3 px-4">BAHAN BAKU</th>
@@ -843,13 +843,13 @@
         <div class="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 border border-cyan-900/40 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div class="flex flex-wrap items-center gap-4">
             <div class="flex items-center gap-3">
-              <span class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-espresso-600 to-gold-500 flex items-center justify-center text-white font-bold text-xs font-mono">AR</span>
+              <span class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-espresso-600 to-gold-500 flex items-center justify-center text-white font-bold text-[14px] font-mono">AR</span>
               <div class="font-sans">
-                <p class="text-xs font-bold text-white font-display">Barista Ari</p>
-                <p class="text-[13px] text-slate-400 font-mono">Shift Pagi • 08:00 – 17:00 WIB</p>
+                <p class="text-[15px] font-bold text-white font-display">Barista Ari</p>
+                <p class="text-[14px] text-slate-400 font-mono">Shift Pagi • 08:00 – 17:00 WIB</p>
               </div>
             </div>
-            <span class="hidden sm:inline-flex items-center gap-1.5 text-[13px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2.5 py-1.5 rounded-xl">
+            <span class="hidden sm:inline-flex items-center gap-1.5 text-[14px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2.5 py-1.5 rounded-xl">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SHIFT AKTIF
             </span>
           </div>
@@ -873,9 +873,9 @@
             <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
               <div>
                 <h3 class="font-bold text-base text-slate-900 font-display">Kasir Barista POS Terminal</h3>
-                <p class="text-[14px] text-stone-500 font-mono">Pilih menu, atur tipe order, lalu selesaikan transaksi untuk mencetak struk kasir.</p>
+                <p class="text-[15px] text-stone-500 font-mono">Pilih menu, atur tipe order, lalu selesaikan transaksi untuk mencetak struk kasir.</p>
               </div>
-              <span class="text-[13px] font-mono font-bold bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200">POS ACTIVE</span>
+              <span class="text-[14px] font-mono font-bold bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200">POS ACTIVE</span>
             </div>
 
             <!-- Customer Data for Order -->
@@ -943,7 +943,7 @@
 
             <div class="flex items-center justify-between">
               <span class="text-[14px] font-bold text-stone-500 uppercase tracking-wider">Item dalam Tagihan</span>
-              <span class="text-[13px] font-bold bg-gold-100 text-gold-800 px-2 py-0.5 rounded border border-gold-300" id="posSelectedTableLabel">Belum dipilih</span>
+              <span class="text-[14px] font-bold bg-gold-100 text-gold-800 px-2 py-0.5 rounded border border-gold-300" id="posSelectedTableLabel">Belum dipilih</span>
             </div>
 
             <!-- Cart Table Items -->
@@ -993,10 +993,10 @@
                   <i data-lucide="qr-code" class="w-4 h-4"></i> Tampilkan QRIS Instan
                 </button>
                 <div id="posQrisBox" class="hidden p-4 bg-white border-2 border-dashed border-cyan-300 rounded-2xl text-center space-y-2">
-                  <div class="w-32 h-32 mx-auto bg-slate-900 rounded-xl flex items-center justify-center text-white font-mono text-[13px] text-center px-3">
+                  <div class="w-32 h-32 mx-auto bg-slate-900 rounded-xl flex items-center justify-center text-white font-mono text-[14px] text-center px-3">
                     QRIS SIMULASI<br>SCAN UNTUK BAYAR
                   </div>
-                  <p class="text-[13px] text-stone-500 font-mono">Quadra Coffee Lab • QRIS Instant</p>
+                  <p class="text-[14px] text-stone-500 font-mono">Quadra Coffee Lab • QRIS Instant</p>
                 </div>
               </div>
             </div>
@@ -1024,7 +1024,7 @@
       <section id="view-transactions" class="hidden space-y-6">
         
         <!-- Filter Header -->
-        <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
+        <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-[13px]">
           <div class="relative w-full md:w-80">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-500"></i>
             <input type="text" id="txSearchInput" onkeyup="filterTransactionsTable()" placeholder="Cari Nama Cup, Invoice, WhatsApp..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
@@ -1043,15 +1043,15 @@
           <div class="flex items-center justify-between border-b border-cyan-50 pb-4">
             <div>
               <h3 class="font-bold text-base text-slate-900 font-display">Database Transaksi Quadra Coffee Lab</h3>
-              <p class="text-xs text-stone-500 font-mono" id="txCountLabel">Menampilkan seluruh transaksi tersimpan</p>
+              <p class="text-[14px] text-stone-500 font-mono" id="txCountLabel">Menampilkan seluruh transaksi tersimpan</p>
             </div>
-            <button onclick="exportTransactionsCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+            <button onclick="exportTransactionsCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-[13px] font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
               <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
             </button>
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs font-mono">
+            <table class="w-full text-left text-[13px] font-mono">
               <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
                 <tr>
                   <th class="py-3 px-4">INVOICE &amp; TOKEN</th>
@@ -1094,7 +1094,7 @@
 
       <p class="text-[14px] text-stone-500 font-sans" id="itemModalDesc">-</p>
 
-      <div class="space-y-3 font-mono text-xs">
+      <div class="space-y-3 font-mono text-[13px]">
         <div>
           <label class="block font-bold text-slate-600 mb-1">Pilihan Susu</label>
           <select id="itemMilk" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
@@ -1161,7 +1161,7 @@
       </div>
 
       <div class="space-y-2">
-        <label class="block text-xs font-bold text-slate-600 font-mono">PIN Supervisor</label>
+        <label class="block text-[13px] font-bold text-slate-600 font-mono">PIN Supervisor</label>
         <input type="password" id="voidPinInput" inputmode="numeric" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter')submitVoidPin()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-center text-2xl tracking-[0.5em] text-slate-900 font-black focus:outline-none focus:ring-2 focus:ring-rose-400" />
         <p id="voidPinError" class="hidden text-[14px] text-rose-600 font-bold font-mono"></p>
       </div>
@@ -1191,17 +1191,17 @@
       <div id="printBillPreview" class="bg-stone-50 rounded-2xl p-4 overflow-x-auto"></div>
 
       <div class="grid grid-cols-2 gap-3">
-        <button onclick="printBillWithWidth('58')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-xs font-mono">
+        <button onclick="printBillWithWidth('58')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-[13px] font-mono">
           <i data-lucide="printer" class="w-4 h-4 text-cyan-300"></i> Thermal 58mm
         </button>
-        <button onclick="printBillWithWidth('80')" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-xs font-mono">
+        <button onclick="printBillWithWidth('80')" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-[13px] font-mono">
           <i data-lucide="printer" class="w-4 h-4"></i> Thermal 80mm
         </button>
       </div>
     </div>
   </div>
 
-  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-cyan-800 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-cyan-800 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-[13px] font-medium font-sans">
     <div class="w-6 h-6 rounded-full bg-cyan-600 flex items-center justify-center text-gold-300 font-bold">
       <i data-lucide="check" class="w-3.5 h-3.5"></i>
     </div>
@@ -1764,7 +1764,7 @@
         <div class="relative mb-1">
           <div class="absolute inset-x-8 -bottom-3 h-8 bg-[#5c3a21]/25 blur-2xl rounded-full pointer-events-none"></div>
           <div class="relative bg-gradient-to-b from-[#3c2415] via-[#5c3a21] to-[#2c1810] rounded-b-[100px] pt-5 pb-9 px-6 text-center shadow-[0_18px_40px_-18px_rgba(92,58,33,0.85)] border border-[#7a5230]/60">
-            <span class="inline-flex items-center gap-2 text-amber-300/90 text-[11px] font-mono uppercase font-bold tracking-[0.34em]">
+            <span class="inline-flex items-center gap-2 text-amber-300/90 text-[13px] font-mono uppercase font-bold tracking-[0.34em]">
               <i data-lucide="coffee" class="w-3.5 h-3.5"></i> Screen / Focus Point
             </span>
             <p class="mt-1.5 text-white font-display font-bold tracking-[0.16em] text-sm sm:text-base">☕ SLOW BAR &amp; ESPRESSO COUNTER AREA</p>
@@ -1910,7 +1910,7 @@
         <div class="min-w-0">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
-            <span class="text-[12px] font-mono uppercase tracking-widest text-rose-600 font-bold">Meja Terisi</span>
+            <span class="text-[13px] font-mono uppercase tracking-widest text-rose-600 font-bold">Meja Terisi</span>
           </div>
           <h3 class="font-bold text-lg text-slate-900 font-display mt-1 truncate">${t.label} <span class="text-stone-400 font-mono text-sm">(${zoneLabel})</span></h3>
           <p class="text-[13px] font-mono text-stone-600 mt-0.5">Terisi • Durasi Duduk: <strong class="text-rose-700">${seatDuration(t.seatedAt)}</strong></p>
@@ -1930,11 +1930,11 @@
           </div>
         </div>
         <div>
-          <p class="text-[12px] font-mono uppercase tracking-widest text-stone-500 font-bold mb-2">Rincian Order</p>
+          <p class="text-[13px] font-mono uppercase tracking-widest text-stone-500 font-bold mb-2">Rincian Order</p>
           <div class="space-y-1.5">
             ${items.map(i => `
             <div class="flex items-start justify-between gap-3 text-[14px] font-sans">
-              <span class="text-slate-700"><strong class="font-mono">${i.qty || 1}×</strong> ${i.name}${i.variant ? '<span class="block text-[12px] text-stone-400">' + i.variant + '</span>' : ''}</span>
+              <span class="text-slate-700"><strong class="font-mono">${i.qty || 1}×</strong> ${i.name}${i.variant ? '<span class="block text-[13px] text-stone-400">' + i.variant + '</span>' : ''}</span>
               <span class="font-mono tabular-nums text-slate-900 flex-shrink-0">${(i.price && i.qty) ? formatRupiah(i.price * i.qty) : (i.price ? formatRupiah(i.price) : '')}</span>
             </div>`).join('')}
           </div>
@@ -2476,7 +2476,7 @@
           <tr class="${low ? 'bg-amber-50/50' : ''}">
             <td class="py-3 px-4">
               <span class="font-bold text-slate-900">${s.name}</span>
-              ${low ? '<span class="ml-2 text-[12px] font-bold bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.5 rounded">MENIPIS</span>' : ''}
+              ${low ? '<span class="ml-2 text-[13px] font-bold bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.5 rounded">MENIPIS</span>' : ''}
               <span class="block text-[13px] text-stone-500">Satuan: ${s.unit} • Min: ${s.min}</span>
             </td>
             <td class="py-3 px-4 text-right font-bold text-slate-700">${s.system}</td>
@@ -2796,7 +2796,7 @@
       const colors = { cyan: 'bg-cyan-50/70 border-cyan-100', gold: 'bg-gold-50/80 border-gold-200', rose: 'bg-rose-50/80 border-rose-200' };
       const div = document.createElement('div');
       div.className = `p-2.5 rounded-xl border ${colors[tone] || colors.cyan}`;
-      div.innerHTML = `<p class="font-bold text-slate-900">${title}</p><p class="text-slate-500 text-[13px] font-mono">${detail}</p><span class="text-[12px] text-cyan-700 font-bold">baru saja</span>`;
+      div.innerHTML = `<p class="font-bold text-slate-900">${title}</p><p class="text-slate-500 text-[13px] font-mono">${detail}</p><span class="text-[13px] text-cyan-700 font-bold">baru saja</span>`;
       feed.insertBefore(div, feed.firstChild);
     }
 
@@ -2831,14 +2831,14 @@
       const pending = syncOrders().filter(o => o.orderStatus !== 'COMPLETED');
       const badge = document.getElementById('waveCountBadge');
       if (badge) badge.innerText = pending.length + ' Pesanan';
-      if (!pending.length) { wrap.innerHTML = '<p class="text-xs text-slate-400 font-mono col-span-3">Belum ada pesanan masuk dari customer site.</p>'; return; }
+      if (!pending.length) { wrap.innerHTML = '<p class="text-[13px] text-slate-400 font-mono col-span-3">Belum ada pesanan masuk dari customer site.</p>'; return; }
       wrap.innerHTML = pending.map(o => `
         <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-[13px] font-mono font-bold text-gold-400">${o.orderId}</span>
-            <span class="text-[12px] font-mono text-slate-400">${o.orderType === 'take_away' ? 'Take Away' : (o.tableNumber || 'Dine In')}</span>
+            <span class="text-[13px] font-mono text-slate-400">${o.orderType === 'take_away' ? 'Take Away' : (o.tableNumber || 'Dine In')}</span>
           </div>
-          <p class="text-xs font-bold text-white font-display truncate">${o.customerName || o.customer || 'Tamu'}</p>
+          <p class="text-[13px] font-bold text-white font-display truncate">${o.customerName || o.customer || 'Tamu'}</p>
           <p class="text-[13px] font-mono text-slate-300 truncate">${(o.items || []).map(i => `${i.qty || 1}x ${i.name}`).join(', ') || '-'}</p>
           <div class="flex items-center justify-between pt-1 border-t border-slate-700">
             <span class="text-[14px] font-bold text-cyan-300">${formatRupiah(o.totalAmount || 0)}</span>
