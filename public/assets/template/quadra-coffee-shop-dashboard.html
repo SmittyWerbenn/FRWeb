@@ -855,10 +855,10 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <span class="text-[13px] font-mono font-bold text-slate-400 uppercase tracking-wider">Tampilan Layar:</span>
+            <span class="text-[14px] font-mono font-bold text-slate-400 uppercase tracking-wider">Tampilan Layar:</span>
             <div class="flex items-center gap-1.5 bg-slate-950 border border-slate-700 rounded-xl p-1">
-              <button id="dispCashierBtn" onclick="setPOSDisplay('cashier')" class="px-3 py-1.5 rounded-lg font-bold text-[14px] transition font-mono bg-cyan-600 text-white shadow-sm">💻 Layar Kasir</button>
-              <button id="dispCustomerBtn" onclick="setPOSDisplay('customer')" class="px-3 py-1.5 rounded-lg font-bold text-[14px] transition font-mono text-slate-400 hover:text-white">👀 Layar Pelanggan</button>
+              <button id="dispCashierBtn" onclick="setPOSDisplay('cashier')" class="px-3 py-1.5 rounded-lg font-bold text-[15px] transition flex items-center gap-1.5 bg-cyan-600 text-white shadow-sm"><i data-lucide="monitor" class="w-4 h-4"></i> Layar Kasir</button>
+              <button id="dispCustomerBtn" onclick="setPOSDisplay('customer')" class="px-3 py-1.5 rounded-lg font-bold text-[15px] transition flex items-center gap-1.5 text-slate-400 hover:text-white"><i data-lucide="eye" class="w-4 h-4"></i> Layar Pelanggan</button>
             </div>
             <button onclick="openVoidPin()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-400/40 px-3 py-2 rounded-xl text-[14px] font-mono font-bold transition flex items-center gap-1.5">
               <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Void Transaksi
@@ -873,13 +873,13 @@
             <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
               <div>
                 <h3 class="font-bold text-base text-slate-900 font-display">Kasir Barista POS Terminal</h3>
-                <p class="text-xs text-stone-500 font-mono">Pilih menu, atur tipe order, lalu selesaikan transaksi untuk mencetak struk kasir.</p>
+                <p class="text-[14px] text-stone-500 font-mono">Pilih menu, atur tipe order, lalu selesaikan transaksi untuk mencetak struk kasir.</p>
               </div>
               <span class="text-[13px] font-mono font-bold bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200">POS ACTIVE</span>
             </div>
 
             <!-- Customer Data for Order -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[15px] font-mono">
               <div>
                 <label class="block font-bold text-slate-600 mb-1">Nama Tamu / Pemesan</label>
                 <input type="text" id="posCustomerName" placeholder="Nama tamu" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
@@ -894,7 +894,7 @@
             <div class="space-y-2.5">
               <div class="relative">
                 <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-500"></i>
-                <input type="text" id="posMenuSearch" oninput="onPOSSearchInput(this.value)" placeholder="Cari menu kopi, pastry, atau makanan..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                <input type="text" id="posMenuSearch" oninput="onPOSSearchInput(this.value)" placeholder="Cari menu kopi, pastry, atau makanan..." class="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-[15px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
               </div>
               <div class="flex flex-wrap gap-2" id="posCategoryFilters">
                 <!-- Populated via JS -->
@@ -903,7 +903,7 @@
 
             <!-- Quick Add Menu Grid -->
             <div>
-              <span class="text-xs font-bold text-slate-600 mb-2 block font-mono">Katalog Menu (klik untuk customizer):</span>
+              <span class="text-[14px] font-bold text-slate-600 mb-2 block font-mono">Katalog Menu (klik untuk customizer):</span>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="posMenuSelectionGrid">
                 <!-- Injected via JS -->
               </div>
@@ -911,11 +911,14 @@
           </div>
 
           <!-- Right: Cart Summary & Payment (5 Cols) -->
-          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-cyan-100 shadow-xl space-y-5 font-mono text-xs">
+          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-cyan-100 shadow-xl space-y-5 font-mono text-[15px]">
+
+            <!-- Dual Display Panel (Layar Kasir / Layar Pelanggan) — di atas kolom agar toggle terlihat langsung -->
+            <div id="posDisplayPanel" class="bg-slate-900 text-white rounded-2xl p-5 border border-cyan-900/40 shadow-xl"></div>
 
             <!-- Tipe Order & Pilih Meja -->
             <div class="space-y-2.5 pb-3 border-b border-cyan-50">
-              <span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Tipe Pesanan</span>
+              <span class="text-[14px] font-bold text-stone-500 uppercase tracking-wider">Tipe Pesanan</span>
               <div class="flex items-center gap-2">
                 <button id="posTypeDineIn" onclick="setPOSOrderType('dine_in')" class="flex-1 px-3 py-2 rounded-xl font-bold text-[14px] transition font-mono">Dine In</button>
                 <button id="posTypeTakeAway" onclick="setPOSOrderType('take_away')" class="flex-1 px-3 py-2 rounded-xl font-bold text-[14px] transition font-mono">Take Away</button>
@@ -926,20 +929,20 @@
                 <select id="posTableSelect" onchange="onPOSTableSelect(this.value)" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
                   <!-- Injected via JS -->
                 </select>
-                <p class="text-[13px]" id="posTableInfo"></p>
+                <p class="text-[14px]" id="posTableInfo"></p>
               </div>
 
               <div id="posQueueRow" class="hidden">
                 <label class="block font-bold text-slate-600 mt-1">Nomor Antrean (Take Away)</label>
                 <div class="w-full bg-gold-50 border border-gold-300 rounded-xl p-3 text-center">
                   <span class="text-2xl font-black text-gold-700 font-display" id="posQueueNumber">A-01</span>
-                  <p class="text-[13px] text-stone-500 mt-0.5">Nomor antrean otomatis untuk pesanan bawa pulang</p>
+                  <p class="text-[14px] text-stone-500 mt-0.5">Nomor antrean otomatis untuk pesanan bawa pulang</p>
                 </div>
               </div>
             </div>
 
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Item dalam Tagihan</span>
+              <span class="text-[14px] font-bold text-stone-500 uppercase tracking-wider">Item dalam Tagihan</span>
               <span class="text-[13px] font-bold bg-gold-100 text-gold-800 px-2 py-0.5 rounded border border-gold-300" id="posSelectedTableLabel">Belum dipilih</span>
             </div>
 
@@ -970,11 +973,11 @@
 
             <!-- Metode Pembayaran -->
             <div class="space-y-2.5">
-              <span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Metode Pembayaran</span>
+              <span class="text-[14px] font-bold text-stone-500 uppercase tracking-wider">Metode Pembayaran</span>
               <div class="flex items-center gap-2">
-                <button id="posPayCash" onclick="setPOSPaymentMethod('Cash')" class="pos-pay-btn flex-1 px-2 py-2 rounded-xl font-bold text-[14px] transition font-mono">Tunai</button>
-                <button id="posPayQRIS" onclick="setPOSPaymentMethod('QRIS')" class="pos-pay-btn flex-1 px-2 py-2 rounded-xl font-bold text-[14px] transition font-mono">QRIS</button>
-                <button id="posPayEDC" onclick="setPOSPaymentMethod('EDC')" class="pos-pay-btn flex-1 px-2 py-2 rounded-xl font-bold text-[14px] transition font-mono">EDC</button>
+                <button id="posPayCash" onclick="setPOSPaymentMethod('Cash')" class="pos-pay-btn flex-1 px-2 py-2.5 rounded-xl font-bold text-[15px] transition font-mono">Tunai</button>
+                <button id="posPayQRIS" onclick="setPOSPaymentMethod('QRIS')" class="pos-pay-btn flex-1 px-2 py-2.5 rounded-xl font-bold text-[15px] transition font-mono">QRIS</button>
+                <button id="posPayEDC" onclick="setPOSPaymentMethod('EDC')" class="pos-pay-btn flex-1 px-2 py-2.5 rounded-xl font-bold text-[15px] transition font-mono">EDC</button>
               </div>
 
               <!-- Kalkulator kembalian tunai -->
@@ -1001,11 +1004,11 @@
             <!-- Action: Cetak Struk & Selesaikan -->
             <div class="space-y-2.5 pt-1">
               <div class="flex items-center gap-2">
-                <button onclick="openPrintBillModal()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-[14px] font-mono">
-                  <i data-lucide="printer" class="w-4 h-4 text-cyan-300"></i> 🖨️ Cetak Struk
+                <button onclick="openPrintBillModal()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-[15px] font-mono">
+                  <i data-lucide="printer" class="w-4 h-4 text-cyan-300"></i> Cetak Struk
                 </button>
-                <button onclick="completePOSOrder()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 active:scale-95 font-sans border border-emerald-500">
-                  <i data-lucide="check-circle" class="w-4 h-4"></i> ✅ Selesaikan
+                <button onclick="completePOSOrder()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 active:scale-95 text-[15px] font-sans border border-emerald-500">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i> Selesaikan
                 </button>
               </div>
             </div>
@@ -1013,9 +1016,7 @@
 
         </div>
 
-        <!-- Dual Display Panel (Layar Kasir / Layar Pelanggan) -->
-        <div id="posDisplayPanel" class="bg-slate-900 text-white rounded-3xl p-6 border border-cyan-900/40 shadow-xl"></div>
-
+        <!-- Dual Display Panel dipindah ke dalam kolom cart agar terlihat saat toggle diklik -->
       </section>
       <!-- ==================== VIEW 6: LABA RUGI & BUSINESS INTELLIGENCE (SUPERADMIN) ==================== -->
       <!-- VIEW ANALYTICS sudah digabung ke Report Summary & Profit / Loss (menu tunggal) -->
@@ -2055,8 +2056,8 @@
       if (!wrap) return;
       wrap.innerHTML = POS_CATEGORIES.map(cat => {
         const active = cat === posMenuCategoryFilter;
-        const label = cat === 'Promo' ? '🔥 Promo' : cat;
-        return `<button onclick="setPOSCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-[14px] font-mono font-bold transition border ${active ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'}">${label}</button>`;
+        const label = cat === 'Promo' ? 'Promo Spesial' : cat;
+        return `<button onclick="setPOSCategory('${cat}')" class="px-3.5 py-2 rounded-xl text-[15px] font-mono font-bold transition border ${active ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'}">${label}</button>`;
       }).join('');
     }
 
@@ -2083,12 +2084,12 @@
       const grid = document.getElementById('posMenuSelectionGrid');
       if (!grid) return;
       const list = posFilteredMenu();
-      if (!list.length) { grid.innerHTML = '<p class="text-xs text-stone-500 font-mono col-span-2">Menu tidak ditemukan.</p>'; return; }
+      if (!list.length) { grid.innerHTML = '<p class="text-[14px] text-stone-500 font-mono col-span-2 py-3">Menu tidak ditemukan.</p>'; return; }
       grid.innerHTML = list.map(m => `
         <button onclick="openItemCustomizer('${m.id}')" class="text-left bg-stone-50 hover:bg-cyan-50 border border-stone-200 hover:border-cyan-300 rounded-2xl p-3 transition space-y-1">
           <div class="flex items-start justify-between gap-2">
             <span class="text-[17px] font-bold text-slate-900 leading-tight font-sans">${m.name}</span>
-            <span class="text-[13px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-1.5 py-0.5 rounded whitespace-nowrap">${m.category === 'Promo' ? '🔥 Promo' : m.category}</span>
+            <span class="text-[13px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-1.5 py-0.5 rounded whitespace-nowrap">${m.category}</span>
           </div>
           <p class="text-[15px] text-stone-500 leading-snug">${m.desc}</p>
           <p class="text-[19px] font-black text-cyan-800 font-mono">${formatRupiah(m.price)}</p>
@@ -2188,9 +2189,9 @@
           return `
             <div class="flex items-start justify-between gap-2 pt-2.5">
               <div class="min-w-0">
-                <p class="font-bold text-slate-900 text-[15px] truncate">${it.name}</p>
-                <p class="text-[14px] text-stone-500 truncate">${it.variant || '-'}${it.note ? ' • ' + it.note : ''}</p>
-                <p class="text-[14px] text-cyan-700 font-bold tabular-nums">${formatRupiah(it.price)} × ${it.qty}</p>
+                <p class="font-bold text-slate-900 text-[16px] truncate">${it.name}</p>
+                <p class="text-[15px] text-stone-500 truncate">${it.variant || '-'}${it.note ? ' • ' + it.note : ''}</p>
+                <p class="text-[15px] text-cyan-700 font-bold tabular-nums">${formatRupiah(it.price)} × ${it.qty}</p>
               </div>
               <div class="flex items-center gap-1.5 flex-shrink-0">
                 <button onclick="changePOSQty(${i},-1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-600 font-bold text-[15px]">−</button>
@@ -2225,7 +2226,7 @@
         const btn = document.getElementById('posPay' + m);
         if (!btn) return;
         const active = m === method;
-        btn.className = `pos-pay-btn flex-1 px-2 py-2 rounded-xl font-bold text-[14px] transition font-mono ${active ? 'bg-cyan-600 text-white border border-cyan-500' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`;
+        btn.className = `pos-pay-btn flex-1 px-2 py-2.5 rounded-xl font-bold text-[15px] transition font-mono ${active ? 'bg-cyan-600 text-white border border-cyan-500' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`;
       });
       const cashRow = document.getElementById('posCashRow');
       const qrisPanel = document.getElementById('posQrisPanel');
@@ -2265,11 +2266,14 @@
       posDisplayMode = mode;
       const c = document.getElementById('dispCashierBtn');
       const p = document.getElementById('dispCustomerBtn');
-      const on = 'px-3 py-1.5 rounded-lg font-bold text-[14px] transition font-mono bg-cyan-600 text-white shadow-sm';
-      const off = 'px-3 py-1.5 rounded-lg font-bold text-[14px] transition font-mono text-slate-400 hover:text-white';
-      if (c) c.className = mode === 'cashier' ? on : off;
-      if (p) p.className = mode === 'customer' ? on : off;
+      const base = 'px-3 py-1.5 rounded-lg font-bold text-[15px] transition flex items-center gap-1.5';
+      if (c) c.className = `${base} ${mode === 'cashier' ? 'bg-cyan-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`;
+      if (p) p.className = `${base} ${mode === 'customer' ? 'bg-cyan-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`;
       renderPOSDisplay();
+      const box = document.getElementById('posDisplayPanel');
+      if (box && mode === 'customer' && box.scrollIntoView) {
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
 
     function renderPOSDisplay() {
@@ -2278,24 +2282,25 @@
       const calc = currentPOSCalc();
       if (posDisplayMode === 'cashier') {
         box.innerHTML = `
-          <p class="text-[13px] font-mono uppercase tracking-widest text-slate-400">Layar Kasir — Ringkasan Transaksi</p>
-          <p class="text-3xl font-black font-display text-white mt-1">${formatRupiah(calc.total)}</p>
-          <div class="flex flex-wrap gap-4 mt-2 text-[14px] font-mono text-slate-300">
+          <p class="text-[14px] font-mono uppercase tracking-widest text-slate-400">Layar Kasir — Ringkasan Transaksi</p>
+          <p class="text-4xl font-black font-display text-white mt-1">${formatRupiah(calc.total)}</p>
+          <div class="flex flex-wrap gap-x-5 gap-y-1.5 mt-3 text-[16px] font-mono text-slate-300">
             <span>Subtotal: <strong class="text-white">${formatRupiah(calc.subtotal)}</strong></span>
             <span>PB1: <strong class="text-white">${formatRupiah(calc.tax)}</strong></span>
             <span>Service: <strong class="text-white">${formatRupiah(calc.service)}</strong></span>
             <span>Items: <strong class="text-white">${posCart.reduce((n, i) => n + i.qty, 0)}</strong></span>
           </div>`;
       } else {
-        const lines = posCart.map(i => `<div class="flex justify-between text-[14px] font-mono text-slate-200"><span>${i.qty}× ${i.name}</span><span>${formatRupiah(i.price * i.qty)}</span></div>`).join('') || '<p class="text-[14px] font-mono text-slate-400">Belum ada item.</p>';
+        const lines = posCart.map(i => `<div class="flex justify-between text-[16px] font-mono text-slate-200"><span>${i.qty}× ${i.name}</span><span>${formatRupiah(i.price * i.qty)}</span></div>`).join('') || '<p class="text-[16px] font-mono text-slate-400">Belum ada item.</p>';
         box.innerHTML = `
-          <p class="text-[13px] font-mono uppercase tracking-widest text-slate-400">Layar Pelanggan — Total Pesanan Anda</p>
-          <div class="mt-2 space-y-1 max-h-28 overflow-y-auto">${lines}</div>
-          <div class="flex items-end justify-between mt-3 pt-2 border-t border-slate-700">
-            <span class="text-[14px] font-mono text-slate-300">TOTAL</span>
-            <span class="text-3xl font-black font-display text-gold-300">${formatRupiah(calc.total)}</span>
+          <p class="text-[14px] font-mono uppercase tracking-widest text-slate-400">Layar Pelanggan — Total Pesanan Anda</p>
+          <div class="mt-2.5 space-y-1.5 max-h-36 overflow-y-auto">${lines}</div>
+          <div class="flex items-end justify-between mt-3 pt-3 border-t border-slate-700">
+            <span class="text-[16px] font-mono text-slate-300">TOTAL</span>
+            <span class="text-4xl font-black font-display text-gold-300">${formatRupiah(calc.total)}</span>
           </div>`;
       }
+      if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
     }
 
     // ==================== SELESAIKAN PESANAN & CETAK ====================
