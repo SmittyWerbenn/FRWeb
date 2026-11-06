@@ -313,10 +313,10 @@
       </div>
 
       <!-- Navigation Tabs (RBAC: menu disaring sesuai role aktif) -->
-      <nav class="p-3 space-y-1.5 font-medium text-xs font-mono">
+      <nav class="p-3 space-y-1.5 font-medium text-[15px] font-sans">
         <button onclick="switchTab('overview')" id="tab-overview" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-amber-200 bg-amber-900/40 border-l-4 border-amber-500 shadow-sm">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-          <span>Overview &amp; Lab Analytics</span>
+          <span>Report Summary &amp; Profit / Loss</span>
         </button>
 
         <button onclick="switchTab('transactions')" id="tab-transactions" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
@@ -398,7 +398,7 @@
         </button>
         <div>
           <h1 class="text-slate-900 font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
-            <span id="currentViewTitle">Overview & Lab Analytics</span>
+            <span id="currentViewTitle">Report Summary &amp; Profit / Loss</span>
           </h1>
           <p class="text-slate-500 text-xs hidden sm:block font-mono">Floor Plan 10 Meja, POS Dual Display, Stock Opname &amp; Sync Real-Time</p>
         </div>
@@ -501,24 +501,7 @@
             </div>
           </div>
 
-          <!-- KPI 4: Extraction Consistency TDS -->
-          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
-            <div class="flex items-center justify-between">
-              <span class="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">KONSISTENSI EKSTRAKSI (TDS)</span>
-              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-200">
-                <i data-lucide="activity" class="w-4 h-4"></i>
-              </div>
-            </div>
-            <div class="mt-3">
-              <span class="text-2xl font-semibold text-slate-900 font-display block tabular-nums tracking-tight">1.35% (98% Acc)</span>
-              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
-                <div class="bg-cyan-600 h-full rounded-full" style="width: 98%"></div>
-              </div>
-              <p class="text-stone-500 text-[13px] mt-1 tracking-wide">Rentang SCA Golden Cup Standard</p>
-            </div>
-          </div>
-
-          <!-- KPI 5: Meja Terisi (dari customer site & POS) -->
+          <!-- KPI 4: Meja Terisi (dari customer site & POS) -->
           <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
             <div class="flex items-center justify-between">
               <span class="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">MEJA TERISI (LIVE)</span>
@@ -1035,7 +1018,7 @@
 
       </section>
       <!-- ==================== VIEW 6: LABA RUGI & BUSINESS INTELLIGENCE (SUPERADMIN) ==================== -->
-      <!-- VIEW ANALYTICS sudah digabung ke Overview (menu tunggal: Overview & Lab Analytics) -->
+      <!-- VIEW ANALYTICS sudah digabung ke Report Summary & Profit / Loss (menu tunggal) -->
       <!-- ==================== VIEW 7: TRANSAKSI & EXPORT CSV ==================== -->
       <section id="view-transactions" class="hidden space-y-6">
         
@@ -1615,7 +1598,7 @@
       }
 
       const titles = {
-        overview: "Overview & Lab Analytics",
+        overview: "Report Summary & Profit / Loss",
         tables: "Denah Meja Live",
         pos: "Kasir Barista POS",
         stock: "Stock Opname Bahan Baku",
@@ -1630,7 +1613,7 @@
         const btn = document.getElementById(`tab-${k}`);
         if (btn) {
           const rbacHidden = !hasAccess(k);
-          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800 font-mono";
+          btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800 font-sans";
           btn.classList.toggle('hidden', rbacHidden);
         }
       });
@@ -1640,7 +1623,7 @@
 
       const activeBtn = document.getElementById(`tab-${tabKey}`);
       if (activeBtn) {
-        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-amber-200 bg-amber-900/40 border-l-4 border-amber-500 shadow-sm font-mono";
+        activeBtn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition font-semibold text-amber-200 bg-amber-900/40 border-l-4 border-amber-500 shadow-sm font-sans";
         activeBtn.classList.remove('hidden');
       }
 
