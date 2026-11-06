@@ -1308,9 +1308,10 @@
   const TABLES_KEY = 'quadra_tables_state';
   const CHANNEL_NAME = 'quadra_sync_channel';
 
-  const AREA_LABEL = { indoor: 'Indoor', outdoor: 'Outdoor', slowbar: 'Slow Bar' };
-  const TABLE_AREA = { 1: 'indoor', 2: 'indoor', 3: 'indoor', 4: 'indoor', 5: 'indoor', 6: 'indoor', 7: 'indoor', 8: 'indoor', 9: 'indoor', 10: 'indoor', 11: 'outdoor', 12: 'outdoor', 13: 'outdoor', 14: 'outdoor', 15: 'outdoor', 16: 'outdoor', 17: 'outdoor', 18: 'outdoor', 19: 'slowbar', 20: 'slowbar', 21: 'slowbar', 22: 'slowbar', 23: 'slowbar', 24: 'slowbar', 25: 'slowbar' };
-  const TABLE_CAPACITY = { 1: 2, 2: 2, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 2, 10: 2, 11: 4, 12: 4, 13: 4, 14: 4, 15: 2, 16: 2, 17: 6, 18: 6, 19: 1, 20: 1, 21: 1, 22: 1, 23: 1, 24: 1, 25: 1 };
+  const AREA_LABEL = { indoor: 'Indoor', outdoor: 'Terrace', slowbar: 'Bar Counter' };
+  /* Denah 10 meja — identik dengan dashboard admin (Quadra Coffee Lab). */
+  const TABLE_AREA = { 1: 'slowbar', 2: 'slowbar', 3: 'indoor', 4: 'indoor', 5: 'indoor', 6: 'indoor', 7: 'indoor', 8: 'outdoor', 9: 'outdoor', 10: 'outdoor' };
+  const TABLE_CAPACITY = { 1: 2, 2: 2, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 2, 10: 6 };
   const ORDER_STATUS_FLOW = ['NEW', 'PREPARING', 'SERVED', 'COMPLETED'];
   const ORDER_STATUS_LABEL = { NEW: 'Pesanan Masuk', PREPARING: 'Sedang Dibuat', SERVED: 'Siap / Disajikan', COMPLETED: 'Selesai' };
   const TABLE_STATUS_LABEL = { available: 'Tersedia', occupied: 'Terisi', reserved: 'Dipesan', cleaning: 'Dibersihkan' };
@@ -1488,7 +1489,7 @@
       subscribe: function (handler) {
         if (channel) channel.addEventListener('message', function (ev) { handler(ev.data || {}); });
         window.addEventListener('storage', function (ev) {
-          if (!ev.key || [ORDERS_KEY, TABLES_KEY, 'quadra_sync_ping'].indexOf(ev.key) < 0) return;
+          if (!ev.key || [ORDERS_KEY, TABLES_KEY, 'quadra_reservations', 'quadra_sync_ping'].indexOf(ev.key) < 0) return;
           handler({ type: ev.key === 'quadra_sync_ping' ? (safeParse(ev.newValue, {}) || {}).type || 'EXTERNAL_CHANGE' : 'EXTERNAL_CHANGE', storageKey: ev.key, source: 'storage' });
         });
       },
@@ -2028,9 +2029,9 @@
   const MENU_BY_ID = MENU.reduce(function (acc, item) { acc[item.id] = item; return acc; }, {});
 
   const AREAS = {
-    indoor: { label: 'Indoor', from: 1, to: 10 },
-    outdoor: { label: 'Outdoor', from: 11, to: 18 },
-    slowbar: { label: 'Slow Bar', from: 19, to: 25 }
+    indoor: { label: 'Indoor', from: 1, to: 7 },
+    outdoor: { label: 'Terrace', from: 8, to: 10 },
+    slowbar: { label: 'Bar Counter', from: 1, to: 2 }
   };
 
   const ROAST_LABEL = { light: 'Light · floral', medium: 'Medium · balanced', dark: 'Dark · cacao' };
@@ -2072,9 +2073,10 @@
     try { if (navigator.vibrate) navigator.vibrate(ms || 8); } catch (e) { /* noop */ }
   }
   function areaOf(n) {
+    /* 1-2 Bar Counter, 3-7 Indoor, 8-10 Terrace — selaras denah admin. */
+    if (n <= AREAS.slowbar.to) return 'slowbar';
     if (n <= AREAS.indoor.to) return 'indoor';
-    if (n <= AREAS.outdoor.to) return 'outdoor';
-    return 'slowbar';
+    return 'outdoor';
   }
   function tableLabel(n) {
     return n ? 'Meja ' + pad(n) : '';
@@ -2095,7 +2097,7 @@
       const data = JSON.parse(raw);
       if (!data || typeof data !== 'object') return;
       if (data.mode === 'takeaway' || data.mode === 'dinein') state.mode = data.mode;
-      if (Number.isInteger(data.table) && data.table >= 1 && data.table <= 25) state.table = data.table;
+      if (Number.isInteger(data.table) && data.table >= 1 && data.table <= 10) state.table = data.table;
       if (data.area && AREAS[data.area]) state.area = data.area;
       if (data.roast && ROAST_LABEL[data.roast]) state.roast = data.roast;
       if (Array.isArray(data.cart)) {
