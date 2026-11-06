@@ -312,15 +312,9 @@
           <span class="ml-auto bg-slate-800 text-stone-300 text-[10px] font-mono px-1.5 py-0.5 rounded" id="badgeBeanLots">5 Lot</span>
         </button>
 
-        <button onclick="switchTab('scanner')" id="tab-scanner" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
-          <i data-lucide="scan" class="w-4 h-4"></i>
-          <span>Pickup Bar Scanner</span>
-          <span class="w-2 h-2 rounded-full bg-cyan-400 ml-auto animate-ping"></span>
-        </button>
-
         <button onclick="switchTab('pos')" id="tab-pos" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
           <i data-lucide="calculator" class="w-4 h-4"></i>
-          <span>Kasir POS & WA Generator</span>
+          <span>Kasir Barista POS</span>
         </button>
 
         <button onclick="switchTab('transactions')" id="tab-transactions" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
@@ -677,72 +671,7 @@
 
       </section>
 
-      <!-- ==================== VIEW 5: PICKUP BAR SCANNER ==================== -->
-      <section id="view-scanner" class="hidden space-y-6">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <!-- Left: Optical Barcode Scanner Simulator (7 Cols) -->
-          <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-3xl border border-cyan-100 shadow-sm space-y-6">
-            <div class="flex items-center justify-between border-b border-cyan-50 pb-4">
-              <div>
-                <h3 class="font-bold text-base text-slate-900 font-display flex items-center gap-2">
-                  <i data-lucide="scan" class="w-5 h-5 text-cyan-600"></i>
-                  Barista Pickup Barcode Scanner Validator
-                </h3>
-                <p class="text-xs text-stone-500 font-mono">Pindai barcode cangkir takeaway atau pass reservasi Slow Bar saat tamu mengambil kopi</p>
-              </div>
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 text-xs font-mono font-bold border border-cyan-200">
-                <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span> SCANNER READY
-              </span>
-            </div>
-
-            <!-- Optical Sensor Graphic -->
-            <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
-              <div class="w-56 h-36 border-2 border-dashed border-cyan-400/60 rounded-2xl relative flex items-center justify-center p-4 bg-slate-800/40">
-                <div class="w-full h-0.5 bg-cyan-400 absolute top-1/2 -translate-y-1/2 shadow-lg shadow-cyan-400 animate-pulse"></div>
-                <i data-lucide="qr-code" class="w-16 h-16 text-slate-500 opacity-60"></i>
-              </div>
-              <p class="text-slate-300 text-xs font-mono mt-4">Posisikan Barcode Tiket (Cth: <strong>CUP-BAR-8821</strong> atau <strong>SLOW-STOOL-02</strong>)</p>
-            </div>
-
-            <!-- Manual Barcode Input -->
-            <div class="space-y-3 font-mono text-xs">
-              <label class="block font-bold text-slate-700">Input Manual Token Barcode:</label>
-              <div class="flex gap-2">
-                <input type="text" id="scannerTokenInput" value="CUP-BAR-8821" placeholder="Masukkan token barcode..." class="flex-1 bg-stone-50 px-4 py-2.5 rounded-xl border border-stone-200 font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-                <button onclick="executePickupScan()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md shadow-cyan-600/20 active:scale-95 font-sans">
-                  <i data-lucide="check" class="w-4 h-4 text-gold-300"></i> Validasi Ambil
-                </button>
-              </div>
-              <p class="text-[11px] text-stone-400 font-sans">Preset token pengujian cepat: 
-                <span onclick="setScannerVal('CUP-BAR-8821')" class="underline cursor-pointer text-cyan-600 font-mono font-bold">CUP-BAR-8821 (Tedi M - Aerocano)</span> • 
-                <span onclick="setScannerVal('SLOW-STOOL-02')" class="underline cursor-pointer text-gold-600 font-mono font-bold">SLOW-STOOL-02 (Nadia H - Slow Bar Stool 02)</span> •
-                <span onclick="setScannerVal('INVALID-CUP-000')" class="underline cursor-pointer text-rose-600 font-mono font-bold">INVALID-CUP-000 (Tidak Ditemukan)</span>
-              </p>
-            </div>
-
-            <!-- Scanner Feedback Result Card -->
-            <div id="pickupScanFeedbackCard" class="hidden p-5 rounded-2xl border transition-all duration-300 font-mono">
-              <!-- Dynamically populated via JS -->
-            </div>
-          </div>
-
-          <!-- Right: Live Pickup Bar Audit Logs (5 Cols) -->
-          <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4 font-mono">
-            <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
-              <h3 class="font-bold text-sm text-slate-900 font-display">Log Pengambilan di Pickup Counter</h3>
-              <span class="text-[10px] text-stone-400">Live Timestamp</span>
-            </div>
-
-            <div class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs" id="pickupAuditLogs">
-              <!-- Populated via JS -->
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- ==================== VIEW 6: KASIR POS & WA ORDER GENERATOR ==================== -->
+      <!-- ==================== VIEW 5: KASIR POS ==================== -->
       <section id="view-pos" class="hidden space-y-6">
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -752,7 +681,7 @@
             <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
               <div>
                 <h3 class="font-bold text-base text-slate-900 font-display">Kasir Barista POS Terminal</h3>
-                <p class="text-xs text-stone-500 font-mono">Pilih item untuk membuat struk kasir atau susun format WhatsApp Takeaway otomatis</p>
+                <p class="text-xs text-stone-500 font-mono">Pilih item untuk membuat struk kasir dan mengirim pesanan ke KDS Barista</p>
               </div>
               <span class="text-[10px] font-mono font-bold bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200">POS ACTIVE</span>
             </div>
@@ -784,7 +713,7 @@
             </div>
           </div>
 
-          <!-- Right: Cart Summary, QRIS Payment & WhatsApp Generator (5 Cols) -->
+          <!-- Right: Cart Summary & QRIS Payment (5 Cols) -->
           <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-cyan-100 shadow-xl space-y-5 font-mono text-xs">
             <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
               <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Item dalam Tagihan</span>
@@ -812,14 +741,10 @@
               </div>
             </div>
 
-            <!-- Dual Action: Print Thermal Receipt or Send WA -->
+            <!-- Action: Print Thermal Receipt -->
             <div class="space-y-2.5 pt-1">
               <button onclick="processPOSPaymentAndPrint()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
                 <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk Barista & Masuk KDS
-              </button>
-
-              <button onclick="generatePOSWhatsAppMessage()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-sm font-sans">
-                <i data-lucide="message-circle" class="w-4 h-4"></i> Kirim Format WhatsApp Takeaway
               </button>
             </div>
           </div>
@@ -985,12 +910,7 @@
       { invoice: "QDR-202610-8824", token: "CUP-BAR-8824", customer: "Agung Pratama", phone: "081722334411", type: "TAKEAWAY", itemsSummary: "1x Colombia Pink Bourbon Origami", time: "14:05 WIB", subtotal: 55000, tax: 5500, total: 60500, method: "QRIS Instant", status: "LUNAS" }
     ];
 
-    // 6. Pickup Audit Logs
-    let pickupLogs = [
-      { time: "14:08:12", token: "CUP-BAR-8824", customer: "Agung Pratama", item: "Colombia Pink Bourbon Origami", status: "BERHASIL DIAMBIL (PICKED UP)" },
-      { time: "13:55:04", token: "CUP-BAR-8819", customer: "Raffi Ahmad", item: "Kyoto Cold Drip 18-Hours", status: "BERHASIL DIAMBIL (PICKED UP)" },
-      { time: "13:40:22", token: "INVALID-CUP", customer: "Unknown Visitor", item: "-", status: "DITOLAK (TIDAK DITEMUKAN)" }
-    ];
+    // 6. (Pickup audit logs dihapus bersama fitur Pickup Bar Scanner)
 
     /* ============================================================
        SINKRONISASI REAL-TIME DENGAN CUSTOMER SITE
@@ -1111,14 +1031,13 @@
         tables: "Status Meja Real-Time",
         slowbar: "Slow Bar 4-Seat Counter Scheduler",
         inventory: "Single Origin & Roast Micro-Lot Hub",
-        scanner: "Pickup Barcode Scanner Validator",
-        pos: "Kasir Barista POS & WhatsApp Generator",
+        pos: "Kasir Barista POS",
         transactions: "Database Transaksi & Ekspor CSV"
       };
 
       document.getElementById('currentViewTitle').innerText = titles[tabKey] || "Quadra Coffee Lab Console";
 
-      ['overview', 'kds', 'tables', 'slowbar', 'inventory', 'scanner', 'pos', 'transactions'].forEach(k => {
+      ['overview', 'kds', 'tables', 'slowbar', 'inventory', 'pos', 'transactions'].forEach(k => {
         const v = document.getElementById(`view-${k}`);
         if (v) v.classList.add('hidden');
 
@@ -1146,7 +1065,6 @@
       if (tabKey === 'tables') renderTableGrid();
       if (tabKey === 'slowbar') renderSlowbarScheduler();
       if (tabKey === 'inventory') renderSingleOriginLots();
-      if (tabKey === 'scanner') renderPickupLogs();
       if (tabKey === 'pos') { renderPOSMenuOptions(); updatePOSCartUI(); }
       if (tabKey === 'transactions') renderMasterTxTable();
 
@@ -1636,139 +1554,7 @@
       }
     }
 
-    // ==================== 5. BARISTA BARCODE SCANNER VALIDATOR ====================
-    function setScannerVal(val) {
-      document.getElementById('scannerTokenInput').value = val;
-      executePickupScan();
-    }
-
-    function executePickupScan() {
-      const token = document.getElementById('scannerTokenInput').value.trim().toUpperCase();
-      const feedback = document.getElementById('pickupScanFeedbackCard');
-      feedback.classList.remove('hidden');
-
-      const kdsMatch = masterKDSOrders.find(o => o.token.toUpperCase() === token);
-      const stoolMatch = masterSlowbarStools.find(s => s.token && s.token.toUpperCase() === token);
-
-      if (!kdsMatch && !stoolMatch) {
-        feedback.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
-        feedback.innerHTML = `
-          <div class="flex items-center gap-2 font-bold text-sm text-rose-800 font-sans">
-            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i> TOKEN BARCODE TIDAK DITEMUKAN
-          </div>
-          <p class="text-xs font-sans">Token <strong>${token}</strong> tidak memiliki catatan cangkir atau reservasi aktif di Quadra Coffee.</p>
-        `;
-        recordPickupLog(token, "UNKNOWN VISITOR", "-", "DITOLAK (INVALID TOKEN)");
-      } else if (kdsMatch) {
-        feedback.className = "p-5 rounded-2xl border border-cyan-200 bg-cyan-50 text-slate-900 space-y-3 font-mono";
-        feedback.innerHTML = `
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-sm text-cyan-800 flex items-center gap-1.5 font-display">
-              <i data-lucide="check-circle" class="w-5 h-5 text-cyan-600"></i> TAKEAWAY CUP READY
-            </span>
-            <span class="text-xs font-bold bg-cyan-600 text-white px-2 py-0.5 rounded">${kdsMatch.token}</span>
-          </div>
-          <div class="space-y-1 font-sans text-xs">
-            <p>Nama Cup: <strong class="text-slate-900">${kdsMatch.customer}</strong></p>
-            <p>Menu: <strong class="text-cyan-700">${kdsMatch.items.join(', ')}</strong></p>
-            <p class="text-stone-500 font-mono text-[11px]">Special Notes: ${kdsMatch.notes}</p>
-          </div>
-          <div class="p-3 bg-white rounded-xl border border-cyan-200 flex items-center justify-between text-xs font-mono">
-            <span>Status KDS:</span>
-            <strong class="text-emerald-700">${kdsMatch.status}</strong>
-          </div>
-          <button onclick="confirmOrderHandover('${kdsMatch.id}')" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-sm">
-            <i data-lucide="coffee" class="w-4 h-4 text-gold-300"></i> Serahkan Cangkir ke Tamu (Completed)
-          </button>
-        `;
-        recordPickupLog(token, kdsMatch.customer, kdsMatch.items[0], "VALIDASI SUKSES");
-      } else if (stoolMatch) {
-        feedback.className = "p-5 rounded-2xl border border-gold-300 bg-gold-50/70 text-slate-900 space-y-3 font-mono";
-        feedback.innerHTML = `
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-sm text-gold-800 flex items-center gap-1.5 font-display">
-              <i data-lucide="check-circle" class="w-5 h-5 text-gold-600"></i> SLOW BAR SESSION PASS
-            </span>
-            <span class="text-xs font-bold bg-slate-900 text-cyan-300 px-2 py-0.5 rounded">${stoolMatch.number}</span>
-          </div>
-          <div class="space-y-1 font-sans text-xs">
-            <p>Tamu Terhormat: <strong class="text-slate-900">${stoolMatch.guest}</strong> (${stoolMatch.phone})</p>
-            <p>Biji Kopi Pilihan: <strong class="text-cyan-800">${stoolMatch.bean}</strong></p>
-            <p>Metode Seduh: ${stoolMatch.dripper} • Sesi: ${stoolMatch.shift}</p>
-          </div>
-          <button onclick="seatSlowbarFromScanner('${stoolMatch.id}')" class="w-full bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans shadow-sm">
-            <i data-lucide="droplet" class="w-4 h-4 text-gold-400"></i> Sambut Tamu di Hadapan Roaster
-          </button>
-        `;
-        recordPickupLog(token, stoolMatch.guest, `Slow Bar (${stoolMatch.number})`, "VALIDASI SLOW BAR");
-      }
-
-      lucide.createIcons();
-    }
-
-    function confirmOrderHandover(orderId) {
-      const o = masterKDSOrders.find(x => x.id === orderId);
-      if (o) {
-        o.status = "COMPLETED";
-        showToast(`Cangkir pesanan ${o.token} untuk ${o.customer} resmi diserahkan.`);
-        renderKDSColumns();
-        updateDashboardCounters();
-        switchTab('kds');
-      }
-    }
-
-    function seatSlowbarFromScanner(stoolId) {
-      const s = masterSlowbarStools.find(x => x.id === stoolId);
-      if (s) {
-        s.status = "SEATED";
-        showToast(`Tamu ${s.guest} resmi duduk di ${s.number} Slow Bar`);
-        renderSlowbarScheduler();
-        renderSlowbarLiveStrip();
-        updateDashboardCounters();
-        switchTab('slowbar');
-      }
-    }
-
-    function recordPickupLog(token, customer, item, status) {
-      const now = new Date();
-      const timeStr = now.toTimeString().split(' ')[0];
-      pickupLogs.unshift({
-        time: timeStr,
-        token: token,
-        customer: customer,
-        item: item,
-        status: status
-      });
-      renderPickupLogs();
-    }
-
-    function renderPickupLogs() {
-      const list = document.getElementById('pickupAuditLogs');
-      if (!list) return;
-      list.innerHTML = '';
-
-      pickupLogs.slice(0, 7).forEach(l => {
-        const isOk = l.status.includes('BERHASIL') || l.status.includes('VALIDASI');
-
-        const div = document.createElement('div');
-        div.className = "p-3 rounded-2xl border flex items-center justify-between " + 
-          (isOk ? "bg-cyan-50/70 border-cyan-200 text-cyan-900" : "bg-rose-50 border-rose-200 text-rose-900");
-
-        div.innerHTML = `
-          <div>
-            <div class="flex items-center gap-2">
-              <strong class="text-xs font-sans">${l.customer}</strong>
-              <span class="text-[9px] px-1.5 py-0.2 rounded bg-white font-mono font-bold text-cyan-700 border border-cyan-100">${l.token}</span>
-            </div>
-            <span class="text-[10px] opacity-75">${l.item} • ${l.time}</span>
-          </div>
-          <span class="text-[10px] font-bold font-mono">${l.status}</span>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    // ==================== 6. KASIR POS & WHATSAPP GENERATOR ====================
+    // ==================== 6. KASIR POS ====================
     function renderPOSMenuOptions() {
       const grid = document.getElementById('posMenuSelectionGrid');
       if (!grid) return;
@@ -1953,34 +1739,6 @@
         window.print();
       }
       showToast(`Pesanan ${randomToken} untuk ${name} langsung masuk ke KDS Barista!`);
-    }
-
-    function generatePOSWhatsAppMessage() {
-      const name = document.getElementById('posCustomerName').value.trim() || 'Pelanggan Quadra';
-      const phone = document.getElementById('posCustomerPhone').value.trim() || '-';
-      const notes = document.getElementById('posOrderNotes').value.trim() || '-';
-      const calc = updatePOSCartUI();
-
-      let itemsText = "";
-      posCart.forEach((it, idx) => {
-        itemsText += `${idx + 1}. ${it.name} (${it.qty} Cup) = ${formatRupiah(it.price * it.qty)}%0A`;
-      });
-
-      const waMsg = 
-        `*ORDER COFFEE - QUADRA SPECIALTY ROASTERY*%0A` +
-        `----------------------------------------%0A` +
-        `*Nama Cup:* ${name}%0A` +
-        `*WhatsApp:* ${phone}%0A` +
-        `*Estimasi Pickup:* 15 Menit di Bar Counter%0A` +
-        `*Catatan:* ${notes}%0A%0A` +
-        `*PESANAN KOPI ANDA:*%0A` +
-        itemsText +
-        `----------------------------------------%0A` +
-        `*Total Tagihan Bersih:* ${formatRupiah(calc.grandTotal)}%0A%0A` +
-        `Pesanan kopi Anda sedang diekstrak oleh Barista Quadra. Silakan tunjukkan pesan ini saat pickup!`;
-
-      const url = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${waMsg}`;
-      window.open(url, '_blank');
     }
 
     // ==================== 7. TRANSACTIONS & EXPORT CSV ====================
@@ -2258,7 +2016,6 @@
       renderKDSColumns();
       renderSlowbarScheduler();
       renderSingleOriginLots();
-      renderPickupLogs();
       renderPOSMenuOptions();
       updatePOSCartUI();
       renderMasterTxTable();
