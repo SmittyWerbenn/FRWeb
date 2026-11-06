@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Quadra Coffee — Slow Bar & Kitchen · Self-Order Dine In</title>
-<meta name="description" content="Quadra Coffee: slow bar artisan, espresso bar, dan kitchen dine-in. Pilih nomor meja, kustomisasi pesanan, lalu kirim langsung ke barista lewat WhatsApp." />
+<meta name="description" content="Quadra Coffee: slow bar artisan, espresso bar, dan kitchen dine-in. Pilih nomor meja, kustomisasi pesanan, bayar QRIS, pesanan langsung masuk antrean barista." />
 <meta name="theme-color" content="#171210" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23171210'/%3E%3Cpath d='M43 45l6 7' stroke='%23C1673F' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='31' cy='31' r='13' fill='none' stroke='%23F6EEE2' stroke-width='6'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -26,7 +26,7 @@
         },
         fontFamily: {
           display: ['Fraunces', 'Georgia', 'serif'],
-          sans: ['"Instrument Sans"', 'Inter', 'system-ui', 'sans-serif']
+          sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif']
         },
         boxShadow: {
           soft: '0 30px 70px -40px rgba(23,18,16,.55)',
@@ -48,7 +48,8 @@
   * { -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
   body {
-    font-family: 'Instrument Sans', Inter, system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+    font-size: 16px;
     background-color: var(--cream);
     color: var(--ink);
     padding-bottom: calc(112px + env(safe-area-inset-bottom));
@@ -836,15 +837,11 @@
         <span id="tableChipLabel">Pilih meja</span>
       </button>
 
-      <div class="seg flex-1 justify-between sm:flex-none sm:justify-start" role="group" aria-label="Tipe pesanan">
-        <button type="button" class="seg-btn flex-1 justify-center sm:flex-none" id="modeDineBtn" aria-pressed="true" aria-label="Dine In" data-mode="dinein">
+      <div class="seg flex-1 justify-center sm:flex-none sm:justify-start" role="status" aria-label="Mode pesanan">
+        <span class="seg-btn flex-1 justify-center sm:flex-none" id="modeDineBadge" aria-pressed="true" data-mode="dinein">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-[15px] w-[15px] flex-none"><path d="M4 20v-6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6"/><path d="M2 20h20M7 11V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v5"/></svg>
-          <span>Dine In</span>
-        </button>
-        <button type="button" class="seg-btn flex-1 justify-center sm:flex-none" id="modeTakeBtn" aria-pressed="false" aria-label="Take Away" data-mode="takeaway">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-[15px] w-[15px] flex-none"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-          <span>Take Away</span>
-        </button>
+          <span>Dine In Only</span>
+        </span>
       </div>
 
       <button type="button" class="icon-btn relative flex-none" id="cartBtn" aria-label="Buka pesanan" aria-haspopup="dialog">
@@ -888,7 +885,7 @@
         </div>
         <div>
           <dt class="text-[10px] font-semibold uppercase tracking-[0.16em] text-ink/60">Meja tersedia</dt>
-          <dd class="mt-1 font-display text-xl">25 meja</dd>
+          <dd class="mt-1 font-display text-xl">10 meja</dd>
         </div>
         <div>
           <dt class="text-[10px] font-semibold uppercase tracking-[0.16em] text-ink/60">Estimasi sajian</dt>
@@ -921,7 +918,7 @@
       <span class="flex items-center gap-2"><span class="fact-dot"></span>Beans digiling per cup</span>
       <span class="flex items-center gap-2"><span class="fact-dot"></span>Kitchen dine-in</span>
       <span class="flex items-center gap-2"><span class="fact-dot"></span>Pisah bill per meja</span>
-      <span class="ml-auto hidden items-center gap-2 text-ink/60 md:flex">Kirim pesanan via WhatsApp barista</span>
+      <span class="ml-auto hidden items-center gap-2 text-ink/60 md:flex">Take away? Pesan langsung di meja kasir</span>
     </div>
   </div>
 </section>
@@ -1190,11 +1187,7 @@
         <span id="payNowLabel">Bayar sekarang</span>
         <span id="payNowTotal" class="tabular-nums"></span>
       </button>
-      <div class="mt-2 grid grid-cols-2 gap-2">
-        <button type="button" class="btn-ghost" id="sendWaBtn">Kirim ke kasir</button>
-        <button type="button" class="btn-ghost" id="copyWaBtn">Salin ringkasan</button>
-      </div>
-      <p id="payHint" class="mt-2.5 text-center text-[10.5px] leading-snug text-ink/45">Pembayaran di demo ini disimulasikan. Tidak ada transaksi nyata.</p>
+      <p id="payHint" class="mt-3 text-center text-[10.5px] leading-snug text-ink/45">Pembayaran dine-in diverifikasi otomatis lewat QRIS. Tidak ada transaksi nyata pada demo ini.</p>
     </div>
   </div>
 </div>
@@ -1229,8 +1222,7 @@
     </div>
     <div class="sheet-scroll flex-1 px-5 py-4" id="qrisBody"></div>
     <div class="border-t border-ink/10 bg-cream px-5 py-4">
-      <button type="button" class="btn-primary btn-clay w-full" id="qrisSimulate">Simulasikan pembayaran berhasil</button>
-      <button type="button" class="btn-ghost mt-2 w-full" data-close="qrisSheet">Batalkan pembayaran</button>
+      <button type="button" class="btn-ghost w-full" data-close="qrisSheet">Batalkan pembayaran</button>
     </div>
   </div>
 </div>
@@ -2096,7 +2088,7 @@
       if (!raw) return;
       const data = JSON.parse(raw);
       if (!data || typeof data !== 'object') return;
-      if (data.mode === 'takeaway' || data.mode === 'dinein') state.mode = data.mode;
+      if (data.mode === 'dinein') state.mode = 'dinein';
       if (Number.isInteger(data.table) && data.table >= 1 && data.table <= 10) state.table = data.table;
       if (data.area && AREAS[data.area]) state.area = data.area;
       if (data.roast && ROAST_LABEL[data.roast]) state.roast = data.roast;
@@ -2207,7 +2199,7 @@
   }
 
   function cardHTML(item) {
-    const locked = item.dineOnly && state.mode === 'takeaway';
+    const locked = false;
     const notes = (item.notes || []).slice(0, 3).map(function (n) {
       return '<span class="note-chip">' + esc(n) + '</span>';
     }).join('');
@@ -2270,9 +2262,9 @@
   }
 
   function syncMenuMode() {
-    $('#menuModeLabel').textContent = state.mode === 'dinein'
-      ? (state.table ? 'Dine In · ' + tableLabel(state.table) + ' (' + AREAS[areaOf(state.table)].label + ')' : 'Dine In · meja belum dipilih')
-      : 'Take Away · ambil di bar';
+    $('#menuModeLabel').textContent = state.table
+      ? 'Dine In · ' + tableLabel(state.table) + ' (' + AREAS[areaOf(state.table)].label + ')'
+      : 'Dine In · meja belum dipilih';
   }
 
   /* ============================================================
@@ -2285,32 +2277,16 @@
     const barTableBtn = $('#barTableBtn');
     const barMode = $('#barMode');
 
-    if (state.mode === 'dinein') {
-      chip.style.display = '';
-      chip.disabled = false;
-      chip.classList.remove('is-idle');
-      chipLabel.textContent = state.table ? tableLabel(state.table) : 'Pilih meja';
-      chip.classList.toggle('is-set', !!state.table);
-      chip.setAttribute('aria-label', state.table ? 'Meja terpilih ' + tableLabel(state.table) + ', ketuk untuk ganti' : 'Pilih nomor meja');
-      barTable.textContent = state.table ? tableLabel(state.table) + ' · ' + AREAS[areaOf(state.table)].label : 'Meja belum dipilih';
-      barTableBtn.classList.toggle('is-warn', !state.table);
-      barMode.textContent = 'Dine in';
-    } else {
-      chip.style.display = '';
-      chip.disabled = true;
-      chip.classList.remove('is-set');
-      chip.classList.add('is-idle');
-      chipLabel.textContent = 'Ambil di bar';
-      chip.setAttribute('aria-label', 'Take away, ambil sendiri di bar');
-      barTable.textContent = 'Pickup di bar';
-      barTableBtn.classList.remove('is-warn');
-      barMode.textContent = 'Take away';
-    }
+    chip.style.display = '';
+    chip.disabled = false;
+    chip.classList.remove('is-idle');
+    chipLabel.textContent = state.table ? tableLabel(state.table) : 'Pilih meja';
+    chip.classList.toggle('is-set', !!state.table);
+    chip.setAttribute('aria-label', state.table ? 'Meja terpilih ' + tableLabel(state.table) + ', ketuk untuk ganti' : 'Pilih nomor meja');
+    barTable.textContent = state.table ? tableLabel(state.table) + ' · ' + AREAS[areaOf(state.table)].label : 'Meja belum dipilih';
+    barTableBtn.classList.toggle('is-warn', !state.table);
+    barMode.textContent = 'Dine in';
     syncHeaderVar();
-
-    $$('#modeDineBtn, #modeTakeBtn').forEach(function (btn) {
-      btn.setAttribute('aria-pressed', String(btn.dataset.mode === state.mode));
-    });
 
     $$('#roastChips [data-roast]').forEach(function (btn) {
       btn.setAttribute('aria-pressed', String(btn.dataset.roast === state.roast));
@@ -2329,7 +2305,7 @@
     const badge = $('#cartCount');
 
     if (count > 0) {
-      countEl.textContent = count + ' item' + (state.mode === 'dinein' && !state.table ? ' · pilih meja' : '');
+      countEl.textContent = count + ' item' + (!state.table ? ' · pilih meja' : '');
       totalEl.textContent = money(total);
       cta.textContent = 'Lihat pesanan';
       cta.dataset.action = 'cart';
@@ -2450,10 +2426,6 @@
   function openItem(id) {
     const item = MENU_BY_ID[id];
     if (!item) return;
-    if (item.dineOnly && state.mode === 'takeaway') {
-      toast('Menu ini dine-in only. Ubah tipe pesanan ke Dine In.');
-      return;
-    }
     modal = { item: item, qty: 1, sel: defaultSelection(item), note: '' };
     renderItemModal();
     openSheet('itemModal');
@@ -2568,41 +2540,9 @@
   }
 
   /* ============================================================
-     CHECKOUT + WHATSAPP
+     CHECKOUT (DINE IN ONLY — QRIS AUTO-VERIFICATION)
      ============================================================ */
-  function buildWaText() {
-    const lines = [];
-    lines.push('Halo Quadra Coffee, saya ingin konfirmasi pesanan:');
-    lines.push('- Tipe: ' + (state.mode === 'dinein'
-      ? 'Dine In (Meja ' + pad(state.table || 0) + ')'
-      : 'Take Away (pickup di bar)'));
-    if (state.name) lines.push('- Nama: ' + state.name);
-    lines.push('- Pesanan:');
-    state.cart.forEach(function (line, idx) {
-      const item = MENU_BY_ID[line.id];
-      const summary = selectionSummary(item, line.sel);
-      lines.push('  ' + (idx + 1) + '. ' + item.name + ' x' + line.qty +
-        (summary ? ' (' + summary + ')' : '') +
-        ' — ' + money(unitPrice(item, line.sel) * line.qty));
-      if (line.note) lines.push('     Catatan: ' + line.note);
-    });
-    const t = totals();
-    lines.push('- Subtotal: ' + money(t.subtotal));
-    lines.push('- Service 5%: ' + money(t.service) + ' | PPN 10%: ' + money(t.tax));
-    lines.push('- Total: ' + money(t.total));
-    lines.push('- Pembayaran: ' + (state.pay === 'qris' ? 'QRIS (sudah dibayar)' : 'Tunai/kartu di kasir'));
-    if (state.roast) lines.push('- Preferensi roast: ' + ROAST_LABEL[state.roast]);
-    if (state.note) lines.push('- Catatan: ' + state.note);
-    lines.push('Terima kasih!');
-    return lines.join('\n');
-  }
-
-  function waUrl() {
-    return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(buildWaText());
-  }
-
   function renderCheckout() {
-    const dine = state.mode === 'dinein';
     const rows = state.cart.map(function (line) {
       const item = MENU_BY_ID[line.id];
       const summary = selectionSummary(item, line.sel);
@@ -2622,14 +2562,12 @@
       '<div class="rounded-2xl bg-espresso p-4 text-cream">' +
         '<div class="flex items-center justify-between gap-3">' +
           '<div>' +
-            '<p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-cream/50">' + (dine ? 'Dine in' : 'Take away') + '</p>' +
-            '<p class="mt-1 font-display text-xl">' + (dine ? (state.table ? tableLabel(state.table) + ' · ' + AREAS[areaOf(state.table)].label : 'Meja belum dipilih') : 'Ambil di bar') + '</p>' +
+            '<p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-cream/50">Dine in</p>' +
+            '<p class="mt-1 font-display text-xl">' + (state.table ? tableLabel(state.table) + ' · ' + AREAS[areaOf(state.table)].label : 'Meja belum dipilih') + '</p>' +
           '</div>' +
-          '<button type="button" class="rounded-full border border-cream/25 px-3 py-1.5 text-[11px] font-semibold" id="checkoutChangeMode">' +
-            (dine ? 'Ganti ke take away' : 'Ganti ke dine in') +
-          '</button>' +
+          '<button type="button" class="rounded-full border border-cream/25 px-3 py-1.5 text-[11px] font-semibold" id="checkoutChangeTable">Ganti meja</button>' +
         '</div>' +
-        (dine && !state.table ? '<p class="mt-2 text-[11.5px] text-claysoft">Nomor meja wajib dipilih sebelum pesanan dikirim.</p>' : '') +
+        (!state.table ? '<p class="mt-2 text-[11.5px] text-claysoft">Nomor meja wajib dipilih sebelum pesanan dikirim.</p>' : '') +
       '</div>' +
 
       '<div class="mt-4">' + rows + '</div>' +
@@ -2643,9 +2581,8 @@
 
       '<div class="mt-5">' +
         '<p class="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink/60">Metode pembayaran</p>' +
-        '<div class="mt-2 space-y-2">' +
-          payOptHTML('qris', 'QRIS', 'GoPay, OVO, DANA, ShopeePay, mobile banking · terkonfirmasi otomatis') +
-          payOptHTML('cash', 'Bayar di kasir', 'Tunai atau kartu debit/kredit saat pesanan diantar') +
+        '<div class="mt-2">' +
+          payOptHTML('qris', 'QRIS Instan', 'GoPay, OVO, DANA, ShopeePay, mobile banking · verifikasi otomatis') +
         '</div>' +
       '</div>' +
 
@@ -2663,23 +2600,21 @@
 
       '<p class="mt-4 flex items-start gap-2 rounded-xl bg-sand/50 px-3 py-2.5 text-[11.5px] leading-snug text-ink/60">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="mt-0.5 h-3.5 w-3.5 flex-none"><path d="M12 8v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>' +
-        '<span>' + (state.pay === 'qris'
-          ? 'Pembayaran QRIS pada demo ini disimulasikan penuh: QR tampil, status menunggu, lalu struk elektronik terbit.'
-          : 'Pesanan dicatat dulu, pembayaran tunai/kartu dilakukan di kasir. Struk elektronik tetap diterbitkan.') + '</span>' +
+        '<span>Pesanan ini untuk makan di tempat. Ingin take away? Silakan pesan langsung di meja kasir.</span>' +
       '</p>';
     const payLabel = $('#payNowLabel');
-    if (payLabel) payLabel.textContent = state.pay === 'qris' ? 'Bayar dengan QRIS' : 'Konfirmasi & bayar di kasir';
+    if (payLabel) payLabel.textContent = 'Bayar dengan QRIS';
     const payTotal = $('#payNowTotal');
     if (payTotal) payTotal.textContent = money(totals().total);
-    $('#payNowBtn').disabled = dine && !state.table;
-    $('#payHint').textContent = dine && !state.table
+    $('#payNowBtn').disabled = !state.table;
+    $('#payHint').textContent = !state.table
       ? 'Pilih nomor meja dulu sebelum melanjutkan.'
       : 'Harga sudah termasuk service charge 5% dan PPN 10%.';
   }
 
   function openCheckout() {
     if (!state.cart.length) { toast('Pesanan masih kosong.'); return; }
-    if (state.mode === 'dinein' && !state.table) {
+    if (!state.table) {
       closeSheet('cartDrawer');
       openTableSheet('Pilih nomor meja dulu untuk pesanan dine in.');
       return;
@@ -2698,63 +2633,12 @@
 
   function payNow() {
     syncCheckoutInputs();
-    if (state.mode === 'dinein' && !state.table) {
+    if (!state.table) {
       toast('Nomor meja belum dipilih.');
       return;
     }
     closeSheet('checkoutModal');
-    if (state.pay === 'qris') {
-      openQris();
-      return;
-    }
-    const o = buildOrder(false);
-    lastOrder = o;
-    /* Bayar di kasir: pesanan tetap masuk antrean, hanya statusnya belum lunas. */
-    publishOrder(o);
-    closeSheet('cartDrawer');
-    openReceipt(o);
-    toast('Tunjukkan struk ini di kasir untuk pembayaran.');
-  }
-
-  function sendWa() {
-    const nameEl = $('#chkName');
-    const noteEl = $('#chkNote');
-    if (nameEl) state.name = nameEl.value.trim().slice(0, 60);
-    if (noteEl) state.note = noteEl.value.trim().slice(0, 240);
-    save();
-    if (state.mode === 'dinein' && !state.table) {
-      toast('Nomor meja belum dipilih.');
-      return;
-    }
-    const win = window.open(waUrl(), '_blank', 'noopener');
-    if (!win) {
-      toast('Popup diblokir. Gunakan tombol salin ringkasan.');
-    } else {
-      closeSheet('checkoutModal');
-      closeSheet('cartDrawer');
-      toast('Pesanan diteruskan ke WhatsApp barista.');
-    }
-  }
-
-  function copySummary() {
-    const text = buildWaText();
-    function fallback() {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.setAttribute('readonly', '');
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy'); toast('Ringkasan disalin.'); }
-      catch (e) { toast('Gagal menyalin. Salin manual dari chat.'); }
-      document.body.removeChild(ta);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { toast('Ringkasan disalin.'); }).catch(fallback);
-    } else {
-      fallback();
-    }
+    openQris();
   }
 
   /* ============================================================
@@ -2807,7 +2691,6 @@
 
   function buildOrder(paid) {
     const t = totals();
-    const dine = state.mode === 'dinein';
     const areaKey = areaOf(state.table);
     const items = state.cart.map(function (line) {
       const item = MENU_BY_ID[line.id];
@@ -2828,20 +2711,20 @@
       no: orderId,
       at: new Date(),
       paid: !!paid,
-      mode: state.mode,
-      place: dine ? tableLabel(state.table) : 'Ambil di bar',
-      areaLabel: dine ? AREAS[areaKey].label : 'Pickup counter',
+      mode: 'dinein',
+      place: tableLabel(state.table),
+      areaLabel: AREAS[areaKey].label,
       items: items,
       totals: t,
       name: state.name,
       note: state.note,
-      pay: state.pay,
+      pay: 'qris',
       /* Bagian yang mengikuti schema sinkronisasi ke dashboard admin. */
       sync: {
         orderId: orderId,
-        tableNumber: dine ? (tableLabel(state.table) || 'Meja 07') : 'Take Away',
-        area: dine ? AREAS[areaKey].label : 'Pickup counter',
-        orderType: dine ? 'dine_in' : 'take_away',
+        tableNumber: tableLabel(state.table) || 'Meja 01',
+        area: AREAS[areaKey].label,
+        orderType: 'dine_in',
         customerName: state.name || '',
         customerPhone: '',
         customerNotes: note,
@@ -2852,7 +2735,7 @@
         tax: t.tax,
         serviceFee: t.service,
         totalAmount: t.total,
-        paymentMethod: state.pay === 'qris' ? 'QRIS' : 'Cash',
+        paymentMethod: 'QRIS',
         paymentStatus: paid ? 'PAID' : 'PENDING',
         orderStatus: 'NEW',
         createdAt: new Date().toISOString()
@@ -2878,8 +2761,8 @@
     out.push('--------------------------------');
     out.push('No. Pesanan : ' + o.no);
     out.push('Waktu       : ' + fmtDate(o.at) + ' ' + fmtClock(o.at));
-    out.push('Tipe        : ' + (o.mode === 'dinein' ? 'Dine in' : 'Take away'));
-    out.push(o.mode === 'dinein' ? 'Meja        : ' + o.place + ' (' + o.areaLabel + ')' : 'Pickup      : ' + o.place);
+    out.push('Tipe        : Dine in');
+    out.push('Meja        : ' + o.place + ' (' + o.areaLabel + ')');
     if (o.name) out.push('Nama        : ' + o.name);
     out.push('--------------------------------');
     o.items.forEach(function (it) {
@@ -2914,8 +2797,8 @@
         '<div class="receipt-dash"></div>' +
         '<div class="receipt-row"><span>No. pesanan</span><span><strong>' + esc(o.no) + '</strong></span></div>' +
         '<div class="receipt-row"><span>Waktu</span><span>' + fmtDate(o.at) + ' · ' + fmtClock(o.at) + '</span></div>' +
-        '<div class="receipt-row"><span>Tipe</span><span>' + (o.mode === 'dinein' ? 'Dine in' : 'Take away') + '</span></div>' +
-        '<div class="receipt-row"><span>' + (o.mode === 'dinein' ? 'Meja' : 'Pickup') + '</span><span><strong>' + esc(o.place) + '</strong> · ' + esc(o.areaLabel) + '</span></div>' +
+        '<div class="receipt-row"><span>Tipe</span><span>Dine in</span></div>' +
+        '<div class="receipt-row"><span>Meja</span><span><strong>' + esc(o.place) + '</strong> · ' + esc(o.areaLabel) + '</span></div>' +
         (o.name ? '<div class="receipt-row"><span>Nama</span><span>' + esc(o.name) + '</span></div>' : '') +
         '<div class="receipt-dash"></div>' +
         rows +
@@ -3000,30 +2883,39 @@
         '<p class="mt-1 text-center font-display text-2xl tabular-nums">' + money(t.total) + '</p>' +
         '<div class="mt-3 flex items-center justify-between rounded-xl bg-sand/40 px-3 py-2 text-[11px]">' +
           '<span class="text-ink/60">' + esc(o.no) + '</span>' +
-          '<span id="qrisTimer" class="qris-timer font-bold">05:00</span>' +
+          '<span id="qrisTimer" class="qris-timer font-bold">00:08</span>' +
         '</div>' +
         '<p class="qris-status mt-3 text-[11.5px] text-ink/65"><span class="qris-pulse"></span><span id="qrisStatus">Menunggu pembayaran dari aplikasi e-wallet Anda…</span></p>' +
+        '<div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-sand/60">' +
+          '<div id="qrisProgress" class="h-full rounded-full bg-clay transition-[width] duration-1000 ease-linear" style="width:0%"></div>' +
+        '</div>' +
+        '<p class="mt-2 text-center text-[10px] uppercase tracking-[0.14em] text-ink/45">Verifikasi otomatis berjalan</p>' +
       '</div>' +
-      '<p class="mt-3 text-center text-[10.5px] leading-snug text-ink/45">Demo interaktif: kode QR di atas dibuat khusus untuk sesi ini, tidak terhubung ke payment gateway sungguhan.</p>';
+      '<p class="mt-3 text-center text-[10.5px] leading-snug text-ink/45">Demo interaktif: kode QR dibuat khusus untuk sesi ini dan pembayaran diverifikasi otomatis, tidak terhubung ke payment gateway sungguhan.</p>';
     const cv = $('#qrisCanvas');
     if (cv) drawQr(cv, o.no + '|' + t.total);
-    startQrisTimer(300);
+    startQrisTimer(8);
     openSheet('qrisSheet');
   }
 
+  /** Hitung mundur verifikasi otomatis; saat habis, pembayaran dianggap diterima. */
   function startQrisTimer(seconds) {
     stopQrisTimer();
     let left = seconds;
+    const total = seconds;
     const el = $('#qrisTimer');
+    const bar = $('#qrisProgress');
     function tick() {
       if (!el || !el.isConnected) { stopQrisTimer(); return; }
       const m = Math.floor(left / 60), s = left % 60;
       el.textContent = pad(m) + ':' + pad(s);
-      el.classList.toggle('is-low', left <= 60);
+      el.classList.toggle('is-low', left <= 3);
+      if (bar) bar.style.width = Math.round(((total - left) / total) * 100) + '%';
       if (left <= 0) {
         stopQrisTimer();
         const st = $('#qrisStatus');
-        if (st) st.textContent = 'Waktu habis — ketuk simulasi untuk memperbarui kode.';
+        if (st) st.textContent = 'Pembayaran terverifikasi. Menerbitkan struk…';
+        markPaid(true);
         return;
       }
       left -= 1;
@@ -3035,7 +2927,7 @@
     if (qrisTimerId) { window.clearInterval(qrisTimerId); qrisTimerId = null; }
   }
 
-  function markPaid() {
+  function markPaid(auto) {
     stopQrisTimer();
     const o = lastOrder || buildOrder(true);
     o.paid = true;
@@ -3052,13 +2944,11 @@
         '<p class="mt-1 text-[12.5px] text-ink/60">' + money(o.totals.total) + ' · QRIS dinamis</p>' +
         '<p class="mt-3 text-[11px] text-ink/45">Menyiapkan struk elektronik…</p>' +
       '</div>';
-    $('#qrisSimulate').disabled = true;
     vibrate(18);
     window.setTimeout(function () {
       closeSheet('qrisSheet');
-      $('#qrisSimulate').disabled = false;
       openReceipt(o);
-    }, 950);
+    }, 1050);
   }
 
   function openReceipt(o) {
@@ -3096,16 +2986,14 @@
   }
 
   function showSuccess(o) {
-    const eta = o.mode === 'dinein' ? '8–12 menit' : '6–10 menit';
-    $('#successTitle').textContent = o.paid ? 'Pesanan diterima' : 'Pesanan dicatat';
-    $('#successText').textContent = o.mode === 'dinein'
-      ? 'Pesanan Anda di ' + o.place + ' sudah masuk ke barista. Estimasi penyajian ' + eta + '.'
-      : 'Pesanan take away Anda sudah masuk ke barista. Silakan tunggu panggilan di bar, estimasi ' + eta + '.';
+    $('#successTitle').textContent = 'Pesanan diterima';
+    $('#successText').textContent = 'Pesanan sedang disiapkan barista dan akan segera diantarkan ke ' + o.place + '. Estimasi penyajian 8–12 menit.';
     $('#successMeta').innerHTML = '' +
       '<div class="flex items-center justify-between"><span class="text-ink/55">No. pesanan</span><span class="font-semibold">' + esc(o.no) + '</span></div>' +
-      '<div class="flex items-center justify-between"><span class="text-ink/55">' + (o.paid ? 'Total dibayar' : 'Total tagihan') + '</span><span class="font-semibold">' + money(o.totals.total) + '</span></div>' +
-      '<div class="flex items-center justify-between"><span class="text-ink/55">Metode</span><span class="font-semibold">' + (o.pay === 'qris' ? 'QRIS · Lunas' : 'Bayar di kasir') + '</span></div>' +
-      '<div class="flex items-center justify-between"><span class="text-ink/55">Estimasi</span><span class="font-semibold">' + eta + '</span></div>';
+      '<div class="flex items-center justify-between"><span class="text-ink/55">Meja</span><span class="font-semibold">' + esc(o.place) + ' · ' + esc(o.areaLabel) + '</span></div>' +
+      '<div class="flex items-center justify-between"><span class="text-ink/55">Total dibayar</span><span class="font-semibold">' + money(o.totals.total) + '</span></div>' +
+      '<div class="flex items-center justify-between"><span class="text-ink/55">Metode</span><span class="font-semibold">QRIS · Lunas</span></div>' +
+      '<div class="flex items-center justify-between"><span class="text-ink/55">Estimasi</span><span class="font-semibold">8–12 menit</span></div>';
     openSheet('successModal');
   }
 
@@ -3120,7 +3008,7 @@
     renderCart();
     renderBar();
     renderChrome();
-    toast('Terima kasih! Meja ' + (state.mode === 'dinein' && state.table ? tableLabel(state.table) : 'Anda') + ' siap dipesan kembali.');
+    toast('Terima kasih! ' + (state.table ? tableLabel(state.table) : 'Meja Anda') + ' siap dipesan kembali.');
   }
 
 
@@ -3153,43 +3041,10 @@
   }
 
   /* ============================================================
-     MODE PESANAN
+     MODE PESANAN (DINE IN ONLY — dikunci permanen)
      ============================================================ */
-  function applyMode(mode) {
-    state.mode = mode;
-    if (mode === 'dinein' && !state.table) {
-      renderChrome();
-      renderMenu();
-      openTableSheet('Pesanan dine in perlu nomor meja.');
-      return;
-    }
-    save();
-    renderChrome();
-    renderMenu();
-    if (mode === 'takeaway') toast('Mode take away aktif · ambil di bar');
-    else toast('Mode dine in · ' + tableLabel(state.table));
-  }
-
-  function setMode(mode) {
-    if (mode === state.mode) return;
-    if (mode === 'takeaway') {
-      const dineOnly = state.cart.filter(function (line) { return MENU_BY_ID[line.id] && MENU_BY_ID[line.id].dineOnly; });
-      if (dineOnly.length) {
-        confirmDialog(
-          'Menu dine-in di pesanan',
-          dineOnly.length + ' item di pesanan Anda hanya tersedia untuk makan di tempat dan akan dihapus jika beralih ke take away.',
-          function () {
-            const ids = {};
-            dineOnly.forEach(function (l) { ids[l.key] = true; });
-            state.cart = state.cart.filter(function (l) { return !ids[l.key]; });
-            save(); renderCart(); renderBar();
-            applyMode('takeaway');
-          }
-        );
-        return;
-      }
-    }
-    applyMode(mode);
+  function lockDineIn() {
+    state.mode = 'dinein';
   }
 
   /* ============================================================
@@ -3250,10 +3105,6 @@
      EVENT WIRING
      ============================================================ */
   function wire() {
-    /* mode toggle */
-    $('#modeDineBtn').addEventListener('click', function () { setMode('dinein'); });
-    $('#modeTakeBtn').addEventListener('click', function () { setMode('takeaway'); });
-
     /* table sheet */
     $('#tableChip').addEventListener('click', function () { openTableSheet(); });
     $('#barTableBtn').addEventListener('click', function () { openTableSheet(); });
@@ -3278,7 +3129,7 @@
 
     $('#tableConfirm').addEventListener('click', function () {
       if (!state.table) return;
-      state.mode = 'dinein';
+      lockDineIn();
       save();
       closeSheet('tableSheet');
       renderChrome();
@@ -3289,7 +3140,7 @@
 
     /* hero */
     $('#heroOrderBtn').addEventListener('click', function () {
-      if (state.mode === 'dinein' && !state.table) { openTableSheet('Pilih meja Anda, lalu pesan dari sini.'); return; }
+      if (!state.table) { openTableSheet('Pilih meja Anda, lalu pesan dari sini.'); return; }
       document.getElementById('menu').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
@@ -3384,10 +3235,7 @@
     });
 
     /* checkout */
-    $('#sendWaBtn').addEventListener('click', sendWa);
-    $('#copyWaBtn').addEventListener('click', copySummary);
     $('#payNowBtn').addEventListener('click', payNow);
-    $('#qrisSimulate').addEventListener('click', markPaid);
     $('#receiptDownload').addEventListener('click', downloadReceipt);
     $('#receiptPrint').addEventListener('click', printReceipt);
     $('#receiptContinue').addEventListener('click', function () {
@@ -3396,17 +3244,10 @@
     $('#successDone').addEventListener('click', finishOrder);
 
     $('#checkoutBody').addEventListener('click', function (e) {
-      if (e.target.closest('#checkoutChangeMode')) {
+      if (e.target.closest('#checkoutChangeTable')) {
         closeSheet('checkoutModal');
-        setMode(state.mode === 'dinein' ? 'takeaway' : 'dinein');
+        openTableSheet('Ganti nomor meja Anda.');
         return;
-      }
-      const payBtn = e.target.closest('[data-pay]');
-      if (payBtn) {
-        state.pay = payBtn.dataset.pay;
-        save();
-        renderCheckout();
-        vibrate(6);
       }
     });
 

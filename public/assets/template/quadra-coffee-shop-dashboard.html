@@ -7,10 +7,10 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Fraunces (display) + Instrument Sans (UI) — sama dengan customer site -->
+  <!-- Google Fonts: Fraunces (display) + Plus Jakarta Sans (UI) — sama dengan customer site -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Chart.js -->
@@ -21,9 +21,9 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Instrument Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
             display: ['"Fraunces"', 'Georgia', 'serif'],
-            mono: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
           },
           colors: {
             /* Sand -> Clay: pengganti cyan, mengikuti palet cream + terracotta customer site */
@@ -150,7 +150,8 @@
     html { -webkit-text-size-adjust: 100%; }
 
     body {
-      font-family: 'Instrument Sans', Inter, system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+      font-size: 16px;
       background-color: var(--cream);
       color: var(--espresso);
       -webkit-font-smoothing: antialiased;
@@ -223,6 +224,7 @@
         visibility: visible !important;
       }
       #printableThermalSlip {
+        display: block !important;
         position: fixed;
         left: 0;
         top: 0;
@@ -299,14 +301,20 @@
           <span class="ml-auto bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="tablesOccupiedBadge">0 Terisi</span>
         </button>
 
-        <button onclick="switchTab('reservations')" id="tab-reservations" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
-          <i data-lucide="calendar-check" class="w-4 h-4"></i>
-          <span>Meja Terpesan / Reservation</span>
-        </button>
-
         <button onclick="switchTab('pos')" id="tab-pos" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
           <i data-lucide="calculator" class="w-4 h-4"></i>
           <span>Kasir Barista POS</span>
+        </button>
+
+        <button onclick="switchTab('stock')" id="tab-stock" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="package-search" class="w-4 h-4"></i>
+          <span>Stock Opname</span>
+          <span class="ml-auto hidden bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono" id="stockAlertBadge">!</span>
+        </button>
+
+        <button onclick="switchTab('analytics')" id="tab-analytics" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="trending-up" class="w-4 h-4"></i>
+          <span>Laba Rugi &amp; Analytics</span>
         </button>
       </nav>
     </div>
@@ -349,7 +357,7 @@
     <div class="bg-slate-950 text-slate-300 text-xs py-2 px-4 flex flex-col sm:flex-row justify-between items-center border-b border-cyan-900/40 font-mono gap-1">
       <div class="flex items-center gap-2">
         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">QUADRA POS &amp; ERP</span>
-        <span>Denah 10 Meja Live • Reservasi 3 Shift (08–12 / 12–17 / 17–22 WIB) • Sinkron dengan Customer Site</span>
+        <span>Denah 10 Meja Live • Stock Opname Harian • Sinkron Real-Time dengan Customer Site</span>
       </div>
       <div class="flex items-center gap-3 text-[11px] text-slate-400">
         <span>Shift Aktif: <strong class="text-cyan-400">Afternoon (12:00 – 17:00)</strong></span>
@@ -368,7 +376,7 @@
           <h1 class="text-white font-extrabold text-base sm:text-lg flex items-center gap-2 font-display">
             <span id="currentViewTitle">Overview & Lab Analytics</span>
           </h1>
-          <p class="text-slate-400 text-xs hidden sm:block font-mono">Floor Plan 10 Meja, Reservation 3 Shift, Kasir POS &amp; Sync Real-Time</p>
+          <p class="text-slate-400 text-xs hidden sm:block font-mono">Floor Plan 10 Meja, POS Dual Display, Stock Opname &amp; Sync Real-Time</p>
         </div>
       </div>
 
@@ -407,9 +415,9 @@
                 <span class="text-[9px] text-cyan-700 font-bold">1 menit lalu</span>
               </div>
               <div class="p-2.5 bg-gold-50/80 rounded-xl border border-gold-200">
-                <p class="font-bold text-slate-900">Reservasi Meja Mendatang</p>
-                <p class="text-slate-500 text-[10px] font-mono">Terrace 02 • Shift Afternoon 12:00 – 17:00 WIB</p>
-                <span class="text-[9px] text-gold-700 font-bold">15 menit lalu</span>
+                <p class="font-bold text-slate-900">Stok Menipis — Perlu Restock</p>
+                <p class="text-slate-500 text-[10px] font-mono">Fresh Milk tersisa 6 L (minimum 10 L)</p>
+                <span class="text-[9px] text-gold-700 font-bold">12 menit lalu</span>
               </div>
             </div>
           </div>
@@ -451,7 +459,7 @@
             </div>
             <div class="mt-3">
               <span class="text-2xl font-semibold text-slate-900 font-display block tabular-nums tracking-tight" id="kpiCupsSold">198 Cangkir</span>
-              <p class="text-slate-500 text-[11.5px] mt-1 tabular-nums">164 Takeaway • 34 Dine-in</p>
+              <p class="text-slate-500 text-[11.5px] mt-1 tabular-nums">Kanal POS Kasir &amp; self-order customer</p>
             </div>
           </div>
 
@@ -508,11 +516,11 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-cyan-50 pb-3">
               <div>
                 <h3 class="font-bold text-base text-slate-900 font-display">Tingkat Penjualan Cangkir per Jam (Jam Sibuk)</h3>
-                <p class="text-xs text-stone-500 font-mono">Distribusi Takeaway Cepat vs Kursi Slow Bar Manual Brew</p>
+                <p class="text-xs text-stone-500 font-mono">Distribusi Take Away Cepat vs Kursi Slow Bar Manual Brew</p>
               </div>
               <div class="flex items-center gap-3 text-xs font-mono">
                 <span class="inline-flex items-center gap-1.5 text-slate-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-cyan-600"></span> Takeaway Bar
+                  <span class="w-2.5 h-2.5 rounded-full bg-cyan-600"></span> Take Away
                 </span>
                 <span class="inline-flex items-center gap-1.5 text-slate-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-gold-500"></span> Dine In / Slow Bar
@@ -608,11 +616,11 @@
               <span class="text-xl font-bold text-rose-700 font-display" id="tableStatsOccupied">0</span>
             </div>
           </div>
-          <div class="bg-white p-4 rounded-3xl border border-amber-200 shadow-sm flex items-center gap-3">
-            <span class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200"><i data-lucide="calendar-clock" class="w-5 h-5"></i></span>
+          <div class="bg-white p-4 rounded-3xl border border-cyan-200 shadow-sm flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-700 flex items-center justify-center border border-cyan-200"><i data-lucide="layout-grid" class="w-5 h-5"></i></span>
             <div>
-              <span class="text-[10px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Dipesan</span>
-              <span class="text-xl font-bold text-amber-700 font-display" id="tableStatsReserved">0</span>
+              <span class="text-[10px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Total Meja</span>
+              <span class="text-xl font-bold text-cyan-700 font-display" id="tableStatsReserved">10</span>
             </div>
           </div>
         </div>
@@ -621,12 +629,11 @@
         <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
             <h3 class="font-bold text-base text-slate-900 font-display">Denah Visual 10 Meja — Floor Plan Real-Time</h3>
-            <p class="text-xs text-stone-500 font-mono">2 bar seat counter • 5 meja indoor • 3 meja outdoor terrace. Meja otomatis menjadi merah saat ada pesanan masuk.</p>
+            <p class="text-xs text-stone-500 font-mono">4 stool slow bar • 5 meja indoor lounge • 1 meja outdoor terrace. Meja otomatis merah saat ada pesanan masuk.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 text-[10px] font-mono">
             <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Hijau — Tersedia</span>
             <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Merah — Terisi</span>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-800 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Kuning — Dipesan</span>
           </div>
         </div>
 
@@ -651,44 +658,99 @@
 
       </section>
 
-      <!-- ==================== VIEW 3: MEJA TERPESAN / RESERVATION TABLE (3 SHIFT) ==================== -->
-      <section id="view-reservations" class="hidden space-y-6">
+      <!-- ==================== VIEW 3: STOCK OPNAME (AUDIT STOK HARIAN) ==================== -->
+      <section id="view-stock" class="hidden space-y-6">
 
-        <!-- Kalender + shift selector -->
-        <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-4 rounded-3xl border border-amber-200 shadow-sm flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200"><i data-lucide="alert-triangle" class="w-5 h-5"></i></span>
             <div>
-              <h3 class="font-bold text-base text-slate-900 font-display">Meja Terpesan / Reservation Table</h3>
-              <p class="text-xs text-stone-500 font-mono">Sistem 3 shift: pilih tanggal &amp; shift, lalu reservasi meja hijau yang masih kosong.</p>
-            </div>
-            <div class="flex items-center gap-2 font-mono text-xs">
-              <span class="text-slate-600 font-bold">Tanggal:</span>
-              <input type="date" id="reservationDateFilter" onchange="onReservationDateChange(this.value)" class="bg-cyan-50/50 border border-cyan-200 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-              <button onclick="setReservationDateToday()" class="bg-slate-900 text-cyan-300 hover:bg-slate-800 px-3.5 py-2 rounded-xl transition font-bold">Hari Ini</button>
+              <span class="text-[10px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Item Menipis</span>
+              <span class="text-xl font-bold text-amber-700 font-display" id="stockStatsLow">0</span>
             </div>
           </div>
-
-          <div class="flex flex-col sm:flex-row gap-3" id="reservationShiftTabs">
-            <!-- Populated via JS -->
+          <div class="bg-white p-4 rounded-3xl border border-rose-200 shadow-sm flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-200"><i data-lucide="package-x" class="w-5 h-5"></i></span>
+            <div>
+              <span class="text-[10px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Total Selisih (Waste)</span>
+              <span class="text-xl font-bold text-rose-700 font-display" id="stockStatsWaste">0</span>
+            </div>
           </div>
-
-          <div class="flex flex-wrap items-center gap-4 pt-1 border-t border-cyan-50">
-            <span class="text-[11px] font-mono font-bold text-slate-700" id="reservationShiftLabel">-</span>
-            <div class="flex flex-wrap items-center gap-3 ml-auto" id="reservationLegend"></div>
+          <div class="bg-white p-4 rounded-3xl border border-emerald-200 shadow-sm flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200"><i data-lucide="clipboard-check" class="w-5 h-5"></i></span>
+            <div>
+              <span class="text-[10px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Status Opname</span>
+              <span class="text-base font-bold text-emerald-700 font-display" id="stockStatsStatus">Belum Diisi</span>
+            </div>
           </div>
         </div>
 
-        <!-- Denah meja reservasi -->
-        <div class="bg-white rounded-3xl border border-cyan-100 shadow-sm p-5 sm:p-7">
-          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="reservationFloorWrap">
-            <!-- Populated via JS -->
+        <div class="bg-white p-5 sm:p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cyan-50 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Stock Opname Bahan Baku Harian</h3>
+              <p class="text-xs text-stone-500 font-mono">Bandingkan stok sistem vs hitungan fisik. Selisih otomatis dicatat sebagai waste.</p>
+            </div>
+            <button onclick="exportStockCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                <tr>
+                  <th class="py-3 px-4">BAHAN BAKU</th>
+                  <th class="py-3 px-4 text-right">STOK SISTEM</th>
+                  <th class="py-3 px-4 text-right">STOK FISIK</th>
+                  <th class="py-3 px-4 text-right">SELISIH</th>
+                  <th class="py-3 px-4">CATATAN</th>
+                </tr>
+              </thead>
+              <tbody id="stockOpnameBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-cyan-50">
+            <p class="text-[11px] text-stone-500 font-mono">Terakhir disimpan: <strong id="stockSavedAt" class="text-slate-800">—</strong></p>
+            <button onclick="saveStockOpname()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 px-5 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
+              <i data-lucide="save" class="w-4 h-4"></i> Simpan Hasil Opname
+            </button>
           </div>
         </div>
 
       </section>
-
-      <!-- ==================== VIEW 4: KASIR BARISTA POS ==================== -->
+      <!-- ==================== VIEW 4: KASIR BARISTA POS (DUAL DISPLAY) ==================== -->
       <section id="view-pos" class="hidden space-y-6">
+
+        <!-- Shift bar + dual display toggle -->
+        <div class="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 border border-cyan-900/40 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 to-gold-500 flex items-center justify-center text-slate-950 font-bold text-xs font-mono">AR</span>
+              <div class="font-sans">
+                <p class="text-xs font-bold text-white font-display">Barista Ari</p>
+                <p class="text-[10px] text-slate-400 font-mono">Shift Pagi • 08:00 – 17:00 WIB</p>
+              </div>
+            </div>
+            <span class="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2.5 py-1.5 rounded-xl">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SHIFT AKTIF
+            </span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Tampilan Layar:</span>
+            <div class="flex items-center gap-1.5 bg-slate-950 border border-slate-700 rounded-xl p-1">
+              <button id="dispCashierBtn" onclick="setPOSDisplay('cashier')" class="px-3 py-1.5 rounded-lg font-bold text-[11px] transition font-mono bg-cyan-600 text-white shadow-sm">💻 Layar Kasir</button>
+              <button id="dispCustomerBtn" onclick="setPOSDisplay('customer')" class="px-3 py-1.5 rounded-lg font-bold text-[11px] transition font-mono text-slate-400 hover:text-white">👀 Layar Pelanggan</button>
+            </div>
+            <button onclick="openVoidPin()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-400/40 px-3 py-2 rounded-xl text-[11px] font-mono font-bold transition flex items-center gap-1.5">
+              <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Void Transaksi
+            </button>
+          </div>
+        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
@@ -705,7 +767,7 @@
             <!-- Customer Data for Order -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
               <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Tamu / Pemesan *</label>
+                <label class="block font-bold text-slate-700 mb-1">Nama Tamu / Pemesan</label>
                 <input type="text" id="posCustomerName" placeholder="Nama tamu" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
               </div>
               <div>
@@ -732,12 +794,6 @@
                 <!-- Injected via JS -->
               </div>
             </div>
-
-            <!-- Customization Notes -->
-            <div class="text-xs font-mono">
-              <label class="block font-bold text-slate-700 mb-1">Catatan Racikan Barista:</label>
-              <input type="text" id="posOrderNotes" placeholder="Less ice, oat milk, dsb." class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-            </div>
           </div>
 
           <!-- Right: Cart Summary & Payment (5 Cols) -->
@@ -751,11 +807,21 @@
                 <button id="posTypeTakeAway" onclick="setPOSOrderType('take_away')" class="flex-1 px-3 py-2 rounded-xl font-bold text-[11px] transition font-mono">Take Away</button>
               </div>
 
-              <label class="block font-bold text-slate-700 mt-1">Pilih Meja (hanya meja hijau/kosong) *</label>
-              <select id="posTableSelect" onchange="onPOSTableSelect(this.value)" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                <!-- Injected via JS -->
-              </select>
-              <p class="text-[10px]" id="posTableInfo"></p>
+              <div id="posTableRow">
+                <label class="block font-bold text-slate-700 mt-1">Pilih Meja (hanya meja hijau/kosong) *</label>
+                <select id="posTableSelect" onchange="onPOSTableSelect(this.value)" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                  <!-- Injected via JS -->
+                </select>
+                <p class="text-[10px]" id="posTableInfo"></p>
+              </div>
+
+              <div id="posQueueRow" class="hidden">
+                <label class="block font-bold text-slate-700 mt-1">Nomor Antrean (Take Away)</label>
+                <div class="w-full bg-gold-50 border border-gold-300 rounded-xl p-3 text-center">
+                  <span class="text-2xl font-black text-gold-700 font-display" id="posQueueNumber">A-01</span>
+                  <p class="text-[10px] text-stone-500 mt-0.5">Nomor antrean otomatis untuk pesanan bawa pulang</p>
+                </div>
+              </div>
             </div>
 
             <div class="flex items-center justify-between">
@@ -820,12 +886,99 @@
 
             <!-- Action: Cetak Struk & Selesaikan -->
             <div class="space-y-2.5 pt-1">
-              <button onclick="processPOSPaymentAndPrint()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
-                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk & Selesaikan Transaksi
-              </button>
+              <div class="flex items-center gap-2">
+                <button onclick="openPrintBillModal()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-[11px] font-mono">
+                  <i data-lucide="printer" class="w-4 h-4 text-cyan-300"></i> 🖨️ Cetak Struk
+                </button>
+                <button onclick="completePOSOrder()" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i> ✅ Selesaikan
+                </button>
+              </div>
             </div>
           </div>
 
+        </div>
+
+        <!-- Dual Display Panel (Layar Kasir / Layar Pelanggan) -->
+        <div id="posDisplayPanel" class="bg-slate-900 text-white rounded-3xl p-6 border border-cyan-900/40 shadow-xl"></div>
+
+      </section>
+      <!-- ==================== VIEW 6: LABA RUGI & BUSINESS INTELLIGENCE (SUPERADMIN) ==================== -->
+      <section id="view-analytics" class="hidden space-y-6">
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 font-display">Laporan Laba Rugi &amp; Business Intelligence</h3>
+            <p class="text-xs text-stone-500 font-mono">Ringkasan finansial harian, produk terlaris, retensi tamu &amp; performa multi-outlet.</p>
+          </div>
+          <button onclick="exportPnLCSV()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 text-xs font-mono font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-cyan-900/50">
+            <i data-lucide="download" class="w-4 h-4"></i> Ekspor Laporan (CSV)
+          </button>
+        </div>
+
+        <!-- P&L Statement -->
+        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-cyan-900/40 shadow-xl space-y-5">
+          <span class="text-gold-400 text-xs font-mono uppercase font-bold tracking-widest">PROFIT &amp; LOSS — HARI INI</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
+              <span class="text-slate-400 text-[10px] uppercase tracking-wider">Total Omzet</span>
+              <p class="font-bold text-white text-2xl font-display tabular-nums" id="plRevenue">Rp 0</p>
+            </div>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
+              <span class="text-slate-400 text-[10px] uppercase tracking-wider">HPP (COGS 34%)</span>
+              <p class="font-bold text-rose-300 text-2xl font-display tabular-nums" id="plCogs">Rp 0</p>
+            </div>
+            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-xs">
+              <span class="text-slate-400 text-[10px] uppercase tracking-wider">Beban Operasional</span>
+              <p class="font-bold text-amber-300 text-2xl font-display tabular-nums" id="plOpex">Rp 0</p>
+            </div>
+            <div class="bg-gradient-to-br from-cyan-600/30 to-gold-500/20 border border-cyan-400/40 p-4 rounded-2xl space-y-1 font-mono text-xs">
+              <span class="text-cyan-200 text-[10px] uppercase tracking-wider">Laba Bersih</span>
+              <p class="font-bold text-white text-2xl font-display tabular-nums" id="plNet">Rp 0</p>
+              <span class="text-emerald-300 text-[10px]">Margin <strong id="plMargin">0%</strong></span>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-[10px] font-mono text-slate-400"><span>Laba Kotor <strong class="text-white" id="plGross">Rp 0</strong></span><span>Nota: <strong class="text-white" id="plTxCount">0</strong> transaksi • rata-rata <strong class="text-white" id="plAvg">Rp 0</strong></span></div>
+            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+              <div id="plGrossBar" class="bg-gradient-to-r from-cyan-500 to-gold-400 h-full rounded-full transition-all" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Top Selling -->
+          <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+            <div class="border-b border-cyan-50 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-display">🔥 Produk Terlaris (Top Selling)</h3>
+              <p class="text-xs text-stone-500 font-mono">Berdasarkan akumulasi qty seluruh transaksi lunas.</p>
+            </div>
+            <div class="space-y-3.5" id="topSellersList"></div>
+          </div>
+
+          <!-- KYC / Retention & Outlet -->
+          <div class="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+            <div class="border-b border-cyan-50 pb-3">
+              <h3 class="font-bold text-base text-slate-900 font-display">💚 Retensi Tamu &amp; Multi-Outlet</h3>
+              <p class="text-xs text-stone-500 font-mono">Metrik pelanggan &amp; sebaran outlet Quadra Coffee Lab.</p>
+            </div>
+            <div class="space-y-3" id="kycMetrics"></div>
+            <div class="grid grid-cols-3 gap-3 pt-2">
+              <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 text-center">
+                <p class="text-[10px] font-mono text-cyan-700 uppercase">Senopati</p>
+                <p class="text-lg font-black text-slate-900 font-display">Flagship</p>
+              </div>
+              <div class="bg-gold-50 border border-gold-300 rounded-2xl p-3 text-center">
+                <p class="text-[10px] font-mono text-gold-700 uppercase">Kemang</p>
+                <p class="text-lg font-black text-slate-900 font-display">Slow Bar</p>
+              </div>
+              <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-center">
+                <p class="text-[10px] font-mono text-emerald-700 uppercase">BSD</p>
+                <p class="text-lg font-black text-slate-900 font-display">Roastery</p>
+              </div>
+            </div>
+          </div>
         </div>
 
       </section>
@@ -886,99 +1039,8 @@
 
   </div>
 
-  <!-- ==================== PRINTABLE THERMAL RECEIPT CONTAINER ==================== -->
-  <div id="printableThermalSlip" class="hidden">
-    <div style="font-family: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace; max-width: 320px; margin: 0 auto; text-align: left; font-size: 11px; color: #2A1D17;">
-      <div style="text-align: center; border-bottom: 2px dashed #C1673F; padding-bottom: 8px; margin-bottom: 8px;">
-        <h2 style="margin: 0; font-size: 16px; font-weight: 800; font-family: 'Fraunces', Georgia, serif; letter-spacing: -0.01em;">QUADRA COFFEE LAB</h2>
-        <p style="margin: 2px 0; font-size: 10px; color: #6E5843;">Specialty Roastery & Slow Bar</p>
-        <p style="margin: 0; font-size: 9px; color: #6E5843;">Jl. Senopati No. 42, Kebayoran Baru, Jaksel</p>
-      </div>
-
-      <div style="margin-bottom: 8px;">
-        <p style="margin: 2px 0;"><strong>No:</strong> <span id="prnReceiptCode">QDR-202610-8821</span></p>
-        <p style="margin: 2px 0;"><strong>Nama Cup:</strong> <span id="prnCustName">Tedi Mahendra</span></p>
-        <p style="margin: 2px 0;"><strong>Tipe:</strong> <span id="prnOrderType">Takeaway Pickup Bar</span></p>
-        <p style="margin: 2px 0;"><strong>Barista:</strong> Mikael J. (Station 1)</p>
-        <p style="margin: 2px 0;"><strong>Waktu:</strong> <span id="prnTime">15 Menit Pickup</span></p>
-      </div>
-
-      <div style="border-top: 1px dashed #D6C1A4; border-bottom: 1px dashed #D6C1A4; padding: 6px 0; margin-bottom: 8px;">
-        <table style="width: 100%;" id="prnItemsTable">
-          <!-- Injected via JS -->
-        </table>
-      </div>
-
-      <div style="margin-bottom: 8px;">
-        <table style="width: 100%;">
-          <tr>
-            <td>Subtotal:</td>
-            <td style="text-align: right;" id="prnSubtotal">Rp 80.000</td>
-          </tr>
-          <tr>
-            <td>PB1 Resto 10%:</td>
-            <td style="text-align: right;" id="prnTax">Rp 8.000</td>
-          </tr>
-          <tr style="font-size: 13px; font-weight: bold;">
-            <td>TOTAL LUNAS:</td>
-            <td style="text-align: right; color: #A9552F;" id="prnGrandTotal">Rp 88.000</td>
-          </tr>
-        </table>
-      </div>
-
-      <div style="text-align: center; margin-top: 10px;">
-        <p style="margin: 0; font-weight: bold;">TOKEN BARCODE: <span id="prnToken">CUP-BAR-8821</span></p>
-        <p style="margin: 3px 0 0; font-size: 9px; color: #6E5843;">Silakan tunjukkan barcode di Pickup Bar Counter.</p>
-        <p style="margin: 2px 0 0; font-size: 9px; color: #6E5843;">Enjoy your specialty coffee extraction!</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== MODAL: RESERVASI MEJA ==================== -->
-  <div id="reservationModal" class="hidden fixed inset-0 z-[70] items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-3xl shadow-2xl border border-cyan-100 w-full max-w-md p-6 space-y-4">
-      <div class="flex items-start justify-between border-b border-cyan-50 pb-3">
-        <div>
-          <h3 class="font-bold text-base text-slate-900 font-display">Input Reservasi Meja</h3>
-          <p class="text-[11px] font-mono text-stone-500 mt-0.5" id="reservationTableInfo">-</p>
-        </div>
-        <button onclick="closeReservationModal()" class="text-stone-400 hover:text-rose-600 transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <p class="text-[10px] font-mono font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2" id="reservationShiftInfo">-</p>
-
-      <form id="reservationForm" onsubmit="return submitReservation(event)" class="space-y-3 font-mono text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Nama Tamu *</label>
-          <input type="text" id="reservationGuestName" placeholder="Nama lengkap tamu" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">No. WhatsApp *</label>
-          <input type="tel" id="reservationGuestPhone" placeholder="08xxxxxxxxxx" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Jumlah Pax</label>
-            <input type="number" id="reservationPax" min="1" value="2" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Nominal DP (Rp)</label>
-            <input type="number" id="reservationDp" min="0" step="10000" value="50000" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2 pt-1">
-          <button type="button" onclick="closeReservationModal()" class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl transition">Batal</button>
-          <button type="submit" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
-            <i data-lucide="check" class="w-4 h-4"></i> Simpan Reservasi
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
+  <!-- ==================== PRINTABLE THERMAL RECEIPT (diisi via JS: 58/80mm) ==================== -->
+  <div id="printableThermalSlip" class="hidden"></div>
   <!-- ==================== MODAL: ITEM CUSTOMIZER ==================== -->
   <div id="itemModal" class="hidden fixed inset-0 z-[70] items-center justify-center bg-black/60 backdrop-blur-sm p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-cyan-100 w-full max-w-md p-6 space-y-4">
@@ -1027,6 +1089,10 @@
           <label class="block font-bold text-slate-700 mb-1">Notes Barista</label>
           <input type="text" id="itemNotes" placeholder="cth: extra shot, tanpa whipped cream" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
         </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Jumlah (Qty)</label>
+          <input type="number" id="itemQty" min="1" value="1" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+        </div>
       </div>
 
       <div class="flex items-center gap-2 pt-1">
@@ -1038,28 +1104,65 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL: E-RECEIPT POS ==================== -->
-  <div id="posReceiptModal" class="hidden fixed inset-0 z-[80] items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-3xl shadow-2xl border border-cyan-100 w-full max-w-sm p-6 space-y-4">
-      <div class="flex items-center justify-between border-b border-cyan-50 pb-3">
-        <h3 class="font-bold text-base text-slate-900 font-display">Struk Kasir (E-Receipt)</h3>
-        <button onclick="closePOSReceipt()" class="text-stone-400 hover:text-rose-600 transition">
+  <!-- ==================== MODAL: VOID / CANCEL — PIN SUPERVISOR ==================== -->
+  <div id="voidPinModal" class="hidden fixed inset-0 z-[70] items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border border-rose-100 w-full max-w-sm p-6 space-y-4">
+      <div class="flex items-start justify-between border-b border-rose-50 pb-3">
+        <div>
+          <h3 class="font-bold text-base text-slate-900 font-display">Void / Cancel Transaksi</h3>
+          <p class="text-[11px] font-mono text-stone-500 mt-0.5">Otorisasi PIN Supervisor (hanya 4 digit)</p>
+        </div>
+        <button onclick="closeVoidPin()" class="text-stone-400 hover:text-rose-600 transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
-      <div id="posReceiptBody" class="bg-stone-50 rounded-2xl border border-stone-200 p-4">
-        <!-- Injected via JS -->
+
+      <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2">
+        <i data-lucide="shield-alert" class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5"></i>
+        <p class="text-[11px] text-rose-800 font-sans">Aksi void hanya dapat dilakukan oleh Supervisor. Masukkan PIN Supervisor untuk membatalkan tagihan berjalan.</p>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="closePOSReceipt()" class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl transition">Tutup</button>
-        <button onclick="printPOSReceiptNow()" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
-          <i data-lucide="printer" class="w-4 h-4"></i> Cetak Termal
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700 font-mono">PIN Supervisor</label>
+        <input type="password" id="voidPinInput" inputmode="numeric" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter')submitVoidPin()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-center text-2xl tracking-[0.5em] text-slate-900 font-black focus:outline-none focus:ring-2 focus:ring-rose-400" />
+        <p id="voidPinError" class="hidden text-[11px] text-rose-600 font-bold font-mono"></p>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <button onclick="closeVoidPin()" class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl transition font-sans">Batal</button>
+        <button onclick="submitVoidPin()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 font-sans">
+          <i data-lucide="shield-check" class="w-4 h-4"></i> Otorisasi Void
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
+  <!-- ==================== MODAL: CETAK STRUK 58/80mm ==================== -->
+  <div id="printBillModal" class="hidden fixed inset-0 z-[70] items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border border-cyan-100 w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 space-y-4">
+      <div class="flex items-start justify-between border-b border-cyan-50 pb-3">
+        <div>
+          <h3 class="font-bold text-base text-slate-900 font-display">🖨️ Cetak Struk (Print Bill)</h3>
+          <p class="text-[11px] font-mono text-stone-500 mt-0.5">Pilih lebar kertas printer thermal.</p>
+        </div>
+        <button onclick="closePrintBillModal()" class="text-stone-400 hover:text-rose-600 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="printBillPreview" class="bg-stone-50 rounded-2xl p-4 overflow-x-auto"></div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="printBillWithWidth('58')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-xs font-mono">
+          <i data-lucide="printer" class="w-4 h-4 text-cyan-300"></i> Thermal 58mm
+        </button>
+        <button onclick="printBillWithWidth('80')" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-xs font-mono">
+          <i data-lucide="printer" class="w-4 h-4"></i> Thermal 80mm
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-cyan-800 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-xs font-medium font-sans">
     <div class="w-6 h-6 rounded-full bg-cyan-600 flex items-center justify-center text-gold-300 font-bold">
       <i data-lucide="check" class="w-3.5 h-3.5"></i>
@@ -1069,8 +1172,6 @@
 
   <!-- ==================== JAVASCRIPT MASTER LOGIC ==================== -->
   <script>
-    // 1. Data Menu Katalog POS (Manual Brew / Espresso / Food / Pastry / Cold / Non-Coffee)
-    const MENU_CATEGORIES = ["Manual Brew", "Espresso", "Cold Brew", "Non-Coffee", "Pastry", "Food"];
     let masterMenu = [
       { id: "mb-1", name: "Panama Geisha Boquete V60", category: "Manual Brew", price: 65000, desc: "Lot #04 Jasmine, Bergamot, White Peach (SCA 92.5)" },
       { id: "mb-2", name: "Colombia Pink Bourbon Origami", category: "Manual Brew", price: 55000, desc: "Strawberry candy, Pink Grapefruit, Honey Anaerobic" },
@@ -1078,63 +1179,73 @@
       { id: "es-1", name: "Quadra Aerocano Citrus Flambé", category: "Espresso", price: 38000, desc: "Espresso aerated with flame-torched orange blossom syrup" },
       { id: "es-2", name: "Oat Pistachio Cloud Latte", category: "Espresso", price: 42000, desc: "Double ristretto with organic oat milk and salted pistachio foam" },
       { id: "es-3", name: "Double Ristretto Macchiato", category: "Espresso", price: 35000, desc: "Ristretto doppio dengan micro-foam tebal" },
-      { id: "cb-1", name: "Kyoto Cold Drip 18-Hours", category: "Cold Brew", price: 45000, desc: "18-hour slow ice drip with dark chocolate and bourbon oak notes" },
-      { id: "cb-2", name: "Signature Cold Brew Tonic", category: "Cold Brew", price: 40000, desc: "Cold brew 16 jam dengan tonic dan orange zest" },
-      { id: "nc-1", name: "Matcha Ceremonial Latte", category: "Non-Coffee", price: 40000, desc: "Matcha upacara Jepang dengan susu segar" },
-      { id: "nc-2", name: "Cokelat Belanda Artisan", category: "Non-Coffee", price: 37000, desc: "Dark chocolate 70% dengan whipped cream" },
+      { id: "cb-1", name: "Kyoto Cold Drip 18-Hours", category: "Espresso", price: 45000, desc: "18-hour slow ice drip with dark chocolate and bourbon oak notes" },
+      { id: "cb-2", name: "Signature Cold Brew Tonic", category: "Espresso", price: 40000, desc: "Cold brew 16 jam dengan tonic dan orange zest" },
+      { id: "nc-1", name: "Matcha Ceremonial Latte", category: "Espresso", price: 40000, desc: "Matcha upacara Jepang dengan susu segar" },
       { id: "pa-1", name: "Butter Croissant", category: "Pastry", price: 28000, desc: "Croissant butter Prancis, dipanggang harian" },
       { id: "pa-2", name: "Pain au Chocolat", category: "Pastry", price: 30000, desc: "Pastri berlapis dengan isian dark chocolate" },
-      { id: "pa-3", name: "Cinnamon Roll Lab", category: "Pastry", price: 32000, desc: "Cinnamon roll dengan cream cheese glaze" },
       { id: "fd-1", name: "Truffle Mushroom Toast", category: "Food", price: 58000, desc: "Sourdough, jamur tumis truffle, telur mata sapi" },
       { id: "fd-2", name: "Quadra Beef Rice Bowl", category: "Food", price: 62000, desc: "Rice bowl daging sapi dengan saus khas Quadra" },
-      { id: "fd-3", name: "Smoked Chicken Panini", category: "Food", price: 55000, desc: "Panini ayam asap dengan keju leleh" }
+      { id: "fd-3", name: "Smoked Chicken Panini", category: "Food", price: 55000, desc: "Panini ayam asap dengan keju leleh" },
+      { id: "pr-1", name: "Paket Duo Espresso Bar", category: "Promo", price: 62000, desc: "2 minuman Espresso Bar pilihan, hemat 25%" },
+      { id: "pr-2", name: "Slow Bar Tasting Flight", category: "Promo", price: 85000, desc: "3 single origin seduh manual dalam satu flight" }
     ];
 
     /* ============================================================
-       DENAH 10 MEJA PROFESIONAL
-       ------------------------------------------------------------
-       2 bar seat counter (Bar-01, Bar-02) + 5 meja indoor (M-01..M-05)
-       + 3 meja outdoor terrace (T-01..T-03).
-       Nomor tableNumber tetap 1..10 supaya sinkron dengan customer site.
-       ============================================================ */
+       DENAH 10 MEJA — TATA LETAK BIOSKOP (CINEMA FLOOR)
+       ------------------------------------------------------------ */
     const TABLE_BLUEPRINT = [
-      { tableNumber: 1, code: "BAR-01", label: "Bar Seat 01", area: "Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
-      { tableNumber: 2, code: "BAR-02", label: "Bar Seat 02", area: "Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
-      { tableNumber: 3, code: "M-01", label: "Meja Indoor 01", area: "Indoor", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 4, code: "M-02", label: "Meja Indoor 02", area: "Indoor", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 5, code: "M-03", label: "Meja Indoor 03", area: "Indoor", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 6, code: "M-04", label: "Meja Indoor 04", area: "Indoor", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 7, code: "M-05", label: "Meja Indoor 05", area: "Indoor", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 8, code: "T-01", label: "Terrace 01", area: "Outdoor Terrace", zone: "outdoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 9, code: "T-02", label: "Terrace 02", area: "Outdoor Terrace", zone: "outdoor", capacity: 2, pax: "1-2 Pax" },
-      { tableNumber: 10, code: "T-03", label: "Terrace 03", area: "Outdoor Terrace", zone: "outdoor", capacity: 6, pax: "4-6 Pax" }
+      { tableNumber: 1, code: "STOOL-01", label: "Stool Bar 01", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
+      { tableNumber: 2, code: "STOOL-02", label: "Stool Bar 02", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
+      { tableNumber: 3, code: "STOOL-03", label: "Stool Bar 03", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
+      { tableNumber: 4, code: "STOOL-04", label: "Stool Bar 04", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
+      { tableNumber: 5, code: "MEJA-01", label: "Meja Indoor 01", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 6, code: "MEJA-02", label: "Meja Indoor 02", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 7, code: "MEJA-03", label: "Meja Indoor 03", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 8, code: "MEJA-04", label: "Meja Indoor 04", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 9, code: "MEJA-05", label: "Meja Indoor 05", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 10, code: "MEJA-06", label: "Meja Terrace 06", area: "Outdoor Terrace", zone: "outdoor", capacity: 6, pax: "4-6 Pax" }
     ];
 
-    // Data Transaksi History (seed contoh; transaksi live ditambahkan dari POS & customer site)
-    let masterTransactions = [
-      { invoice: "QDR-202610-8821", token: "CUP-BAR-8821", customer: "Tedi Mahendra", phone: "081299998888", type: "TAKEAWAY", itemsSummary: "1x Quadra Aerocano Citrus", time: "14:15 WIB", subtotal: 38000, tax: 3800, total: 41800, method: "QRIS Instant", status: "LUNAS" },
-      { invoice: "QDR-202610-8822", token: "CUP-BAR-8822", customer: "Nadia Hutagalung", phone: "081134567890", type: "TAKEAWAY", itemsSummary: "1x Oat Pistachio Latte, 1x Kyoto Drip", time: "14:20 WIB", subtotal: 87000, tax: 8700, total: 95700, method: "QRIS Instant", status: "LUNAS" },
-      { invoice: "QDR-202610-8823", token: "SLOW-STOOL-02", customer: "Bima Santoso", phone: "081355667788", type: "SLOWBAR", itemsSummary: "Slow Bar Tasting Flight (Colombia Pink Bourbon)", time: "14:00 WIB", subtotal: 85000, tax: 8500, total: 93500, method: "WhatsApp Order Transfer", status: "LUNAS" },
-      { invoice: "QDR-202610-8824", token: "CUP-BAR-8824", customer: "Agung Pratama", phone: "081722334411", type: "TAKEAWAY", itemsSummary: "1x Colombia Pink Bourbon Origami", time: "14:05 WIB", subtotal: 55000, tax: 5500, total: 60500, method: "QRIS Instant", status: "LUNAS" }
+    /* Seed transaksi historis (Database Transaksi & P&L Superadmin). */
+    const SEED_TRANSACTIONS = [
+      { invoice: "QDR-202611-9001", token: "MEJA-03", customer: "Tedi Mahendra", phone: "081299998888", type: "DINE_IN", itemsSummary: "2x Quadra Aerocano Citrus, 1x Butter Croissant", time: "08:42 WIB", subtotal: 104000, tax: 10400, service: 5200, total: 119600, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9002", token: "MEJA-07", customer: "Nadia Hutagalung", phone: "081134567890", type: "DINE_IN", itemsSummary: "1x Oat Pistachio Cloud Latte, 1x Kyoto Cold Drip", time: "09:15 WIB", subtotal: 87000, tax: 8700, service: 4350, total: 100050, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9003", token: "STOOL-02", customer: "Bima Santoso", phone: "081355667788", type: "DINE_IN", itemsSummary: "Slow Bar Tasting Flight (Colombia Pink Bourbon)", time: "09:30 WIB", subtotal: 85000, tax: 8500, service: 4250, total: 97750, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9004", token: "A-01", customer: "Agung Pratama", phone: "081722334411", type: "TAKE_AWAY", itemsSummary: "Kolombia Pink Bourbon Origami + Croissant", time: "10:05 WIB", subtotal: 120000, tax: 12000, service: 0, total: 132000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9005", token: "MEJA-05", customer: "Clara Wijaya", phone: "081566778899", type: "DINE_IN", itemsSummary: "2x Truffle Mushroom Toast, 2x Matcha Latte", time: "10:40 WIB", subtotal: 196000, tax: 19600, service: 9800, total: 225400, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9006", token: "MEJA-01", customer: "Rizky Kurniawan", phone: "081788990011", type: "DINE_IN", itemsSummary: "1x Beef Rice Bowl, 1x Signature Cold Brew Tonic", time: "11:12 WIB", subtotal: 102000, tax: 10200, service: 5100, total: 117300, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9007", token: "A-02", customer: "Sinta Marlina", phone: "081911223344", type: "TAKE_AWAY", itemsSummary: "4x Oat Pistachio Cloud Latte", time: "11:35 WIB", subtotal: 240000, tax: 24000, service: 0, total: 264000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9008", token: "MEJA-08", customer: "Hendra Gunawan", phone: "081233445566", type: "DINE_IN", itemsSummary: "1x Panama Geisha Boquete V60, 1x Pain au Chocolat", time: "12:20 WIB", subtotal: 93000, tax: 9300, service: 4650, total: 106950, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9009", token: "MEJA-02", customer: "Maya Puspita", phone: "081877665544", type: "DINE_IN", itemsSummary: "1x Smoked Chicken Panini, 1x Matcha Latte", time: "12:55 WIB", subtotal: 95000, tax: 9500, service: 4750, total: 109250, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9010", token: "STOOL-01", customer: "Yusuf Ramadhan", phone: "081655443322", type: "DINE_IN", itemsSummary: "1x Ethiopia Yirgacheffe Syphon, 1x Cinnamon Roll", time: "13:10 WIB", subtotal: 120000, tax: 12000, service: 6000, total: 138000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9011", token: "MEJA-04", customer: "Dewi Lestari", phone: "081344556677", type: "DINE_IN", itemsSummary: "2x Aerocano Citrus, 1x Cinnamon Roll Lab", time: "13:48 WIB", subtotal: 190000, tax: 19000, service: 9500, total: 218500, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9012", token: "A-03", customer: "Fajar Nugroho", phone: "081255667788", type: "TAKE_AWAY", itemsSummary: "2x Cold Brew Tonic, 1x Butter Croissant", time: "14:05 WIB", subtotal: 90000, tax: 9000, service: 0, total: 99000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9013", token: "MEJA-09", customer: "Anisa Rahmawati", phone: "081999887766", type: "DINE_IN", itemsSummary: "2x Kyoto Cold Drip 18-Hours, 1x Truffle Toast", time: "14:32 WIB", subtotal: 148000, tax: 14800, service: 7400, total: 170200, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9014", token: "MEJA-06", customer: "Bagus Setiawan", phone: "081666778899", type: "DINE_IN", itemsSummary: "1x Paket Duo Espresso, 1x Pain au Chocolat", time: "15:10 WIB", subtotal: 92000, tax: 9200, service: 4600, total: 105800, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9015", token: "MEJA-10", customer: "Intan Permata", phone: "081777889900", type: "DINE_IN", itemsSummary: "2x Beef Rice Bowl, 2x Matcha Latte, 1x Croissant", time: "15:45 WIB", subtotal: 290000, tax: 29000, service: 14500, total: 333500, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9016", token: "A-04", customer: "Galih Pratama", phone: "081888990011", type: "TAKE_AWAY", itemsSummary: "2x Oat Latte, 1x Kyoto Cold Drip", time: "16:02 WIB", subtotal: 129000, tax: 12900, service: 0, total: 141900, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9017", token: "MEJA-07", customer: "Putri Anggraini", phone: "081999001122", type: "DINE_IN", itemsSummary: "1x Tasting Flight, 1x Cinnamon Roll Lab", time: "16:38 WIB", subtotal: 204000, tax: 20400, service: 10200, total: 234600, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9018", token: "STOOL-03", customer: "Rangga Aditya", phone: "081222334455", type: "DINE_IN", itemsSummary: "1x Macchiato, 1x Croissant, 1x Cold Brew Tonic", time: "17:05 WIB", subtotal: 180000, tax: 18000, service: 9000, total: 207000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9019", token: "MEJA-05", customer: "Vina Oktaviani", phone: "081333221100", type: "DINE_IN", itemsSummary: "3x Truffle Mushroom Toast, 2x Aerocano Citrus", time: "17:40 WIB", subtotal: 260000, tax: 26000, service: 13000, total: 299000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9020", token: "A-05", customer: "Doni Saputra", phone: "081444332211", type: "TAKE_AWAY", itemsSummary: "2x Matcha Latte, 1x Butter Croissant", time: "18:02 WIB", subtotal: 96000, tax: 9600, service: 0, total: 105600, method: "Tunai", status: "LUNAS", date: todayISO() }
+    ];
+
+    /* Seed stok bahan baku (Stock Opname). */
+    const STOCK_BLUEPRINT = [
+      { id: "st-beans", name: "Biji Kopi Single Origin", unit: "kg", system: 18.5, min: 8, cost: 320000, recipeUse: 0.018 },
+      { id: "st-milk", name: "Fresh Milk", unit: "L", system: 6, min: 10, cost: 22000, recipeUse: 0.18 },
+      { id: "st-syrup", name: "Sirup Gula Aren", unit: "botol", system: 14, min: 5, cost: 45000, recipeUse: 0.03 },
+      { id: "st-cup", name: "Paper Cup 12oz", unit: "pcs", system: 420, min: 150, cost: 1400, recipeUse: 1 }
     ];
 
     /* ============================================================
        SINKRONISASI REAL-TIME DENGAN CUSTOMER SITE
-       ------------------------------------------------------------
-       Helper yang sama sudah dimuat customer site (window.QuadraSync).
-       Jika file ini dibuka berdiri sendiri (mis. diuji terpisah),
-       salinan minimal di bawah dipakai supaya kontrak tetap identik.
        ============================================================ */
-    const RESERVATIONS_KEY = 'quadra_reservations';
-    const SHIFTS = [
-      { id: "shift-1", name: "Morning Coffee & Brunch", start: "08:00", end: "12:00", label: "08:00 – 12:00 WIB" },
-      { id: "shift-2", name: "Afternoon Chill & Work", start: "12:00", end: "17:00", label: "12:00 – 17:00 WIB" },
-      { id: "shift-3", name: "Evening Slow Bar & Dining", start: "17:00", end: "22:00", label: "17:00 – 22:00 WIB" }
-    ];
-
     var QuadraSync = window.QuadraSync || (function () {
       const ORDERS_KEY = 'quadra_orders_db';
       const TABLES_KEY = 'quadra_tables_state';
+      const STOCK_KEY = 'quadra_stock';
       const CHANNEL_NAME = 'quadra_sync_channel';
       const FLOW = ['NEW', 'PREPARING', 'SERVED', 'COMPLETED'];
       let channel = null;
@@ -1162,20 +1273,20 @@
         return order;
       }
       return {
-        VERSION: 1, ORDERS_KEY: ORDERS_KEY, TABLES_KEY: TABLES_KEY, RESERVATIONS_KEY: RESERVATIONS_KEY,
+        VERSION: 1, ORDERS_KEY: ORDERS_KEY, TABLES_KEY: TABLES_KEY, STOCK_KEY: STOCK_KEY,
         CHANNEL_NAME: CHANNEL_NAME,
         ORDER_STATUS_FLOW: FLOW,
         ORDER_STATUS_LABEL: { NEW: 'Pesanan Masuk', PREPARING: 'Sedang Dibuat', SERVED: 'Siap / Disajikan', COMPLETED: 'Selesai' },
-        TABLE_STATUS_LABEL: { available: 'Tersedia', occupied: 'Terisi', reserved: 'Dipesan', cleaning: 'Dibersihkan' },
+        TABLE_STATUS_LABEL: { available: 'Tersedia', occupied: 'Terisi' },
         emit: emit, readOrders: readOrders, readTables: readTables, upsertOrder: upsertOrder,
-        readReservations: function () { return readList(RESERVATIONS_KEY).filter(r => r && r.id); },
-        writeReservations: function (list) { writeList(RESERVATIONS_KEY, Array.isArray(list) ? list : []); },
+        readStock: function () { return readList(STOCK_KEY); },
+        writeStock: function (list) { writeList(STOCK_KEY, Array.isArray(list) ? list : []); },
         setOrderStatus: function (orderId, status) { return setSyncOrderStatus(orderId, status); },
         writeList: writeList,
         subscribe: function (handler) {
           if (channel) channel.addEventListener('message', function (ev) { handler(ev.data || {}); });
           window.addEventListener('storage', function (ev) {
-            if (!ev.key || [ORDERS_KEY, TABLES_KEY, RESERVATIONS_KEY, 'quadra_sync_ping'].indexOf(ev.key) < 0) return;
+            if (!ev.key || [ORDERS_KEY, TABLES_KEY, STOCK_KEY, 'quadra_sync_ping'].indexOf(ev.key) < 0) return;
             handler({ type: 'EXTERNAL_CHANGE', storageKey: ev.key, source: 'storage' });
           });
         },
@@ -1184,27 +1295,18 @@
 
     /** Perbarui status pesanan + teruskan event ke customer site. */
     function setSyncOrderStatus(orderId, status) {
-      const shared = window.QuadraSync;
-      /* Bila helper customer tersedia (halaman dibuka satu origin), pakai itu:
-         versi customer juga menurunkan ulang status meja (COMPLETED -> cleaning). */
-      if (shared && shared !== QuadraSync && typeof shared.setOrderStatus === 'function') {
-        const res = shared.setOrderStatus(orderId, status);
-        if (res) return (window.QuadraSync.readOrders() || []).find(function (o) { return o.orderId === orderId; }) || res;
-      }
       const list = QuadraSync.readOrders();
       const order = list.find(o => o.orderId === orderId);
       if (!order) return null;
       order.orderStatus = status;
       if (status === 'COMPLETED') { order.paymentStatus = 'PAID'; order.completedAt = new Date().toISOString(); }
       QuadraSync.upsertOrder(order);
-      /* Meja mengikuti alur pesanan: COMPLETED -> dibersihkan, selain itu terisi. */
       const tables = QuadraSync.readTables();
-      const m = /(\d+)/.exec(String(order.tableNumber || ''));
-      const num = m ? Number(m[1]) : null;
+      const num = parseTableNumber(order.tableNumber);
       const ti = num == null ? -1 : tables.findIndex(t => Number(t.tableNumber) === num);
       if (ti >= 0) {
         const closed = status === 'COMPLETED';
-        tables[ti].status = closed ? 'cleaning' : 'occupied';
+        tables[ti].status = closed ? 'available' : 'occupied';
         tables[ti].orderId = closed ? null : order.orderId;
         tables[ti].guestCount = closed ? 0 : (tables[ti].guestCount || 1);
         if (closed) tables[ti].seatedAt = null;
@@ -1214,17 +1316,54 @@
       return order;
     }
 
-    /** Ambil pesanan customer dari storage (bentuk QuadraOrder apa adanya). */
     function syncOrders() { return QuadraSync.readOrders(); }
     function syncTables() { return QuadraSync.readTables(); }
 
     /* ============================================================
-       STATE MESIN MEJA (10 MEJA)
+       SEEDING DENAH: 7 meja hijau (kosong) + 3 meja merah (terisi)
        ------------------------------------------------------------
-       Sumber kebenaran tunggal untuk denah: localStorage
-       `quadra_tables_state` (dibagi bersama customer site).
-       Bila kosong, di-seed dari TABLE_BLUEPRINT sehingga 10 meja
-       selalu tampil walau belum ada pesanan sama sekali.
+       Dijalankan sekali saat belum ada data supaya demo langsung
+       menampilkan 3 bill aktif dengan timer duduk & nominal.
+       ============================================================ */
+    const SEED_OCCUPIED = [
+      { tableNumber: 5, guest: "Rangga Aditya", minutesAgo: 35, amount: 128000 },
+      { tableNumber: 7, guest: "Maya Puspita", minutesAgo: 18, amount: 96000 },
+      { tableNumber: 10, guest: "Keluarga Hartono", minutesAgo: 62, amount: 245000 }
+    ];
+
+    function seedOccupancy() {
+      const tables = syncTables();
+      if (!tables.length) return;
+      const anyOccupied = tables.some(t => t.status === 'occupied');
+      if (anyOccupied) return;
+      SEED_OCCUPIED.forEach(seed => {
+        const i = tables.findIndex(t => Number(t.tableNumber) === seed.tableNumber);
+        if (i < 0) return;
+        tables[i].status = 'occupied';
+        tables[i].orderId = 'QDR-SEED-' + seed.tableNumber;
+        tables[i].guestCount = 2;
+        tables[i].seatedAt = new Date(Date.now() - seed.minutesAgo * 60000).toISOString();
+        tables[i].bill = seed.amount;
+      });
+      QuadraSync.writeList(QuadraSync.TABLES_KEY, tables);
+      // Daftarkan bill aktif sebagai pesanan supaya terhitung di P&L / denah.
+      SEED_OCCUPIED.forEach(seed => {
+        QuadraSync.upsertOrder({
+          orderId: 'QDR-SEED-' + seed.tableNumber,
+          tableNumber: TABLE_BLUEPRINT.find(b => b.tableNumber === seed.tableNumber).code,
+          area: TABLE_BLUEPRINT.find(b => b.tableNumber === seed.tableNumber).area,
+          orderType: 'dine_in', customerName: seed.guest, customerPhone: '',
+          items: [{ name: 'Bill Berjalan (Dine In)', variant: '', qty: 1, price: seed.amount }],
+          subtotal: Math.round(seed.amount / 1.15), tax: Math.round(seed.amount * 0.1 / 1.15),
+          serviceFee: Math.round(seed.amount * 0.05 / 1.15), totalAmount: seed.amount,
+          paymentMethod: 'QRIS', paymentStatus: 'PENDING', orderStatus: 'SERVED',
+          createdAt: new Date(Date.now() - seed.minutesAgo * 60000).toISOString(),
+        });
+      });
+    }
+
+    /* ============================================================
+       STATE MESIN MEJA (10 MEJA)
        ============================================================ */
     function seedTables() {
       const existing = syncTables();
@@ -1237,7 +1376,6 @@
           capacity: bp.capacity, pax: bp.pax,
           status: 'available', orderId: null, guestCount: 0, seatedAt: null,
         }, prev, {
-          /* Blueprint mengatur identitas denah; status tetap dari data tersimpan. */
           code: bp.code, label: bp.label, area: bp.area, zone: bp.zone, capacity: bp.capacity, pax: bp.pax,
         });
       });
@@ -1245,7 +1383,6 @@
       return merged;
     }
 
-    /** Salinan denah 10 meja: state tersimpan + identitas blueprint. */
     function floorTables() {
       const existing = syncTables();
       if (!existing.length) return seedTables();
@@ -1256,7 +1393,6 @@
 
     function tableByNumber(num) { return floorTables().find(t => Number(t.tableNumber) === Number(num)) || null; }
 
-    /** Nomor meja dari string label apa pun ("Meja 07", "M-03", 7). */
     function parseTableNumber(label) {
       const direct = Number(label);
       if (Number.isFinite(direct) && direct >= 1 && direct <= 10) return direct;
@@ -1266,7 +1402,6 @@
       return m ? Number(m[1]) : null;
     }
 
-    /** Timer durasi duduk ("42 mnt") dari timestamp ISO. */
     function seatDuration(iso) {
       if (!iso) return '-';
       const ms = Date.now() - new Date(iso).getTime();
@@ -1277,7 +1412,6 @@
       return h + ' j ' + (mins % 60) + ' mnt';
     }
 
-    /** Bill berjalan sebuah meja dari pesanan aktifnya. */
     function tableBill(table) {
       if (!table || !table.orderId) return 0;
       const order = syncOrders().find(o => o.orderId === table.orderId);
@@ -1285,14 +1419,13 @@
       return Number(table.bill) || 0;
     }
 
-    /** Ubah status satu meja dan siarkan ke customer site. */
     function setTableStatus(number, status, patch) {
       const tables = floorTables();
       const idx = tables.findIndex(t => Number(t.tableNumber) === Number(number));
       if (idx < 0) return null;
       const t = Object.assign({}, tables[idx], patch || {});
       t.status = status;
-      if (status === 'available' || status === 'cleaning') {
+      if (status === 'available') {
         t.orderId = null; t.guestCount = 0; t.seatedAt = null; t.bill = 0;
       }
       tables[idx] = t;
@@ -1301,50 +1434,67 @@
       return t;
     }
 
-    /** Meja hijau (kosong) — dipakai untuk dropdown "Pilih Meja" di POS. */
     function availableTables() {
       return floorTables().filter(t => t.status === 'available');
     }
 
-    /** Reservasi tersimpan untuk tanggal + shift tertentu. */
-    function reservationsFor(dateISO, shiftId) {
-      return QuadraSync.readReservations().filter(r => r.date === dateISO && r.shiftId === shiftId);
+    /* ============================================================
+       STOCK OPNAME STATE (quadra_stock)
+       ============================================================ */
+    function stockItems() {
+      const saved = QuadraSync.readStock();
+      const byId = {};
+      saved.forEach(s => { byId[s.id] = s; });
+      return STOCK_BLUEPRINT.map(bp => Object.assign({}, bp, byId[bp.id] || {}));
     }
-    function reservationOfTable(dateISO, shiftId, tableNumber) {
-      return reservationsFor(dateISO, shiftId).find(r => Number(r.tableNumber) === Number(tableNumber)) || null;
+    function seedStock() {
+      const existing = QuadraSync.readStock();
+      if (existing.length) return stockItems();
+      const seeded = STOCK_BLUEPRINT.map(bp => Object.assign({}, bp, { physical: bp.system, waste: 0, note: '', updatedAt: null }));
+      QuadraSync.writeStock(seeded);
+      return stockItems();
     }
-    function upsertReservation(res) {
-      const list = QuadraSync.readReservations();
-      const idx = list.findIndex(r => r.id === res.id);
-      if (idx >= 0) list[idx] = Object.assign({}, list[idx], res); else list.unshift(res);
-      QuadraSync.writeReservations(list);
-      QuadraSync.emit('RESERVATION_UPDATED', { reservation: res, reservations: list });
-      return res;
+    function lowStockCount() {
+      return stockItems().filter(s => Number(s.system) < Number(s.min)).length;
+    }
+    function deductStockForOrder(order) {
+      const items = (order && order.items) || [];
+      const totalUnits = items.reduce((n, it) => n + (Number(it.qty) || 0), 0);
+      if (!totalUnits) return;
+      const list = stockItems();
+      list.forEach(s => {
+        const use = Number(s.recipeUse) || 0;
+        if (use > 0) {
+          s.system = Math.max(0, Number((Number(s.system) - use * totalUnits).toFixed(3)));
+          s.updatedAt = new Date().toISOString();
+        }
+      });
+      QuadraSync.writeStock(list);
+      QuadraSync.emit('STOCK_UPDATED', { stock: list });
     }
 
-    // State UI dashboard
-    let currentRole = 'superadmin';           // 'superadmin' | 'kasir'
-    let currentReservationDate = new Date().toISOString().split('T')[0];
-    let currentReservationShift = SHIFTS[0].id;
+    /* ============================================================
+       STATE UI DASHBOARD
+       ============================================================ */
+    let currentRole = 'superadmin';
     let posMenuCategoryFilter = 'Semua';
     let posMenuSearchQuery = '';
-    let posSelectedTable = null;              // nomor meja hijau terpilih di POS
-    let posOrderType = 'dine_in';             // 'dine_in' | 'take_away'
-    let posPaymentMethod = 'Cash';            // 'Cash' | 'QRIS' | 'EDC'
+    let posSelectedTable = null;
+    let posOrderType = 'dine_in';
+    let posPaymentMethod = 'Cash';
     let posCustomizingMenuId = null;
     let posCashReceived = 0;
-    let posWave = [];                         // pesanan customer site yang belum di-acknowledge
-
-    // POS Cart State (kosong di awal; kasir menambahkan dari katalog)
+    let posDisplayMode = 'cashier';
+    let posQueueCounter = 1;
     let posCart = [];
 
     let cupPeakHourChartInstance = null;
     let beverageRatioChartInstance = null;
 
-    // Helper: Formatter
     function formatRupiah(num) {
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
     }
+    function todayISO() { return new Date().toISOString().split('T')[0]; }
 
     function toggleSidebar() {
       const sb = document.getElementById('adminSidebar');
@@ -1355,28 +1505,26 @@
 
     /* ============================================================
        ROLE-BASED ACCESS CONTROL (RBAC)
-       ------------------------------------------------------------
-       Superadmin -> analitik & database (Overview, Transaksi).
-       Kasir      -> operasional (Status Meja, Reservasi, POS).
+       Superadmin -> analitik finansial, P&L, database & ekspor.
+       Kasir      -> operasional: Denah Meja, POS, Stock Opname.
        ============================================================ */
     const ROLE_MENU = {
-      superadmin: ['overview', 'transactions'],
-      kasir: ['tables', 'reservations', 'pos'],
-      /* Audit/analitik dan ekspor database hanya milik Superadmin. */
+      superadmin: ['overview', 'analytics', 'transactions'],
+      kasir: ['tables', 'pos', 'stock']
     };
     const ROLE_LABEL = { superadmin: 'Superadmin', kasir: 'Kasir' };
     const ROLE_DEFAULT_TAB = { superadmin: 'overview', kasir: 'tables' };
+    const ALL_TABS = ['overview', 'tables', 'pos', 'stock', 'analytics', 'transactions'];
 
     function hasAccess(tabKey) {
       return (ROLE_MENU[currentRole] || []).indexOf(tabKey) >= 0;
     }
 
     function applyRoleMenus() {
-      ['overview', 'tables', 'reservations', 'pos', 'transactions'].forEach(k => {
+      ALL_TABS.forEach(k => {
         const btn = document.getElementById(`tab-${k}`);
         if (btn) btn.classList.toggle('hidden', !hasAccess(k));
       });
-      /* Section "audit sensitif" tambahan pada Overview disembunyikan untuk Kasir. */
       document.querySelectorAll('[data-role-only="superadmin"]').forEach(el => {
         el.classList.toggle('hidden', currentRole !== 'superadmin');
       });
@@ -1394,8 +1542,8 @@
       if (badge) badge.innerText = ROLE_LABEL[currentRole];
       const hint = document.getElementById('currentRoleHint');
       if (hint) hint.innerText = currentRole === 'superadmin'
-        ? 'Akses audit & analitik finansial'
-        : 'Akses operasional kasir & meja';
+        ? 'Akses laba rugi & analitik bisnis'
+        : 'Akses operasional kasir, meja & stok';
     }
 
     function setRole(roleKey) {
@@ -1407,7 +1555,6 @@
     }
 
     function switchTab(tabKey) {
-      /* RBAC guard: tolak tab di luar hak akses role aktif. */
       if (!hasAccess(tabKey)) {
         showToast(`Menu "${tabKey}" tidak tersedia untuk role ${ROLE_LABEL[currentRole]}.`);
         tabKey = ROLE_DEFAULT_TAB[currentRole];
@@ -1415,21 +1562,20 @@
 
       const titles = {
         overview: "Overview & Lab Analytics",
-        tables: "Status Meja Live",
-        reservations: "Meja Terpesan / Reservation Table",
+        tables: "Denah Meja Live",
         pos: "Kasir Barista POS",
+        stock: "Stock Opname Bahan Baku",
+        analytics: "Laba Rugi & Business Intelligence",
         transactions: "Database Transaksi & Ekspor CSV"
       };
 
       document.getElementById('currentViewTitle').innerText = titles[tabKey] || "Quadra Coffee Lab Console";
 
-      ['overview', 'tables', 'reservations', 'pos', 'transactions'].forEach(k => {
+      ALL_TABS.forEach(k => {
         const v = document.getElementById(`view-${k}`);
         if (v) v.classList.add('hidden');
-
         const btn = document.getElementById(`tab-${k}`);
         if (btn) {
-          /* Pertahankan hidden RBAC: tombol non-akses tetap disembunyikan. */
           const rbacHidden = !hasAccess(k);
           btn.className = "sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800 font-mono";
           btn.classList.toggle('hidden', rbacHidden);
@@ -1450,10 +1596,11 @@
         toggleSidebar();
       }
 
-      if (tabKey === 'overview') { initCharts(); }
+      if (tabKey === 'overview') { initCharts(); updateDashboardCounters(); }
       if (tabKey === 'tables') { renderTableGrid(); renderFloorPlan(); }
-      if (tabKey === 'reservations') { renderReservationView(); }
-      if (tabKey === 'pos') { renderPOSMenuOptions(); renderPOSCategoryFilters(); renderPOSFloorPicker(); updatePOSCartUI(); }
+      if (tabKey === 'pos') { renderPOSMenuOptions(); renderPOSCategoryFilters(); renderPOSFloorPicker(); updatePOSCartUI(); renderPOSDisplay(); }
+      if (tabKey === 'stock') renderStockOpname();
+      if (tabKey === 'analytics') renderAnalytics();
       if (tabKey === 'transactions') renderMasterTxTable();
 
       lucide.createIcons();
@@ -1476,11 +1623,9 @@
 
     // ==================== 1. OVERVIEW & CHARTS ====================
     function initCharts() {
-      // Idempotent: hancurkan instance lama supaya tidak dobel saat tab dibuka ulang
       if (cupPeakHourChartInstance) { cupPeakHourChartInstance.destroy(); cupPeakHourChartInstance = null; }
       if (beverageRatioChartInstance) { beverageRatioChartInstance.destroy(); beverageRatioChartInstance = null; }
 
-      // 1. Hourly Cup Volume Bar Chart
       const ctxHour = document.getElementById('cupPeakHourChart');
       if (ctxHour) {
         cupPeakHourChartInstance = new Chart(ctxHour, {
@@ -1488,529 +1633,184 @@
           data: {
             labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
             datasets: [
-              {
-                label: 'Takeaway Bar (Cups)',
-                data: [28, 42, 35, 38, 46, 32, 21],
-                backgroundColor: '#A9552F',
-                borderRadius: 6
-              },
-              {
-                label: 'Dine In / Slow Bar (Cups)',
-                data: [12, 18, 22, 24, 26, 30, 18],
-                backgroundColor: '#CC9E4F',
-                borderRadius: 6
-              }
+              { label: 'Take Away (Cups)', data: [18, 26, 22, 24, 28, 20, 12], backgroundColor: '#A9552F', borderRadius: 6 },
+              { label: 'Dine In / Slow Bar (Cups)', data: [12, 18, 22, 24, 26, 30, 18], backgroundColor: '#CC9E4F', borderRadius: 6 }
             ]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-              y: {
-                beginAtZero: true,
-                max: 55,
-                ticks: { stepSize: 10, color: '#7E6853', font: { family: 'Instrument Sans', size: 10 } },
-                grid: { color: '#EFE2CE' }
-              },
-              x: {
-                ticks: { color: '#7E6853', font: { family: 'Instrument Sans', size: 10 } },
-                grid: { display: false }
-              }
+              y: { beginAtZero: true, max: 40, ticks: { stepSize: 10, color: '#7E6853', font: { family: 'Plus Jakarta Sans', size: 10 } }, grid: { color: '#EFE2CE' } },
+              x: { ticks: { color: '#7E6853', font: { family: 'Plus Jakarta Sans', size: 10 } }, grid: { display: false } }
             }
           }
         });
       }
 
-      // 2. Beverage Ratio Doughnut Chart
       const ctxRatio = document.getElementById('beverageRatioChart');
       if (ctxRatio) {
         beverageRatioChartInstance = new Chart(ctxRatio, {
           type: 'doughnut',
           data: {
             labels: ['Espresso Bar', 'Manual Brew', 'Pastry & Food'],
-            datasets: [{
-              data: [48, 28, 24],
-              backgroundColor: ['#A9552F', '#CC9E4F', '#9C8270'],
-              borderWidth: 2,
-              borderColor: '#FFFCF6'
-            }]
+            datasets: [{ data: [46, 30, 24], backgroundColor: ['#A9552F', '#CC9E4F', '#9C8270'], borderWidth: 2, borderColor: '#FFFCF6' }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Instrument Sans', size: 10 } } }
-            },
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } } },
             cutout: '70%'
           }
         });
       }
     }
 
-    // ==================== 2. DENAH 10 MEJA & INDIKATOR STATUS ====================
-    /** Palet warna ketat: hijau = tersedia, merah = terisi, kuning = reserved. */
+    // ==================== 2. DENAH 10 MEJA — BIOSKOP, 2 WARNA ====================
     const TABLE_TONE = {
       available: {
-        card: 'bg-emerald-50 border-emerald-400 hover:border-emerald-600 shadow-sm',
+        card: 'bg-emerald-50 border-emerald-400 hover:border-emerald-600 hover:shadow-md',
         badge: 'bg-emerald-600 text-white',
-        ring: 'ring-emerald-200',
+        chair: 'text-emerald-500',
         dot: 'bg-emerald-500',
       },
       occupied: {
-        card: 'bg-rose-50 border-rose-400 shadow-sm',
+        card: 'bg-rose-50 border-rose-400',
         badge: 'bg-rose-600 text-white',
-        ring: 'ring-rose-200',
+        chair: 'text-rose-500',
         dot: 'bg-rose-500',
-      },
-      reserved: {
-        card: 'bg-amber-50 border-amber-400 shadow-sm',
-        badge: 'bg-amber-500 text-slate-900',
-        ring: 'ring-amber-200',
-        dot: 'bg-amber-400',
-      },
-      cleaning: {
-        card: 'bg-slate-100 border-slate-300',
-        badge: 'bg-slate-600 text-white',
-        ring: 'ring-slate-200',
-        dot: 'bg-slate-400',
       },
     };
 
-    /**
-     * Gabungkan state tersimpan + reservasi shift aktif menjadi status denah.
-     * Prioritas aturan: pesanan aktif (occupied) > reservasi (reserved) > tersedia.
-     */
     function floorState() {
       const tables = floorTables().map(t => Object.assign({}, t));
-      const reservasi = reservationsFor(currentReservationDate, currentReservationShift);
-
       tables.forEach(t => {
-        const res = reservasi.find(r => Number(r.tableNumber) === Number(t.tableNumber));
-        t.reservation = res || null;
         const order = t.orderId ? syncOrders().find(o => o.orderId === t.orderId) : null;
         t.activeOrder = order || null;
-
-        if (order && order.orderStatus !== 'COMPLETED') {
-          t.displayStatus = 'occupied';
-        } else if (res && res.status === 'booked') {
-          t.displayStatus = 'reserved';
-        } else if (t.status === 'occupied') {
-          t.displayStatus = 'occupied';
-        } else {
-          t.displayStatus = 'available';
-        }
-        t.guestName = (order && (order.customerName || order.tableNumber)) || (res ? res.guestName : null);
+        t.displayStatus = (order && order.orderStatus !== 'COMPLETED') || t.status === 'occupied' ? 'occupied' : 'available';
+        t.guestName = (order && (order.customerName || order.customer)) || null;
         t.bill = order ? (Number(order.totalAmount) || 0) : 0;
       });
       return tables;
     }
 
-    /** Denah visual 10 meja: 2 bar counter, 5 indoor, 3 terrace. */
+    /** Kursi melengkung ala bioskop menghadap meja. */
+    function chairRow(count) {
+      let out = '';
+      for (let i = 0; i < count; i++) {
+        out += '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 20v-3a6 6 0 0 1 12 0v3"/><path d="M6 17h12"/></svg>';
+      }
+      return out;
+    }
+
     function renderFloorPlan() {
       const wrap = document.getElementById('floorPlanWrap');
       if (!wrap) return;
 
       const tables = floorState();
       const zones = [
-        { key: 'bar', title: 'Bar Seat Counter', icon: 'armchair', desc: '2 kursi bar menghadap barista' },
-        { key: 'indoor', title: 'Indoor Lounge', icon: 'sofa', desc: '5 meja indoor ber-AC' },
-        { key: 'outdoor', title: 'Outdoor Terrace', icon: 'trees', desc: '3 meja teras terbuka' },
+        { key: 'bar', title: 'Slow Bar Counter', icon: 'armchair', desc: 'Stool bar menghadap barista' },
+        { key: 'indoor', title: 'Indoor Lounge', icon: 'sofa', desc: 'Meja indoor ber-AC' },
+        { key: 'outdoor', title: 'Outdoor Terrace', icon: 'trees', desc: 'Meja teras terbuka' },
       ];
 
-      wrap.innerHTML = zones.map(zone => {
-        const list = tables.filter(t => t.zone === zone.key);
-        return `
-          <div class="space-y-3">
-            <div class="flex items-center justify-between border-b border-cyan-100 pb-2">
-              <div class="flex items-center gap-2">
-                <i data-lucide="${zone.icon}" class="w-4 h-4 text-cyan-700"></i>
-                <h4 class="font-bold text-sm text-slate-900 font-display">${zone.title}</h4>
-              </div>
-              <span class="text-[10px] font-mono text-stone-500">${zone.desc}</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              ${list.map(tableCardHtml).join('')}
-            </div>
-          </div>
-        `;
-      }).join('');
+      let html = '';
+      html += '<div class="mb-2 rounded-2xl border-2 border-dashed border-cyan-300 bg-gradient-to-r from-slate-900 to-slate-800 py-3 text-center">';
+      html += '<p class="text-white font-display font-bold tracking-[0.2em] text-xs sm:text-sm">SLOW BAR &amp; ESPRESSO COUNTER</p>';
+      html += '</div>';
 
+      zones.forEach(zone => {
+        const items = tables.filter(t => t.zone === zone.key);
+        if (!items.length) return;
+        html += '<div class="space-y-4">';
+        html += `<div class="flex items-center gap-2"><i data-lucide="${zone.icon}" class="w-4 h-4 text-cyan-600"></i><h4 class="font-bold text-sm text-slate-900 font-display">${zone.title}</h4><span class="text-[10px] font-mono text-stone-400">${zone.desc}</span></div>`;
+        html += '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">';
+        items.forEach(t => { html += tableCardHtml(t); });
+        html += '</div></div>';
+      });
+
+      wrap.innerHTML = html;
       lucide.createIcons();
     }
 
-    /** Kartu satu meja sesuai indikator warna strict status rule. */
     function tableCardHtml(t) {
       const tone = TABLE_TONE[t.displayStatus] || TABLE_TONE.available;
-      const statusLabel = { available: 'Tersedia', occupied: 'Terisi', reserved: 'Dipesan', cleaning: 'Dibersihkan' }[t.displayStatus];
-
-      let bodyHtml = '';
-      if (t.displayStatus === 'occupied') {
-        const duration = t.activeOrder ? seatDuration(t.activeOrder.createdAt) : seatDuration(t.seatedAt);
-        bodyHtml = `
-          <div class="mt-2.5 p-2.5 bg-white/80 rounded-xl border border-rose-200 space-y-1 font-sans text-[11px]">
-            <div class="flex items-center justify-between">
-              <span class="text-stone-500 font-mono text-[10px]">Tamu / Order</span>
-              <span class="font-bold text-slate-900 truncate max-w-[120px]">${t.guestName || '-'}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-stone-500 font-mono text-[10px]">Durasi Duduk</span>
-              <span class="font-bold text-rose-700 font-mono">${duration}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-stone-500 font-mono text-[10px]">Bill Berjalan</span>
-              <span class="font-black text-slate-900 font-mono">${t.bill ? formatRupiah(t.bill) : '-'}</span>
-            </div>
+      const isOcc = t.displayStatus === 'occupied';
+      const seats = Math.min(Number(t.capacity) || 2, 6);
+      let body = '';
+      if (isOcc) {
+        body = `
+          <div class="mt-2 space-y-1 text-center">
+            <p class="text-[9px] font-mono text-rose-700 font-bold">Duduk: ${seatDuration(t.seatedAt)}</p>
+            <p class="text-sm font-black text-rose-800 font-display">${formatRupiah(t.bill)}</p>
+            ${t.guestName ? `<p class="text-[9px] font-mono text-stone-500 truncate">${t.guestName}</p>` : ''}
           </div>
-          <div class="mt-3 flex items-center gap-2">
-            <button onclick="openTableBill(${t.tableNumber})" class="flex-1 bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold py-2 rounded-xl transition text-[11px] font-sans flex items-center justify-center gap-1">
-              <i data-lucide="receipt-text" class="w-3.5 h-3.5"></i> Lihat Bill
-            </button>
-            <button onclick="clearTable(${t.tableNumber})" class="flex-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 font-bold py-2 rounded-xl transition text-[11px] font-sans flex items-center justify-center gap-1">
-              <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Kosongkan
-            </button>
-          </div>
-        `;
-      } else if (t.displayStatus === 'reserved') {
-        const res = t.reservation || {};
-        bodyHtml = `
-          <div class="mt-2.5 p-2.5 bg-white/80 rounded-xl border border-amber-200 space-y-1 font-sans text-[11px]">
-            <div class="flex items-center justify-between">
-              <span class="text-stone-500 font-mono text-[10px]">Reservasi</span>
-              <span class="font-bold text-slate-900 truncate max-w-[120px]">${res.guestName || '-'}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-stone-500 font-mono text-[10px]">Pax / DP</span>
-              <span class="font-bold text-amber-800 font-mono">${res.pax || '-'} pax • ${formatRupiah(res.dp || 0)}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-stone-500 font-mono text-[10px]">Shift</span>
-              <span class="font-bold text-amber-800 font-mono">${shiftLabel(res.shiftId)}</span>
-            </div>
-          </div>
-          <div class="mt-3 flex items-center gap-2">
-            <button onclick="checkInReservation(${t.tableNumber})" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2 rounded-xl transition text-[11px] font-sans flex items-center justify-center gap-1">
-              <i data-lucide="user-check" class="w-3.5 h-3.5"></i> Check-in
-            </button>
-            <button onclick="cancelReservation(${t.tableNumber})" class="bg-white hover:bg-stone-50 text-stone-600 border border-stone-300 font-bold py-2 px-2.5 rounded-xl transition text-[11px] font-sans" title="Batalkan reservasi">
-              <i data-lucide="x" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        `;
+          <button onclick="event.stopPropagation();clearTable(${t.tableNumber})" class="mt-2 w-full bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 font-bold py-2 rounded-xl transition text-[10px] font-sans">Selesaikan &amp; Kosongkan Meja</button>`;
       } else {
-        bodyHtml = `
-          <div class="mt-2.5 p-2.5 bg-white/70 rounded-xl border border-emerald-200 text-center font-sans text-[11px] text-stone-500">
-            Meja kosong siap dipakai tamu
+        body = `
+          <div class="mt-2 space-y-1 text-center">
+            <p class="text-[10px] font-mono text-emerald-700 font-bold">${t.pax} • ${t.area}</p>
+            <p class="text-[11px] font-bold text-emerald-800 font-sans">Kosong / Tersedia</p>
           </div>
-          <div class="mt-3 flex items-center gap-2">
-            <button onclick="posFromTable(${t.tableNumber})" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 rounded-xl transition text-[11px] font-sans flex items-center justify-center gap-1">
-              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Pesan di Sini (POS)
-            </button>
-            <button onclick="openReservationModal(${t.tableNumber})" class="bg-white hover:bg-amber-50 text-amber-800 border border-amber-300 font-bold py-2 px-2.5 rounded-xl transition text-[11px] font-sans" title="Reservasi meja ini">
-              <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        `;
+          <button onclick="event.stopPropagation();posFromTable(${t.tableNumber})" class="mt-2 w-full bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold py-2 rounded-xl transition text-[10px] font-sans">Mulai Pesanan di Meja Ini</button>`;
       }
-
       return `
-        <div class="p-4 rounded-2xl border-2 ${tone.card} flex flex-col justify-between">
-          <div>
-            <div class="flex items-start justify-between font-mono">
-              <div>
-                <span class="text-[10px] text-stone-500 font-bold">${t.code}</span>
-                <h5 class="font-bold text-slate-900 text-sm font-display leading-tight">${t.label}</h5>
-                <p class="text-[10px] text-stone-500 mt-0.5">${t.area} • ${t.pax}</p>
-              </div>
-              <span class="px-2 py-0.5 rounded-lg text-[9px] font-bold ${tone.badge} flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-white/80"></span>${statusLabel}
-              </span>
-            </div>
-            ${bodyHtml}
+        <div class="rounded-3xl border-2 p-3 transition ${tone.card} ${!isOcc ? 'cursor-pointer' : ''}" ${!isOcc ? `onclick="posFromTable(${t.tableNumber})"` : ''}>
+          <div class="flex items-center justify-between">
+            <span class="${tone.badge} text-[9px] font-bold px-2 py-0.5 rounded-full font-mono">${t.code}</span>
+            <span class="w-2.5 h-2.5 rounded-full ${tone.dot}"></span>
           </div>
-        </div>
-      `;
+          <div class="flex justify-center gap-1 mt-2 ${tone.chair}">${chairRow(seats)}</div>
+          <p class="text-center text-[11px] font-bold text-slate-900 mt-1 font-display leading-tight">${t.label}</p>
+          ${body}
+        </div>`;
     }
 
-    function shiftLabel(shiftId) {
-      const s = SHIFTS.find(x => x.id === shiftId);
-      return s ? s.label : '-';
-    }
-
-    /** Ringkasan status meja pada badge sidebar + KPI. */
     function renderTableGrid() {
-      const badge = document.getElementById('tablesOccupiedBadge');
       const tables = floorState();
       const occupied = tables.filter(t => t.displayStatus === 'occupied').length;
-      const available = tables.filter(t => t.displayStatus === 'available').length;
-      const reserved = tables.filter(t => t.displayStatus === 'reserved').length;
-
-      if (badge) badge.innerText = `${occupied} Terisi`;
-
-      const elOcc = document.getElementById('tableStatsOccupied');
-      if (elOcc) elOcc.innerText = String(occupied);
-      const elAvail = document.getElementById('tableStatsAvailable');
-      if (elAvail) elAvail.innerText = String(available);
-      const elRes = document.getElementById('tableStatsReserved');
-      if (elRes) elRes.innerText = String(reserved);
-
-      const kpi = document.getElementById('kpiTablesOccupied');
-      if (kpi) kpi.innerText = `${occupied} / 10 Meja Terisi`;
+      const available = tables.length - occupied;
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      setTxt('tableStatsAvailable', available);
+      setTxt('tableStatsOccupied', occupied);
+      setTxt('tableStatsReserved', 0);
+      const badge = document.getElementById('tablesOccupiedBadge');
+      if (badge) badge.innerText = occupied + ' Terisi';
+      renderWavePanel();
     }
 
     function openTableBill(number) {
       const t = floorState().find(x => Number(x.tableNumber) === Number(number));
       if (!t) return;
-      const order = t.activeOrder;
-      if (order) {
-        showToast(`${t.code} • ${t.guestName || 'Tamu'} • ${formatRupiah(Number(order.totalAmount) || 0)} • ${seatDuration(order.createdAt)}`);
-      } else {
-        showToast(`${t.code} tidak memiliki bill berjalan.`);
-      }
-    }
-
-    /** Kosongkan meja: bersihkan meja + tutup pesanan aktifnya. */
-    function clearTable(number) {
-      const tables = floorTables();
-      const t = tables.find(x => Number(x.tableNumber) === Number(number));
-      if (!t) return;
-      if (t.orderId) {
-        setSyncOrderStatus(t.orderId, 'COMPLETED');
-      }
-      setTableStatus(number, 'available');
-      refreshSyncedViews();
-      showToast(`${t.code} ${t.label} dikosongkan dan siap untuk tamu berikutnya.`);
-    }
-
-    // ==================== 3. RESERVATION TABLE (3 SHIFT SYSTEM) ====================
-    /** Tab shift + kalender + denah meja pada menu Meja Terpesan. */
-    function renderReservationView() {
-      const tabs = document.getElementById('reservationShiftTabs');
-      if (tabs) {
-        tabs.innerHTML = SHIFTS.map(s => {
-          const active = s.id === currentReservationShift;
-          const cls = active
-            ? 'flex-1 min-w-[200px] text-left p-3.5 rounded-2xl border-2 border-cyan-600 bg-cyan-50 shadow-sm transition'
-            : 'flex-1 min-w-[200px] text-left p-3.5 rounded-2xl border-2 border-stone-200 bg-white hover:border-cyan-300 transition';
-          const booked = reservationsFor(currentReservationDate, s.id).filter(r => r.status === 'booked').length;
-          return `
-            <button onclick="setReservationShift('${s.id}')" class="${cls}">
-              <span class="block text-[10px] uppercase tracking-widest font-mono font-bold ${active ? 'text-cyan-700' : 'text-stone-400'}">${s.label}</span>
-              <span class="block font-bold text-sm text-slate-900 font-display mt-0.5">${s.name}</span>
-              <span class="block text-[10px] font-mono text-stone-500 mt-1">${booked} meja terpesan</span>
-            </button>
-          `;
-        }).join('');
-      }
-
-      const dateInput = document.getElementById('reservationDateFilter');
-      if (dateInput) dateInput.value = currentReservationDate;
-
-      const label = document.getElementById('reservationShiftLabel');
-      if (label) label.innerText = `${shiftLabel(currentReservationShift)} • ${currentReservationDate}`;
-
-      renderReservationFloor();
-      lucide.createIcons();
-    }
-
-    function setReservationShift(shiftId) {
-      currentReservationShift = shiftId;
-      renderReservationView();
-      showToast(`Shift reservasi: ${shiftLabel(shiftId)}`);
-    }
-
-    function setReservationDateToday() {
-      currentReservationDate = new Date().toISOString().split('T')[0];
-      renderReservationView();
-    }
-
-    function onReservationDateChange(value) {
-      if (!value) return;
-      currentReservationDate = value;
-      renderReservationView();
-    }
-
-    /** Denah meja khusus reservasi: menampilkan jam shift + tombol reservasi. */
-    function renderReservationFloor() {
-      const wrap = document.getElementById('reservationFloorWrap');
-      if (!wrap) return;
-      const tables = floorState();
-
-      const count = { available: 0, reserved: 0, occupied: 0 };
-      tables.forEach(t => { count[t.displayStatus] = (count[t.displayStatus] || 0) + 1; });
-
-      const legend = document.getElementById('reservationLegend');
-      if (legend) {
-        legend.innerHTML = `
-          <span class="inline-flex items-center gap-1.5 text-[10px] font-mono"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Tersedia (${count.available || 0})</span>
-          <span class="inline-flex items-center gap-1.5 text-[10px] font-mono"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Dipesan (${count.reserved || 0})</span>
-          <span class="inline-flex items-center gap-1.5 text-[10px] font-mono"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Terisi (${count.occupied || 0})</span>
-        `;
-      }
-
-      wrap.innerHTML = tables.map(t => {
-        const tone = TABLE_TONE[t.displayStatus] || TABLE_TONE.available;
-        const statusLabel = { available: 'Tersedia', occupied: 'Terisi', reserved: 'Dipesan', cleaning: 'Dibersihkan' }[t.displayStatus];
-        const res = t.reservation;
-        const isOccupied = t.displayStatus === 'occupied';
-
-        return `
-          <div class="p-4 rounded-2xl border-2 ${tone.card} space-y-2.5">
-            <div class="flex items-start justify-between font-mono">
-              <div>
-                <span class="text-[10px] text-stone-500 font-bold">${t.code}</span>
-                <h5 class="font-bold text-slate-900 text-sm font-display leading-tight">${t.label}</h5>
-                <p class="text-[10px] text-stone-500 mt-0.5">${t.area} • ${t.pax}</p>
-              </div>
-              <span class="px-2 py-0.5 rounded-lg text-[9px] font-bold ${tone.badge}">${statusLabel}</span>
-            </div>
-
-            ${res ? `
-              <div class="p-2.5 bg-white/80 rounded-xl border border-amber-200 font-sans text-[11px] space-y-0.5">
-                <p class="font-bold text-slate-900">${res.guestName}</p>
-                <p class="text-stone-500 font-mono text-[10px]">${res.phone || '-'} • ${res.pax} pax</p>
-                <p class="text-amber-800 font-mono text-[10px] font-bold">DP ${formatRupiah(res.dp || 0)}</p>
-              </div>
-            ` : `
-              <div class="p-2.5 bg-white/70 rounded-xl border border-dashed border-stone-200 text-center text-[10px] text-stone-400 font-sans">
-                Belum ada reservasi pada shift ini
-              </div>
-            `}
-
-            <div class="flex items-center gap-2">
-              ${isOccupied ? `
-                <span class="flex-1 text-center text-[10px] font-mono text-rose-700 font-bold py-2">Sedang dipakai tamu</span>
-              ` : (res ? `
-                <button onclick="checkInReservation(${t.tableNumber})" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2 rounded-xl transition text-[11px] font-sans flex items-center justify-center gap-1">
-                  <i data-lucide="user-check" class="w-3.5 h-3.5"></i> Check-in Tamu
-                </button>
-                <button onclick="cancelReservation(${t.tableNumber})" class="bg-white hover:bg-stone-50 text-stone-600 border border-stone-300 font-bold py-2 px-2.5 rounded-xl transition" title="Batalkan reservasi">
-                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                </button>
-              ` : `
-                <button onclick="openReservationModal(${t.tableNumber})" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 rounded-xl transition text-[11px] font-sans flex items-center justify-center gap-1">
-                  <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> Reservasi Meja Ini
-                </button>
-              `)}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      lucide.createIcons();
-    }
-
-    /** Modal input reservasi: nama tamu, WhatsApp, pax, nominal DP. */
-    function openReservationModal(tableNumber) {
-      const t = floorState().find(x => Number(x.tableNumber) === Number(tableNumber));
-      if (!t) return;
       if (t.displayStatus === 'occupied') {
-        showToast(`${t.code} sedang terisi — tidak bisa direservasi sekarang.`);
-        return;
+        showToast(`${t.label}: ${t.guestName || 'Tamu'} — bill ${formatRupiah(t.bill)}, ${seatDuration(t.seatedAt)}.`);
+      } else {
+        posFromTable(number);
       }
-      posCustomizingMenuId = null;
-      const modal = document.getElementById('reservationModal');
-      const form = document.getElementById('reservationForm');
-      if (!modal || !form) return;
-
-      document.getElementById('reservationTableInfo').innerHTML =
-        `<span class="font-bold text-slate-900">${t.code} • ${t.label}</span> <span class="text-stone-500">(${t.area} • ${t.pax})</span>`;
-
-      form.dataset.tableNumber = String(tableNumber);
-      document.getElementById('reservationGuestName').value = '';
-      document.getElementById('reservationGuestPhone').value = '';
-      document.getElementById('reservationPax').value = String(Math.min(2, t.capacity || 2));
-      document.getElementById('reservationDp').value = '50000';
-
-      const shiftInfo = document.getElementById('reservationShiftInfo');
-      if (shiftInfo) shiftInfo.innerText = `${shiftLabel(currentReservationShift)} • ${currentReservationDate}`;
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      lucide.createIcons();
     }
 
-    function closeReservationModal() {
-      const modal = document.getElementById('reservationModal');
-      if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-    }
-
-    function submitReservation(event) {
-      if (event) event.preventDefault();
-      const form = document.getElementById('reservationForm');
-      const tableNumber = Number(form.dataset.tableNumber);
-      const guestName = document.getElementById('reservationGuestName').value.trim();
-      const phone = document.getElementById('reservationGuestPhone').value.trim();
-      const pax = Math.max(1, Number(document.getElementById('reservationPax').value) || 1);
-      const dp = Math.max(0, Number(document.getElementById('reservationDp').value) || 0);
-
-      if (!guestName) { alert('Nama tamu wajib diisi.'); return false; }
-      if (!phone) { alert('Nomor WhatsApp tamu wajib diisi.'); return false; }
-
-      const existing = reservationOfTable(currentReservationDate, currentReservationShift, tableNumber);
-      const res = Object.assign({
-        id: existing ? existing.id : ('RSV-' + Date.now()),
-        tableNumber: tableNumber,
-        guestName: guestName,
-        phone: phone,
-        pax: pax,
-        dp: dp,
-        date: currentReservationDate,
-        shiftId: currentReservationShift,
-        shiftLabel: shiftLabel(currentReservationShift),
-        status: 'booked',
-        createdAt: (existing && existing.createdAt) || new Date().toISOString(),
-      });
-      upsertReservation(res);
-      setTableStatus(tableNumber, 'reserved', { guestCount: pax });
-      closeReservationModal();
-      renderReservationView();
-      renderFloorPlan();
+    function clearTable(number) {
+      const t = tableByNumber(number);
+      if (!t) return;
+      if (t.orderId) setSyncOrderStatus(t.orderId, 'COMPLETED');
+      setTableStatus(number, 'available');
+      showToast(`${t.label} dikosongkan — meja kembali hijau.`);
       renderTableGrid();
-      showToast(`Reservasi ${guestName} tercatat untuk meja ${tableNumber} (${shiftLabel(currentReservationShift)}).`);
-      return false;
+      renderFloorPlan();
+      updateDashboardCounters();
     }
 
-    /** Check-in tamu reservasi: meja langsung menjadi MERAH (occupied). */
-    function checkInReservation(tableNumber) {
-      const res = reservationOfTable(currentReservationDate, currentReservationShift, tableNumber);
-      const t = floorState().find(x => Number(x.tableNumber) === Number(tableNumber));
-      setTableStatus(tableNumber, 'occupied', {
-        guestCount: res ? res.pax : ((t && t.capacity) || 2),
-        seatedAt: new Date().toISOString(),
-        guestName: res ? res.guestName : 'Tamu Reservasi',
-        code: t ? t.code : null,
-        label: t ? t.label : null,
-      });
-      if (res) upsertReservation(Object.assign({}, res, { status: 'checked_in', checkedInAt: new Date().toISOString() }));
-      refreshSyncedViews();
-      showToast(`Check-in berhasil — ${t ? t.code : ('Meja ' + tableNumber)} kini TERISI (merah).`);
-    }
+    function shiftLabel(shiftId) { return shiftId; }
 
-    function cancelReservation(tableNumber) {
-      const res = reservationOfTable(currentReservationDate, currentReservationShift, tableNumber);
-      if (!res) return;
-      const list = QuadraSync.readReservations().filter(r => r.id !== res.id);
-      QuadraSync.writeReservations(list);
-      QuadraSync.emit('RESERVATION_CANCELLED', { reservationId: res.id });
-      setTableStatus(tableNumber, 'available');
-      refreshSyncedViews();
-      renderReservationView();
-      showToast(`Reservasi ${res.guestName} dibatalkan. Meja kembali tersedia.`);
-    }
+    // ==================== 3. KASIR BARISTA POS ====================
+    const POS_CATEGORIES = ['Semua', 'Manual Brew', 'Espresso', 'Food', 'Pastry', 'Promo'];
 
-    // ==================== 4. KASIR BARISTA POS ====================
-    /** Filter kategori cepat pada katalog POS. */
     function renderPOSCategoryFilters() {
       const wrap = document.getElementById('posCategoryFilters');
       if (!wrap) return;
-      const cats = ['Semua'].concat(MENU_CATEGORIES);
-      wrap.innerHTML = cats.map(c => {
-        const active = c === posMenuCategoryFilter;
-        const cls = active
-          ? 'pos-cat-btn px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-white transition text-[11px] font-mono'
-          : 'pos-cat-btn px-3 py-1.5 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition text-[11px] font-mono';
-        return `<button onclick="setPOSCategory('${c}')" data-cat="${c}" class="${cls}">${c}</button>`;
+      wrap.innerHTML = POS_CATEGORIES.map(cat => {
+        const active = cat === posMenuCategoryFilter;
+        const label = cat === 'Promo' ? '🔥 Promo' : cat;
+        return `<button onclick="setPOSCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition border ${active ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'}">${label}</button>`;
       }).join('');
     }
 
@@ -2021,256 +1821,192 @@
     }
 
     function onPOSSearchInput(value) {
-      posMenuSearchQuery = String(value || '').toLowerCase().trim();
+      posMenuSearchQuery = String(value || '').toLowerCase();
       renderPOSMenuOptions();
     }
 
-    /** Katalog produk: grid menu dengan filter kategori + search instan. */
+    function posFilteredMenu() {
+      return masterMenu.filter(m => {
+        const catOk = posMenuCategoryFilter === 'Semua' || m.category === posMenuCategoryFilter;
+        const qOk = !posMenuSearchQuery || m.name.toLowerCase().indexOf(posMenuSearchQuery) >= 0 || m.category.toLowerCase().indexOf(posMenuSearchQuery) >= 0;
+        return catOk && qOk;
+      });
+    }
+
     function renderPOSMenuOptions() {
       const grid = document.getElementById('posMenuSelectionGrid');
       if (!grid) return;
-      grid.innerHTML = '';
-
-      const list = masterMenu.filter(m => {
-        const byCat = posMenuCategoryFilter === 'Semua' || m.category === posMenuCategoryFilter;
-        const byQ = !posMenuSearchQuery || (m.name + ' ' + m.category + ' ' + m.desc).toLowerCase().indexOf(posMenuSearchQuery) >= 0;
-        return byCat && byQ;
-      });
-
-      if (!list.length) {
-        grid.innerHTML = '<p class="col-span-full text-center text-xs italic text-stone-400 py-6 font-mono">Menu tidak ditemukan.</p>';
-        return;
-      }
-
-      list.forEach(m => {
-        const div = document.createElement('div');
-        div.className = "p-3 rounded-2xl border border-stone-200 hover:border-cyan-400 bg-stone-50 hover:bg-cyan-50/40 transition cursor-pointer flex justify-between items-start gap-2";
-        div.onclick = () => openItemCustomizer(m.id);
-        div.innerHTML = `
-          <div class="min-w-0">
-            <span class="font-bold text-slate-800 text-xs block truncate">${m.name}</span>
-            <span class="text-[10px] text-stone-500">${m.category}</span>
-            <p class="text-[10px] text-stone-400 mt-0.5 line-clamp-2 font-sans">${m.desc}</p>
+      const list = posFilteredMenu();
+      if (!list.length) { grid.innerHTML = '<p class="text-xs text-stone-400 font-mono col-span-2">Menu tidak ditemukan.</p>'; return; }
+      grid.innerHTML = list.map(m => `
+        <button onclick="openItemCustomizer('${m.id}')" class="text-left bg-stone-50 hover:bg-cyan-50 border border-stone-200 hover:border-cyan-300 rounded-2xl p-3 transition space-y-1">
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-[11px] font-bold text-slate-900 leading-tight font-sans">${m.name}</span>
+            <span class="text-[9px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-1.5 py-0.5 rounded whitespace-nowrap">${m.category === 'Promo' ? '🔥 Promo' : m.category}</span>
           </div>
-          <span class="text-xs font-black text-cyan-700 font-mono flex-none">${formatRupiah(m.price)}</span>
-        `;
-        grid.appendChild(div);
-      });
+          <p class="text-[10px] text-stone-500 leading-snug">${m.desc}</p>
+          <p class="text-xs font-black text-cyan-700 font-mono">${formatRupiah(m.price)}</p>
+        </button>`).join('');
     }
 
-    /** Modal customizer: susu, sugar level, ice level, notes barista. */
     function openItemCustomizer(menuId) {
-      const m = masterMenu.find(x => x.id === menuId);
-      if (!m) return;
+      const item = masterMenu.find(m => m.id === menuId);
+      if (!item) return;
       posCustomizingMenuId = menuId;
-
-      const modal = document.getElementById('itemModal');
-      if (!modal) return;
-
-      document.getElementById('itemModalTitle').innerText = m.name;
-      document.getElementById('itemModalPrice').innerText = formatRupiah(m.price);
-      document.getElementById('itemModalDesc').innerText = m.desc;
-      document.getElementById('itemMilk').value = 'Fresh Milk';
-      document.getElementById('itemSugar').value = 'Normal';
-      document.getElementById('itemIce').value = 'Normal';
-      document.getElementById('itemNotes').value = '';
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      lucide.createIcons();
+      const m = document.getElementById('itemModal');
+      document.getElementById('itemModalTitle').innerText = item.name;
+      document.getElementById('itemModalPrice').innerText = formatRupiah(item.price);
+      document.getElementById('itemModalDesc').innerText = item.desc;
+      if (document.getElementById('itemMilk')) document.getElementById('itemMilk').value = 'Fresh Milk';
+      if (document.getElementById('itemSugar')) document.getElementById('itemSugar').value = 'Normal';
+      if (document.getElementById('itemIce')) document.getElementById('itemIce').value = 'Normal';
+      if (document.getElementById('itemQty')) document.getElementById('itemQty').value = 1;
+      if (document.getElementById('itemNotes')) document.getElementById('itemNotes').value = '';
+      m.classList.remove('hidden'); m.classList.add('flex');
     }
 
     function closeItemCustomizer() {
-      const modal = document.getElementById('itemModal');
-      if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+      const m = document.getElementById('itemModal');
+      m.classList.add('hidden'); m.classList.remove('flex');
       posCustomizingMenuId = null;
     }
 
     function confirmItemCustomizer() {
-      const m = masterMenu.find(x => x.id === posCustomizingMenuId);
-      if (!m) { closeItemCustomizer(); return; }
-      const milk = document.getElementById('itemMilk').value;
-      const sugar = document.getElementById('itemSugar').value;
-      const ice = document.getElementById('itemIce').value;
-      const notes = document.getElementById('itemNotes').value.trim();
-      const variant = [milk, sugar === 'Normal' ? null : ('Sugar ' + sugar), ice === 'Normal' ? null : ('Ice ' + ice), notes || null]
-        .filter(Boolean).join(' • ');
-
-      const key = m.id + '|' + variant;
-      const existing = posCart.find(c => c.key === key);
-      if (existing) existing.qty += 1;
-      else posCart.push({ key: key, id: m.id, name: m.name, variant: variant, price: m.price, qty: 1 });
-
+      const item = masterMenu.find(m => m.id === posCustomizingMenuId);
+      if (!item) return;
+      const milk = document.getElementById('itemMilk') ? document.getElementById('itemMilk').value : '';
+      const sugar = document.getElementById('itemSugar') ? document.getElementById('itemSugar').value : '';
+      const ice = document.getElementById('itemIce') ? document.getElementById('itemIce').value : '';
+      const qty = Math.max(1, Number(document.getElementById('itemQty') ? document.getElementById('itemQty').value : 1) || 1);
+      const note = document.getElementById('itemNotes') ? document.getElementById('itemNotes').value : '';
+      const variant = [milk, sugar, ice].filter(Boolean).join(' • ');
+      posCart.push({ menuId: item.id, name: item.name, variant: variant, note: note, qty: qty, price: item.price });
       closeItemCustomizer();
       updatePOSCartUI();
-      showToast(`${m.name} ditambahkan ke tagihan.`);
+      showToast(`${item.name} ditambahkan ke tagihan.`);
     }
 
-    /** Tipe order Dine In (wajib meja hijau) / Take Away. */
     function setPOSOrderType(type) {
       posOrderType = type;
-      if (type === 'take_away') posSelectedTable = null;
-      renderPOSFloorPicker();
+      const dine = document.getElementById('posTypeDineIn');
+      const take = document.getElementById('posTypeTakeAway');
+      const activeCls = 'flex-1 px-3 py-2 rounded-xl font-bold text-[11px] transition font-mono bg-cyan-600 text-white';
+      const idleCls = 'flex-1 px-3 py-2 rounded-xl font-bold text-[11px] transition font-mono bg-stone-100 text-stone-600 hover:bg-stone-200';
+      if (dine) dine.className = type === 'dine_in' ? activeCls : idleCls;
+      if (take) take.className = type === 'take_away' ? activeCls : idleCls;
+      const tableRow = document.getElementById('posTableRow');
+      const queueRow = document.getElementById('posQueueRow');
+      if (tableRow) tableRow.classList.toggle('hidden', type !== 'dine_in');
+      if (queueRow) queueRow.classList.toggle('hidden', type !== 'take_away');
+      const label = document.getElementById('posSelectedTableLabel');
+      if (label) label.innerText = type === 'take_away' ? 'Take Away' : (posSelectedTable ? 'Meja ' + String(posSelectedTable).padStart(2, '0') : 'Belum dipilih');
       updatePOSCartUI();
     }
 
-    /** Dropdown "Pilih Meja": hanya meja HIJAU (tersedia) yang muncul. */
     function renderPOSFloorPicker() {
-      const select = document.getElementById('posTableSelect');
+      const sel = document.getElementById('posTableSelect');
       const info = document.getElementById('posTableInfo');
-      const buttDine = document.getElementById('posTypeDineIn');
-      const buttTake = document.getElementById('posTypeTakeAway');
-
-      const dineCls = 'flex-1 px-3 py-2 rounded-xl font-bold text-[11px] transition font-mono';
-      if (buttDine) buttDine.className = posOrderType === 'dine_in' ? `${dineCls} bg-cyan-600 text-white shadow-sm` : `${dineCls} bg-stone-100 text-stone-600 hover:bg-stone-200`;
-      if (buttTake) buttTake.className = posOrderType === 'take_away' ? `${dineCls} bg-cyan-600 text-white shadow-sm` : `${dineCls} bg-stone-100 text-stone-600 hover:bg-stone-200`;
-
-      if (select) {
-        const list = availableTables();
-        if (posOrderType === 'take_away') {
-          select.disabled = true;
-          select.innerHTML = '<option value="">Take Away — tanpa meja</option>';
-        } else {
-          select.disabled = false;
-          select.innerHTML = '<option value="">— Pilih meja kosong —</option>' + list.map(t =>
-            `<option value="${t.tableNumber}" ${Number(posSelectedTable) === Number(t.tableNumber) ? 'selected' : ''}>${t.code} • ${t.label} (${t.pax})</option>`
-          ).join('');
-          if (!list.length) select.innerHTML = '<option value="">Semua meja terisi</option>';
-        }
-      }
-
-      if (info) {
-        if (posOrderType === 'take_away') {
-          info.innerHTML = '<span class="text-stone-500">Take Away: struk tanpa meja, pesanan tetap tercatat.</span>';
-        } else if (posSelectedTable) {
-          const t = tableByNumber(posSelectedTable);
-          info.innerHTML = `<span class="font-bold text-emerald-700">${t ? t.code + ' • ' + t.label : '-'}</span> <span class="text-stone-500">— akan berubah menjadi MERAH setelah pembayaran.</span>`;
-        } else {
-          info.innerHTML = '<span class="text-rose-600 font-bold">Dine In wajib memilih meja hijau terlebih dahulu.</span>';
-        }
-      }
-
-      const selected = document.getElementById('posSelectedTableLabel');
-      if (selected) {
-        selected.innerText = posOrderType === 'take_away'
-          ? 'Take Away'
-          : (posSelectedTable ? ((tableByNumber(posSelectedTable) || {}).code || ('Meja ' + posSelectedTable)) : 'Belum dipilih');
-      }
+      if (!sel) return;
+      const avail = availableTables();
+      sel.innerHTML = '<option value="">— Pilih meja hijau —</option>' + avail.map(t =>
+        `<option value="${t.tableNumber}" ${Number(posSelectedTable) === Number(t.tableNumber) ? 'selected' : ''}>${t.label} (${t.code}) • ${t.pax}</option>`
+      ).join('');
+      if (info) info.innerHTML = avail.length ? `<span class="text-emerald-600 font-bold">${avail.length} meja tersedia</span>` : '<span class="text-rose-600 font-bold">Semua meja terisi</span>';
     }
 
     function onPOSTableSelect(value) {
       posSelectedTable = value ? Number(value) : null;
-      renderPOSFloorPicker();
+      const t = posSelectedTable ? tableByNumber(posSelectedTable) : null;
+      const label = document.getElementById('posSelectedTableLabel');
+      if (label) label.innerText = t ? `${t.label}` : (posOrderType === 'take_away' ? 'Take Away' : 'Belum dipilih');
       updatePOSCartUI();
     }
 
-    /** Buka POS dari denah meja hijau: preset meja + tipe Dine In. */
     function posFromTable(tableNumber) {
+      if (currentRole !== 'kasir') { setRole('kasir'); }
       posOrderType = 'dine_in';
       posSelectedTable = Number(tableNumber);
       switchTab('pos');
+      setPOSOrderType('dine_in');
       renderPOSFloorPicker();
-      const t = tableByNumber(tableNumber);
-      showToast(`${t ? t.code : ('Meja ' + tableNumber)} dipilih untuk pesanan Dine In.`);
+      onPOSTableSelect(posSelectedTable);
+      showToast(`${tableByNumber(tableNumber) ? tableByNumber(tableNumber).label : 'Meja'} siap dipesan — meja terkunci di POS.`);
     }
 
     function updatePOSCartUI() {
-      const container = document.getElementById('posCartItemsContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
+      const wrap = document.getElementById('posCartItemsContainer');
       let subtotal = 0;
-
-      if (posCart.length === 0) {
-        container.innerHTML = `<div class="p-4 text-center text-stone-400 italic">Keranjang POS kosong</div>`;
+      if (wrap) {
+        wrap.innerHTML = posCart.map((it, i) => {
+          subtotal += it.price * it.qty;
+          return `
+            <div class="flex items-start justify-between gap-2 pt-2.5">
+              <div class="min-w-0">
+                <p class="font-bold text-slate-900 text-[11px] truncate">${it.name}</p>
+                <p class="text-[10px] text-stone-500 truncate">${it.variant || '-'}${it.note ? ' • ' + it.note : ''}</p>
+                <p class="text-[10px] text-cyan-700 font-bold">${formatRupiah(it.price)} × ${it.qty}</p>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button onclick="changePOSQty(${i},-1)" class="w-6 h-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 font-bold">−</button>
+                <span class="w-5 text-center font-bold text-slate-900">${it.qty}</span>
+                <button onclick="changePOSQty(${i},1)" class="w-6 h-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 font-bold">+</button>
+                <button onclick="changePOSQty(${i},-999)" class="w-6 h-6 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold ml-1">×</button>
+              </div>
+            </div>`;
+        }).join('') || '<p class="text-[11px] text-stone-400 py-3">Tagihan masih kosong — pilih menu di katalog.</p>';
       }
-
-      posCart.forEach((item, index) => {
-        const itemTotal = item.price * item.qty;
-        subtotal += itemTotal;
-
-        const row = document.createElement('div');
-        row.className = "flex justify-between items-start py-1.5 gap-2";
-        row.innerHTML = `
-          <div class="min-w-0">
-            <span class="font-bold text-slate-900 text-[11px] block truncate">${item.name}</span>
-            ${item.variant ? `<span class="text-[10px] text-stone-500 block truncate">${item.variant}</span>` : ''}
-            <div class="flex items-center gap-2 mt-0.5">
-              <button onclick="changePOSQty(${index}, -1)" class="w-5 h-5 rounded bg-stone-200 text-slate-700 font-bold hover:bg-stone-300">-</button>
-              <span class="text-xs font-bold text-cyan-700">${item.qty}x</span>
-              <button onclick="changePOSQty(${index}, 1)" class="w-5 h-5 rounded bg-cyan-600 text-white font-bold hover:bg-cyan-700">+</button>
-            </div>
-          </div>
-          <span class="font-bold text-slate-900 flex-none">${formatRupiah(itemTotal)}</span>
-        `;
-        container.appendChild(row);
-      });
-
-      const tax = Math.round(subtotal * 0.10);
-      const serviceFee = posOrderType === 'dine_in' ? Math.round(subtotal * 0.05) : 0;
-      const grandTotal = subtotal + tax + serviceFee;
-
-      const elSub = document.getElementById('posSubtotalText');
-      if (elSub) elSub.innerText = formatRupiah(subtotal);
-      const elTax = document.getElementById('posTaxText');
-      if (elTax) elTax.innerText = formatRupiah(tax);
-      const elSvc = document.getElementById('posServiceText');
-      if (elSvc) elSvc.innerText = formatRupiah(serviceFee);
-      const elTot = document.getElementById('posGrandTotalText');
-      if (elTot) elTot.innerText = formatRupiah(grandTotal);
-
-      const cashRow = document.getElementById('posCashRow');
-      if (cashRow) cashRow.classList.toggle('hidden', posPaymentMethod !== 'Cash');
-      if (posPaymentMethod === 'Cash') renderPOSCashChange();
-
-      return { subtotal, tax, serviceFee, grandTotal };
+      const calc = currentPOSCalc();
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      setTxt('posSubtotalText', formatRupiah(calc.subtotal));
+      setTxt('posTaxText', formatRupiah(calc.tax));
+      setTxt('posServiceText', formatRupiah(calc.service));
+      setTxt('posGrandTotalText', formatRupiah(calc.total));
+      renderPOSCashChange();
+      renderPOSDisplay();
     }
 
     function changePOSQty(index, delta) {
-      if (!posCart[index]) return;
-      posCart[index].qty += delta;
-      if (posCart[index].qty <= 0) {
-        posCart.splice(index, 1);
-      }
+      const it = posCart[index];
+      if (!it) return;
+      if (delta === -999) { posCart.splice(index, 1); }
+      else { it.qty = Math.max(1, it.qty + delta); }
       updatePOSCartUI();
     }
 
-    /** Metode bayar: Tunai (kalkulator kembalian), QRIS (QR simulasi), EDC. */
     function setPOSPaymentMethod(method) {
       posPaymentMethod = method;
       ['Cash', 'QRIS', 'EDC'].forEach(m => {
         const btn = document.getElementById('posPay' + m);
         if (!btn) return;
-        const base = 'pos-pay-btn flex-1 px-2 py-2 rounded-xl font-bold text-[11px] transition font-mono flex items-center justify-center gap-1';
-        btn.className = m === method ? `${base} bg-cyan-600 text-white shadow-sm` : `${base} bg-stone-100 text-stone-600 hover:bg-stone-200`;
+        const active = m === method;
+        btn.className = `pos-pay-btn flex-1 px-2 py-2 rounded-xl font-bold text-[11px] transition font-mono ${active ? 'bg-cyan-600 text-white border border-cyan-500' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`;
       });
+      const cashRow = document.getElementById('posCashRow');
       const qrisPanel = document.getElementById('posQrisPanel');
-      const qrisBox = document.getElementById('posQrisBox');
+      if (cashRow) cashRow.classList.toggle('hidden', method !== 'Cash');
       if (qrisPanel) qrisPanel.classList.toggle('hidden', method !== 'QRIS');
-      if (qrisBox && method !== 'QRIS') qrisBox.classList.add('hidden');
-      updatePOSCartUI();
     }
 
     function onPOSCashInput(value) {
-      posCashReceived = Math.max(0, Number(value) || 0);
+      posCashReceived = Number(value) || 0;
       renderPOSCashChange();
     }
 
     function renderPOSCashChange() {
-      const calc = currentPOSCalc();
       const el = document.getElementById('posCashChange');
       if (!el) return;
-      const change = posCashReceived - calc.grandTotal;
-      if (!posCashReceived) { el.innerText = 'Isi nominal uang diterima'; el.className = 'font-bold text-stone-400'; return; }
-      el.innerText = change >= 0 ? ('Kembalian: ' + formatRupiah(change)) : ('Kurang: ' + formatRupiah(Math.abs(change)));
-      el.className = change >= 0 ? 'font-bold text-emerald-700' : 'font-bold text-rose-600';
+      const calc = currentPOSCalc();
+      if (!posCashReceived) { el.className = 'font-bold text-stone-400'; el.innerText = 'Isi nominal uang diterima'; return; }
+      const change = posCashReceived - calc.total;
+      if (change < 0) { el.className = 'font-bold text-rose-600'; el.innerText = 'Kurang ' + formatRupiah(Math.abs(change)); }
+      else { el.className = 'font-bold text-emerald-600'; el.innerText = 'Kembalian ' + formatRupiah(change); }
     }
 
     function currentPOSCalc() {
-      const subtotal = posCart.reduce((s, it) => s + it.price * it.qty, 0);
-      const tax = Math.round(subtotal * 0.10);
-      const serviceFee = posOrderType === 'dine_in' ? Math.round(subtotal * 0.05) : 0;
-      return { subtotal, tax, serviceFee, grandTotal: subtotal + tax + serviceFee };
+      const subtotal = posCart.reduce((n, it) => n + it.price * it.qty, 0);
+      const tax = Math.round(subtotal * 0.1);
+      const service = posOrderType === 'dine_in' ? Math.round(subtotal * 0.05) : 0;
+      return { subtotal: subtotal, tax: tax, service: service, total: subtotal + tax + service };
     }
 
     function showPOSQris() {
@@ -2278,514 +2014,595 @@
       if (box) box.classList.toggle('hidden');
     }
 
-    /** Selesaikan transaksi: struk, meja hijau -> merah, catat transaksi. */
-    function processPOSPaymentAndPrint() {
-      if (posCart.length === 0) {
-        alert("Keranjang pesanan kosong.");
-        return;
-      }
-      if (posOrderType === 'dine_in' && !posSelectedTable) {
-        alert("Dine In wajib memilih meja hijau terlebih dahulu.");
-        return;
-      }
-      if (posOrderType === 'dine_in') {
-        const t = tableByNumber(posSelectedTable);
-        if (!t || t.status !== 'available') {
-          alert("Meja yang dipilih sudah tidak tersedia. Silakan pilih meja hijau lain.");
-          renderPOSFloorPicker();
-          return;
-        }
-      }
+    // ==================== DUAL DISPLAY (Kasir vs Pelanggan) ====================
+    function setPOSDisplay(mode) {
+      posDisplayMode = mode;
+      const c = document.getElementById('dispCashierBtn');
+      const p = document.getElementById('dispCustomerBtn');
+      const on = 'px-3 py-1.5 rounded-lg font-bold text-[11px] transition font-mono bg-cyan-600 text-white shadow-sm';
+      const off = 'px-3 py-1.5 rounded-lg font-bold text-[11px] transition font-mono text-slate-400 hover:text-white';
+      if (c) c.className = mode === 'cashier' ? on : off;
+      if (p) p.className = mode === 'customer' ? on : off;
+      renderPOSDisplay();
+    }
 
-      const name = document.getElementById('posCustomerName').value.trim() || 'Pelanggan Quadra';
-      const phone = document.getElementById('posCustomerPhone').value.trim() || '-';
-      const notes = document.getElementById('posOrderNotes').value.trim() || 'Standar Cup';
+    function renderPOSDisplay() {
+      const box = document.getElementById('posDisplayPanel');
+      if (!box) return;
       const calc = currentPOSCalc();
-
-      const randomInv = "QDR-" + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
-      const randomToken = "CUP-BAR-" + Math.floor(1000 + Math.random() * 9000);
-      const table = posOrderType === 'dine_in' ? tableByNumber(posSelectedTable) : null;
-      const tableLabelText = table ? table.label : 'Take Away';
-
-      const order = {
-        orderId: randomInv,
-        tableNumber: table ? table.label : 'Take Away',
-        area: table ? table.area : 'Take Away',
-        orderType: posOrderType,
-        customerName: name,
-        customerPhone: phone,
-        customerNotes: notes,
-        items: posCart.map(i => ({ name: i.name, variant: i.variant || '', qty: i.qty, price: i.price })),
-        subtotal: calc.subtotal,
-        serviceFee: calc.serviceFee,
-        tax: calc.tax,
-        totalAmount: calc.grandTotal,
-        paymentMethod: posPaymentMethod === 'QRIS' ? 'QRIS' : (posPaymentMethod === 'Cash' ? 'Cash' : 'EDC'),
-        paymentStatus: 'PAID',
-        orderStatus: 'PREPARING',
-        createdAt: new Date().toISOString(),
-      };
-
-      try {
-        QuadraSync.upsertOrder(order);
-        QuadraSync.emit('ORDER_CREATED', { order: order });
-      } catch (e) { /* storage penuh / private mode */ }
-
-      /* Meja hijau otomatis menjadi MERAH di denah. */
-      if (table) {
-        setTableStatus(table.tableNumber, 'occupied', {
-          orderId: randomInv,
-          guestCount: Math.max(1, Math.min(table.capacity || 4, posCart.reduce((s, i) => s + i.qty, 0))),
-          seatedAt: new Date().toISOString(),
-          bill: calc.grandTotal,
-        });
+      if (posDisplayMode === 'cashier') {
+        box.innerHTML = `
+          <p class="text-[10px] font-mono uppercase tracking-widest text-slate-400">Layar Kasir — Ringkasan Transaksi</p>
+          <p class="text-3xl font-black font-display text-white mt-1">${formatRupiah(calc.total)}</p>
+          <div class="flex flex-wrap gap-4 mt-2 text-[11px] font-mono text-slate-300">
+            <span>Subtotal: <strong class="text-white">${formatRupiah(calc.subtotal)}</strong></span>
+            <span>PB1: <strong class="text-white">${formatRupiah(calc.tax)}</strong></span>
+            <span>Service: <strong class="text-white">${formatRupiah(calc.service)}</strong></span>
+            <span>Items: <strong class="text-white">${posCart.reduce((n, i) => n + i.qty, 0)}</strong></span>
+          </div>`;
+      } else {
+        const lines = posCart.map(i => `<div class="flex justify-between text-[11px] font-mono text-slate-200"><span>${i.qty}× ${i.name}</span><span>${formatRupiah(i.price * i.qty)}</span></div>`).join('') || '<p class="text-[11px] font-mono text-slate-400">Belum ada item.</p>';
+        box.innerHTML = `
+          <p class="text-[10px] font-mono uppercase tracking-widest text-slate-400">Layar Pelanggan — Total Pesanan Anda</p>
+          <div class="mt-2 space-y-1 max-h-28 overflow-y-auto">${lines}</div>
+          <div class="flex items-end justify-between mt-3 pt-2 border-t border-slate-700">
+            <span class="text-[11px] font-mono text-slate-300">TOTAL</span>
+            <span class="text-3xl font-black font-display text-gold-300">${formatRupiah(calc.total)}</span>
+          </div>`;
       }
+    }
 
-      masterTransactions.unshift({
-        invoice: randomInv,
-        token: randomToken,
-        customer: name,
-        phone: phone,
-        type: table ? 'DINE_IN' : 'TAKEAWAY',
-        itemsSummary: posCart.map(i => `${i.qty}x ${i.name}`).join(', '),
-        time: "Kasir POS Lunas",
-        subtotal: calc.subtotal,
-        tax: calc.tax,
-        total: calc.grandTotal,
-        method: posPaymentMethod === 'QRIS' ? 'QRIS Instant' : (posPaymentMethod === 'Cash' ? 'Tunai Kasir' : 'Debit / EDC'),
-        status: "LUNAS"
-      });
+    // ==================== SELESAIKAN PESANAN & CETAK ====================
+    function buildPOSOrder(paymentStatus) {
+      const calc = currentPOSCalc();
+      const t = posSelectedTable ? tableByNumber(posSelectedTable) : null;
+      const isDine = posOrderType === 'dine_in';
+      return {
+        orderId: 'QDR-' + Date.now().toString().slice(-6),
+        tableNumber: isDine && t ? t.code : (isDine ? null : 'Take Away'),
+        area: isDine && t ? t.area : 'Take Away',
+        orderType: isDine ? 'dine_in' : 'take_away',
+        queueNumber: isDine ? null : 'A-' + String(posQueueCounter).padStart(2, '0'),
+        customerName: (document.getElementById('posCustomerName') || {}).value || (isDine && t ? 'Tamu ' + t.label : 'Walk-in Guest'),
+        customerPhone: (document.getElementById('posCustomerPhone') || {}).value || '',
+        customerNotes: '',
+        items: posCart.map(i => ({ name: i.name, variant: i.variant, qty: i.qty, price: i.price })),
+        subtotal: calc.subtotal, tax: calc.tax, serviceFee: calc.service, totalAmount: calc.total,
+        paymentMethod: posPaymentMethod, paymentStatus: paymentStatus || 'PAID',
+        orderStatus: 'COMPLETED', createdAt: new Date().toISOString(),
+      };
+    }
 
-      // Populate Printable Receipt
-      document.getElementById('prnReceiptCode').innerText = randomInv;
-      document.getElementById('prnCustName').innerText = name;
-      document.getElementById('prnOrderType').innerText = posOrderType === 'dine_in' ? ('Dine In — ' + tableLabelText) : 'Takeaway Pickup Bar';
-      document.getElementById('prnTime').innerText = posOrderType === 'dine_in' ? 'Dine In' : '15 Menit Siap';
-      document.getElementById('prnToken').innerText = randomToken;
+    function completePOSOrder() {
+      if (currentRole !== 'kasir') { showToast('Hanya Kasir yang bisa menyelesaikan transaksi POS.'); return; }
+      if (!posCart.length) { showToast('Tagihan masih kosong.'); return; }
+      if (posOrderType === 'dine_in' && !posSelectedTable) { showToast('Pilih meja hijau terlebih dahulu.'); return; }
+      if (posPaymentMethod === 'Cash' && posCashReceived && posCashReceived < currentPOSCalc().total) { showToast('Uang diterima kurang dari total bayar.'); return; }
 
-      const prnTbody = document.getElementById('prnItemsTable');
-      prnTbody.innerHTML = '';
-      posCart.forEach(it => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${it.qty}x ${it.name}${it.variant ? '<br><span style="font-size:9px;color:#6E5843;">' + it.variant + '</span>' : ''}</td>
-          <td style="text-align: right;">${formatRupiah(it.price * it.qty)}</td>
-        `;
-        prnTbody.appendChild(row);
-      });
+      const order = buildPOSOrder('PAID');
+      QuadraSync.upsertOrder(order);
 
-      document.getElementById('prnSubtotal').innerText = formatRupiah(calc.subtotal);
-      document.getElementById('prnTax').innerText = formatRupiah(calc.tax + calc.serviceFee);
-      document.getElementById('prnGrandTotal').innerText = formatRupiah(calc.grandTotal);
+      // Kunci meja jadi merah (occupied) bila dine-in
+      if (order.orderType === 'dine_in' && posSelectedTable) {
+        setTableStatus(posSelectedTable, 'occupied', { orderId: order.orderId, guestCount: 1, seatedAt: new Date().toISOString(), status: 'occupied' });
+      }
+      // Take away: nomor antrean berikutnya
+      if (order.orderType === 'take_away') { posQueueCounter += 1; }
 
-      // E-receipt on screen (struk kasir muncul di layar)
-      showPOSReceipt(order, randomToken, calc);
+      // Potong stok sesuai resep
+      deductStockForOrder(order);
 
-      // Reset Cart & state
+      // Catat ke database transaksi
+      recordTransaction(order);
+
+      QuadraSync.emit('NEW_ORDER', { order: order });
+
+      showToast(`Pesanan ${order.orderId} selesai • stok terpotong otomatis.`);
+
+      // Bersihkan cart
       posCart = [];
-      posSelectedTable = null;
       posCashReceived = 0;
-      const cashInput = document.getElementById('posCashInput');
-      if (cashInput) cashInput.value = '';
+      if (document.getElementById('posCashInput')) document.getElementById('posCashInput').value = '';
+      if (document.getElementById('posCustomerName')) document.getElementById('posCustomerName').value = '';
+      if (document.getElementById('posCustomerPhone')) document.getElementById('posCustomerPhone').value = '';
+      posSelectedTable = null;
       updatePOSCartUI();
       renderPOSFloorPicker();
-      renderMasterTxTable();
-      updateDashboardCounters();
-      renderFloorPlan();
+      onPOSTableSelect('');
       renderTableGrid();
-      renderReservationView();
-
-      showToast(`Transaksi ${randomInv} tersimpan${table ? ' — ' + table.code + ' kini TERISI' : ''}.`);
+      renderFloorPlan();
+      updateDashboardCounters();
     }
 
-    /** Struk e-receipt yang muncul di layar setelah pembayaran. */
-    function showPOSReceipt(order, token, calc) {
-      const modal = document.getElementById('posReceiptModal');
-      if (!modal) return;
-      document.getElementById('posReceiptBody').innerHTML = `
-        <div class="text-center border-b-2 border-dashed border-cyan-300 pb-2 mb-2">
-          <h4 class="font-display font-extrabold text-base text-slate-900">QUADRA COFFEE LAB</h4>
-          <p class="text-[10px] text-stone-500">Specialty Roastery & Slow Bar</p>
-        </div>
-        <div class="space-y-0.5 text-[11px] font-mono">
-          <div class="flex justify-between"><span class="text-stone-500">No</span><span class="font-bold">${order.orderId}</span></div>
-          <div class="flex justify-between"><span class="text-stone-500">Token</span><span class="font-bold">${token}</span></div>
-          <div class="flex justify-between"><span class="text-stone-500">Tamu</span><span class="font-bold">${order.customerName}</span></div>
-          <div class="flex justify-between"><span class="text-stone-500">Tipe</span><span class="font-bold">${order.orderType === 'dine_in' ? ('Dine In • ' + order.tableNumber) : 'Take Away'}</span></div>
-          <div class="flex justify-between"><span class="text-stone-500">Bayar</span><span class="font-bold">${order.paymentMethod}</span></div>
-        </div>
-        <div class="border-t border-b border-dashed border-cyan-300 my-2 py-2 space-y-1">
-          ${order.items.map(i => `<div class="flex justify-between text-[11px] font-mono"><span>${i.qty}x ${i.name}</span><span>${formatRupiah(i.price * i.qty)}</span></div>`).join('')}
-        </div>
-        <div class="space-y-0.5 text-[11px] font-mono">
-          <div class="flex justify-between"><span class="text-stone-500">Subtotal</span><span>${formatRupiah(calc.subtotal)}</span></div>
-          <div class="flex justify-between"><span class="text-stone-500">PB1 10%</span><span>${formatRupiah(calc.tax)}</span></div>
-          ${calc.serviceFee ? `<div class="flex justify-between"><span class="text-stone-500">Service 5%</span><span>${formatRupiah(calc.serviceFee)}</span></div>` : ''}
-          <div class="flex justify-between font-black text-sm pt-1 border-t border-cyan-200 mt-1"><span>TOTAL</span><span class="text-cyan-700">${formatRupiah(calc.grandTotal)}</span></div>
-        </div>
-        <p class="text-center text-[10px] text-stone-500 mt-3">Terima kasih — enjoy your specialty coffee!</p>
-      `;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+    /* ==================== VOID / CANCEL — PIN SUPERVISOR 9999 ==================== */
+    function openVoidPin() {
+      const m = document.getElementById('voidPinModal');
+      if (!m) return;
+      if (document.getElementById('voidPinInput')) document.getElementById('voidPinInput').value = '';
+      const err = document.getElementById('voidPinError');
+      if (err) err.classList.add('hidden');
+      m.classList.remove('hidden'); m.classList.add('flex');
+      setTimeout(() => { const i = document.getElementById('voidPinInput'); if (i) i.focus(); }, 50);
+    }
+    function closeVoidPin() {
+      const m = document.getElementById('voidPinModal');
+      if (!m) return;
+      m.classList.add('hidden'); m.classList.remove('flex');
+    }
+    function submitVoidPin() {
+      const val = (document.getElementById('voidPinInput') || {}).value || '';
+      const err = document.getElementById('voidPinError');
+      if (String(val).trim() !== '9999') {
+        if (err) { err.innerText = 'PIN Supervisor salah. Akses void ditolak.'; err.classList.remove('hidden'); }
+        return;
+      }
+      closeVoidPin();
+      const voided = posCart.length;
+      posCart = []; posCashReceived = 0;
+      if (document.getElementById('posCashInput')) document.getElementById('posCashInput').value = '';
+      updatePOSCartUI();
+      showToast(voided ? `Transaksi divoid oleh Supervisor (PIN valid). ${voided} item dibatalkan.` : 'PIN Supervisor valid — tidak ada item untuk divoid.');
+    }
+
+    /* ==================== CETAK STRUK 58/80mm ==================== */
+    function openPrintBillModal() {
+      if (currentRole !== 'kasir') { showToast('Cetak struk tersedia di mode Kasir.'); return; }
+      if (!posCart.length) { showToast('Tagihan masih kosong — tidak ada yang dicetak.'); return; }
+      const order = buildPOSOrder('PENDING');
+      const m = document.getElementById('printBillModal');
+      if (!m) return;
+      const preview = document.getElementById('printBillPreview');
+      if (preview) preview.innerHTML = receiptHtml(order);
+      window.__pendingPrintOrder = order;
+      m.classList.remove('hidden'); m.classList.add('flex');
       lucide.createIcons();
     }
-
-    function closePOSReceipt() {
-      const modal = document.getElementById('posReceiptModal');
-      if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+    function closePrintBillModal() {
+      const m = document.getElementById('printBillModal');
+      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    }
+    function printBillWithWidth(width) {
+      const order = window.__pendingPrintOrder;
+      if (!order) return;
+      const container = document.getElementById('printableThermalSlip');
+      if (container) {
+        container.style.maxWidth = width === '80' ? '302px' : '219px';
+        container.innerHTML = receiptHtml(order, true);
+      }
+      closePrintBillModal();
+      window.setTimeout(() => { window.print(); }, 120);
     }
 
-    function printPOSReceiptNow() {
-      closePOSReceipt();
-      window.print();
+    function receiptHtml(order, thermal) {
+      const items = (order.items || []).map(i =>
+        `<tr><td style="padding:1px 0;">${i.qty}× ${i.name}${i.variant ? '<br><span style="font-size:9px;color:#6E5843;">' + i.variant + '</span>' : ''}</td><td style="text-align:right;vertical-align:top;">${formatRupiah(i.price * i.qty)}</td></tr>`
+      ).join('');
+      const inner = `
+        <div style="text-align:center;border-bottom:2px dashed #C1673F;padding-bottom:8px;margin-bottom:8px;">
+          <h2 style="margin:0;font-size:15px;font-weight:800;font-family:'Fraunces',Georgia,serif;">QUADRA COFFEE LAB</h2>
+          <p style="margin:2px 0;font-size:10px;color:#6E5843;">Specialty Roastery &amp; Slow Bar</p>
+          <p style="margin:0;font-size:9px;color:#6E5843;">Jl. Senopati No. 42, Kebayoran Baru, Jaksel</p>
+        </div>
+        <div style="margin-bottom:8px;">
+          <p style="margin:2px 0;"><strong>No:</strong> ${order.orderId}</p>
+          <p style="margin:2px 0;"><strong>Nama:</strong> ${order.customerName || '-'}</p>
+          <p style="margin:2px 0;"><strong>Tipe:</strong> ${order.orderType === 'dine_in' ? 'Dine In' : 'Take Away'}</p>
+          <p style="margin:2px 0;"><strong>${order.orderType === 'dine_in' ? 'Meja' : 'Antrean'}:</strong> ${order.orderType === 'dine_in' ? (order.tableNumber || '-') : (order.queueNumber || '-')}</p>
+          <p style="margin:2px 0;"><strong>Waktu:</strong> ${new Date(order.createdAt).toLocaleString('id-ID')}</p>
+        </div>
+        <div style="border-top:1px dashed #D6C1A4;border-bottom:1px dashed #D6C1A4;padding:6px 0;margin-bottom:8px;">
+          <table style="width:100%;font-size:11px;">${items}</table>
+        </div>
+        <div style="margin-bottom:8px;">
+          <table style="width:100%;font-size:11px;">
+            <tr><td>Subtotal:</td><td style="text-align:right;">${formatRupiah(order.subtotal)}</td></tr>
+            <tr><td>PB1 Resto 10%:</td><td style="text-align:right;">${formatRupiah(order.tax)}</td></tr>
+            <tr><td>Service 5%:</td><td style="text-align:right;">${formatRupiah(order.serviceFee)}</td></tr>
+            <tr style="font-size:13px;font-weight:bold;"><td>TOTAL:</td><td style="text-align:right;color:#A9552F;">${formatRupiah(order.totalAmount)}</td></tr>
+          </table>
+        </div>
+        <div style="text-align:center;margin-top:10px;">
+          <p style="margin:0;font-weight:bold;">Metode: ${order.paymentMethod}</p>
+          <p style="margin:3px 0 0;font-size:9px;color:#6E5843;">Terima kasih — Enjoy your specialty coffee extraction!</p>
+        </div>`;
+      if (thermal) {
+        return `<div style="font-family:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;text-align:left;font-size:11px;color:#2A1D17;">${inner}</div>`;
+      }
+      return `<div style="font-family:ui-monospace,'SFMono-Regular','Menlo','Consolas',monospace;max-width:300px;margin:0 auto;text-align:left;font-size:11px;color:#2A1D17;background:#FFFCF6;padding:14px;border:1px solid #E8D9C3;border-radius:12px;">${inner}</div>`;
     }
 
-    // ==================== 7. TRANSACTIONS & EXPORT CSV ====================
-    function renderMasterTxTable(filteredList = null) {
-      const tbody = document.getElementById('masterTxTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
+    /* ==================== STOCK OPNAME ==================== */
+    function renderStockOpname() {
+      const body = document.getElementById('stockOpnameBody');
+      if (!body) return;
+      const list = stockItems();
+      body.innerHTML = list.map(s => {
+        const physical = s.physical != null ? s.physical : s.system;
+        const diff = Number((Number(physical) - Number(s.system)).toFixed(3));
+        const low = Number(s.system) < Number(s.min);
+        const diffCls = diff < 0 ? 'text-rose-600' : (diff > 0 ? 'text-emerald-600' : 'text-stone-400');
+        return `
+          <tr class="${low ? 'bg-amber-50/50' : ''}">
+            <td class="py-3 px-4">
+              <span class="font-bold text-slate-900">${s.name}</span>
+              ${low ? '<span class="ml-2 text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.5 rounded">MENIPIS</span>' : ''}
+              <span class="block text-[10px] text-stone-400">Satuan: ${s.unit} • Min: ${s.min}</span>
+            </td>
+            <td class="py-3 px-4 text-right font-bold text-slate-800">${s.system}</td>
+            <td class="py-3 px-4 text-right">
+              <input type="number" step="0.001" value="${physical}" oninput="updateStockPhysical('${s.id}', this.value)" class="w-24 bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-right text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            </td>
+            <td class="py-3 px-4 text-right font-bold ${diffCls}" id="stockDiff-${s.id}">${diff > 0 ? '+' : ''}${diff}</td>
+            <td class="py-3 px-4">
+              <input type="text" value="${s.note || ''}" placeholder="Catatan waste / sebab selisih" oninput="updateStockNote('${s.id}', this.value)" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            </td>
+          </tr>`;
+      }).join('');
 
-      const list = filteredList || applyTxFilters();
-      const countEl = document.getElementById('txCountLabel');
-      if (countEl) countEl.innerText = `Menampilkan ${list.length} transaksi`;
+      const stats = document.getElementById('stockStatsLow');
+      if (stats) stats.innerText = lowStockCount();
+      const waste = list.reduce((n, s) => n + Math.max(0, Number(s.system) - Number(s.physical != null ? s.physical : s.system)), 0);
+      const wasteEl = document.getElementById('stockStatsWaste');
+      if (wasteEl) wasteEl.innerText = waste.toFixed(2);
+      const savedEl = document.getElementById('stockSavedAt');
+      if (savedEl) {
+        const last = list.map(s => s.updatedAt).filter(Boolean).sort().pop();
+        savedEl.innerText = last ? new Date(last).toLocaleString('id-ID') : '—';
+      }
+      const alertBadge = document.getElementById('stockAlertBadge');
+      if (alertBadge) alertBadge.classList.toggle('hidden', lowStockCount() === 0);
+      renderPOSDisplay();
+    }
 
-      list.forEach(tx => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-cyan-50/30 transition";
-
-        tr.innerHTML = `
-          <td class="py-3 px-4 font-bold text-slate-900">${tx.invoice}<br><span class="text-[9px] text-stone-400 font-normal">Token: ${tx.token}</span></td>
-          <td class="py-3 px-4 font-sans font-bold text-slate-800">${tx.customer}<br><span class="text-[10px] text-stone-500 font-mono font-normal">${tx.phone}</span></td>
-          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tx.type === 'SLOWBAR' ? 'bg-gold-100 text-gold-800' : (tx.type === 'DINE_IN' ? 'bg-emerald-50 text-emerald-800' : 'bg-cyan-50 text-cyan-800')}">${tx.type}</span></td>
-          <td class="py-3 px-4 font-sans text-slate-700 max-w-[200px] truncate" title="${tx.itemsSummary}">${tx.itemsSummary}</td>
-          <td class="py-3 px-4 font-mono text-slate-600">${formatTxTime(tx.time)}</td>
-          <td class="py-3 px-4 font-black text-slate-900">${formatRupiah(tx.total)}</td>
-          <td class="py-3 px-4 text-emerald-700 font-bold">${tx.method}</td>
-          <td class="py-3 px-4 text-center">
-            <button onclick="reprintTxSlip('${tx.invoice}')" class="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 transition" title="Cetak Ulang Struk">
-              <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
+    function updateStockPhysical(id, value) {
+      const list = stockItems();
+      const s = list.find(x => x.id === id);
+      if (!s) return;
+      s.physical = Number(value) || 0;
+      QuadraSync.writeStock(list);
+      const diff = Number((Number(s.physical) - Number(s.system)).toFixed(3));
+      const el = document.getElementById('stockDiff-' + id);
+      if (el) { el.innerText = (diff > 0 ? '+' : '') + diff; el.className = 'py-3 px-4 text-right font-bold ' + (diff < 0 ? 'text-rose-600' : (diff > 0 ? 'text-emerald-600' : 'text-stone-400')); }
+    }
+    function updateStockNote(id, value) {
+      const list = stockItems();
+      const s = list.find(x => x.id === id);
+      if (!s) return;
+      s.note = value;
+      QuadraSync.writeStock(list);
+    }
+    function saveStockOpname() {
+      const list = stockItems();
+      list.forEach(s => { s.updatedAt = new Date().toISOString(); });
+      QuadraSync.writeStock(list);
+      QuadraSync.emit('STOCK_UPDATED', { stock: list });
+      showToast('Hasil stock opname tersimpan ke sistem.');
+      renderStockOpname();
+    }
+    function exportStockCSV() {
+      const list = stockItems();
+      let csv = "data:text/csv;charset=utf-8,Bahan Baku,Satuan,Stok Sistem,Stok Fisik,Selisih,Catatan\n";
+      list.forEach(s => {
+        const diff = (Number(s.physical != null ? s.physical : s.system) - Number(s.system)).toFixed(3);
+        csv += `${s.name},${s.unit},${s.system},${s.physical},${diff},"${(s.note || '').replace(/"/g, '')}"\n`;
       });
-
-      lucide.createIcons();
+      const a = document.createElement('a');
+      a.href = encodeURI(csv);
+      a.download = 'quadra_stock_opname.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      showToast('CSV stock opname diunduh.');
     }
 
-    /** Jam lokal singkat dari ISO timestamp (data customer) atau string lama. */
-    function formatTxTime(value) {
-      if (!value) return '--:-- WIB';
-      if (typeof value === 'string' && value.indexOf('WIB') >= 0) return value;
-      const d = new Date(value);
-      if (isNaN(d.getTime())) return String(value);
-      return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':') + ' WIB';
-    }
-
-    /** Gabungan transaksi bawaan dashboard + pesanan dari customer site & POS. */
-    function allTransactions() {
-      const synced = syncOrders().map(o => ({
-        invoice: o.orderId, token: o.orderId,
-        customer: o.customerName || (o.orderType === 'take_away' ? 'Take Away' : (o.tableNumber || 'Tamu Quadra')),
-        phone: o.customerPhone || '-',
-        type: o.orderType === 'take_away' ? 'TAKEAWAY' : 'DINE_IN',
-        tableNumber: o.tableNumber,
-        itemsSummary: (o.items || []).map(it => `${it.qty}x ${it.name}`).join(', '),
-        time: o.createdAt,
-        subtotal: o.subtotal, tax: o.tax, total: o.totalAmount,
-        method: o.paymentMethod === 'QRIS' ? 'QRIS Instant' : (o.paymentMethod === 'EDC' ? 'Debit / EDC' : 'Tunai/Kartu Kasir'),
-        status: o.orderStatus === 'COMPLETED' ? 'SELESAI' : (o.paymentStatus === 'PAID' ? 'LUNAS' : 'BELUM BAYAR'),
-        fromCustomer: true,
-      }));
-      const locals = masterTransactions.map(t => Object.assign({}, t, { type: (t.type === 'SLOWBAR' ? 'DINE_IN' : t.type) }));
-      const syncedIds = new Set(synced.map(t => t.invoice));
-      return synced.concat(locals.filter(t => !syncedIds.has(t.invoice)));
-    }
-
+    /* ==================== DATABASE TRANSAKSI ==================== */
     let txTypeFilter = 'ALL';
     let txDateFilter = '';
+    let transaksiLog = [];
 
-    /** Terapkan search + filter tipe + filter tanggal sekaligus. */
-    function applyTxFilters(list) {
-      const qEl = document.getElementById('txSearchInput');
-      const q = qEl ? qEl.value.toLowerCase().trim() : '';
-      return (list || allTransactions()).filter(t => {
-        const byType = txTypeFilter === 'ALL' || t.type === txTypeFilter;
-        const byQ = !q ||
-          String(t.invoice || '').toLowerCase().includes(q) ||
-          String(t.customer || '').toLowerCase().includes(q) ||
-          String(t.token || '').toLowerCase().includes(q) ||
-          String(t.phone || '').toLowerCase().includes(q);
-        const byDate = !txDateFilter || String(t.time || '').slice(0, 10) === txDateFilter;
-        return byType && byQ && byDate;
+    function recordTransaction(order) {
+      transaksiLog.unshift({
+        invoice: order.orderId, token: order.orderType === 'dine_in' ? (order.tableNumber || '-') : (order.queueNumber || '-'),
+        customer: order.customerName || 'Walk-in Guest', phone: order.customerPhone || '-',
+        type: order.orderType === 'dine_in' ? 'DINE_IN' : 'TAKE_AWAY',
+        itemsSummary: (order.items || []).map(i => `${i.qty}x ${i.name}`).join(', '),
+        time: new Date(order.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+        subtotal: order.subtotal, tax: order.tax, service: order.serviceFee || 0, total: order.totalAmount,
+        method: order.paymentMethod, status: 'LUNAS', date: todayISO(),
       });
+    }
+
+    function allTransactions() {
+      const live = syncOrders().map(o => ({
+        invoice: o.orderId, token: o.orderType === 'dine_in' ? parseTableNumber(o.tableNumber) : '-',
+        customer: o.customerName || o.customer || 'Walk-in Guest', phone: o.customerPhone || o.phone || '-',
+        type: o.orderType === 'take_away' ? 'TAKE_AWAY' : 'DINE_IN',
+        itemsSummary: (o.items || []).map(i => `${i.qty || 1}x ${i.name}`).join(', ') || '-',
+        time: new Date(o.createdAt || Date.now()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+        subtotal: o.subtotal || 0, tax: o.tax || 0, service: o.serviceFee || 0, total: o.totalAmount || 0,
+        method: o.paymentMethod || 'QRIS', status: o.paymentStatus === 'PAID' ? 'LUNAS' : 'PENDING', date: (o.createdAt || '').slice(0, 10),
+      }));
+      return live.concat(transaksiLog).concat(SEED_TRANSACTIONS);
+    }
+
+    function applyTxFilters(list) {
+      return list.filter(t => {
+        if (txTypeFilter !== 'ALL' && t.type !== txTypeFilter) return false;
+        if (txDateFilter && t.date && t.date !== txDateFilter) return false;
+        return true;
+      });
+    }
+
+    function renderMasterTxTable(filteredList = null) {
+      const body = document.getElementById('masterTxTableBody');
+      if (!body) return;
+      const list = filteredList || allTransactions();
+      if (!list.length) { body.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-stone-400">Tidak ada transaksi.</td></tr>'; }
+      else {
+        body.innerHTML = list.map(t => `
+          <tr class="hover:bg-cyan-50/40">
+            <td class="py-3 px-4"><span class="font-bold text-slate-900">${t.invoice}</span><span class="block text-[10px] text-stone-400">${t.token}</span></td>
+            <td class="py-3 px-4"><span class="font-bold text-slate-800">${t.customer}</span><span class="block text-[10px] text-stone-400">${t.phone}</span></td>
+            <td class="py-3 px-4"><span class="text-[10px] font-bold px-2 py-0.5 rounded ${t.type === 'DINE_IN' ? 'bg-cyan-50 text-cyan-700 border border-cyan-200' : 'bg-gold-100 text-gold-800 border border-gold-300'}">${t.type === 'DINE_IN' ? 'Dine In' : 'Take Away'}</span></td>
+            <td class="py-3 px-4 text-stone-600">${t.itemsSummary}</td>
+            <td class="py-3 px-4 text-stone-500">${t.time}</td>
+            <td class="py-3 px-4 font-bold text-slate-900">${formatRupiah(t.total)}</td>
+            <td class="py-3 px-4">${t.method}</td>
+            <td class="py-3 px-4 text-center"><button onclick="reprintTxSlip('${t.invoice}')" class="text-cyan-600 hover:text-cyan-800" title="Cetak ulang"><i data-lucide="printer" class="w-4 h-4 mx-auto"></i></button></td>
+          </tr>`).join('');
+      }
+      const label = document.getElementById('txCountLabel');
+      if (label) label.innerText = `Menampilkan ${list.length} dari ${allTransactions().length} transaksi tersimpan`;
+      lucide.createIcons();
     }
 
     function filterTransactionsTable() {
-      renderMasterTxTable(applyTxFilters());
+      const q = ((document.getElementById('txSearchInput') || {}).value || '').toLowerCase();
+      const list = applyTxFilters(allTransactions()).filter(t =>
+        !q || t.invoice.toLowerCase().indexOf(q) >= 0 || t.customer.toLowerCase().indexOf(q) >= 0 || String(t.phone).indexOf(q) >= 0
+      );
+      renderMasterTxTable(list);
     }
-
-    function filterTxDate(value) {
-      txDateFilter = value || '';
-      renderMasterTxTable(applyTxFilters());
-    }
-
+    function filterTxDate(value) { txDateFilter = value; filterTransactionsTable(); }
     function filterTxType(typeKey) {
       txTypeFilter = typeKey;
-      document.querySelectorAll('.tx-filter-btn').forEach(btn => {
-        if (btn.getAttribute('data-type') === typeKey) {
-          btn.className = "tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-slate-900 text-white transition";
-        } else {
-          btn.className = "tx-filter-btn px-3.5 py-2 rounded-xl font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition";
-        }
+      document.querySelectorAll('.tx-filter-btn').forEach(b => {
+        const active = b.dataset.type === typeKey;
+        b.className = `tx-filter-btn px-3.5 py-2 rounded-xl font-bold transition ${active ? 'bg-slate-900 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`;
       });
-      renderMasterTxTable(applyTxFilters());
+      filterTransactionsTable();
     }
-
     function reprintTxSlip(invoice) {
       const t = allTransactions().find(x => x.invoice === invoice);
       if (!t) return;
-
-      document.getElementById('prnReceiptCode').innerText = t.invoice;
-      document.getElementById('prnCustName').innerText = t.customer;
-      document.getElementById('prnOrderType').innerText = t.type === 'DINE_IN' ? ('Dine In — ' + (t.tableNumber || '')) : 'Take Away';
-      document.getElementById('prnTime').innerText = formatTxTime(t.time);
-      document.getElementById('prnToken').innerText = t.token;
-
-      const prnTbody = document.getElementById('prnItemsTable');
-      prnTbody.innerHTML = `
-        <tr>
-          <td>${t.itemsSummary}</td>
-          <td style="text-align: right;">${formatRupiah(t.subtotal)}</td>
-        </tr>
-      `;
-
-      document.getElementById('prnSubtotal').innerText = formatRupiah(t.subtotal);
-      document.getElementById('prnTax').innerText = formatRupiah(t.tax);
-      document.getElementById('prnGrandTotal').innerText = formatRupiah(t.total);
-
-      window.print();
+      const container = document.getElementById('printableThermalSlip');
+      if (container) {
+        container.style.maxWidth = '302px';
+        container.innerHTML = `<div style="font-family:ui-monospace,'Menlo','Consolas',monospace;font-size:11px;color:#2A1D17;text-align:left;">
+          <div style="text-align:center;border-bottom:2px dashed #C1673F;padding-bottom:8px;margin-bottom:8px;">
+            <h2 style="margin:0;font-size:15px;font-weight:800;font-family:'Fraunces',Georgia,serif;">QUADRA COFFEE LAB</h2>
+            <p style="margin:2px 0;font-size:10px;color:#6E5843;">Reprint Struk</p>
+          </div>
+          <p style="margin:2px 0;"><strong>No:</strong> ${t.invoice}</p>
+          <p style="margin:2px 0;"><strong>Nama:</strong> ${t.customer}</p>
+          <p style="margin:2px 0;"><strong>Tipe:</strong> ${t.type === 'DINE_IN' ? 'Dine In' : 'Take Away'}</p>
+          <p style="margin:2px 0;"><strong>Menu:</strong> ${t.itemsSummary}</p>
+          <p style="margin:2px 0;"><strong>Waktu:</strong> ${t.time}</p>
+          <div style="border-top:1px dashed #D6C1A4;margin-top:8px;padding-top:6px;">
+            <p style="margin:2px 0;font-size:13px;font-weight:bold;">TOTAL: ${formatRupiah(t.total)}</p>
+            <p style="margin:2px 0;">Metode: ${t.method}</p>
+          </div>
+        </div>`;
+      }
+      window.setTimeout(() => window.print(), 120);
     }
-
     function exportTransactionsCSV() {
-      const rows = applyTxFilters();
-      let csv = "data:text/csv;charset=utf-8,Invoice,Token,Tamu,WhatsApp,Tipe,Rincian Menu,Waktu,Subtotal,Pajak,Total,Metode,Status\n";
-      rows.forEach(t => {
-        csv += `"${t.invoice}","${t.token}","${t.customer}","${t.phone}","${t.type}","${t.itemsSummary}","${formatTxTime(t.time)}","${t.subtotal}","${t.tax}","${t.total}","${t.method}","${t.status}"\n`;
+      const list = applyTxFilters(allTransactions());
+      let csv = "data:text/csv;charset=utf-8,Invoice,Token,Tamu,WhatsApp,Tipe,Rincian Menu,Waktu,Subtotal,Pajak,Service,Total,Metode,Status\n";
+      list.forEach(t => {
+        csv += `${t.invoice},${t.token},"${t.customer}",${t.phone},${t.type},"${t.itemsSummary}",${t.time},${t.subtotal},${t.tax},${t.service},${t.total},${t.method},${t.status}\n`;
       });
-      const encodedUri = encodeURI(csv);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `QuadraCoffee_Transactions_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast(`Ekspor CSV: ${rows.length} transaksi diunduh.`);
+      const a = document.createElement('a');
+      a.href = encodeURI(csv);
+      a.download = 'quadra_transactions.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      showToast(`CSV ${list.length} transaksi diunduh.`);
     }
 
-    // ==================== 8. DASHBOARD COUNTERS ====================
+    /* ==================== SUPERADMIN: P&L & ANALYTICS ==================== */
+    function pnlSummary(period) {
+      const all = allTransactions().filter(t => t.status === 'LUNAS');
+      const revenue = all.reduce((n, t) => n + Number(t.total || 0), 0);
+      const cogs = Math.round(revenue * 0.34);
+      const gross = revenue - cogs;
+      const opex = 0;
+      const net = gross - opex;
+      return { revenue: revenue, cogs: cogs, gross: gross, opex: opex, net: net, txCount: all.length, avg: all.length ? Math.round(revenue / all.length) : 0 };
+    }
+
+    function topSellers() {
+      const counts = {};
+      allTransactions().forEach(t => {
+        if (t.itemsSummary && t.itemsSummary !== '-') {
+          String(t.itemsSummary).split(',').forEach(seg => {
+            const m = /(\d+)x\s+(.+)/.exec(seg.trim());
+            if (m) { const name = m[2].trim(); counts[name] = (counts[name] || 0) + Number(m[1]); }
+          });
+        }
+      });
+      return Object.keys(counts).map(k => ({ name: k, qty: counts[k] })).sort((a, b) => b.qty - a.qty).slice(0, 6);
+    }
+
+    function renderAnalytics() {
+      if (currentRole !== 'superadmin') return;
+      const p = pnlSummary('daily');
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      setTxt('plRevenue', formatRupiah(p.revenue));
+      setTxt('plCogs', formatRupiah(p.cogs));
+      setTxt('plGross', formatRupiah(p.gross));
+      setTxt('plOpex', formatRupiah(p.opex));
+      setTxt('plNet', formatRupiah(p.net));
+      setTxt('plMargin', p.revenue ? Math.round((p.net / p.revenue) * 100) + '%' : '0%');
+      setTxt('plTxCount', p.txCount);
+      setTxt('plAvg', formatRupiah(p.avg));
+
+      const bar = document.getElementById('plGrossBar');
+      if (bar) bar.style.width = Math.max(0, Math.min(100, p.revenue ? (p.net / p.revenue) * 100 : 0)) + '%';
+
+      const topWrap = document.getElementById('topSellersList');
+      if (topWrap) {
+        const top = topSellers();
+        const max = top.length ? top[0].qty : 1;
+        topWrap.innerHTML = top.map((t, i) => `
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-700 font-bold">${i + 1}. ${t.name}</span><span class="text-slate-900 font-bold">${t.qty} terjual</span></div>
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div class="bg-gradient-to-r from-cyan-500 to-gold-400 h-full rounded-full" style="width:${Math.round((t.qty / max) * 100)}%"></div></div>
+          </div>`).join('') || '<p class="text-[11px] text-stone-400">Belum ada data penjualan.</p>';
+      }
+
+      const kycWrap = document.getElementById('kycMetrics');
+      if (kycWrap) {
+        const all = allTransactions();
+        const dine = all.filter(t => t.type === 'DINE_IN').length;
+        const take = all.filter(t => t.type === 'TAKE_AWAY').length;
+        const qris = all.filter(t => /QRIS/i.test(t.method)).length;
+        const retention = all.length ? Math.round((all.length - 1) / all.length * 100) : 0;
+        kycWrap.innerHTML = `
+          <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Rasio Dine In : Take Away</span><strong class="text-slate-900">${dine} : ${take}</strong></div>
+          <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Pembayaran QRIS / Non-tunai</span><strong class="text-cyan-700">${qris} / ${all.length}</strong></div>
+          <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Estimasi Retensi Tamu</span><strong class="text-emerald-700">${retention}%</strong></div>
+          <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">SKU Aktif di Katalog</span><strong class="text-slate-900">${masterMenu.length}</strong></div>
+          <div class="flex justify-between text-[11px] font-mono"><span class="text-slate-500">Outlet Aktif</span><strong class="text-slate-900">3 Outlet</strong></div>`;
+      }
+    }
+
+    function exportPnLCSV() {
+      const p = pnlSummary('daily');
+      let csv = "data:text/csv;charset=utf-8,Metrik,Nilai\n";
+      csv += `Omzet,${p.revenue}\nHPP (COGS),${p.cogs}\nLaba Kotor,${p.gross}\nBeban Operasional,${p.opex}\nLaba Bersih,${p.net}\nJumlah Transaksi,${p.txCount}\nRata-rata / Transaksi,${p.avg}\n`;
+      const a = document.createElement('a');
+      a.href = encodeURI(csv);
+      a.download = 'quadra_laba_rugi.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      showToast('Laporan Laba Rugi (CSV) diunduh.');
+    }
+
+    /* ==================== COUNTERS & NOTIFIKASI ==================== */
     function updateDashboardCounters() {
-      const synced = syncOrders();
-      const paidSynced = synced.filter(o => o.paymentStatus === 'PAID' || o.orderStatus === 'COMPLETED');
-      const totalRev = masterTransactions.reduce((acc, t) => acc + t.total, 0)
-        + paidSynced.reduce((acc, o) => acc + (Number(o.totalAmount) || 0), 0);
-      const occupiedTables = floorState().filter(t => t.displayStatus === 'occupied').length;
-
-      const kpiRev = document.getElementById('kpiRevenue');
-      if (kpiRev) kpiRev.innerText = formatRupiah(totalRev);
-      const kpiTx = document.getElementById('kpiTotalTx');
-      if (kpiTx) kpiTx.innerText = `${allTransactions().length} Transaksi`;
-      const cup = document.getElementById('kpiCupsSold');
-      if (cup) {
-        const syncedCups = synced.reduce((acc, o) => acc + (o.items || []).reduce((s, it) => s + (Number(it.qty) || 0), 0), 0);
-        cup.innerText = `${198 + syncedCups} Cangkir`;
-      }
-      const tbl = document.getElementById('kpiTablesOccupied');
-      if (tbl) tbl.innerText = `${occupiedTables} / 10 Meja Terisi`;
-
-      /* Panel audit finansial (Superadmin) */
-      const auditRev = document.getElementById('auditRevenue');
-      if (auditRev) auditRev.innerText = formatRupiah(totalRev);
-      const auditTx = document.getElementById('auditTxCount');
-      if (auditTx) auditTx.innerText = String(allTransactions().length);
-      const auditTables = document.getElementById('auditTables');
-      if (auditTables) auditTables.innerText = `${occupiedTables} / 10`;
-      const auditAvg = document.getElementById('auditAvg');
-      if (auditAvg) {
-        const txCount = allTransactions().length;
-        auditAvg.innerText = txCount ? formatRupiah(Math.round(totalRev / txCount)) : formatRupiah(0);
-      }
+      const all = allTransactions().filter(t => t.status === 'LUNAS');
+      const revenue = all.reduce((n, t) => n + Number(t.total || 0), 0);
+      const cups = all.reduce((n, t) => n + (String(t.itemsSummary).match(/\d+x/g) || []).reduce((s, x) => s + Number(x.replace('x', '')), 0), 0);
+      const tables = floorState();
+      const occupied = tables.filter(t => t.displayStatus === 'occupied').length;
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      setTxt('kpiRevenue', formatRupiah(revenue));
+      setTxt('kpiCupsSold', cups + ' Cangkir');
+      setTxt('kpiTotalTx', all.length + ' Transaksi');
+      setTxt('kpiTablesOccupied', occupied + ' / 10 Meja Terisi');
+      setTxt('auditRevenue', formatRupiah(revenue));
+      setTxt('auditTxCount', all.length);
+      setTxt('auditTables', occupied + ' / 10');
+      setTxt('auditAvg', formatRupiah(all.length ? Math.round(revenue / all.length) : 0));
+      const q = document.getElementById('badgeQueueCount');
+      if (q) q.innerText = syncOrders().filter(o => o.orderStatus !== 'COMPLETED').length + ' Antrean';
+      const lowBadge = document.getElementById('stockAlertBadge');
+      if (lowBadge) lowBadge.classList.toggle('hidden', lowStockCount() === 0);
+      if (document.getElementById('view-analytics') && !document.getElementById('view-analytics').classList.contains('hidden')) renderAnalytics();
     }
 
-    // ==================== 8b. NOTIFIKASI & MEJA REAL-TIME ====================
-    /** Tulis satu baris ke feed notifikasi dashboard. */
     function pushNotification(title, detail, tone) {
       const feed = document.getElementById('notificationFeed');
       if (!feed) return;
-      const cls = tone === 'gold' ? 'bg-gold-50/80 border-gold-200' : 'bg-cyan-50/70 border-cyan-100';
-      const el = document.createElement('div');
-      el.className = `p-2.5 ${cls} rounded-xl border`;
-      el.innerHTML = `
-        <p class="font-bold text-slate-900">${title}</p>
-        <p class="text-slate-500 text-[10px] font-mono">${detail}</p>
-        <span class="text-[9px] ${tone === 'gold' ? 'text-gold-700' : 'text-cyan-700'} font-bold">baru saja</span>
-      `;
-      feed.prepend(el);
-      while (feed.children.length > 12) feed.removeChild(feed.lastElementChild);
+      const colors = { cyan: 'bg-cyan-50/70 border-cyan-100', gold: 'bg-gold-50/80 border-gold-200', rose: 'bg-rose-50/80 border-rose-200' };
+      const div = document.createElement('div');
+      div.className = `p-2.5 rounded-xl border ${colors[tone] || colors.cyan}`;
+      div.innerHTML = `<p class="font-bold text-slate-900">${title}</p><p class="text-slate-500 text-[10px] font-mono">${detail}</p><span class="text-[9px] text-cyan-700 font-bold">baru saja</span>`;
+      feed.insertBefore(div, feed.firstChild);
     }
 
-    /** Badge merah + lonceng ketika ada pesanan baru dari customer site. */
     function flagNewOrder() {
-      const bell = document.getElementById('bellBadge');
-      if (bell) bell.classList.remove('hidden');
+      const badge = document.getElementById('bellBadge');
+      if (badge) badge.classList.remove('hidden');
+      playNewOrderChime();
     }
     function clearNewOrderFlag() {
-      const bell = document.getElementById('bellBadge');
-      if (bell) bell.classList.add('hidden');
+      const badge = document.getElementById('bellBadge');
+      if (badge) badge.classList.add('hidden');
     }
-
-    /**
-     * Bunyi notifikasi "New Order" tanpa file audio eksternal:
-     * dua nada pendek dari Web Audio API, dengan getar di perangkat mobile.
-     */
     function playNewOrderChime() {
       try {
         const Ctx = window.AudioContext || window.webkitAudioContext;
         if (!Ctx) return;
         const ctx = new Ctx();
-        [880, 1320].forEach((freq, i) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          const start = ctx.currentTime + i * 0.18;
-          gain.gain.setValueAtTime(0.0001, start);
-          gain.gain.exponentialRampToValueAtTime(0.25, start + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.16);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(start); osc.stop(start + 0.18);
-        });
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine'; osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+        osc.start(); osc.stop(ctx.currentTime + 0.6);
         window.setTimeout(function () { try { ctx.close(); } catch (e) { /* noop */ } }, 900);
-      } catch (e) { /* autoplay diblokir sebelum interaksi user */ }
-      try { if (navigator.vibrate) navigator.vibrate([40, 60, 40]); } catch (e) { /* noop */ }
+      } catch (e) { /* noop */ }
     }
 
-    /** Pesanan self-order dari customer site yang belum selesai (panel wave). */
     function renderWavePanel() {
-      const box = document.getElementById('waveOrderList');
+      const wrap = document.getElementById('waveOrderList');
+      if (!wrap) return;
+      const pending = syncOrders().filter(o => o.orderStatus !== 'COMPLETED');
       const badge = document.getElementById('waveCountBadge');
-      if (!box) return;
-
-      const wave = syncOrders().filter(o => o.orderStatus !== 'COMPLETED');
-      posWave = wave;
-      if (badge) badge.innerText = `${wave.length} Pesanan`;
-      const sideBadge = document.getElementById('badgeQueueCount');
-      if (sideBadge) sideBadge.innerText = `${wave.length} Antrean`;
-
-      if (!wave.length) {
-        box.innerHTML = '<p class="text-center text-xs italic text-stone-400 py-4 font-mono">Belum ada pesanan masuk dari customer site.</p>';
-        return;
-      }
-
-      box.innerHTML = wave.map(o => `
-        <div class="p-2.5 bg-white rounded-xl border border-cyan-200 space-y-1.5">
+      if (badge) badge.innerText = pending.length + ' Pesanan';
+      if (!pending.length) { wrap.innerHTML = '<p class="text-xs text-slate-400 font-mono col-span-3">Belum ada pesanan masuk dari customer site.</p>'; return; }
+      wrap.innerHTML = pending.map(o => `
+        <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-slate-900 text-[11px]">${o.customerName || (o.orderType === 'take_away' ? 'Take Away' : o.tableNumber)}</span>
-            <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-800 border border-cyan-200">${o.tableNumber || 'Take Away'}</span>
+            <span class="text-[10px] font-mono font-bold text-gold-400">${o.orderId}</span>
+            <span class="text-[9px] font-mono text-slate-400">${o.orderType === 'take_away' ? 'Take Away' : (o.tableNumber || 'Dine In')}</span>
           </div>
-          <p class="text-[10px] text-stone-500 font-mono truncate">${(o.items || []).map(i => i.qty + 'x ' + i.name).join(', ')}</p>
-          <div class="flex items-center justify-between text-[10px] font-mono">
-            <span class="text-stone-400">${o.orderId}</span>
-            <span class="font-bold text-slate-900">${formatRupiah(Number(o.totalAmount) || 0)}</span>
+          <p class="text-xs font-bold text-white font-display truncate">${o.customerName || o.customer || 'Tamu'}</p>
+          <p class="text-[10px] font-mono text-slate-300 truncate">${(o.items || []).map(i => `${i.qty || 1}x ${i.name}`).join(', ') || '-'}</p>
+          <div class="flex items-center justify-between pt-1 border-t border-slate-700">
+            <span class="text-[11px] font-bold text-cyan-300">${formatRupiah(o.totalAmount || 0)}</span>
+            <button onclick="setSyncOrderStatus('${o.orderId}','SERVED')" class="bg-cyan-600/30 hover:bg-cyan-600 text-cyan-200 hover:text-white text-[10px] font-bold px-2.5 py-1 rounded-lg border border-cyan-400/40 transition">Tandai Siap</button>
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
     }
 
-    /** Segarkan semua tampilan yang bergantung pada data tersinkron. */
     function refreshSyncedViews() {
+      const tablesView = document.getElementById('view-tables');
+      if (tablesView && !tablesView.classList.contains('hidden')) { renderTableGrid(); renderFloorPlan(); }
+      const posView = document.getElementById('view-pos');
+      if (posView && !posView.classList.contains('hidden')) { renderPOSFloorPicker(); renderPOSDisplay(); }
       updateDashboardCounters();
-      renderTableGrid();
-      renderFloorPlan();
-      renderWavePanel();
-      const resView = document.querySelector('#view-reservations:not(.hidden)');
-      if (resView) renderReservationFloor();
-      const posView = document.querySelector('#view-pos:not(.hidden)');
-      if (posView) renderPOSFloorPicker();
-      const active = document.querySelector('#view-transactions:not(.hidden)');
-      if (active) renderMasterTxTable();
     }
 
-    // ==================== 9. INITIALIZATION ====================
     function initDashboard() {
       seedTables();
+      seedOccupancy();
+      seedStock();
       applyRoleMenus();
-
-      // Chart.js dimuat async dari CDN: tunggu sampai tersedia
-      if (typeof Chart === 'undefined') {
-        let tries = 0;
-        const t = setInterval(() => {
-          tries++;
-          if (typeof Chart !== 'undefined' || tries > 40) {
-            clearInterval(t);
-            if (typeof Chart !== 'undefined' && hasAccess('overview')) initCharts();
-          }
-        }, 150);
-      } else if (hasAccess('overview')) {
-        initCharts();
-      }
-
-      renderPOSCategoryFilters();
-      renderPOSMenuOptions();
+      setPOSOrderType('dine_in');
       setPOSPaymentMethod('Cash');
-      renderPOSFloorPicker();
-      updatePOSCartUI();
-      renderMasterTxTable();
-      renderTableGrid();
-      renderFloorPlan();
-      renderReservationView();
-      renderWavePanel();
+      setPOSDisplay('cashier');
+      switchTab(ROLE_DEFAULT_TAB[currentRole]);
       updateDashboardCounters();
-      subscribeSync();
-
-      if (window.lucide) lucide.createIcons();
     }
 
-    /** Terima event dari customer site (BroadcastChannel / storage event). */
     function subscribeSync() {
       QuadraSync.subscribe(function (ev) {
         if (!ev || !ev.type) return;
-        if (ev.type === 'ORDER_CREATED' && ev.source !== 'admin') {
-          const order = ev.order || {};
-          const who = order.customerName || order.tableNumber || (order.orderType === 'take_away' ? 'Take Away' : 'Tamu Quadra');
-          const itemsTxt = (order.items || []).map(i => `${i.qty}x ${i.name}`).join(', ');
-          pushNotification('Pesanan Baru dari Customer', `${who} • ${itemsTxt} • ${order.paymentMethod || 'QRIS'} ${order.paymentStatus === 'PAID' ? 'LUNAS' : 'BELUM BAYAR'}`);
-          playNewOrderChime();
+        if (ev.type === 'ORDER_CREATED' || ev.type === 'NEW_ORDER') {
+          pushNotification('Pesanan Baru dari Customer Site', (ev.order && (ev.order.tableNumber || ev.order.orderType)) + ' • ' + (ev.order && ev.order.customerName || 'Tamu'), 'cyan');
           flagNewOrder();
-          showToast(`Pesanan baru ${order.orderId} dari ${who} — meja terkait otomatis TERISI.`);
-          refreshSyncedViews();
-          return;
+          showToast('Pesanan baru masuk dari customer site.');
         }
-        if (ev.type === 'RESERVATION_UPDATED' || ev.type === 'RESERVATION_CANCELLED' || ev.type === 'TABLE_UPDATED') {
-          refreshSyncedViews();
-          return;
-        }
-        if (ev.type === 'STATUS_UPDATED' || ev.type === 'ORDER_UPDATED') {
-          refreshSyncedViews();
-          return;
-        }
-        if (ev.type === 'DB_RESET' || ev.type === 'EXTERNAL_CHANGE') {
+        if (ev.type === 'STATUS_UPDATED' || ev.type === 'TABLE_UPDATED' || ev.type === 'STOCK_UPDATED' || ev.type === 'EXTERNAL_CHANGE') {
           refreshSyncedViews();
         }
       });
     }
 
-    if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', initDashboard);
-    } else {
-      initDashboard();
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+      try { initDashboard(); subscribeSync(); }
+      catch (e) { console.error('Quadra dashboard init error:', e); }
+    });
   </script>
 
 </body>
