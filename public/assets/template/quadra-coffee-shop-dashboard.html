@@ -319,6 +319,12 @@
           <span>Report Summary &amp; Profit / Loss</span>
         </button>
 
+        <button onclick="switchTab('menu')" id="tab-menu" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="book-open-check" class="w-4 h-4"></i>
+          <span>Master Menu &amp; Resep</span>
+          <span class="ml-auto bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[13px] font-bold px-1.5 py-0.5 rounded font-mono" id="menuCountBadge">0</span>
+        </button>
+
         <button onclick="switchTab('transactions')" id="tab-transactions" class="sidebar-item w-full flex items-center gap-3 px-3.5 py-3 rounded-xl transition text-slate-400 hover:text-white hover:bg-slate-800">
           <i data-lucide="database" class="w-4 h-4"></i>
           <span>Database Transaksi &amp; Ekspor CSV</span>
@@ -772,6 +778,74 @@
 
       </section>
 
+      <!-- ==================== VIEW: MASTER MENU & RESEP (BOM ENGINE) ==================== -->
+      <section id="view-menu" class="hidden space-y-6">
+
+        <!-- Ringkasan portofolio menu -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-3xl border border-cyan-100 shadow-sm flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-700 flex items-center justify-center border border-cyan-200"><i data-lucide="book-open-check" class="w-5 h-5"></i></span>
+            <div>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Total Menu</span>
+              <span class="text-xl font-bold text-slate-900 font-display" id="menuStatsTotal">0</span>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-3xl border border-amber-100 shadow-sm flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200"><i data-lucide="calculator" class="w-5 h-5"></i></span>
+            <div>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Rata-rata HPP</span>
+              <span class="text-xl font-bold text-amber-700 font-display" id="menuStatsAvgHpp">Rp 0</span>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-3xl border border-emerald-100 shadow-sm flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200"><i data-lucide="trending-up" class="w-5 h-5"></i></span>
+            <div>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Rata-rata Margin</span>
+              <span class="text-xl font-bold text-emerald-700 font-display" id="menuStatsAvgMargin">0%</span>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-3xl border border-stone-200 shadow-sm flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-stone-100 text-stone-600 flex items-center justify-center border border-stone-200"><i data-lucide="eye-off" class="w-5 h-5"></i></span>
+            <div>
+              <span class="text-[14px] uppercase tracking-[0.14em] text-stone-500 font-semibold block">Non-Aktif di POS</span>
+              <span class="text-xl font-bold text-stone-600 font-display" id="menuStatsInactive">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daftar Menu & Komposisi Resep -->
+        <div class="bg-white p-5 sm:p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cyan-50 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Daftar Menu &amp; Komposisi Resep</h3>
+              <p class="text-[14px] text-stone-500 font-mono">HPP &amp; margin dikalkulasi otomatis dari harga beli master bahan baku.</p>
+            </div>
+            <button onclick="openMenuForm()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Menu &amp; Resep Baru
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-[14px] font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200">
+                <tr>
+                  <th class="py-3 px-4">MENU &amp; KATEGORI</th>
+                  <th class="py-3 px-4">KOMPOSISI RESEP (BOM)</th>
+                  <th class="py-3 px-4 text-right">HARGA JUAL</th>
+                  <th class="py-3 px-4 text-right">HPP / COGS</th>
+                  <th class="py-3 px-4 text-right">MARGIN</th>
+                  <th class="py-3 px-4 text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody id="menuMasterBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
       <!-- ==================== VIEW 3: STOCK OPNAME (AUDIT STOK HARIAN) ==================== -->
       <section id="view-stock" class="hidden space-y-6">
 
@@ -805,6 +879,9 @@
               <h3 class="font-bold text-base text-slate-900 font-display">Stock Opname Bahan Baku Harian</h3>
               <p class="text-[14px] text-stone-500 font-mono">Bandingkan stok sistem vs hitungan fisik. Selisih otomatis dicatat sebagai waste.</p>
             </div>
+            <button onclick="openRestockForm()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[14px] font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-emerald-400 shadow-sm shadow-emerald-600/20">
+              <i data-lucide="package-plus" class="w-4 h-4"></i> Tambah Stok Masuk (Restock)
+            </button>
             <button onclick="exportStockCSV()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-[14px] font-mono font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
               <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor CSV
             </button>
@@ -830,8 +907,34 @@
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-cyan-50">
             <p class="text-[14px] text-stone-500 font-mono">Terakhir disimpan: <strong id="stockSavedAt" class="text-slate-700">—</strong></p>
             <button onclick="saveStockOpname()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 px-5 rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-cyan-600/25 active:scale-95 font-sans border border-cyan-400">
-              <i data-lucide="save" class="w-4 h-4"></i> Simpan Hasil Opname
+              <i data-lucide="save" class="w-4 h-4"></i> Kunci &amp; Simpan Hasil Opname
             </button>
+          </div>
+        </div>
+
+        <!-- Riwayat Mutasi Stok (ledger) -->
+        <div class="bg-white p-5 sm:p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-cyan-50 pb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 font-display">Riwayat Mutasi Stok (Ledger)</h3>
+              <p class="text-[14px] text-stone-500 font-mono">Jejak audit: restock masuk, pemotongan resep otomatis, koreksi opname.</p>
+            </div>
+            <span class="font-mono text-[13px] font-bold bg-stone-100 text-stone-600 border border-stone-200 px-2 py-1 rounded-lg" id="stockHistoryCount">0 entri</span>
+          </div>
+          <div class="overflow-x-auto max-h-[420px] overflow-y-auto">
+            <table class="w-full text-left text-[13px] font-mono">
+              <thead class="bg-stone-50 text-stone-500 font-semibold border-b border-stone-200 sticky top-0">
+                <tr>
+                  <th class="py-3 px-4">WAKTU &amp; PELAKU</th>
+                  <th class="py-3 px-4">JENIS</th>
+                  <th class="py-3 px-4">REFERENSI</th>
+                  <th class="py-3 px-4">DETAIL MUTASI</th>
+                </tr>
+              </thead>
+              <tbody id="stockHistoryBody" class="divide-y divide-stone-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -1201,6 +1304,146 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL: TAMBAH / EDIT MENU & RESEP (BOM) ==================== -->
+  <div id="menuFormModal" class="hidden fixed inset-0 z-[75] items-start justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl border border-cyan-100 w-full max-w-3xl my-6 p-6 space-y-5">
+      <div class="flex items-start justify-between border-b border-cyan-50 pb-3">
+        <div>
+          <h3 class="font-bold text-lg text-slate-900 font-display" id="menuFormTitle">Tambah Menu &amp; Racik Resep Baru</h3>
+          <p class="text-[14px] font-mono text-stone-500 mt-0.5">Definisikan produk &amp; komposisi bahan baku (BOM) — HPP dihitung otomatis.</p>
+        </div>
+        <button onclick="closeMenuForm()" class="text-stone-500 hover:text-rose-600 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Informasi Produk -->
+      <div class="space-y-3">
+        <h4 class="text-[14px] font-bold text-cyan-700 font-mono uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="coffee" class="w-4 h-4"></i> Informasi Produk
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Nama Menu</label>
+            <input type="text" id="menuFormName" placeholder="cth. Cold Drip Tonic" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Kategori</label>
+            <select id="menuFormCategory" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              <option value="Manual Brew">Manual Brew</option>
+              <option value="Espresso">Espresso</option>
+              <option value="Food">Food</option>
+              <option value="Pastry">Pastry</option>
+              <option value="Promo">Promo</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Harga Jual (Rp)</label>
+            <input type="number" id="menuFormPrice" min="0" step="1000" placeholder="40000" oninput="recalcMenuFormHpp()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Deskripsi Singkat</label>
+            <input type="text" id="menuFormDesc" placeholder="cth. Cold brew 16 jam dengan tonic dan orange zest" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="flex items-center gap-2.5 cursor-pointer select-none">
+              <input type="checkbox" id="menuFormActive" checked class="w-5 h-5 rounded border-stone-300 text-cyan-600 focus:ring-cyan-500" />
+              <span class="text-[14px] font-bold text-slate-700 font-sans">Status Aktif di POS</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Komposisi Resep / BOM -->
+      <div class="space-y-3 border-t border-cyan-50 pt-4">
+        <div class="flex items-center justify-between">
+          <h4 class="text-[14px] font-bold text-cyan-700 font-mono uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="list-plus" class="w-4 h-4"></i> Komposisi Resep / Bahan Baku
+          </h4>
+          <button onclick="addRecipeRow()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 text-[14px] font-mono font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 border border-stone-200">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Tambah Bahan Baku
+          </button>
+        </div>
+        <div id="recipeRows" class="space-y-2"><!-- rows injected --></div>
+      </div>
+
+      <!-- Kalkulator HPP live -->
+      <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="font-mono">
+          <p class="text-[13px] uppercase tracking-wider text-cyan-700 font-bold">HPP Terkalkulasi Otomatis</p>
+          <p class="text-2xl font-black text-cyan-800" id="menuFormHpp">Rp 0</p>
+        </div>
+        <div class="font-mono text-right">
+          <p class="text-[13px] uppercase tracking-wider text-cyan-700 font-bold">Margin Profit</p>
+          <p class="text-2xl font-black text-emerald-700" id="menuFormMargin">0%</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <button onclick="closeMenuForm()" class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3 rounded-xl transition font-sans">Batal</button>
+        <button onclick="saveMenuForm()" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 font-sans border border-cyan-400 shadow-md shadow-cyan-600/25 active:scale-95">
+          <i data-lucide="save" class="w-4 h-4"></i> Simpan Menu &amp; Aktifkan di POS
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: RESTOCK / TAMBAH STOK MASUK ==================== -->
+  <div id="restockModal" class="hidden fixed inset-0 z-[75] items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border border-emerald-100 w-full max-w-lg max-h-[92vh] overflow-y-auto p-6 space-y-4">
+      <div class="flex items-start justify-between border-b border-emerald-50 pb-3">
+        <div>
+          <h3 class="font-bold text-lg text-slate-900 font-display">Tambah Stok Masuk (Restock Bahan)</h3>
+          <p class="text-[14px] font-mono text-stone-500 mt-0.5">Catat penerimaan bahan baku / faktur supplier.</p>
+        </div>
+        <button onclick="closeRestockForm()" class="text-stone-500 hover:text-rose-600 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Pilih Bahan Baku</label>
+          <select id="restockItem" onchange="onRestockItemChange()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Jumlah Masuk</label>
+            <input type="number" id="restockQty" min="0" step="1" placeholder="10000" oninput="onRestockQtyChange()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Satuan</label>
+            <input type="text" id="restockUnit" disabled class="w-full bg-stone-100 border border-stone-200 rounded-xl p-2.5 text-stone-500 font-bold" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Harga Beli Total (Rp) — opsional</label>
+            <input type="number" id="restockCost" min="0" step="1000" placeholder="1800000" oninput="onRestockCostChange()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Harga Beli / Satuan</label>
+            <input type="text" id="restockUnitCost" disabled class="w-full bg-stone-100 border border-stone-200 rounded-xl p-2.5 text-stone-500 font-bold" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-[13px] font-bold text-slate-600 font-mono mb-1">Catatan Masuk</label>
+          <input type="text" id="restockNote" placeholder="cth. Restock mingguan Supplier A" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 font-mono text-[14px] text-emerald-800">
+          Stok sistem <strong id="restockPreview">—</strong> setelah restock.
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <button onclick="closeRestockForm()" class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3 rounded-xl transition font-sans">Batal</button>
+        <button onclick="saveRestock()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 font-sans border border-emerald-400 shadow-md shadow-emerald-600/25 active:scale-95">
+          <i data-lucide="package-plus" class="w-4 h-4"></i> Simpan Stok Masuk
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-cyan-800 flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 text-[13px] font-medium font-sans">
     <div class="w-6 h-6 rounded-full bg-cyan-600 flex items-center justify-center text-gold-300 font-bold">
       <i data-lucide="check" class="w-3.5 h-3.5"></i>
@@ -1210,23 +1453,46 @@
 
   <!-- ==================== JAVASCRIPT MASTER LOGIC ==================== -->
   <script>
+    /* ============================================================
+       MASTER MENU & RESEP (BILL OF MATERIALS)
+       ------------------------------------------------------------
+       recipe[] = daftar bahan baku (BOM) per 1 porsi/cup:
+         { stockId, qty, unit }  -> qty dalam satuan dasar master stok
+       hpp dihitung otomatis: Σ (qty × harga beli master stok)
+       ============================================================ */
     let masterMenu = [
-      { id: "mb-1", name: "Panama Geisha Boquete V60", category: "Manual Brew", price: 65000, desc: "Lot #04 Jasmine, Bergamot, White Peach (SCA 92.5)" },
-      { id: "mb-2", name: "Colombia Pink Bourbon Origami", category: "Manual Brew", price: 55000, desc: "Strawberry candy, Pink Grapefruit, Honey Anaerobic" },
-      { id: "mb-3", name: "Ethiopia Yirgacheffe Idido Syphon", category: "Manual Brew", price: 52000, desc: "Citrus blossom, white peach, earl grey finish" },
-      { id: "es-1", name: "Quadra Aerocano Citrus Flambé", category: "Espresso", price: 38000, desc: "Espresso aerated with flame-torched orange blossom syrup" },
-      { id: "es-2", name: "Oat Pistachio Cloud Latte", category: "Espresso", price: 42000, desc: "Double ristretto with organic oat milk and salted pistachio foam" },
-      { id: "es-3", name: "Double Ristretto Macchiato", category: "Espresso", price: 35000, desc: "Ristretto doppio dengan micro-foam tebal" },
-      { id: "cb-1", name: "Kyoto Cold Drip 18-Hours", category: "Espresso", price: 45000, desc: "18-hour slow ice drip with dark chocolate and bourbon oak notes" },
-      { id: "cb-2", name: "Signature Cold Brew Tonic", category: "Espresso", price: 40000, desc: "Cold brew 16 jam dengan tonic dan orange zest" },
-      { id: "nc-1", name: "Matcha Ceremonial Latte", category: "Espresso", price: 40000, desc: "Matcha upacara Jepang dengan susu segar" },
-      { id: "pa-1", name: "Butter Croissant", category: "Pastry", price: 28000, desc: "Croissant butter Prancis, dipanggang harian" },
-      { id: "pa-2", name: "Pain au Chocolat", category: "Pastry", price: 30000, desc: "Pastri berlapis dengan isian dark chocolate" },
-      { id: "fd-1", name: "Truffle Mushroom Toast", category: "Food", price: 58000, desc: "Sourdough, jamur tumis truffle, telur mata sapi" },
-      { id: "fd-2", name: "Quadra Beef Rice Bowl", category: "Food", price: 62000, desc: "Rice bowl daging sapi dengan saus khas Quadra" },
-      { id: "fd-3", name: "Smoked Chicken Panini", category: "Food", price: 55000, desc: "Panini ayam asap dengan keju leleh" },
-      { id: "pr-1", name: "Paket Duo Espresso Bar", category: "Promo", price: 62000, desc: "2 minuman Espresso Bar pilihan, hemat 25%" },
-      { id: "pr-2", name: "Slow Bar Tasting Flight", category: "Promo", price: 85000, desc: "3 single origin seduh manual dalam satu flight" }
+      { id: "mb-1", name: "Panama Geisha Boquete V60", category: "Manual Brew", price: 65000, desc: "Lot #04 Jasmine, Bergamot, White Peach (SCA 92.5)", active: true,
+        recipe: [ { stockId: "st-beans-so", qty: 18, unit: "Gram" }, { stockId: "st-cup-8", qty: 1, unit: "Pcs" }, { stockId: "st-lid", qty: 1, unit: "Pcs" } ] },
+      { id: "mb-2", name: "Colombia Pink Bourbon Origami", category: "Manual Brew", price: 55000, desc: "Strawberry candy, Pink Grapefruit, Honey Anaerobic", active: true,
+        recipe: [ { stockId: "st-beans-so", qty: 16, unit: "Gram" }, { stockId: "st-cup-8", qty: 1, unit: "Pcs" }, { stockId: "st-lid", qty: 1, unit: "Pcs" } ] },
+      { id: "mb-3", name: "Ethiopia Yirgacheffe Idido Syphon", category: "Manual Brew", price: 52000, desc: "Citrus blossom, white peach, earl grey finish", active: true,
+        recipe: [ { stockId: "st-beans-so", qty: 15, unit: "Gram" }, { stockId: "st-cup-8", qty: 1, unit: "Pcs" } ] },
+      { id: "es-1", name: "Quadra Aerocano Citrus Flambé", category: "Espresso", price: 38000, desc: "Espresso aerated with flame-torched orange blossom syrup", active: true,
+        recipe: [ { stockId: "st-beans-house", qty: 18, unit: "Gram" }, { stockId: "st-syrup-caramel", qty: 20, unit: "Ml" }, { stockId: "st-cup-12", qty: 1, unit: "Pcs" }, { stockId: "st-lid", qty: 1, unit: "Pcs" } ] },
+      { id: "es-2", name: "Oat Pistachio Cloud Latte", category: "Espresso", price: 42000, desc: "Double ristretto with organic oat milk and salted pistachio foam", active: true,
+        recipe: [ { stockId: "st-beans-house", qty: 20, unit: "Gram" }, { stockId: "st-oat", qty: 180, unit: "Ml" }, { stockId: "st-pistachio", qty: 15, unit: "Gram" }, { stockId: "st-cup-12", qty: 1, unit: "Pcs" }, { stockId: "st-lid", qty: 1, unit: "Pcs" } ] },
+      { id: "es-3", name: "Double Ristretto Macchiato", category: "Espresso", price: 35000, desc: "Ristretto doppio dengan micro-foam tebal", active: true,
+        recipe: [ { stockId: "st-beans-house", qty: 18, unit: "Gram" }, { stockId: "st-milk", qty: 60, unit: "Ml" }, { stockId: "st-cup-8", qty: 1, unit: "Pcs" } ] },
+      { id: "cb-1", name: "Kyoto Cold Drip 18-Hours", category: "Espresso", price: 45000, desc: "18-hour slow ice drip with dark chocolate and bourbon oak notes", active: true,
+        recipe: [ { stockId: "st-beans-so", qty: 22, unit: "Gram" }, { stockId: "st-cup-12", qty: 1, unit: "Pcs" }, { stockId: "st-lid", qty: 1, unit: "Pcs" } ] },
+      { id: "cb-2", name: "Signature Cold Brew Tonic", category: "Espresso", price: 40000, desc: "Cold brew 16 jam dengan tonic dan orange zest", active: true,
+        recipe: [ { stockId: "st-beans-house", qty: 20, unit: "Gram" }, { stockId: "st-tonic", qty: 150, unit: "Ml" }, { stockId: "st-cup-12", qty: 1, unit: "Pcs" }, { stockId: "st-lid", qty: 1, unit: "Pcs" } ] },
+      { id: "nc-1", name: "Matcha Ceremonial Latte", category: "Espresso", price: 40000, desc: "Matcha upacara Jepang dengan susu segar", active: true,
+        recipe: [ { stockId: "st-matcha", qty: 6, unit: "Gram" }, { stockId: "st-milk", qty: 200, unit: "Ml" }, { stockId: "st-syrup-palm", qty: 15, unit: "Ml" }, { stockId: "st-cup-12", qty: 1, unit: "Pcs" } ] },
+      { id: "pa-1", name: "Butter Croissant", category: "Pastry", price: 28000, desc: "Croissant butter Prancis, dipanggang harian", active: true,
+        recipe: [ { stockId: "st-butler-croissant", qty: 1, unit: "Pcs" }, { stockId: "st-butter", qty: 10, unit: "Gram" } ] },
+      { id: "pa-2", name: "Pain au Chocolat", category: "Pastry", price: 30000, desc: "Pastri berlapis dengan isian dark chocolate", active: true,
+        recipe: [ { stockId: "st-pain-choco", qty: 1, unit: "Pcs" }, { stockId: "st-butter", qty: 8, unit: "Gram" } ] },
+      { id: "fd-1", name: "Truffle Mushroom Toast", category: "Food", price: 58000, desc: "Sourdough, jamur tumis truffle, telur mata sapi", active: true,
+        recipe: [ { stockId: "st-sourdough", qty: 1, unit: "Pcs" }, { stockId: "st-butter", qty: 15, unit: "Gram" } ] },
+      { id: "fd-2", name: "Quadra Beef Rice Bowl", category: "Food", price: 62000, desc: "Rice bowl daging sapi dengan saus khas Quadra", active: true,
+        recipe: [ { stockId: "st-beef", qty: 120, unit: "Gram" }, { stockId: "st-rice", qty: 1, unit: "Porsi" } ] },
+      { id: "fd-3", name: "Smoked Chicken Panini", category: "Food", price: 55000, desc: "Panini ayam asap dengan keju leleh", active: true,
+        recipe: [ { stockId: "st-sourdough", qty: 1, unit: "Pcs" }, { stockId: "st-butter", qty: 12, unit: "Gram" } ] },
+      { id: "pr-1", name: "Paket Duo Espresso Bar", category: "Promo", price: 62000, desc: "2 minuman Espresso Bar pilihan, hemat 25%", active: true,
+        recipe: [ { stockId: "st-beans-house", qty: 36, unit: "Gram" }, { stockId: "st-milk", qty: 240, unit: "Ml" }, { stockId: "st-cup-12", qty: 2, unit: "Pcs" }, { stockId: "st-lid", qty: 2, unit: "Pcs" } ] },
+      { id: "pr-2", name: "Slow Bar Tasting Flight", category: "Promo", price: 85000, desc: "3 single origin seduh manual dalam satu flight", active: true,
+        recipe: [ { stockId: "st-beans-so", qty: 45, unit: "Gram" }, { stockId: "st-cup-8", qty: 3, unit: "Pcs" } ] }
     ];
 
     /* ============================================================
@@ -1269,13 +1535,42 @@
       { invoice: "QDR-202611-9020", outlet: "BSD Roastery", token: "A-05", customer: "Doni Saputra", phone: "081444332211", type: "TAKE_AWAY", itemsSummary: "2x Matcha Latte, 1x Butter Croissant", time: "18:02 WIB", subtotal: 96000, tax: 9600, service: 0, total: 105600, method: "Tunai", status: "LUNAS", date: todayISO() }
     ];
 
-    /* Seed stok bahan baku (Stock Opname). */
+    /* ============================================================
+       MASTER BAHAN BAKU (INVENTORY) — satuan operasional dapur
+       ------------------------------------------------------------
+       cost  = harga beli per satuan dasar (Rp / Gram, Rp / Ml, Rp / Pcs)
+       system= stok buku sistem (bertambah saat restock, berkurang saat order)
+       min   = ambang batas "menipis" untuk peringatan
+       ============================================================ */
     const STOCK_BLUEPRINT = [
-      { id: "st-beans", name: "Biji Kopi Single Origin", unit: "kg", system: 18.5, min: 8, cost: 320000, recipeUse: 0.018 },
-      { id: "st-milk", name: "Fresh Milk", unit: "L", system: 6, min: 10, cost: 22000, recipeUse: 0.18 },
-      { id: "st-syrup", name: "Sirup Gula Aren", unit: "botol", system: 14, min: 5, cost: 45000, recipeUse: 0.03 },
-      { id: "st-cup", name: "Paper Cup 12oz", unit: "pcs", system: 420, min: 150, cost: 1400, recipeUse: 1 }
+      { id: "st-beans-house", name: "Biji Kopi House Blend", unit: "Gram", system: 5000, min: 1200, cost: 180 },
+      { id: "st-beans-so", name: "Biji Kopi Single Origin", unit: "Gram", system: 2500, min: 800, cost: 420 },
+      { id: "st-milk", name: "Fresh Milk", unit: "Ml", system: 15000, min: 4000, cost: 22 },
+      { id: "st-oat", name: "Oatmilk", unit: "Ml", system: 6000, min: 2000, cost: 38 },
+      { id: "st-syrup-caramel", name: "Sirup Karamel", unit: "Ml", system: 3000, min: 800, cost: 65 },
+      { id: "st-syrup-palm", name: "Sirup Gula Aren", unit: "Ml", system: 2500, min: 700, cost: 58 },
+      { id: "st-pistachio", name: "Pasta Pistachio", unit: "Gram", system: 1200, min: 300, cost: 320 },
+      { id: "st-matcha", name: "Matcha Ceremonial", unit: "Gram", system: 900, min: 250, cost: 780 },
+      { id: "st-tonic", name: "Tonic Water", unit: "Ml", system: 4000, min: 1000, cost: 18 },
+      { id: "st-butler-croissant", name: "Butter Croissant Dough", unit: "Pcs", system: 25, min: 10, cost: 14000 },
+      { id: "st-pain-choco", name: "Pain au Chocolat Dough", unit: "Pcs", system: 5, min: 8, cost: 15500 },
+      { id: "st-cup-8", name: "Paper Cup 8oz", unit: "Pcs", system: 120, min: 60, cost: 1350 },
+      { id: "st-cup-12", name: "Paper Cup 12oz", unit: "Pcs", system: 420, min: 150, cost: 1400 },
+      { id: "st-lid", name: "Lid Cup", unit: "Pcs", system: 380, min: 150, cost: 500 },
+      { id: "st-butter", name: "Butter", unit: "Gram", system: 2000, min: 500, cost: 48 },
+      { id: "st-sourdough", name: "Sourdough", unit: "Pcs", system: 40, min: 15, cost: 18000 },
+      { id: "st-beef", name: "Beef Slice", unit: "Gram", system: 3500, min: 1000, cost: 145 },
+      { id: "st-rice", name: "Nasi Putih (Porsi)", unit: "Porsi", system: 60, min: 20, cost: 6000 }
     ];
+
+    function stockUnitById(id) {
+      const bp = STOCK_BLUEPRINT.find(s => s.id === id);
+      return bp ? bp.unit : 'Pcs';
+    }
+    function stockNameById(id) {
+      const bp = STOCK_BLUEPRINT.find(s => s.id === id);
+      return bp ? bp.name : id;
+    }
 
     /* ============================================================
        SINKRONISASI REAL-TIME DENGAN CUSTOMER SITE
@@ -1284,6 +1579,8 @@
       const ORDERS_KEY = 'quadra_orders_db';
       const TABLES_KEY = 'quadra_tables_state';
       const STOCK_KEY = 'quadra_stock';
+      const MENU_KEY = 'quadra_menu_master';
+      const HISTORY_KEY = 'quadra_stock_history';
       const CHANNEL_NAME = 'quadra_sync_channel';
       const FLOW = ['NEW', 'PREPARING', 'SERVED', 'COMPLETED'];
       let channel = null;
@@ -1312,6 +1609,7 @@
       }
       return {
         VERSION: 1, ORDERS_KEY: ORDERS_KEY, TABLES_KEY: TABLES_KEY, STOCK_KEY: STOCK_KEY,
+        MENU_KEY: MENU_KEY, HISTORY_KEY: HISTORY_KEY,
         CHANNEL_NAME: CHANNEL_NAME,
         ORDER_STATUS_FLOW: FLOW,
         ORDER_STATUS_LABEL: { NEW: 'Pesanan Masuk', PREPARING: 'Sedang Dibuat', SERVED: 'Siap / Disajikan', COMPLETED: 'Selesai' },
@@ -1319,12 +1617,16 @@
         emit: emit, readOrders: readOrders, readTables: readTables, upsertOrder: upsertOrder,
         readStock: function () { return readList(STOCK_KEY); },
         writeStock: function (list) { writeList(STOCK_KEY, Array.isArray(list) ? list : []); },
+        readMenu: function () { return readList(MENU_KEY); },
+        writeMenu: function (list) { writeList(MENU_KEY, Array.isArray(list) ? list : []); },
+        readHistory: function () { return readList(HISTORY_KEY); },
+        writeHistory: function (list) { writeList(HISTORY_KEY, Array.isArray(list) ? list : []); },
         setOrderStatus: function (orderId, status) { return setSyncOrderStatus(orderId, status); },
         writeList: writeList,
         subscribe: function (handler) {
           if (channel) channel.addEventListener('message', function (ev) { handler(ev.data || {}); });
           window.addEventListener('storage', function (ev) {
-            if (!ev.key || [ORDERS_KEY, TABLES_KEY, STOCK_KEY, 'quadra_sync_ping'].indexOf(ev.key) < 0) return;
+            if (!ev.key || [ORDERS_KEY, TABLES_KEY, STOCK_KEY, MENU_KEY, HISTORY_KEY, 'quadra_sync_ping'].indexOf(ev.key) < 0) return;
             handler({ type: 'EXTERNAL_CHANGE', storageKey: ev.key, source: 'storage' });
           });
         },
@@ -1477,6 +1779,45 @@
     }
 
     /* ============================================================
+       MASTER MENU & RESEP STATE (quadra_menu_master)
+       ============================================================ */
+    function readMenuMaster() {
+      const saved = QuadraSync.readMenu();
+      if (Array.isArray(saved) && saved.length) return saved;
+      return masterMenu.map(m => JSON.parse(JSON.stringify(m)));
+    }
+    function writeMenuMaster(list) {
+      masterMenu = list;
+      QuadraSync.writeMenu(list);
+      QuadraSync.emit('MENU_UPDATED', { menu: list });
+    }
+    function seedMenuMaster() {
+      const saved = QuadraSync.readMenu();
+      if (saved.length) { masterMenu = saved; return; }
+      QuadraSync.writeMenu(masterMenu);
+    }
+    function menuById(id) { return readMenuMaster().find(m => m.id === id) || null; }
+
+    /** HPP = Σ (qty × harga beli per satuan dasar master stok). */
+    function calcHPP(recipe) {
+      if (!Array.isArray(recipe)) return 0;
+      const stock = stockItems();
+      return recipe.reduce((sum, r) => {
+        const s = stock.find(x => x.id === r.stockId);
+        const cost = s ? Number(s.cost) || 0 : 0;
+        return sum + (Number(r.qty) || 0) * cost;
+      }, 0);
+    }
+    function marginPct(hpp, price) {
+      if (!price) return 0;
+      return Math.round((1 - hpp / price) * 1000) / 10;
+    }
+    function recipeSummary(recipe) {
+      if (!Array.isArray(recipe) || !recipe.length) return 'Belum ada resep / bahan baku';
+      return recipe.map(r => `${r.qty}${r.unit === 'Gram' || r.unit === 'Ml' ? r.unit.toLowerCase() : ' ' + r.unit} ${stockNameById(r.stockId)}`).join(', ');
+    }
+
+    /* ============================================================
        STOCK OPNAME STATE (quadra_stock)
        ============================================================ */
     function stockItems() {
@@ -1495,20 +1836,54 @@
     function lowStockCount() {
       return stockItems().filter(s => Number(s.system) < Number(s.min)).length;
     }
+
+    /* ============================================================
+       RIWAYAT MUTASI STOK (quadra_stock_history)
+       ============================================================ */
+    function pushStockHistory(entry) {
+      const hist = QuadraSync.readHistory();
+      hist.unshift(Object.assign({
+        id: 'hist-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        at: new Date().toISOString(), actor: currentRole === 'superadmin' ? 'Superadmin' : 'Kasir Barista'
+      }, entry));
+      QuadraSync.writeHistory(hist.slice(0, 200));
+    }
+    function readStockHistory() { return QuadraSync.readHistory(); }
+
+    /* ============================================================
+       AUTOMATED DEDUCTION — potong stok sesuai BOM menu terjual
+       ------------------------------------------------------------
+       Setiap item pada order dipetakan ke resep menu (BOM), lalu
+       kuantitas resep dikali qty order, dipotong dari stok sistem.
+       ============================================================ */
     function deductStockForOrder(order) {
       const items = (order && order.items) || [];
-      const totalUnits = items.reduce((n, it) => n + (Number(it.qty) || 0), 0);
-      if (!totalUnits) return;
+      if (!items.length) return [];
       const list = stockItems();
-      list.forEach(s => {
-        const use = Number(s.recipeUse) || 0;
-        if (use > 0) {
-          s.system = Math.max(0, Number((Number(s.system) - use * totalUnits).toFixed(3)));
+      const deductions = [];
+      items.forEach(it => {
+        const menu = readMenuMaster().find(m => m.id === it.menuId || m.name === it.name);
+        if (!menu || !Array.isArray(menu.recipe)) return;
+        const orderQty = Number(it.qty) || 1;
+        menu.recipe.forEach(r => {
+          const s = list.find(x => x.id === r.stockId);
+          if (!s) return;
+          const use = (Number(r.qty) || 0) * orderQty;
+          s.system = Math.max(0, Number((Number(s.system) - use).toFixed(3)));
           s.updatedAt = new Date().toISOString();
-        }
+          deductions.push({ stockId: s.id, name: s.name, unit: s.unit, qty: Number(use.toFixed(3)), type: 'OUT' });
+        });
       });
       QuadraSync.writeStock(list);
+      if (deductions.length) {
+        pushStockHistory({
+          type: 'ORDER_DEDUCTION', ref: order.orderId || '-',
+          note: 'Pemotongan otomatis resep BOM • ' + (order.items || []).map(i => i.qty + 'x ' + i.name).join(', '),
+          lines: deductions
+        });
+      }
       QuadraSync.emit('STOCK_UPDATED', { stock: list });
+      return deductions;
     }
 
     /* ============================================================
@@ -1547,12 +1922,12 @@
        Kasir      -> operasional: Denah Meja, POS, Stock Opname.
        ============================================================ */
     const ROLE_MENU = {
-      superadmin: ['overview', 'transactions'],
+      superadmin: ['overview', 'menu', 'transactions'],
       kasir: ['tables', 'pos', 'stock']
     };
     const ROLE_LABEL = { superadmin: 'Superadmin', kasir: 'Kasir' };
     const ROLE_DEFAULT_TAB = { superadmin: 'overview', kasir: 'tables' };
-    const ALL_TABS = ['overview', 'tables', 'pos', 'stock', 'transactions'];
+    const ALL_TABS = ['overview', 'menu', 'tables', 'pos', 'stock', 'transactions'];
 
     function hasAccess(tabKey) {
       return (ROLE_MENU[currentRole] || []).indexOf(tabKey) >= 0;
@@ -1600,6 +1975,7 @@
 
       const titles = {
         overview: "Report Summary & Profit / Loss",
+        menu: "Master Menu & Resep (Bill of Materials)",
         tables: "Denah Meja Live",
         pos: "Kasir Barista POS",
         stock: "Stock Opname Bahan Baku",
@@ -1634,6 +2010,7 @@
       }
 
       if (tabKey === 'overview') { initCharts(); updateDashboardCounters(); renderAnalytics(); }
+      if (tabKey === 'menu') renderMenuMaster();
       if (tabKey === 'tables') { renderTableGrid(); renderFloorPlan(); }
       if (tabKey === 'pos') { renderPOSMenuOptions(); renderPOSCategoryFilters(); renderPOSFloorPicker(); updatePOSCartUI(); renderPOSDisplay(); }
       if (tabKey === 'stock') renderStockOpname();
@@ -2049,12 +2426,20 @@
     function shiftLabel(shiftId) { return shiftId; }
 
     // ==================== 3. KASIR BARISTA POS ====================
-    const POS_CATEGORIES = ['Semua', 'Manual Brew', 'Espresso', 'Food', 'Pastry', 'Promo'];
+    const POS_CATEGORIES_BASE = ['Semua', 'Manual Brew', 'Espresso', 'Food', 'Pastry', 'Promo'];
+    function posCategories() {
+      const fromMenu = readMenuMaster().map(m => m.category);
+      const merged = POS_CATEGORIES_BASE.slice();
+      fromMenu.forEach(c => { if (c && merged.indexOf(c) < 0) merged.push(c); });
+      return merged;
+    }
 
     function renderPOSCategoryFilters() {
       const wrap = document.getElementById('posCategoryFilters');
       if (!wrap) return;
-      wrap.innerHTML = POS_CATEGORIES.map(cat => {
+      const cats = posCategories();
+      if (cats.indexOf(posMenuCategoryFilter) < 0) posMenuCategoryFilter = 'Semua';
+      wrap.innerHTML = cats.map(cat => {
         const active = cat === posMenuCategoryFilter;
         const label = cat === 'Promo' ? 'Promo Spesial' : cat;
         return `<button onclick="setPOSCategory('${cat}')" class="px-3.5 py-2 rounded-xl text-[15px] font-mono font-bold transition border ${active ? 'bg-cyan-600 text-white border-cyan-500' : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'}">${label}</button>`;
@@ -2073,7 +2458,8 @@
     }
 
     function posFilteredMenu() {
-      return masterMenu.filter(m => {
+      return readMenuMaster().filter(m => {
+        if (m.active === false) return false;
         const catOk = posMenuCategoryFilter === 'Semua' || m.category === posMenuCategoryFilter;
         const qOk = !posMenuSearchQuery || m.name.toLowerCase().indexOf(posMenuSearchQuery) >= 0 || m.category.toLowerCase().indexOf(posMenuSearchQuery) >= 0;
         return catOk && qOk;
@@ -2097,7 +2483,7 @@
     }
 
     function openItemCustomizer(menuId) {
-      const item = masterMenu.find(m => m.id === menuId);
+      const item = readMenuMaster().find(m => m.id === menuId);
       if (!item) return;
       posCustomizingMenuId = menuId;
       const m = document.getElementById('itemModal');
@@ -2119,7 +2505,7 @@
     }
 
     function confirmItemCustomizer() {
-      const item = masterMenu.find(m => m.id === posCustomizingMenuId);
+      const item = readMenuMaster().find(m => m.id === posCustomizingMenuId);
       if (!item) return;
       const milk = document.getElementById('itemMilk') ? document.getElementById('itemMilk').value : '';
       const sugar = document.getElementById('itemSugar') ? document.getElementById('itemSugar').value : '';
@@ -2317,7 +2703,7 @@
         customerName: (document.getElementById('posCustomerName') || {}).value || (isDine && t ? 'Tamu ' + t.label : 'Walk-in Guest'),
         customerPhone: (document.getElementById('posCustomerPhone') || {}).value || '',
         customerNotes: '',
-        items: posCart.map(i => ({ name: i.name, variant: i.variant, qty: i.qty, price: i.price })),
+        items: posCart.map(i => ({ menuId: i.menuId, name: i.name, variant: i.variant, qty: i.qty, price: i.price })),
         subtotal: calc.subtotal, tax: calc.tax, serviceFee: calc.service, totalAmount: calc.total,
         paymentMethod: posPaymentMethod, paymentStatus: paymentStatus || 'PAID',
         orderStatus: 'COMPLETED', createdAt: new Date().toISOString(),
@@ -2502,6 +2888,7 @@
       }
       const alertBadge = document.getElementById('stockAlertBadge');
       if (alertBadge) alertBadge.classList.toggle('hidden', lowStockCount() === 0);
+      renderStockHistory();
       renderPOSDisplay();
     }
 
@@ -2524,10 +2911,29 @@
     }
     function saveStockOpname() {
       const list = stockItems();
-      list.forEach(s => { s.updatedAt = new Date().toISOString(); });
+      const corrections = [];
+      list.forEach(s => {
+        const physical = s.physical != null ? s.physical : s.system;
+        const diff = Number((Number(physical) - Number(s.system)).toFixed(3));
+        if (diff !== 0) {
+          corrections.push({ stockId: s.id, name: s.name, unit: s.unit, qty: diff, type: 'CORRECTION',
+            from: Number(s.system), to: Number(physical), note: s.note || '' });
+        }
+        // Kunci: stok sistem disinkronkan ke hasil hitungan fisik
+        s.system = Number(Number(physical).toFixed(3));
+        s.waste = diff < 0 ? Math.abs(diff) : (s.waste || 0);
+        s.updatedAt = new Date().toISOString();
+      });
       QuadraSync.writeStock(list);
+      if (corrections.length) {
+        pushStockHistory({
+          type: 'STOCK_OPNAME', ref: 'OPNAME-' + new Date().toISOString().slice(0, 10),
+          note: 'Koreksi opname fisik • ' + corrections.length + ' item disesuaikan' + (currentRole === 'superadmin' ? ' oleh Superadmin' : ' oleh Kasir'),
+          lines: corrections
+        });
+      }
       QuadraSync.emit('STOCK_UPDATED', { stock: list });
-      showToast('Hasil stock opname tersimpan ke sistem.');
+      showToast(corrections.length ? `Opname terkunci — ${corrections.length} item disesuaikan ke stok fisik.` : 'Opname terkunci — stok sistem sudah sesuai fisik.');
       renderStockOpname();
     }
     function exportStockCSV() {
@@ -2542,6 +2948,307 @@
       a.download = 'quadra_stock_opname.csv';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       showToast('CSV stock opname diunduh.');
+    }
+
+    /* ==================== RESTOCK / TAMBAH STOK MASUK ==================== */
+    let restockSelectedId = null;
+    function openRestockForm() {
+      const sel = document.getElementById('restockItem');
+      if (!sel) return;
+      const list = stockItems();
+      sel.innerHTML = list.map(s => `<option value="${s.id}">${s.name} — stok ${s.system} ${s.unit}</option>`).join('');
+      restockSelectedId = list.length ? list[0].id : null;
+      const qty = document.getElementById('restockQty'); if (qty) qty.value = '';
+      const cost = document.getElementById('restockCost'); if (cost) cost.value = '';
+      const note = document.getElementById('restockNote'); if (note) note.value = '';
+      onRestockItemChange();
+      const m = document.getElementById('restockModal');
+      m.classList.remove('hidden'); m.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeRestockForm() {
+      const m = document.getElementById('restockModal');
+      m.classList.add('hidden'); m.classList.remove('flex');
+      restockSelectedId = null;
+    }
+    function onRestockItemChange() {
+      const sel = document.getElementById('restockItem');
+      restockSelectedId = sel ? sel.value : null;
+      const s = stockItems().find(x => x.id === restockSelectedId);
+      const unitEl = document.getElementById('restockUnit');
+      if (unitEl) unitEl.value = s ? s.unit : '';
+      onRestockQtyChange();
+      onRestockCostChange();
+    }
+    function onRestockQtyChange() {
+      const s = stockItems().find(x => x.id === restockSelectedId);
+      const qtyEl = document.getElementById('restockQty');
+      const prev = document.getElementById('restockPreview');
+      if (!s) { if (prev) prev.innerText = '—'; return; }
+      const add = Number(qtyEl ? qtyEl.value : 0) || 0;
+      if (prev) prev.innerText = `${s.system} + ${add} = ${Number((Number(s.system) + add).toFixed(3))} ${s.unit}`;
+    }
+    function onRestockCostChange() {
+      const costEl = document.getElementById('restockCost');
+      const unitCostEl = document.getElementById('restockUnitCost');
+      const qtyEl = document.getElementById('restockQty');
+      const total = Number(costEl ? costEl.value : 0) || 0;
+      const qty = Number(qtyEl ? qtyEl.value : 0) || 0;
+      const s = stockItems().find(x => x.id === restockSelectedId);
+      if (unitCostEl) unitCostEl.value = (total > 0 && qty > 0) ? formatRupiah(Math.round(total / qty)) + ' / ' + (s ? s.unit : '') : '—';
+    }
+    function saveRestock() {
+      const s = stockItems().find(x => x.id === restockSelectedId);
+      if (!s) { showToast('Pilih bahan baku terlebih dahulu.'); return; }
+      const qtyEl = document.getElementById('restockQty');
+      const add = Number(qtyEl ? qtyEl.value : 0) || 0;
+      if (add <= 0) { showToast('Jumlah masuk harus lebih dari 0.'); return; }
+      const costEl = document.getElementById('restockCost');
+      const totalCost = Number(costEl ? costEl.value : 0) || 0;
+      const noteEl = document.getElementById('restockNote');
+      const note = noteEl ? noteEl.value : '';
+
+      const list = stockItems();
+      const target = list.find(x => x.id === s.id);
+      const before = Number(target.system);
+      target.system = Number((before + add).toFixed(3));
+      if (totalCost > 0 && add > 0) target.cost = Math.round(totalCost / add); // update harga beli/satuan
+      target.updatedAt = new Date().toISOString();
+      QuadraSync.writeStock(list);
+      pushStockHistory({
+        type: 'RESTOCK', ref: 'PO-' + Date.now().toString().slice(-6),
+        note: note || 'Restock bahan baku',
+        lines: [{ stockId: target.id, name: target.name, unit: target.unit, qty: add, type: 'IN', from: before, to: target.system,
+          unitCost: totalCost > 0 && add > 0 ? Math.round(totalCost / add) : Number(target.cost) }]
+      });
+      QuadraSync.emit('STOCK_UPDATED', { stock: list });
+      closeRestockForm();
+      showToast(`Stok ${target.name} bertambah ${add} ${target.unit}.`);
+      renderStockOpname();
+    }
+
+    /* ==================== RENDER: RIWAYAT MUTASI STOK ==================== */
+    const HISTORY_TYPE_LABEL = {
+      RESTOCK: { label: 'Stok Masuk', cls: 'bg-emerald-100 text-emerald-800 border-emerald-300' },
+      ORDER_DEDUCTION: { label: 'Pemotongan Resep', cls: 'bg-cyan-100 text-cyan-800 border-cyan-300' },
+      STOCK_OPNAME: { label: 'Koreksi Opname', cls: 'bg-amber-100 text-amber-800 border-amber-300' }
+    };
+    function renderStockHistory() {
+      const body = document.getElementById('stockHistoryBody');
+      if (!body) return;
+      const hist = readStockHistory();
+      const countEl = document.getElementById('stockHistoryCount');
+      if (countEl) countEl.innerText = hist.length + ' entri';
+      if (!hist.length) {
+        body.innerHTML = '<tr><td colspan="4" class="py-6 px-4 text-center text-stone-400 font-mono">Belum ada mutasi stok. Lakukan restock atau selesaikan pesanan POS.</td></tr>';
+        return;
+      }
+      body.innerHTML = hist.map(h => {
+        const meta = HISTORY_TYPE_LABEL[h.type] || { label: h.type, cls: 'bg-stone-100 text-stone-700 border-stone-300' };
+        const detail = (h.lines || []).map(l => {
+          const sign = l.type === 'IN' ? '+' : (Number(l.qty) > 0 && l.type === 'CORRECTION' ? '+' : '');
+          const val = l.type === 'IN' ? '+' + l.qty : (l.type === 'CORRECTION' ? (Number(l.qty) > 0 ? '+' + l.qty : l.qty) : '−' + Math.abs(Number(l.qty)));
+          return `<div class="flex items-center justify-between gap-3 py-0.5"><span class="text-slate-700">${l.name}</span><span class="font-bold ${l.type === 'IN' || Number(l.qty) > 0 && l.type === 'CORRECTION' ? 'text-emerald-700' : (l.type === 'CORRECTION' ? 'text-amber-700' : 'text-rose-700')} tabular-nums">${val} ${l.unit || ''}</span></div>`;
+        }).join('');
+        const when = h.at ? new Date(h.at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+        return `<tr>
+          <td class="py-3 px-4 align-top">
+            <span class="block text-slate-800 font-bold">${when}</span>
+            <span class="block text-[12.5px] text-stone-500">${h.actor || '-'}</span>
+          </td>
+          <td class="py-3 px-4 align-top"><span class="text-[13px] font-bold px-1.5 py-0.5 rounded border ${meta.cls} whitespace-nowrap">${meta.label}</span></td>
+          <td class="py-3 px-4 align-top">
+            <span class="block text-slate-700 font-bold">${h.ref || '-'}</span>
+            <span class="block text-[12.5px] text-stone-500">${(h.note || '').slice(0, 60)}</span>
+          </td>
+          <td class="py-3 px-4 align-top min-w-[240px]">${detail || '<span class="text-stone-400">—</span>'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    /* ==================== MASTER MENU & RESEP (BOM ENGINE) ==================== */
+    function renderMenuMaster() {
+      const body = document.getElementById('menuMasterBody');
+      if (!body) return;
+      const list = readMenuMaster();
+      const badge = document.getElementById('menuCountBadge');
+      if (badge) badge.innerText = list.length;
+
+      body.innerHTML = list.map(m => {
+        const hpp = calcHPP(m.recipe);
+        const margin = marginPct(hpp, m.price);
+        const marginCls = margin >= 60 ? 'text-emerald-700' : (margin >= 40 ? 'text-amber-700' : 'text-rose-600');
+        const inactive = m.active === false;
+        return `
+          <tr class="${inactive ? 'opacity-60' : ''}">
+            <td class="py-3 px-4 align-top">
+              <span class="block font-bold text-slate-900">${m.name}</span>
+              <span class="inline-block mt-1 text-[13px] font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 px-1.5 py-0.5 rounded">${m.category}</span>
+              ${inactive ? '<span class="ml-1 inline-block text-[13px] font-bold text-stone-500 bg-stone-100 border border-stone-300 px-1.5 py-0.5 rounded">NON-AKTIF</span>' : ''}
+            </td>
+            <td class="py-3 px-4 align-top max-w-[320px]">
+              <span class="block text-[13px] text-stone-600 leading-snug">${recipeSummary(m.recipe)}</span>
+            </td>
+            <td class="py-3 px-4 align-top text-right font-bold text-slate-800 tabular-nums">${formatRupiah(m.price)}</td>
+            <td class="py-3 px-4 align-top text-right font-bold text-amber-700 tabular-nums">${formatRupiah(hpp)}</td>
+            <td class="py-3 px-4 align-top text-right font-black ${marginCls} tabular-nums">${margin}%</td>
+            <td class="py-3 px-4 align-top">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="editMenuForm('${m.id}')" title="Edit Resep" class="text-cyan-700 hover:text-white hover:bg-cyan-600 border border-cyan-200 hover:border-cyan-500 p-1.5 rounded-lg transition"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                <button onclick="duplicateMenu('${m.id}')" title="Duplikat" class="text-slate-600 hover:text-white hover:bg-slate-700 border border-stone-200 hover:border-slate-500 p-1.5 rounded-lg transition"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                <button onclick="deleteMenu('${m.id}')" title="Hapus Menu" class="text-rose-600 hover:text-white hover:bg-rose-600 border border-rose-200 hover:border-rose-500 p-1.5 rounded-lg transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+
+      const total = list.length;
+      const avgHpp = total ? Math.round(list.reduce((n, m) => n + calcHPP(m.recipe), 0) / total) : 0;
+      const avgMargin = total ? Math.round(list.reduce((n, m) => n + marginPct(calcHPP(m.recipe), m.price), 0) / total * 10) / 10 : 0;
+      const inactive = list.filter(m => m.active === false).length;
+      const tEl = document.getElementById('menuStatsTotal'); if (tEl) tEl.innerText = total;
+      const hEl = document.getElementById('menuStatsAvgHpp'); if (hEl) hEl.innerText = formatRupiah(avgHpp);
+      const mEl = document.getElementById('menuStatsAvgMargin'); if (mEl) mEl.innerText = avgMargin + '%';
+      const iEl = document.getElementById('menuStatsInactive'); if (iEl) iEl.innerText = inactive;
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    /* ---- Form Modal: tambah/edit menu & resep ---- */
+    let editingMenuId = null;
+    function openMenuForm() {
+      editingMenuId = null;
+      document.getElementById('menuFormTitle').innerText = 'Tambah Menu & Racik Resep Baru';
+      document.getElementById('menuFormName').value = '';
+      document.getElementById('menuFormCategory').value = 'Espresso';
+      document.getElementById('menuFormPrice').value = '';
+      document.getElementById('menuFormDesc').value = '';
+      document.getElementById('menuFormActive').checked = true;
+      document.getElementById('recipeRows').innerHTML = '';
+      addRecipeRow();
+      recalcMenuFormHpp();
+      const m = document.getElementById('menuFormModal');
+      m.classList.remove('hidden'); m.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+    function editMenuForm(id) {
+      const menu = menuById(id);
+      if (!menu) return;
+      editingMenuId = id;
+      document.getElementById('menuFormTitle').innerText = 'Edit Menu & Resep — ' + menu.name;
+      document.getElementById('menuFormName').value = menu.name;
+      document.getElementById('menuFormCategory').value = menu.category;
+      document.getElementById('menuFormPrice').value = menu.price;
+      document.getElementById('menuFormDesc').value = menu.desc || '';
+      document.getElementById('menuFormActive').checked = menu.active !== false;
+      const rows = document.getElementById('recipeRows');
+      rows.innerHTML = '';
+      (menu.recipe || []).forEach(r => addRecipeRow(r));
+      if (!(menu.recipe || []).length) addRecipeRow();
+      recalcMenuFormHpp();
+      const m = document.getElementById('menuFormModal');
+      m.classList.remove('hidden'); m.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeMenuForm() {
+      const m = document.getElementById('menuFormModal');
+      m.classList.add('hidden'); m.classList.remove('flex');
+      editingMenuId = null;
+    }
+    function addRecipeRow(preset) {
+      const wrap = document.getElementById('recipeRows');
+      if (!wrap) return;
+      const stock = stockItems();
+      const rowId = 'rr-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+      const opts = stock.map(s => `<option value="${s.id}" ${preset && preset.stockId === s.id ? 'selected' : ''}>${s.name} (${s.unit})</option>`).join('');
+      const qty = preset && preset.qty != null ? preset.qty : '';
+      const div = document.createElement('div');
+      div.className = 'recipe-row flex items-center gap-2';
+      div.setAttribute('data-row', rowId);
+      div.innerHTML = `
+        <select onchange="recalcMenuFormHpp()" class="recipe-stock flex-1 bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-slate-900 font-bold text-[14px] focus:outline-none focus:ring-2 focus:ring-cyan-500">${opts}</select>
+        <input type="number" min="0" step="0.01" value="${qty}" placeholder="18" oninput="recalcMenuFormHpp()" class="recipe-qty w-24 bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-right text-slate-900 font-bold text-[14px] focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+        <span class="recipe-unit w-14 text-[13px] font-mono text-stone-500 text-center">${preset ? preset.unit : stock[0] ? stock[0].unit : ''}</span>
+        <button type="button" onclick="removeRecipeRow(this)" class="text-rose-500 hover:text-white hover:bg-rose-600 border border-rose-200 hover:border-rose-500 p-2 rounded-lg transition"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+      wrap.appendChild(div);
+      // update unit label on select change
+      const sel = div.querySelector('.recipe-stock');
+      const unitSpan = div.querySelector('.recipe-unit');
+      sel.addEventListener('change', () => { unitSpan.innerText = stockUnitById(sel.value); });
+      if (window.lucide) lucide.createIcons();
+    }
+    function removeRecipeRow(btn) {
+      const row = btn.closest('.recipe-row');
+      if (row) row.remove();
+      recalcMenuFormHpp();
+    }
+    function collectRecipeFromForm() {
+      const rows = document.querySelectorAll('#recipeRows .recipe-row');
+      const recipe = [];
+      rows.forEach(r => {
+        const stockId = r.querySelector('.recipe-stock').value;
+        const qty = Number(r.querySelector('.recipe-qty').value) || 0;
+        if (stockId && qty > 0) recipe.push({ stockId: stockId, qty: qty, unit: stockUnitById(stockId) });
+      });
+      return recipe;
+    }
+    function recalcMenuFormHpp() {
+      const recipe = collectRecipeFromForm();
+      const hpp = calcHPP(recipe);
+      const price = Number(document.getElementById('menuFormPrice').value) || 0;
+      const hppEl = document.getElementById('menuFormHpp'); if (hppEl) hppEl.innerText = formatRupiah(hpp);
+      const mEl = document.getElementById('menuFormMargin'); if (mEl) mEl.innerText = marginPct(hpp, price) + '%';
+    }
+    function saveMenuForm() {
+      const name = (document.getElementById('menuFormName').value || '').trim();
+      const category = document.getElementById('menuFormCategory').value;
+      const price = Number(document.getElementById('menuFormPrice').value) || 0;
+      const desc = (document.getElementById('menuFormDesc').value || '').trim();
+      const active = document.getElementById('menuFormActive').checked;
+      if (!name) { showToast('Nama menu wajib diisi.'); return; }
+      if (price <= 0) { showToast('Harga jual harus lebih dari 0.'); return; }
+      const recipe = collectRecipeFromForm();
+      if (!recipe.length) { showToast('Tambahkan minimal 1 bahan baku pada resep.'); return; }
+
+      const list = readMenuMaster();
+      if (editingMenuId) {
+        const i = list.findIndex(m => m.id === editingMenuId);
+        if (i >= 0) list[i] = Object.assign({}, list[i], { name, category, price, desc, active, recipe });
+      } else {
+        list.push({ id: 'mn-' + Date.now(), name, category, price, desc, active, recipe });
+      }
+      writeMenuMaster(list);
+      closeMenuForm();
+      showToast(editingMenuId ? `Menu "${name}" diperbarui.` : `Menu "${name}" disimpan & aktif di POS.`);
+      renderMenuMaster();
+      renderPOSMenuOptions();
+      renderPOSCategoryFilters();
+      updateDashboardCounters();
+    }
+    function duplicateMenu(id) {
+      const menu = menuById(id);
+      if (!menu) return;
+      const list = readMenuMaster();
+      const copy = JSON.parse(JSON.stringify(menu));
+      copy.id = 'mn-' + Date.now();
+      copy.name = menu.name + ' (Copy)';
+      copy.recipe = (menu.recipe || []).map(r => Object.assign({}, r));
+      list.push(copy);
+      writeMenuMaster(list);
+      showToast(`Menu "${menu.name}" diduplikat.`);
+      renderMenuMaster();
+      renderPOSMenuOptions();
+      updateDashboardCounters();
+    }
+    function deleteMenu(id) {
+      const menu = menuById(id);
+      if (!menu) return;
+      if (!confirm(`Hapus menu "${menu.name}" dari master & POS?`)) return;
+      writeMenuMaster(readMenuMaster().filter(m => m.id !== id));
+      showToast(`Menu "${menu.name}" dihapus.`);
+      renderMenuMaster();
+      renderPOSMenuOptions();
+      updateDashboardCounters();
     }
 
     /* ==================== DATABASE TRANSAKSI ==================== */
@@ -2851,7 +3558,13 @@
       const tablesView = document.getElementById('view-tables');
       if (tablesView && !tablesView.classList.contains('hidden')) { renderTableGrid(); renderFloorPlan(); }
       const posView = document.getElementById('view-pos');
-      if (posView && !posView.classList.contains('hidden')) { renderPOSFloorPicker(); renderPOSDisplay(); }
+      if (posView && !posView.classList.contains('hidden')) { renderPOSFloorPicker(); renderPOSMenuOptions(); renderPOSDisplay(); }
+      const menuView = document.getElementById('view-menu');
+      if (menuView && !menuView.classList.contains('hidden')) renderMenuMaster();
+      const stockView = document.getElementById('view-stock');
+      if (stockView && !stockView.classList.contains('hidden')) { renderStockOpname(); }
+      const menuBadge = document.getElementById('menuCountBadge');
+      if (menuBadge) menuBadge.innerText = readMenuMaster().length;
       updateDashboardCounters();
     }
 
@@ -2859,12 +3572,15 @@
       seedTables();
       seedOccupancy();
       seedStock();
+      seedMenuMaster();
       applyRoleMenus();
       setPOSOrderType('dine_in');
       setPOSPaymentMethod('Cash');
       setPOSDisplay('cashier');
       switchTab(ROLE_DEFAULT_TAB[currentRole]);
       updateDashboardCounters();
+      const menuBadge = document.getElementById('menuCountBadge');
+      if (menuBadge) menuBadge.innerText = readMenuMaster().length;
     }
 
     function subscribeSync() {
@@ -2875,7 +3591,7 @@
           flagNewOrder();
           showToast('Pesanan baru masuk dari customer site.');
         }
-        if (ev.type === 'STATUS_UPDATED' || ev.type === 'TABLE_UPDATED' || ev.type === 'STOCK_UPDATED' || ev.type === 'EXTERNAL_CHANGE') {
+        if (ev.type === 'STATUS_UPDATED' || ev.type === 'TABLE_UPDATED' || ev.type === 'STOCK_UPDATED' || ev.type === 'MENU_UPDATED' || ev.type === 'EXTERNAL_CHANGE') {
           refreshSyncedViews();
         }
       });
