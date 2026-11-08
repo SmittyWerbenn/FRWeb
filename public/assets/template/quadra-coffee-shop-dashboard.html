@@ -1499,16 +1499,16 @@
        DENAH 10 MEJA — TATA LETAK BIOSKOP (CINEMA FLOOR)
        ------------------------------------------------------------ */
     const TABLE_BLUEPRINT = [
-      { tableNumber: 1, code: "STOOL-01", label: "Stool Bar 01", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
-      { tableNumber: 2, code: "STOOL-02", label: "Stool Bar 02", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
-      { tableNumber: 3, code: "STOOL-03", label: "Stool Bar 03", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
-      { tableNumber: 4, code: "STOOL-04", label: "Stool Bar 04", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
-      { tableNumber: 5, code: "MEJA-01", label: "Meja Indoor 01", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 6, code: "MEJA-02", label: "Meja Indoor 02", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 7, code: "MEJA-03", label: "Meja Indoor 03", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 8, code: "MEJA-04", label: "Meja Indoor 04", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 9, code: "MEJA-05", label: "Meja Indoor 05", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
-      { tableNumber: 10, code: "MEJA-06", label: "Meja Terrace 06", area: "Outdoor Terrace", zone: "outdoor", capacity: 6, pax: "4-6 Pax" }
+      { tableNumber: 1, code: "STOOL-01", label: "Bar 01", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
+      { tableNumber: 2, code: "STOOL-02", label: "Bar 02", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
+      { tableNumber: 3, code: "STOOL-03", label: "Bar 03", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
+      { tableNumber: 4, code: "STOOL-04", label: "Bar 04", area: "Slow Bar Counter", zone: "bar", capacity: 2, pax: "1-2 Pax" },
+      { tableNumber: 5, code: "MEJA-05", label: "Meja 05", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 6, code: "MEJA-06", label: "Meja 06", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 7, code: "MEJA-07", label: "Meja 07", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 8, code: "MEJA-08", label: "Meja 08", area: "Indoor Lounge", zone: "indoor", capacity: 4, pax: "2-4 Pax" },
+      { tableNumber: 9, code: "MEJA-09", label: "Meja 09", area: "Outdoor Terrace", zone: "outdoor", capacity: 6, pax: "4-6 Pax" },
+      { tableNumber: 10, code: "MEJA-10", label: "Meja 10", area: "Outdoor Terrace", zone: "outdoor", capacity: 6, pax: "4-6 Pax" }
     ];
 
     /* Seed transaksi historis (Database Transaksi & P&L Superadmin). */
@@ -2207,10 +2207,10 @@
         </section>`;
 
       /* ---- 4. ZONA 2: INDOOR LOUNGE (meja + seating pod melingkar) ---- */
-      html += renderPodZone('Indoor Lounge', 'sofa', 'Meja T-01–T-05 · ber-AC, tempat duduk melingkar', tables.filter(t => t.zone === 'indoor'), faded, isBarred);
+      html += renderPodZone('Indoor Lounge', 'sofa', 'Meja T-05–T-08 · ber-AC, tempat duduk melingkar', tables.filter(t => t.zone === 'indoor'), faded, isBarred);
 
       /* ---- 5. ZONA 3: OUTDOOR TERRACE ---- */
-      html += renderPodZone('Outdoor Terrace', 'trees', 'Meja teras OUT-06–OUT-10 · santai di udara terbuka', tables.filter(t => t.zone === 'outdoor'), faded, isBarred);
+      html += renderPodZone('Outdoor Terrace', 'trees', 'Meja teras OUT-09–OUT-10 · santai di udara terbuka', tables.filter(t => t.zone === 'outdoor'), faded, isBarred);
 
       html += `
         </div>
