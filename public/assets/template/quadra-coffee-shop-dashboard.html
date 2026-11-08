@@ -307,7 +307,7 @@
           </span>
           <div class="min-w-0">
             <p class="text-[14px] font-mono uppercase tracking-wider text-slate-500 leading-none mb-1.5">Outlet Aktif</p>
-            <p class="text-base font-semibold text-stone-100 tracking-wide leading-tight truncate font-display">Senopati Flagship</p>
+            <p class="text-base font-semibold text-stone-100 tracking-wide leading-tight truncate font-display" id="sidebarOutletName">Senopati Flagship</p>
           </div>
         </div>
       </div>
@@ -461,107 +461,80 @@
       <!-- ==================== VIEW 1: OVERVIEW & COFFEE LAB ANALYTICS ==================== -->
       <section id="view-overview" class="space-y-8">
         
-        <!-- KPI Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <!-- KPI 1: Gross Omset -->
-          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
-            <div class="flex items-center justify-between">
-              <span class="text-[14px] font-semibold uppercase tracking-[0.14em] text-slate-500">OMSET LAB & BAR HARI INI</span>
-              <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold border border-cyan-200">
-                <i data-lucide="wallet" class="w-4 h-4"></i>
-              </div>
-            </div>
-            <div class="mt-3">
-              <span class="text-2xl font-semibold text-slate-900 font-display block tabular-nums tracking-tight" id="kpiRevenue">Rp 8.420.000</span>
-              <p class="text-emerald-600 text-[11.5px] font-semibold flex items-center gap-1 mt-1 tabular-nums">
-                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +18.4% vs kemarin
-              </p>
-            </div>
-          </div>
-
-          <!-- KPI 2: Total Cups Sold -->
-          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
-            <div class="flex items-center justify-between">
-              <span class="text-[14px] font-semibold uppercase tracking-[0.14em] text-slate-500">TOTAL CANGKIR TERSEDUR</span>
-              <div class="w-8 h-8 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center font-bold border border-gold-300">
-                <i data-lucide="coffee" class="w-4 h-4"></i>
-              </div>
-            </div>
-            <div class="mt-3">
-              <span class="text-2xl font-semibold text-slate-900 font-display block tabular-nums tracking-tight" id="kpiCupsSold">198 Cangkir</span>
-              <p class="text-slate-500 text-[14px] mt-1 tabular-nums">Kanal POS Kasir &amp; self-order customer</p>
-            </div>
-          </div>
-
-          <!-- KPI 3: Total Transaksi -->
-          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
-            <div class="flex items-center justify-between">
-              <span class="text-[14px] font-semibold uppercase tracking-[0.14em] text-slate-500">TOTAL TRANSAKSI TERCATAT</span>
-              <div class="w-8 h-8 rounded-xl bg-slate-900 text-gold-300 flex items-center justify-center font-bold">
-                <i data-lucide="receipt" class="w-4 h-4"></i>
-              </div>
-            </div>
-            <div class="mt-3">
-              <span class="text-2xl font-semibold text-gold-600 font-display block tabular-nums tracking-tight" id="kpiTotalTx">0 Transaksi</span>
-              <p class="text-slate-500 text-[14px] mt-1 tabular-nums">Kasir POS + self-order customer site</p>
-            </div>
-          </div>
-
-          <!-- KPI 4: Meja Terisi (dari customer site & POS) -->
-          <div class="bg-white p-5 rounded-3xl border border-cyan-100 shadow-sm relative overflow-hidden">
-            <div class="flex items-center justify-between">
-              <span class="text-[14px] font-semibold uppercase tracking-[0.14em] text-slate-500">MEJA TERISI (LIVE)</span>
-              <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-700 flex items-center justify-center font-bold border border-cyan-200">
-                <i data-lucide="armchair" class="w-4 h-4"></i>
-              </div>
-            </div>
-            <div class="mt-3">
-              <span class="text-2xl font-semibold text-cyan-700 font-display block tabular-nums tracking-tight" id="kpiTablesOccupied">0 / 10 Meja Terisi</span>
-              <p class="text-slate-500 text-[14px] mt-1 tabular-nums">Denah 10 meja real-time</p>
-            </div>
-          </div>
-        </div>
-
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 class="font-bold text-base text-slate-900 font-display">Laporan Laba Rugi &amp; Business Intelligence</h3>
             <p class="text-[14px] text-stone-500 font-mono">Ringkasan finansial harian, produk terlaris, retensi tamu &amp; performa multi-outlet.</p>
           </div>
           <div class="flex items-center gap-2">
-            <div id="pnlOutletSlot"></div>
             <button onclick="exportPnLCSV()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 text-[14px] font-mono font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-cyan-900/50">
               <i data-lucide="download" class="w-4 h-4"></i> Ekspor Laporan (CSV)
             </button>
           </div>
         </div>
 
-        <!-- P&L Statement -->
-        <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-7 border border-cyan-900/40 shadow-xl space-y-5">
-          <span class="text-gold-400 text-[14px] font-mono uppercase font-bold tracking-widest">PROFIT &amp; LOSS — HARI INI</span>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
-              <span class="text-slate-400 text-[14px] uppercase tracking-wider">Total Omzet</span>
-              <p class="font-bold text-white text-2xl font-display tabular-nums" id="plRevenue">Rp 0</p>
+        <!-- P&L + Metrik Operasional (satu container terpadu) -->
+        <div class="bg-[#24140e] text-white rounded-3xl border border-stone-800/70 shadow-xl overflow-hidden">
+          <div class="p-6 sm:p-7 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span class="text-gold-400 text-[14px] font-mono uppercase font-bold tracking-widest">PROFIT &amp; LOSS — HARI INI</span>
+              <label class="flex items-center gap-2 text-[13px] font-mono text-stone-400">
+                <i data-lucide="store" class="w-4 h-4"></i><span class="hidden sm:inline">Filter Cabang</span>
+                <span id="pnlOutletSlot"></span>
+              </label>
             </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
-              <span class="text-slate-400 text-[14px] uppercase tracking-wider">HPP (COGS 34%)</span>
-              <p class="font-bold text-rose-300 text-2xl font-display tabular-nums" id="plCogs">Rp 0</p>
+
+            <!-- Tier 1: Ringkasan finansial -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-stone-900/60 border border-stone-800/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+                <span class="text-stone-400 text-[14px] uppercase tracking-wider">Total Omzet</span>
+                <p class="font-bold text-white text-2xl font-display tabular-nums" id="plRevenue">Rp 0</p>
+                <span class="text-emerald-400 text-[13px] tabular-nums" id="plGrowth">+0% vs kemarin</span>
+              </div>
+              <div class="bg-stone-900/60 border border-stone-800/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+                <span class="text-stone-400 text-[14px] uppercase tracking-wider">HPP (COGS 34%)</span>
+                <p class="font-bold text-rose-300 text-2xl font-display tabular-nums" id="plCogs">Rp 0</p>
+              </div>
+              <div class="bg-stone-900/60 border border-stone-800/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+                <span class="text-stone-400 text-[14px] uppercase tracking-wider">Beban Operasional</span>
+                <p class="font-bold text-amber-300 text-2xl font-display tabular-nums" id="plOpex">Rp 0</p>
+              </div>
+              <div class="bg-gradient-to-br from-emerald-700/30 to-gold-500/20 border border-emerald-500/40 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
+                <span class="text-emerald-200 text-[14px] uppercase tracking-wider">Laba Bersih</span>
+                <p class="font-bold text-white text-2xl font-display tabular-nums" id="plNet">Rp 0</p>
+                <span class="inline-block rounded-full bg-emerald-500/20 border border-emerald-400/40 px-2 py-0.5 text-emerald-300 text-[13px] tabular-nums">Margin <strong id="plMargin">0%</strong></span>
+              </div>
             </div>
-            <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
-              <span class="text-slate-400 text-[14px] uppercase tracking-wider">Beban Operasional</span>
-              <p class="font-bold text-amber-300 text-2xl font-display tabular-nums" id="plOpex">Rp 0</p>
-            </div>
-            <div class="bg-gradient-to-br from-cyan-600/30 to-gold-500/20 border border-cyan-400/40 p-4 rounded-2xl space-y-1 font-mono text-[14px]">
-              <span class="text-cyan-200 text-[14px] uppercase tracking-wider">Laba Bersih</span>
-              <p class="font-bold text-white text-2xl font-display tabular-nums" id="plNet">Rp 0</p>
-              <span class="text-emerald-300 text-[14px]">Margin <strong id="plMargin">0%</strong></span>
+
+            <div class="space-y-1.5">
+              <div class="flex flex-wrap justify-between gap-x-4 text-[14px] font-mono text-stone-400 tabular-nums"><span>Laba Kotor <strong class="text-white" id="plGross">Rp 0</strong></span><span>Nota: <strong class="text-white" id="plTxCount">0</strong> transaksi • rata-rata <strong class="text-white" id="plAvg">Rp 0</strong></span></div>
+              <div class="w-full bg-stone-900 h-3 rounded-full overflow-hidden">
+                <div id="plGrossBar" class="bg-gradient-to-r from-emerald-500 to-gold-400 h-full rounded-full transition-all" style="width:0%"></div>
+              </div>
             </div>
           </div>
 
-          <div class="space-y-1.5">
-            <div class="flex justify-between text-[14px] font-mono text-slate-400"><span>Laba Kotor <strong class="text-white" id="plGross">Rp 0</strong></span><span>Nota: <strong class="text-white" id="plTxCount">0</strong> transaksi • rata-rata <strong class="text-white" id="plAvg">Rp 0</strong></span></div>
-            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
-              <div id="plGrossBar" class="bg-gradient-to-r from-cyan-500 to-gold-400 h-full rounded-full transition-all" style="width:0%"></div>
+          <!-- Tier 2: Metrik operasional bar & kasir -->
+          <div class="border-t border-stone-800/60 p-6 sm:p-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-5">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 text-stone-400"><i data-lucide="wallet" class="w-4 h-4 text-gold-400"></i><span class="text-[13px] font-semibold uppercase tracking-[0.14em]">Omset Lab &amp; Bar</span></div>
+              <span class="text-2xl font-semibold text-white font-display block tabular-nums tracking-tight" id="kpiRevenue">Rp 0</span>
+              <p class="text-emerald-400 text-[13px] font-semibold tabular-nums" id="kpiRevenueGrowth">+0% vs kemarin</p>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 text-stone-400"><i data-lucide="coffee" class="w-4 h-4 text-gold-400"></i><span class="text-[13px] font-semibold uppercase tracking-[0.14em]">Total Cangkir Terseduh</span></div>
+              <span class="text-2xl font-semibold text-white font-display block tabular-nums tracking-tight" id="kpiCupsSold">0 Cangkir</span>
+              <p class="text-stone-400 text-[13px]">Kanal POS Kasir &amp; self-order</p>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 text-stone-400"><i data-lucide="receipt" class="w-4 h-4 text-gold-400"></i><span class="text-[13px] font-semibold uppercase tracking-[0.14em]">Total Transaksi</span></div>
+              <span class="text-2xl font-semibold text-white font-display block tabular-nums tracking-tight" id="kpiTotalTx">0 Transaksi</span>
+              <p class="text-stone-400 text-[13px]">Kasir POS + self-order customer</p>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 text-stone-400"><i data-lucide="armchair" class="w-4 h-4 text-gold-400"></i><span class="text-[13px] font-semibold uppercase tracking-[0.14em]">Meja Terisi (Live)</span></div>
+              <span class="text-2xl font-semibold text-white font-display block tabular-nums tracking-tight" id="kpiTablesOccupied">0 / 10 Meja Terisi</span>
+              <p class="text-stone-400 text-[13px]" id="kpiTablesNote">Denah 10 meja real-time</p>
             </div>
           </div>
         </div>
@@ -589,12 +562,12 @@
                 <p class="text-lg font-black text-slate-900 font-display">Flagship</p>
               </div>
               <div class="bg-gold-50 border border-gold-300 rounded-2xl p-3 text-center">
-                <p class="text-[14px] font-mono text-gold-700 uppercase">Kemang</p>
-                <p class="text-lg font-black text-slate-900 font-display">Slow Bar</p>
+                <p class="text-[14px] font-mono text-gold-700 uppercase">Bintaro</p>
+                <p class="text-lg font-black text-slate-900 font-display">Artisan Hub</p>
               </div>
               <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-center">
-                <p class="text-[14px] font-mono text-emerald-700 uppercase">BSD</p>
-                <p class="text-lg font-black text-slate-900 font-display">Roastery</p>
+                <p class="text-[14px] font-mono text-emerald-700 uppercase">Kelapa Gading</p>
+                <p class="text-lg font-black text-slate-900 font-display">Slow Bar</p>
               </div>
             </div>
           </div>
@@ -1514,25 +1487,25 @@
     /* Seed transaksi historis (Database Transaksi & P&L Superadmin). */
     const SEED_TRANSACTIONS = [
       { invoice: "QDR-202611-9001", outlet: "Senopati Flagship", token: "MEJA-03", customer: "Tedi Mahendra", phone: "081299998888", type: "DINE_IN", itemsSummary: "2x Quadra Aerocano Citrus, 1x Butter Croissant", time: "08:42 WIB", subtotal: 104000, tax: 10400, service: 5200, total: 119600, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9002", outlet: "Kemang Slow Bar", token: "MEJA-07", customer: "Nadia Hutagalung", phone: "081134567890", type: "DINE_IN", itemsSummary: "1x Oat Pistachio Cloud Latte, 1x Kyoto Cold Drip", time: "09:15 WIB", subtotal: 87000, tax: 8700, service: 4350, total: 100050, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9003", outlet: "BSD Roastery", token: "STOOL-02", customer: "Bima Santoso", phone: "081355667788", type: "DINE_IN", itemsSummary: "Slow Bar Tasting Flight (Colombia Pink Bourbon)", time: "09:30 WIB", subtotal: 85000, tax: 8500, service: 4250, total: 97750, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9002", outlet: "Bintaro Artisan Hub", token: "MEJA-07", customer: "Nadia Hutagalung", phone: "081134567890", type: "DINE_IN", itemsSummary: "1x Oat Pistachio Cloud Latte, 1x Kyoto Cold Drip", time: "09:15 WIB", subtotal: 87000, tax: 8700, service: 4350, total: 100050, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9003", outlet: "Kelapa Gading Slow Bar", token: "STOOL-02", customer: "Bima Santoso", phone: "081355667788", type: "DINE_IN", itemsSummary: "Slow Bar Tasting Flight (Colombia Pink Bourbon)", time: "09:30 WIB", subtotal: 85000, tax: 8500, service: 4250, total: 97750, method: "EDC", status: "LUNAS", date: todayISO() },
       { invoice: "QDR-202611-9004", outlet: "Senopati Flagship", token: "A-01", customer: "Agung Pratama", phone: "081722334411", type: "TAKE_AWAY", itemsSummary: "Kolombia Pink Bourbon Origami + Croissant", time: "10:05 WIB", subtotal: 120000, tax: 12000, service: 0, total: 132000, method: "Tunai", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9005", outlet: "Kemang Slow Bar", token: "MEJA-05", customer: "Clara Wijaya", phone: "081566778899", type: "DINE_IN", itemsSummary: "2x Truffle Mushroom Toast, 2x Matcha Latte", time: "10:40 WIB", subtotal: 196000, tax: 19600, service: 9800, total: 225400, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9006", outlet: "BSD Roastery", token: "MEJA-01", customer: "Rizky Kurniawan", phone: "081788990011", type: "DINE_IN", itemsSummary: "1x Beef Rice Bowl, 1x Signature Cold Brew Tonic", time: "11:12 WIB", subtotal: 102000, tax: 10200, service: 5100, total: 117300, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9005", outlet: "Bintaro Artisan Hub", token: "MEJA-05", customer: "Clara Wijaya", phone: "081566778899", type: "DINE_IN", itemsSummary: "2x Truffle Mushroom Toast, 2x Matcha Latte", time: "10:40 WIB", subtotal: 196000, tax: 19600, service: 9800, total: 225400, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9006", outlet: "Kelapa Gading Slow Bar", token: "MEJA-01", customer: "Rizky Kurniawan", phone: "081788990011", type: "DINE_IN", itemsSummary: "1x Beef Rice Bowl, 1x Signature Cold Brew Tonic", time: "11:12 WIB", subtotal: 102000, tax: 10200, service: 5100, total: 117300, method: "EDC", status: "LUNAS", date: todayISO() },
       { invoice: "QDR-202611-9007", outlet: "Senopati Flagship", token: "A-02", customer: "Sinta Marlina", phone: "081911223344", type: "TAKE_AWAY", itemsSummary: "4x Oat Pistachio Cloud Latte", time: "11:35 WIB", subtotal: 240000, tax: 24000, service: 0, total: 264000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9008", outlet: "Kemang Slow Bar", token: "MEJA-08", customer: "Hendra Gunawan", phone: "081233445566", type: "DINE_IN", itemsSummary: "1x Panama Geisha Boquete V60, 1x Pain au Chocolat", time: "12:20 WIB", subtotal: 93000, tax: 9300, service: 4650, total: 106950, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9009", outlet: "BSD Roastery", token: "MEJA-02", customer: "Maya Puspita", phone: "081877665544", type: "DINE_IN", itemsSummary: "1x Smoked Chicken Panini, 1x Matcha Latte", time: "12:55 WIB", subtotal: 95000, tax: 9500, service: 4750, total: 109250, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9010", outlet: "BSD Roastery", token: "STOOL-01", customer: "Yusuf Ramadhan", phone: "081655443322", type: "DINE_IN", itemsSummary: "1x Ethiopia Yirgacheffe Syphon, 1x Cinnamon Roll", time: "13:10 WIB", subtotal: 120000, tax: 12000, service: 6000, total: 138000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9008", outlet: "Bintaro Artisan Hub", token: "MEJA-08", customer: "Hendra Gunawan", phone: "081233445566", type: "DINE_IN", itemsSummary: "1x Panama Geisha Boquete V60, 1x Pain au Chocolat", time: "12:20 WIB", subtotal: 93000, tax: 9300, service: 4650, total: 106950, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9009", outlet: "Kelapa Gading Slow Bar", token: "MEJA-02", customer: "Maya Puspita", phone: "081877665544", type: "DINE_IN", itemsSummary: "1x Smoked Chicken Panini, 1x Matcha Latte", time: "12:55 WIB", subtotal: 95000, tax: 9500, service: 4750, total: 109250, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9010", outlet: "Kelapa Gading Slow Bar", token: "STOOL-01", customer: "Yusuf Ramadhan", phone: "081655443322", type: "DINE_IN", itemsSummary: "1x Ethiopia Yirgacheffe Syphon, 1x Cinnamon Roll", time: "13:10 WIB", subtotal: 120000, tax: 12000, service: 6000, total: 138000, method: "Tunai", status: "LUNAS", date: todayISO() },
       { invoice: "QDR-202611-9011", outlet: "Senopati Flagship", token: "MEJA-04", customer: "Dewi Lestari", phone: "081344556677", type: "DINE_IN", itemsSummary: "2x Aerocano Citrus, 1x Cinnamon Roll Lab", time: "13:48 WIB", subtotal: 190000, tax: 19000, service: 9500, total: 218500, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9012", outlet: "Kemang Slow Bar", token: "A-03", customer: "Fajar Nugroho", phone: "081255667788", type: "TAKE_AWAY", itemsSummary: "2x Cold Brew Tonic, 1x Butter Croissant", time: "14:05 WIB", subtotal: 90000, tax: 9000, service: 0, total: 99000, method: "Tunai", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9013", outlet: "BSD Roastery", token: "MEJA-09", customer: "Anisa Rahmawati", phone: "081999887766", type: "DINE_IN", itemsSummary: "2x Kyoto Cold Drip 18-Hours, 1x Truffle Toast", time: "14:32 WIB", subtotal: 148000, tax: 14800, service: 7400, total: 170200, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9012", outlet: "Bintaro Artisan Hub", token: "A-03", customer: "Fajar Nugroho", phone: "081255667788", type: "TAKE_AWAY", itemsSummary: "2x Cold Brew Tonic, 1x Butter Croissant", time: "14:05 WIB", subtotal: 90000, tax: 9000, service: 0, total: 99000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9013", outlet: "Kelapa Gading Slow Bar", token: "MEJA-09", customer: "Anisa Rahmawati", phone: "081999887766", type: "DINE_IN", itemsSummary: "2x Kyoto Cold Drip 18-Hours, 1x Truffle Toast", time: "14:32 WIB", subtotal: 148000, tax: 14800, service: 7400, total: 170200, method: "EDC", status: "LUNAS", date: todayISO() },
       { invoice: "QDR-202611-9014", outlet: "Senopati Flagship", token: "MEJA-06", customer: "Bagus Setiawan", phone: "081666778899", type: "DINE_IN", itemsSummary: "1x Paket Duo Espresso, 1x Pain au Chocolat", time: "15:10 WIB", subtotal: 92000, tax: 9200, service: 4600, total: 105800, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9015", outlet: "Kemang Slow Bar", token: "MEJA-10", customer: "Intan Permata", phone: "081777889900", type: "DINE_IN", itemsSummary: "2x Beef Rice Bowl, 2x Matcha Latte, 1x Croissant", time: "15:45 WIB", subtotal: 290000, tax: 29000, service: 14500, total: 333500, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9016", outlet: "BSD Roastery", token: "A-04", customer: "Galih Pratama", phone: "081888990011", type: "TAKE_AWAY", itemsSummary: "2x Oat Latte, 1x Kyoto Cold Drip", time: "16:02 WIB", subtotal: 129000, tax: 12900, service: 0, total: 141900, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9015", outlet: "Bintaro Artisan Hub", token: "MEJA-10", customer: "Intan Permata", phone: "081777889900", type: "DINE_IN", itemsSummary: "2x Beef Rice Bowl, 2x Matcha Latte, 1x Croissant", time: "15:45 WIB", subtotal: 290000, tax: 29000, service: 14500, total: 333500, method: "EDC", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9016", outlet: "Kelapa Gading Slow Bar", token: "A-04", customer: "Galih Pratama", phone: "081888990011", type: "TAKE_AWAY", itemsSummary: "2x Oat Latte, 1x Kyoto Cold Drip", time: "16:02 WIB", subtotal: 129000, tax: 12900, service: 0, total: 141900, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
       { invoice: "QDR-202611-9017", outlet: "Senopati Flagship", token: "MEJA-07", customer: "Putri Anggraini", phone: "081999001122", type: "DINE_IN", itemsSummary: "1x Tasting Flight, 1x Cinnamon Roll Lab", time: "16:38 WIB", subtotal: 204000, tax: 20400, service: 10200, total: 234600, method: "EDC", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9018", outlet: "Kemang Slow Bar", token: "STOOL-03", customer: "Rangga Aditya", phone: "081222334455", type: "DINE_IN", itemsSummary: "1x Macchiato, 1x Croissant, 1x Cold Brew Tonic", time: "17:05 WIB", subtotal: 180000, tax: 18000, service: 9000, total: 207000, method: "Tunai", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9019", outlet: "BSD Roastery", token: "MEJA-05", customer: "Vina Oktaviani", phone: "081333221100", type: "DINE_IN", itemsSummary: "3x Truffle Mushroom Toast, 2x Aerocano Citrus", time: "17:40 WIB", subtotal: 260000, tax: 26000, service: 13000, total: 299000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
-      { invoice: "QDR-202611-9020", outlet: "BSD Roastery", token: "A-05", customer: "Doni Saputra", phone: "081444332211", type: "TAKE_AWAY", itemsSummary: "2x Matcha Latte, 1x Butter Croissant", time: "18:02 WIB", subtotal: 96000, tax: 9600, service: 0, total: 105600, method: "Tunai", status: "LUNAS", date: todayISO() }
+      { invoice: "QDR-202611-9018", outlet: "Bintaro Artisan Hub", token: "STOOL-03", customer: "Rangga Aditya", phone: "081222334455", type: "DINE_IN", itemsSummary: "1x Macchiato, 1x Croissant, 1x Cold Brew Tonic", time: "17:05 WIB", subtotal: 180000, tax: 18000, service: 9000, total: 207000, method: "Tunai", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9019", outlet: "Kelapa Gading Slow Bar", token: "MEJA-05", customer: "Vina Oktaviani", phone: "081333221100", type: "DINE_IN", itemsSummary: "3x Truffle Mushroom Toast, 2x Aerocano Citrus", time: "17:40 WIB", subtotal: 260000, tax: 26000, service: 13000, total: 299000, method: "QRIS Instant", status: "LUNAS", date: todayISO() },
+      { invoice: "QDR-202611-9020", outlet: "Kelapa Gading Slow Bar", token: "A-05", customer: "Doni Saputra", phone: "081444332211", type: "TAKE_AWAY", itemsSummary: "2x Matcha Latte, 1x Butter Croissant", time: "18:02 WIB", subtotal: 96000, tax: 9600, service: 0, total: 105600, method: "Tunai", status: "LUNAS", date: todayISO() }
     ];
 
     /* ============================================================
@@ -3277,14 +3250,15 @@
     let transaksiLog = [];
 
     /* Outlet Quadra Coffee Lab (untuk filter Laba Rugi / BI) */
-    const OUTLET_NAMES = ['Senopati Flagship', 'Kemang Slow Bar', 'BSD Roastery'];
-    let pnlOutlet = 'ALL';
+    const OUTLET_NAMES = ['Senopati Flagship', 'Bintaro Artisan Hub', 'Kelapa Gading Slow Bar'];
+    let pnlOutlet = 'Senopati Flagship';
     function setPnlOutlet(v) { pnlOutlet = v; renderAnalytics(); }
 
     function outletSelectMarkup() {
-      const opts = ['<option value="ALL">Semua Outlet (3)</option>']
-        .concat(OUTLET_NAMES.map(o => `<option value="${o}">${o}</option>`)).join('');
-      return `<select id="pnlOutletSelect" onchange="setPnlOutlet(this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 text-[14px] font-mono rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-400">${opts}</select>`;
+      const labels = { 'Senopati Flagship': 'Senopati Flagship (Outlet Aktif Saat Ini)' };
+      const opts = ['<option value="ALL">Semua Outlet (3 Cabang Konsolidasi)</option>']
+        .concat(OUTLET_NAMES.map(o => `<option value="${o}">${labels[o] || o}</option>`)).join('');
+      return `<select id="pnlOutletSelect" aria-label="Filter cabang" onchange="setPnlOutlet(this.value)" class="bg-stone-900 border border-stone-700 text-stone-100 text-[14px] font-mono rounded-lg px-2.5 py-1.5 max-w-[260px] focus:outline-none focus:border-gold-400">${opts}</select>`;
     }
 
     function recordTransaction(order) {
@@ -3410,40 +3384,98 @@
     }
 
     /* ==================== SUPERADMIN: P&L & ANALYTICS ==================== */
-    function pnlSummary(period) {
-      const all = txByOutlet(allTransactions()).filter(t => t.status === 'LUNAS');
-      const revenue = all.reduce((n, t) => n + Number(t.total || 0), 0);
-      const cogs = Math.round(revenue * 0.34);
-      const gross = revenue - cogs;
-      const opex = 0;
-      const net = gross - opex;
-      return { revenue: revenue, cogs: cogs, gross: gross, opex: opex, net: net, txCount: all.length, avg: all.length ? Math.round(revenue / all.length) : 0 };
+    /* Dataset dummy multi-outlet (baseline harian). Transaksi live dari POS / self-order
+       ditambahkan di atas baseline outlet masing-masing (default Senopati Flagship). */
+    const OUTLET_DATA = {
+      'Senopati Flagship': {
+        revenue: 3443850, cogs: 1170909, cups: 55, tx: 21, occupied: null, growth: 18.4,
+        top: [['Quadra Aerocano Citrus', 14], ['Oat Pistachio Cloud Latte', 11], ['Kyoto Cold Drip 18-Hours', 8], ['Butter Croissant', 7], ['Matcha Latte', 5], ['Cinnamon Roll Lab', 4]],
+        dine: 14, take: 7, qris: 15, retention: 62, sku: 16
+      },
+      'Bintaro Artisan Hub': {
+        revenue: 4120000, cogs: 1410000, cups: 62, tx: 25, occupied: 5, growth: 12.7,
+        top: [['Oat Pistachio Cloud Latte', 16], ['Matcha Latte', 12], ['Quadra Aerocano Citrus', 10], ['Truffle Mushroom Toast', 9], ['Pain au Chocolat', 8], ['Cold Brew Tonic', 7]],
+        dine: 18, take: 7, qris: 17, retention: 58, sku: 16
+      },
+      'Kelapa Gading Slow Bar': {
+        revenue: 3286150, cogs: 1119091, cups: 51, tx: 18, occupied: 2, growth: 9.2,
+        top: [['Kyoto Cold Drip 18-Hours', 13], ['Panama Geisha Boquete V60', 9], ['Slow Bar Tasting Flight', 8], ['Cold Brew Tonic', 7], ['Cinnamon Roll Lab', 6], ['Butter Croissant', 5]],
+        dine: 13, take: 5, qris: 11, retention: 66, sku: 16
+      }
+    };
+    const SEED_INVOICES = SEED_TRANSACTIONS.reduce((m, t) => { m[t.invoice] = true; return m; }, {});
+
+    function countCups(summary) {
+      return (String(summary || '').match(/\d+x/g) || []).reduce((n, x) => n + Number(x.replace('x', '')), 0);
     }
 
-    function topSellers() {
-      const counts = {};
-      txByOutlet(allTransactions()).forEach(t => {
-        if (t.itemsSummary && t.itemsSummary !== '-') {
-          String(t.itemsSummary).split(',').forEach(seg => {
-            const m = /(\d+)x\s+(.+)/.exec(seg.trim());
-            if (m) { const name = m[2].trim(); counts[name] = (counts[name] || 0) + Number(m[1]); }
-          });
-        }
+    /** Metrik satu outlet = baseline dummy + transaksi live outlet tsb. */
+    function outletMetrics(name) {
+      const base = OUTLET_DATA[name];
+      const live = allTransactions().filter(t => t.status === 'LUNAS' && !SEED_INVOICES[t.invoice] && (t.outlet || OUTLET_NAMES[0]) === name);
+      const liveRev = live.reduce((n, t) => n + Number(t.total || 0), 0);
+      const top = {};
+      base.top.forEach(p => { top[p[0]] = p[1]; });
+      live.forEach(t => {
+        String(t.itemsSummary || '').split(',').forEach(seg => {
+          const m = /(\d+)x\s+(.+)/.exec(seg.trim());
+          if (m) top[m[2].trim()] = (top[m[2].trim()] || 0) + Number(m[1]);
+        });
       });
-      return Object.keys(counts).map(k => ({ name: k, qty: counts[k] })).sort((a, b) => b.qty - a.qty).slice(0, 6);
+      const occupied = base.occupied == null ? floorState().filter(t => t.displayStatus === 'occupied').length : base.occupied;
+      return {
+        revenue: base.revenue + liveRev,
+        cogs: base.cogs + Math.round(liveRev * 0.34),
+        cups: base.cups + live.reduce((n, t) => n + countCups(t.itemsSummary), 0),
+        tx: base.tx + live.length,
+        occupied: occupied, capacity: 10, growth: base.growth,
+        top: top,
+        dine: base.dine + live.filter(t => t.type === 'DINE_IN').length,
+        take: base.take + live.filter(t => t.type === 'TAKE_AWAY').length,
+        qris: base.qris + live.filter(t => /QRIS/i.test(t.method)).length,
+        retention: base.retention, sku: base.sku
+      };
+    }
+
+    /** Agregat sesuai filter cabang ('ALL' = konsolidasi 3 outlet). */
+    function pnlData() {
+      const names = (pnlOutlet && pnlOutlet !== 'ALL' && OUTLET_DATA[pnlOutlet]) ? [pnlOutlet] : OUTLET_NAMES;
+      const parts = names.map(outletMetrics);
+      const sum = k => parts.reduce((n, p) => n + p[k], 0);
+      const revenue = sum('revenue'), cogs = sum('cogs');
+      const top = {};
+      parts.forEach(p => Object.keys(p.top).forEach(k => { top[k] = (top[k] || 0) + p.top[k]; }));
+      const prevRev = parts.reduce((n, p) => n + p.revenue / (1 + p.growth / 100), 0);
+      const tx = sum('tx');
+      return {
+        revenue: revenue, cogs: cogs, gross: revenue - cogs, opex: 0, net: revenue - cogs,
+        cups: sum('cups'), txCount: tx, avg: tx ? Math.round(revenue / tx) : 0,
+        occupied: sum('occupied'), capacity: names.length * 10, outlets: names.length,
+        growth: prevRev ? ((revenue - prevRev) / prevRev) * 100 : 0,
+        top: top, dine: sum('dine'), take: sum('take'), qris: sum('qris'),
+        retention: Math.round(sum('retention') / parts.length), sku: parts[0].sku
+      };
+    }
+
+    function pnlSummary() { return pnlData(); }
+
+    function topSellers() {
+      const t = pnlData().top;
+      return Object.keys(t).map(k => ({ name: k, qty: t[k] })).sort((a, b) => b.qty - a.qty).slice(0, 6);
     }
 
     function renderAnalytics() {
       if (currentRole !== 'superadmin') return;
       const slot = document.getElementById('pnlOutletSlot');
-      if (slot) {
-        slot.innerHTML = outletSelectMarkup();
-        const sel = document.getElementById('pnlOutletSelect');
-        if (sel) sel.value = pnlOutlet;
-      }
-      const p = pnlSummary('daily');
+      if (slot && !document.getElementById('pnlOutletSelect')) slot.innerHTML = outletSelectMarkup();
+      const sel = document.getElementById('pnlOutletSelect');
+      if (sel) sel.value = pnlOutlet;
+      const p = pnlData();
       const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      const growth = (p.growth >= 0 ? '+' : '') + p.growth.toFixed(1).replace('.', ',') + '% vs kemarin';
+      setTxt('sidebarOutletName', pnlOutlet === 'ALL' ? 'Semua Outlet (3)' : pnlOutlet);
       setTxt('plRevenue', formatRupiah(p.revenue));
+      setTxt('plGrowth', growth);
       setTxt('plCogs', formatRupiah(p.cogs));
       setTxt('plGross', formatRupiah(p.gross));
       setTxt('plOpex', formatRupiah(p.opex));
@@ -3451,6 +3483,12 @@
       setTxt('plMargin', p.revenue ? Math.round((p.net / p.revenue) * 100) + '%' : '0%');
       setTxt('plTxCount', p.txCount);
       setTxt('plAvg', formatRupiah(p.avg));
+      setTxt('kpiRevenue', formatRupiah(p.revenue));
+      setTxt('kpiRevenueGrowth', growth);
+      setTxt('kpiCupsSold', p.cups + ' Cangkir');
+      setTxt('kpiTotalTx', p.txCount + ' Transaksi');
+      setTxt('kpiTablesOccupied', p.occupied + ' / ' + p.capacity + ' Meja Terisi');
+      setTxt('kpiTablesNote', p.outlets > 1 ? 'Denah ' + p.capacity + ' meja (3 outlet)' : 'Denah 10 meja real-time');
 
       const bar = document.getElementById('plGrossBar');
       if (bar) bar.style.width = Math.max(0, Math.min(100, p.revenue ? (p.net / p.revenue) * 100 : 0)) + '%';
@@ -3461,24 +3499,19 @@
         const max = top.length ? top[0].qty : 1;
         topWrap.innerHTML = top.map((t, i) => `
           <div class="space-y-1">
-            <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-600 font-bold">${i + 1}. ${t.name}</span><span class="text-slate-900 font-bold">${t.qty} terjual</span></div>
+            <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-600 font-bold">${i + 1}. ${t.name}</span><span class="text-slate-900 font-bold tabular-nums">${t.qty} terjual</span></div>
             <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div class="bg-gradient-to-r from-cyan-500 to-gold-400 h-full rounded-full" style="width:${Math.round((t.qty / max) * 100)}%"></div></div>
           </div>`).join('') || '<p class="text-[14px] text-stone-500">Belum ada data penjualan.</p>';
       }
 
       const kycWrap = document.getElementById('kycMetrics');
       if (kycWrap) {
-        const all = txByOutlet(allTransactions());
-        const dine = all.filter(t => t.type === 'DINE_IN').length;
-        const take = all.filter(t => t.type === 'TAKE_AWAY').length;
-        const qris = all.filter(t => /QRIS/i.test(t.method)).length;
-        const retention = all.length ? Math.round((all.length - 1) / all.length * 100) : 0;
-        const outletInfo = (pnlOutlet && pnlOutlet !== 'ALL') ? pnlOutlet : '3 Outlet';
+        const outletInfo = pnlOutlet === 'ALL' ? '3 Outlet' : pnlOutlet;
         kycWrap.innerHTML = `
-          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Rasio Dine In : Take Away</span><strong class="text-slate-900">${dine} : ${take}</strong></div>
-          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Pembayaran QRIS / Non-tunai</span><strong class="text-cyan-700">${qris} / ${all.length}</strong></div>
-          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Estimasi Retensi Tamu</span><strong class="text-emerald-700">${retention}%</strong></div>
-          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">SKU Aktif di Katalog</span><strong class="text-slate-900">${masterMenu.length}</strong></div>
+          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Rasio Dine In : Take Away</span><strong class="text-slate-900 tabular-nums">${p.dine} : ${p.take}</strong></div>
+          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Pembayaran QRIS / Non-tunai</span><strong class="text-cyan-700 tabular-nums">${p.qris} / ${p.txCount}</strong></div>
+          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Estimasi Retensi Tamu</span><strong class="text-emerald-700 tabular-nums">${p.retention}%</strong></div>
+          <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">SKU Aktif di Katalog</span><strong class="text-slate-900 tabular-nums">${masterMenu.length}</strong></div>
           <div class="flex justify-between text-[14px] font-mono"><span class="text-slate-500">Outlet Aktif</span><strong class="text-slate-900">${outletInfo}</strong></div>`;
       }
     }
@@ -3502,10 +3535,6 @@
       const tables = floorState();
       const occupied = tables.filter(t => t.displayStatus === 'occupied').length;
       const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
-      setTxt('kpiRevenue', formatRupiah(revenue));
-      setTxt('kpiCupsSold', cups + ' Cangkir');
-      setTxt('kpiTotalTx', all.length + ' Transaksi');
-      setTxt('kpiTablesOccupied', occupied + ' / 10 Meja Terisi');
       setTxt('auditRevenue', formatRupiah(revenue));
       setTxt('auditTxCount', all.length);
       setTxt('auditTables', occupied + ' / 10');
