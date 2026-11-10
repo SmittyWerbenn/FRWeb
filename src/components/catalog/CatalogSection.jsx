@@ -68,14 +68,14 @@ export default function CatalogSection({
                 aria-pressed={active}
                 className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-[12.5px] font-semibold transition ${
                   active
-                    ? 'border-indigo-500/50 bg-indigo-500/15 text-indigo-100 shadow-[0_0_24px_-10px_rgba(99,102,241,0.8)]'
-                    : 'border-slate-800/80 bg-white/[0.02] text-slate-400 hover:border-slate-700 hover:text-white'
+                    ? 'border-[#0B1F3F] bg-[#F3F4F6] text-[#0B1F3F] shadow-[0_8px_24px_-12px_rgba(11,31,63,0.18)]'
+                    : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#6B7280] hover:border-[#E5E7EB] hover:text-[#0B1F3F]'
                 }`}
               >
                 {item.label}
                 <span
                   className={`text-[10px] font-bold tabular-nums ${
-                    active ? 'text-indigo-200' : 'text-slate-500'
+                    active ? 'text-[#0B1F3F]' : 'text-[#6B7280]'
                   }`}
                 >
                   ({total})
@@ -90,20 +90,20 @@ export default function CatalogSection({
             Cari template
           </label>
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
             <input
               id="cari-template"
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
               placeholder="Cari template, gaya, atau industri…"
-              className="w-full rounded-xl border border-slate-800/80 bg-white/[0.04] py-2.5 pl-10 pr-10 text-[13px] text-white placeholder:text-slate-500 focus:border-indigo-400/60 focus:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-indigo-400/20"
+              className="w-full rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] py-2.5 pl-10 pr-10 text-[13px] text-[#0B1F3F] placeholder:text-[#6B7280] focus:border-[#0B1F3F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3F]/10"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => onQueryChange('')}
                 aria-label="Hapus pencarian"
-                className="absolute right-2.5 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-md text-slate-400 hover:bg-white/10 hover:text-white"
+                className="absolute right-2.5 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-md text-[#6B7280] hover:bg-[#F3F4F6] hover:text-[#0B1F3F]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -112,19 +112,19 @@ export default function CatalogSection({
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#E5E7EB] pb-4">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-[12px] text-slate-500">{CATEGORY_NOTES[category]}</p>
-          <span className="inline-flex items-center gap-1 rounded-md border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-1 text-[10px] font-semibold text-emerald-200/90">
+          <p className="text-[12px] text-[#6B7280]">{CATEGORY_NOTES[category]}</p>
+          <span className="inline-flex items-center gap-1 rounded-md border border-[#D1D5DB] bg-[#F3F4F6] px-2 py-1 text-[10px] font-semibold text-[#0B1F3F]">
             <LayoutGrid className="h-2.5 w-2.5" />
             2-in-1: Customer + Admin
           </span>
         </div>
-        <p className="text-[12px] font-medium text-slate-400">
-          Menampilkan <span className="font-bold text-white">{visible.length}</span> dari{' '}
+        <p className="text-[12px] font-medium text-[#6B7280]">
+          Menampilkan <span className="font-bold text-[#0B1F3F]">{visible.length}</span> dari{' '}
           {filtered.length} template
           {canToggle && !showAll && (
-            <span className="text-slate-500"> · {hiddenCount} template lainnya</span>
+            <span className="text-[#6B7280]"> · {hiddenCount} template lainnya</span>
           )}
         </p>
       </div>
@@ -150,25 +150,25 @@ export default function CatalogSection({
                 onClick={() => setShowAll((value) => !value)}
                 aria-expanded={showAll}
                 aria-controls="grid-template-katalog"
-                className="group inline-flex items-center gap-2 rounded-full border border-slate-700/80 bg-white/[0.03] px-6 py-3 text-[13px] font-semibold text-white transition hover:border-indigo-400/60 hover:bg-indigo-500/10"
+                className="group inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F9FAFB] px-6 py-3 text-[13px] font-semibold text-[#0B1F3F] transition hover:border-[#D1D5DB] hover:bg-[#F3F4F6]"
               >
                 {showAll ? (
                   <>
                     Tampilkan 12 template pertama
-                    <ChevronDown className="h-4 w-4 rotate-180 text-indigo-300 transition group-hover:-translate-y-0.5" />
+                    <ChevronDown className="h-4 w-4 rotate-180 text-[#0B1F3F] transition group-hover:-translate-y-0.5" />
                   </>
                 ) : (
                   <>
                     Lihat semua template
-                    <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-[11px] font-bold text-indigo-200 tabular-nums">
+                    <span className="rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[11px] font-bold text-[#0B1F3F] tabular-nums">
                       {filtered.length}
                     </span>
-                    <ArrowRight className="h-4 w-4 text-indigo-300 transition group-hover:translate-x-0.5" />
+                    <ArrowRight className="h-4 w-4 text-[#0B1F3F] transition group-hover:translate-x-0.5" />
                   </>
                 )}
               </button>
               {!showAll && (
-                <p className="text-[11.5px] text-slate-500">
+                <p className="text-[11.5px] text-[#6B7280]">
                   {hiddenCount} template lainnya siap dilihat — thumbnail & live preview tetap lengkap.
                 </p>
               )}
@@ -176,16 +176,16 @@ export default function CatalogSection({
           )}
         </>
       ) : (
-        <div className="mt-10 rounded-2xl border border-dashed border-slate-800 bg-white/[0.02] px-6 py-16 text-center">
-          <p className="text-[15px] font-bold text-white">Template tidak ditemukan</p>
-          <p className="mx-auto mt-2 max-w-sm text-[13px] text-slate-400">
+        <div className="mt-10 rounded-2xl border border-dashed border-[#E5E7EB] bg-[#F9FAFB] px-6 py-16 text-center">
+          <p className="text-[15px] font-bold text-[#0B1F3F]">Template tidak ditemukan</p>
+          <p className="mx-auto mt-2 max-w-sm text-[13px] text-[#6B7280]">
             Coba kata kunci lain seperti “booking”, “catering”, “brutalist”, atau “spec”.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
             <button
               type="button"
               onClick={reset}
-              className="rounded-lg border border-slate-700 px-4 py-2 text-[12px] font-semibold text-white hover:bg-white/5"
+              className="rounded-lg border border-[#E5E7EB] px-4 py-2 text-[12px] font-semibold text-[#0B1F3F] hover:bg-[#F3F4F6]"
             >
               Reset filter
             </button>
@@ -193,7 +193,7 @@ export default function CatalogSection({
               <button
                 type="button"
                 onClick={onRequestCustom}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400 px-4 py-2 text-[12px] font-bold text-[#1a1205] hover:brightness-110"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#0B1F3F] px-4 py-2 text-[12px] font-bold text-white hover:bg-[#17315F]"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 Buatkan desain kustom

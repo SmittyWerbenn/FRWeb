@@ -44,7 +44,7 @@ export default function Navbar() {
               key={link.target}
               type="button"
               onClick={() => go(link.target)}
-              className="rounded-lg px-3.5 py-2 text-[13px] font-medium text-[#4B5563] transition hover:bg-[#F3F4F6] hover:text-[#18181B]"
+              className="rounded-lg px-3.5 py-2 text-[13px] font-medium text-[#4B5563] transition hover:bg-[#F3F4F6] hover:text-[#0B1F3F]"
             >
               {link.label}
             </button>
@@ -59,7 +59,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => go('ringkasan')}
-            className="hidden items-center gap-1.5 rounded-full border border-[#E5E7EB] px-3.5 py-2 text-[13px] font-semibold text-[#18181B] transition hover:bg-[#F3F4F6] sm:inline-flex"
+            className="hidden items-center gap-1.5 rounded-full border border-[#E5E7EB] px-3.5 py-2 text-[13px] font-semibold text-[#0B1F3F] transition hover:bg-[#F3F4F6] sm:inline-flex"
           >
             Ringkasan
             <ArrowUpRight className="h-3.5 w-3.5" />
@@ -68,7 +68,7 @@ export default function Navbar() {
             href={WA_CONSULT}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-[#18181B] px-3.5 py-2 text-[13px] font-semibold text-white transition hover:bg-[#27272A] sm:px-4"
+            className="inline-flex items-center gap-2 rounded-full bg-[#0B1F3F] px-3.5 py-2 text-[13px] font-semibold text-white transition hover:bg-[#17315F] sm:px-4"
           >
             <MessageCircle className="h-4 w-4" />
             <span className="hidden xs:inline">Chat Sales</span>
@@ -92,7 +92,7 @@ export default function Navbar() {
               key={link.target}
               type="button"
               onClick={() => go(link.target)}
-              className="block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#18181B]"
+              className="block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#0B1F3F]"
             >
               {link.label}
             </button>
@@ -100,7 +100,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => go('ringkasan')}
-            className="mt-2 w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-left text-sm font-semibold text-[#18181B]"
+            className="mt-2 w-full rounded-lg border border-[#E5E7EB] px-3 py-2.5 text-left text-sm font-semibold text-[#0B1F3F]"
           >
             Lihat ringkasan order
           </button>

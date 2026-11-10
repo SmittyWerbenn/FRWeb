@@ -14,12 +14,12 @@ function PlanCard({ plan }) {
     <div
       className={`group relative flex flex-col overflow-hidden rounded-2xl border p-5 transition duration-300 ${
         selected
-          ? 'border-emerald-400/50 bg-emerald-400/[0.06] shadow-[0_25px_60px_-35px_rgba(52,211,153,0.45)]'
-          : 'border-slate-800/80 bg-[#0b1120] hover:-translate-y-1 hover:border-indigo-500/50'
+          ? 'border-[#0B1F3F] bg-[#F3F4F6] shadow-[0_8px_24px_-12px_rgba(11,31,63,0.18)]'
+          : 'border-[#E5E7EB] bg-white hover:-translate-y-1 hover:border-[#D1D5DB]'
       }`}
     >
       {plan.recommended && (
-        <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 px-2.5 py-1 text-[9.5px] font-black uppercase tracking-wider text-[#04140f]">
+        <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-[#0B1F3F] px-2.5 py-1 text-[9.5px] font-black uppercase tracking-wider text-white">
           <Sparkles className="h-2.5 w-2.5" />
           {plan.badge}
         </span>
@@ -30,43 +30,43 @@ function PlanCard({ plan }) {
         onClick={() => selectPlan(plan.id)}
         aria-pressed={selected}
         aria-label={`Pilih ${plan.name}`}
-        className="absolute inset-0 z-0 cursor-pointer rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+        className="absolute inset-0 z-0 cursor-pointer rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D1D5DB]"
       />
 
       <div className="pointer-events-none relative z-10 flex flex-1 flex-col">
         <div className="flex items-start gap-2">
           <span
             className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full border transition ${
-              selected ? 'border-emerald-400 bg-emerald-400 text-[#04140f]' : 'border-white/25 text-transparent'
+              selected ? 'border-[#0B1F3F] bg-[#0B1F3F] text-white' : 'border-[#E5E7EB] text-transparent'
             }`}
           >
             <Check className="h-2.5 w-2.5" strokeWidth={4} />
           </span>
           <div>
-            <h3 className="text-[15px] font-extrabold tracking-tight text-white">{plan.name}</h3>
-            <p className="mt-1 text-[11.5px] leading-snug text-slate-400">{plan.tagline}</p>
+            <h3 className={`${plan.recommended ? "pr-24 " : ""}text-[15px] font-extrabold tracking-tight text-[#0B1F3F]`}>{plan.name}</h3>
+            <p className="mt-1 text-[11.5px] leading-snug text-[#6B7280]">{plan.tagline}</p>
           </div>
         </div>
 
         <div className="mt-4">
           {isCustom ? (
-            <p className="text-[22px] font-extrabold leading-none text-white">Hubungi WhatsApp</p>
+            <p className="text-[22px] font-extrabold leading-none text-[#0B1F3F]">Hubungi WhatsApp</p>
           ) : (
             <p className="flex flex-wrap items-baseline gap-1">
-              <span className="text-[22px] font-extrabold leading-none text-white">{formatIDR(plan.price)}</span>
-              <span className="text-[10.5px] font-medium text-slate-500">{plan.priceSuffix}</span>
+              <span className="text-[22px] font-extrabold leading-none text-[#0B1F3F]">{formatIDR(plan.price)}</span>
+              <span className="text-[10.5px] font-medium text-[#6B7280]">{plan.priceSuffix}</span>
             </p>
           )}
         </div>
 
-        <p className="mt-3 rounded-lg bg-white/[0.03] px-2.5 py-2 text-[11px] leading-snug text-slate-400">
-          <span className="font-semibold text-slate-300">Cocok untuk: </span>
+        <p className="mt-3 rounded-lg bg-[#F9FAFB] px-2.5 py-2 text-[11px] leading-snug text-[#6B7280]">
+          <span className="font-semibold text-[#4B5563]">Cocok untuk: </span>
           {plan.bestFor}
         </p>
 
         <ul className="mt-4 flex-1 space-y-2">
           {plan.specs.map((spec) => (
-            <li key={spec} className="flex items-start gap-2 text-[11.5px] leading-snug text-slate-300">
+            <li key={spec} className="flex items-start gap-2 text-[11.5px] leading-snug text-[#4B5563]">
               <span
                 className="mt-[3px] grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full"
                 style={{ background: `${plan.accent}24`, color: plan.accent }}
@@ -77,8 +77,8 @@ function PlanCard({ plan }) {
             </li>
           ))}
           {plan.notIncluded.map((spec) => (
-            <li key={spec} className="flex items-start gap-2 text-[11px] leading-snug text-slate-500 line-through decoration-slate-700">
-              <span className="mt-[3px] grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full bg-white/5">
+            <li key={spec} className="flex items-start gap-2 text-[11px] leading-snug text-[#6B7280] line-through decoration-[#D1D5DB]">
+              <span className="mt-[3px] grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full bg-[#F9FAFB]">
                 <Minus className="h-2 w-2" strokeWidth={3} />
               </span>
               {spec}
@@ -94,8 +94,8 @@ function PlanCard({ plan }) {
           }}
           className={`pointer-events-auto mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-[12px] font-bold transition ${
             selected
-              ? 'bg-emerald-400 text-[#04140f] hover:brightness-110'
-              : 'border border-white/15 bg-white/[0.04] text-white hover:border-indigo-400/50 hover:bg-white/[0.09]'
+              ? 'bg-[#0B1F3F] text-white hover:bg-[#17315F]'
+              : 'border border-[#E5E7EB] bg-[#F9FAFB] text-[#0B1F3F] hover:border-[#D1D5DB] hover:bg-[#F3F4F6]'
           }`}
         >
           {selected ? (
@@ -127,18 +127,18 @@ export default function PricingSection() {
       <div className="mx-auto w-full max-w-7xl">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-indigo-400">Langkah 1</span>
-            <h2 className="mt-2.5 text-[26px] font-extrabold leading-tight tracking-tight text-white sm:text-[34px]">
+            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#0B1F3F]">Langkah 1</span>
+            <h2 className="mt-2.5 text-[26px] font-extrabold leading-tight tracking-tight text-[#0B1F3F] sm:text-[34px]">
               Pilih paket sesuai kebutuhan website Anda
             </h2>
-            <p className="mt-3 text-[14px] leading-relaxed text-slate-400">
+            <p className="mt-3 text-[14px] leading-relaxed text-[#6B7280]">
               Harga setup sekali bayar, sudah termasuk aktivasi, SSL, dan penyambungan
               domain. Tidak ada biaya tersembunyi — Anda bisa upgrade kapan saja.
             </p>
           </div>
           <a
             href="#domain"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-800/80 bg-white/[0.03] px-4 py-2.5 text-[12.5px] font-semibold text-slate-200 transition hover:border-white/25 hover:bg-white/[0.07]"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-2.5 text-[12.5px] font-semibold text-[#374151] transition hover:border-[#E5E7EB] hover:bg-[#F3F4F6]"
           >
             Sudah tahu paketnya? Lanjut ke domain
             <ArrowUpRight className="h-3.5 w-3.5" />
@@ -154,19 +154,19 @@ export default function PricingSection() {
         {/* Add-on opsional: Payment Gateway & QRIS Otomatis (Step 1) */}
         <div
           id="addon-pembayaran"
-          className="mt-5 scroll-mt-24 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3 sm:p-4"
+          className="mt-5 scroll-mt-24 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 sm:p-4"
         >
           <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 px-1">
-            <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-slate-400">
+            <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#6B7280]">
               Add-on opsional · tidak wajib
             </p>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-[#6B7280]">
               {plan.name}
               {includePaymentGateway ? ' + add-on QRIS' : ' tanpa add-on'}
-              <span className="mx-1.5 text-slate-600">=</span>
+              <span className="mx-1.5 text-[#9CA3AF]">=</span>
               <span
                 data-pricing-live-total
-                className={`font-extrabold ${includePaymentGateway ? 'text-emerald-300' : 'text-white'}`}
+                className={`font-extrabold ${includePaymentGateway ? 'text-[#0B1F3F]' : 'text-[#0B1F3F]'}`}
               >
                 {liveTotal}
               </span>
@@ -175,17 +175,17 @@ export default function PricingSection() {
 
           <PaymentGatewayToggle className="mt-2.5" />
 
-          <p className="mt-2.5 px-1 text-[10.5px] leading-snug text-slate-500">
+          <p className="mt-2.5 px-1 text-[10.5px] leading-snug text-[#6B7280]">
             {PAYMENT_ADDON.footnote} Tanpa add-on, seluruh paket sudah termasuk checkout via WhatsApp
             dengan konfirmasi pembayaran manual oleh tim FRWeb.
           </p>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3 text-[11.5px] text-slate-400">
+        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3 text-[11.5px] text-[#6B7280]">
           {['Invoice resmi & pembayaran transfer/QRIS', 'Garansi revisi konten 7 hari', 'Domain & hosting atas nama Anda'].map(
             (item) => (
               <span key={item} className="inline-flex items-center gap-1.5">
-                <Check className="h-3.5 w-3.5 text-emerald-300" strokeWidth={3} />
+                <Check className="h-3.5 w-3.5 text-[#0B1F3F]" strokeWidth={3} />
                 {item}
               </span>
             ),

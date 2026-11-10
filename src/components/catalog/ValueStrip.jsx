@@ -19,7 +19,7 @@ export default function ValueStrip() {
                 <Icon className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-[13px] font-semibold text-[#18181B]">{title}</p>
+                <p className="text-[13px] font-semibold text-[#0B1F3F]">{title}</p>
                 <p className="mt-0.5 text-[12px] leading-snug text-[#6B7280]">{desc}</p>
               </div>
             </div>

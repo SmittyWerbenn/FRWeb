@@ -49,8 +49,8 @@ export const ORDER_STEPS = [
 const PILL_SURFACE = {
   done: 'border-[#D1D5DB] bg-[#F3F4F6] text-[#374151] hover:border-[#9CA3AF]',
   active:
-    'border-[#18181B] bg-[#18181B] text-white',
-  idle: 'border-[#E5E7EB] bg-white text-[#6B7280] hover:border-[#D1D5DB] hover:text-[#18181B]',
+    'border-[#0B1F3F] bg-[#0B1F3F] text-white',
+  idle: 'border-[#E5E7EB] bg-white text-[#6B7280] hover:border-[#D1D5DB] hover:text-[#0B1F3F]',
 }
 
 export default function Stepper({ className = '' }) {
@@ -92,7 +92,7 @@ export default function Stepper({ className = '' }) {
                   <span
                     className={`relative grid h-5 w-5 shrink-0 place-items-center rounded-full ${
                       isDone
-                        ? 'bg-[#18181B] text-white'
+                        ? 'bg-[#0B1F3F] text-white'
                         : isActive
                           ? 'bg-white/15 text-white'
                           : 'bg-[#F3F4F6] text-[#6B7280]'
@@ -125,7 +125,7 @@ export default function Stepper({ className = '' }) {
         })}
 
         <li className="ml-auto hidden shrink-0 items-center gap-1.5 pl-3 lg:flex">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#18181B]" />
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#0B1F3F]" />
           <span className="font-mono text-[10px] font-semibold tabular-nums text-[#6B7280]">
             {completed}/{ORDER_STEPS.length} siap
           </span>
@@ -135,7 +135,7 @@ export default function Stepper({ className = '' }) {
       <div className="mt-3 flex items-center gap-3">
         <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-[#E5E7EB]">
           <div
-            className="h-full rounded-full bg-[#18181B] transition-all duration-500"
+            className="h-full rounded-full bg-[#0B1F3F] transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>

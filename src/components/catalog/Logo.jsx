@@ -8,7 +8,7 @@ export default function Logo({ compact = false, onNavigate, tone = 'dark' }) {
       aria-label="FRWeb — kembali ke atas"
     >
       {light ? (
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#18181B] text-[13px] font-bold tracking-tight text-white">
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#0B1F3F] text-[13px] font-bold tracking-tight text-white">
           FR
         </span>
       ) : (
@@ -24,7 +24,7 @@ export default function Logo({ compact = false, onNavigate, tone = 'dark' }) {
         <span className="flex flex-col leading-none">
           <span
             className={`text-[15px] tracking-tight ${
-              light ? 'font-semibold text-[#18181B]' : 'font-extrabold text-white'
+              light ? 'font-semibold text-[#0B1F3F]' : 'font-extrabold text-white'
             }`}
           >
             FR{light ? 'Web' : <span className="text-indigo-400">Web</span>}

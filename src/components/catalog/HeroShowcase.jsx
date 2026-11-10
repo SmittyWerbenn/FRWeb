@@ -136,8 +136,8 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
                 aria-label={`Tampilkan pratinjau ${tpl.name} di hero`}
                 className={`group relative flex shrink-0 items-center gap-1.5 overflow-hidden rounded-full border px-3 py-1.5 text-[12px] font-medium transition duration-300 ${
                   isActive
-                    ? 'border-[#18181B] bg-[#18181B] text-white'
-                    : 'border-[#E5E7EB] bg-white text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#18181B]'
+                    ? 'border-[#0B1F3F] bg-[#0B1F3F] text-white'
+                    : 'border-[#E5E7EB] bg-white text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#0B1F3F]'
                 }`}
               >
                 <span aria-hidden="true" className="grid h-3.5 w-3.5 place-items-center">
@@ -165,8 +165,8 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
           title={autoPlay ? 'Jeda rotasi otomatis' : 'Mulai rotasi otomatis'}
           className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border transition ${
             autoPlay
-              ? 'border-[#18181B] bg-[#18181B] text-white'
-              : 'border-[#E5E7EB] bg-white text-[#6B7280] hover:text-[#18181B]'
+              ? 'border-[#0B1F3F] bg-[#0B1F3F] text-white'
+              : 'border-[#E5E7EB] bg-white text-[#6B7280] hover:text-[#0B1F3F]'
           }`}
         >
           {autoPlay ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
@@ -175,12 +175,12 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
 
       <div className="relative">
         {/* Floating badge atas: status provisioning */}
-        <div className="absolute -top-3.5 right-2 z-30 hidden items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3 py-1.5 shadow-[0_8px_24px_-12px_rgba(24,24,27,0.18)] sm:flex">
+        <div className="absolute -top-3.5 right-2 z-30 hidden items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3 py-1.5 shadow-[0_8px_24px_-12px_rgba(11,31,63,0.18)] sm:flex">
           <span className="relative grid h-3.5 w-3.5 shrink-0 place-items-center">
-            <span aria-hidden="true" className="absolute inset-0 animate-pulse rounded-full bg-[#18181B]/20" />
-            <CheckCircle2 className="relative h-3.5 w-3.5 text-[#18181B]" />
+            <span aria-hidden="true" className="absolute inset-0 animate-pulse rounded-full bg-[#0B1F3F]/20" />
+            <CheckCircle2 className="relative h-3.5 w-3.5 text-[#0B1F3F]" />
           </span>
-          <p className="text-[11px] font-semibold tracking-wide text-[#18181B]">
+          <p className="text-[11px] font-semibold tracking-wide text-[#0B1F3F]">
             Auto-provisioning: Complete
           </p>
           <span aria-hidden="true" className="h-1 w-1 rounded-full bg-[#9CA3AF]" />
@@ -188,7 +188,7 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
         </div>
 
         {/* Frame browser mini */}
-        <div className="relative overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_24px_60px_-30px_rgba(24,24,27,0.18)]">
+        <div className="relative overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_24px_60px_-30px_rgba(11,31,63,0.18)]">
           <div className="flex items-center gap-2 border-b border-[#E5E7EB] bg-[#F3F4F6] px-3 py-2.5">
             <div className="flex shrink-0 items-center gap-1.5" aria-hidden="true">
               <span className="h-2.5 w-2.5 rounded-full bg-[#D1D5DB]" />
@@ -203,12 +203,12 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
               <ShieldCheck className="h-3 w-3 shrink-0 text-[#6B7280]" />
               <p data-hero-address className="truncate text-[11px] font-medium text-[#6B7280]">
                 https://demo.frcloud.id
-                <span className="font-semibold text-[#18181B]">/{active.id}</span>
+                <span className="font-semibold text-[#0B1F3F]">/{active.id}</span>
               </p>
             </div>
 
             <span className="hidden shrink-0 items-center gap-1 rounded-full border border-[#E5E7EB] bg-white px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#374151] sm:flex">
-              <span aria-hidden="true" className="h-1 w-1 animate-pulse rounded-full bg-[#18181B]" />
+              <span aria-hidden="true" className="h-1 w-1 animate-pulse rounded-full bg-[#0B1F3F]" />
               live
             </span>
           </div>
@@ -253,16 +253,16 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
         </div>
 
         {/* Floating badge bawah kiri: estimasi go-live */}
-        <div className="absolute -bottom-6 left-1 z-30 hidden items-center gap-2.5 rounded-2xl border border-[#E5E7EB] bg-white px-3 py-2.5 shadow-[0_8px_24px_-12px_rgba(24,24,27,0.18)] sm:-left-3 sm:flex">
+        <div className="absolute -bottom-6 left-1 z-30 hidden items-center gap-2.5 rounded-2xl border border-[#E5E7EB] bg-white px-3 py-2.5 shadow-[0_8px_24px_-12px_rgba(11,31,63,0.18)] sm:-left-3 sm:flex">
           <span className="grid h-8 w-8 place-items-center rounded-lg border border-[#E5E7EB] bg-[#F3F4F6] text-[#374151]">
             <Clock className="h-4 w-4" />
           </span>
           <div>
-            <p className="text-[12px] font-semibold text-[#18181B]">Estimasi Go-Live: ~30 Menit</p>
+            <p className="text-[12px] font-semibold text-[#0B1F3F]">Estimasi Go-Live: ~30 Menit</p>
             <p className="text-[11px] text-[#6B7280]">DNS &amp; SSL Ready</p>
           </div>
           <span className="ml-1 flex items-center gap-1 rounded-full border border-[#E5E7EB] bg-[#F3F4F6] px-2 py-0.5 text-[10px] font-semibold text-[#374151]">
-            <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#18181B]" />
+            <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#0B1F3F]" />
             READY
           </span>
         </div>
@@ -271,7 +271,7 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
         <button
           type="button"
           onClick={() => onOpenFullscreen?.(active)}
-          className="group absolute -bottom-6 right-1 z-30 inline-flex items-center gap-1.5 rounded-full bg-[#18181B] px-3 py-2 text-[11.5px] font-semibold text-white shadow-[0_8px_24px_-12px_rgba(24,24,27,0.4)] transition hover:-translate-y-0.5 hover:bg-[#27272A] sm:right-0 sm:px-3.5"
+          className="group absolute -bottom-6 right-1 z-30 inline-flex items-center gap-1.5 rounded-full bg-[#0B1F3F] px-3 py-2 text-[11.5px] font-semibold text-white shadow-[0_8px_24px_-12px_rgba(11,31,63,0.4)] transition hover:-translate-y-0.5 hover:bg-[#17315F] sm:right-0 sm:px-3.5"
         >
           <Maximize2 className="h-3.5 w-3.5" />
           Buka Preview Penuh
