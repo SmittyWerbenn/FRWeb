@@ -119,11 +119,6 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
       onFocusCapture={() => setHovering(true)}
       onBlurCapture={() => setHovering(false)}
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-gradient-to-br from-indigo-500/20 via-violet-500/10 to-emerald-400/15 blur-2xl"
-      />
-
       {/* Pill selector antar template + kontrol auto-play */}
       <div className="relative z-20 mb-3 flex w-full min-w-0 items-center gap-2">
         <div className="no-scrollbar -mx-1 flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto px-1 py-1">
@@ -139,19 +134,11 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
                 onClick={() => selectTemplate(tplIndex)}
                 aria-pressed={isActive}
                 aria-label={`Tampilkan pratinjau ${tpl.name} di hero`}
-                className={`group relative flex shrink-0 items-center gap-1.5 overflow-hidden rounded-full border px-2.5 py-1.5 text-[11px] font-semibold transition duration-300 ${
+                className={`group relative flex shrink-0 items-center gap-1.5 overflow-hidden rounded-full border px-3 py-1.5 text-[12px] font-medium transition duration-300 ${
                   isActive
-                    ? 'border-white/20 bg-white/10 text-white'
-                    : 'border-slate-800/80 bg-white/[0.03] text-slate-400 hover:border-indigo-400/30 hover:bg-white/[0.06] hover:text-slate-200'
+                    ? 'border-[#18181B] bg-[#18181B] text-white'
+                    : 'border-[#E5E7EB] bg-white text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#18181B]'
                 }`}
-                style={
-                  isActive
-                    ? {
-                        borderColor: `${tpl.accentColor ?? '#818cf8'}80`,
-                        boxShadow: `0 10px 28px -16px ${tpl.accentColor ?? '#818cf8'}`,
-                      }
-                    : undefined
-                }
               >
                 <span aria-hidden="true" className="grid h-3.5 w-3.5 place-items-center">
                   <PillIcon className="h-3.5 w-3.5" />
@@ -161,7 +148,7 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
                   <span
                     aria-hidden="true"
                     key={`${tpl.id}-${index}`}
-                    className="animate-rotate-progress absolute inset-x-0 bottom-0 h-[2px] origin-left bg-gradient-to-r from-indigo-400 via-violet-300 to-emerald-300"
+                    className="animate-rotate-progress absolute inset-x-0 bottom-0 h-[2px] origin-left bg-white/70"
                     style={{ animationPlayState: hovering || !autoPlay ? 'paused' : 'running' }}
                   />
                 ) : null}
@@ -178,8 +165,8 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
           title={autoPlay ? 'Jeda rotasi otomatis' : 'Mulai rotasi otomatis'}
           className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border transition ${
             autoPlay
-              ? 'border-indigo-400/40 bg-indigo-500/15 text-indigo-200'
-              : 'border-slate-800/80 bg-white/[0.03] text-slate-500 hover:text-slate-300'
+              ? 'border-[#18181B] bg-[#18181B] text-white'
+              : 'border-[#E5E7EB] bg-white text-[#6B7280] hover:text-[#18181B]'
           }`}
         >
           {autoPlay ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
@@ -188,40 +175,40 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
 
       <div className="relative">
         {/* Floating badge atas: status provisioning */}
-        <div className="absolute -top-3.5 right-2 z-30 hidden items-center gap-1.5 rounded-full border border-emerald-400/30 bg-[#07130d]/95 px-2.5 py-1.5 shadow-[0_18px_40px_-24px_rgba(16,185,129,0.9)] backdrop-blur-md sm:flex">
+        <div className="absolute -top-3.5 right-2 z-30 hidden items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3 py-1.5 shadow-[0_8px_24px_-12px_rgba(24,24,27,0.18)] sm:flex">
           <span className="relative grid h-3.5 w-3.5 shrink-0 place-items-center">
-            <span aria-hidden="true" className="absolute inset-0 animate-pulse rounded-full bg-emerald-400/40" />
-            <CheckCircle2 className="relative h-3.5 w-3.5 text-emerald-400" />
+            <span aria-hidden="true" className="absolute inset-0 animate-pulse rounded-full bg-[#18181B]/20" />
+            <CheckCircle2 className="relative h-3.5 w-3.5 text-[#18181B]" />
           </span>
-          <p className="text-[9.5px] font-bold tracking-wide text-emerald-200">
+          <p className="text-[11px] font-semibold tracking-wide text-[#18181B]">
             Auto-provisioning: Complete
           </p>
-          <span aria-hidden="true" className="h-1 w-1 rounded-full bg-emerald-400/60" />
-          <p className="text-[9.5px] font-semibold text-emerald-300/85">Ready in 30 Min</p>
+          <span aria-hidden="true" className="h-1 w-1 rounded-full bg-[#9CA3AF]" />
+          <p className="text-[11px] font-medium text-[#6B7280]">Ready in 30 Min</p>
         </div>
 
         {/* Frame browser mini */}
-        <div className="relative overflow-hidden rounded-2xl border border-slate-700/70 bg-[#0b1120] shadow-[0_40px_120px_-45px_rgba(2,6,23,0.95)]">
-          <div className="flex items-center gap-2 border-b border-slate-800/80 bg-[#0e1526] px-3 py-2.5">
+        <div className="relative overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_24px_60px_-30px_rgba(24,24,27,0.18)]">
+          <div className="flex items-center gap-2 border-b border-[#E5E7EB] bg-[#F3F4F6] px-3 py-2.5">
             <div className="flex shrink-0 items-center gap-1.5" aria-hidden="true">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-              <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-              <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#D1D5DB]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#D1D5DB]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#D1D5DB]" />
             </div>
 
             <div
-              className="ml-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-md border border-slate-700/60 bg-[#080d18] px-2 py-1"
+              className="ml-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-md border border-[#E5E7EB] bg-white px-2 py-1"
               title="Pratinjau sandbox — alamat demo, bukan URL publik"
             >
-              <ShieldCheck className="h-3 w-3 shrink-0 text-emerald-400" />
-              <p data-hero-address className="truncate text-[10px] font-medium text-slate-500">
+              <ShieldCheck className="h-3 w-3 shrink-0 text-[#6B7280]" />
+              <p data-hero-address className="truncate text-[11px] font-medium text-[#6B7280]">
                 https://demo.frcloud.id
-                <span className="font-semibold text-indigo-300">/{active.id}</span>
+                <span className="font-semibold text-[#18181B]">/{active.id}</span>
               </p>
             </div>
 
-            <span className="hidden shrink-0 items-center gap-1 rounded-full bg-indigo-500/15 px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-[0.12em] text-indigo-300 sm:flex">
-              <span aria-hidden="true" className="h-1 w-1 animate-pulse rounded-full bg-indigo-400" />
+            <span className="hidden shrink-0 items-center gap-1 rounded-full border border-[#E5E7EB] bg-white px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#374151] sm:flex">
+              <span aria-hidden="true" className="h-1 w-1 animate-pulse rounded-full bg-[#18181B]" />
               live
             </span>
           </div>
@@ -245,13 +232,13 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
             )}
 
             <div
-              className={`pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2.5 bg-[#080d18] transition-opacity duration-300 ${
+              className={`pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2.5 bg-[#F9FAFB] transition-opacity duration-300 ${
                 isLoaded ? 'opacity-0' : 'opacity-100'
               }`}
             >
-              <Loader2 className="h-5 w-5 animate-spin text-indigo-300" />
-              <p className="text-[11px] font-semibold text-slate-300">Memuat {label}…</p>
-              <p className="max-w-[260px] px-4 text-center text-[10px] leading-relaxed text-slate-500">
+              <Loader2 className="h-5 w-5 animate-spin text-[#6B7280]" />
+              <p className="text-[12px] font-semibold text-[#374151]">Memuat {label}…</p>
+              <p className="max-w-[260px] px-4 text-center text-[11px] leading-relaxed text-[#6B7280]">
                 {isSlow
                   ? 'Aset CDN lambat. Buka demo penuh untuk melihat template utuh.'
                   : 'Menyiapkan pratinjau live di dalam sandbox'}
@@ -260,22 +247,22 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
 
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-14 bg-gradient-to-t from-[#080d18]/70 to-transparent"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-14 bg-gradient-to-t from-white/60 to-transparent"
             />
           </div>
         </div>
 
         {/* Floating badge bawah kiri: estimasi go-live */}
-        <div className="absolute -bottom-6 left-1 z-30 hidden items-center gap-2.5 rounded-xl border border-slate-800/80 bg-[#0b1120]/95 px-3 py-2.5 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.95)] backdrop-blur-md sm:-left-3 sm:flex">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-500/15 text-indigo-300">
+        <div className="absolute -bottom-6 left-1 z-30 hidden items-center gap-2.5 rounded-2xl border border-[#E5E7EB] bg-white px-3 py-2.5 shadow-[0_8px_24px_-12px_rgba(24,24,27,0.18)] sm:-left-3 sm:flex">
+          <span className="grid h-8 w-8 place-items-center rounded-lg border border-[#E5E7EB] bg-[#F3F4F6] text-[#374151]">
             <Clock className="h-4 w-4" />
           </span>
           <div>
-            <p className="text-[11px] font-bold text-white">Estimasi Go-Live: ~30 Menit</p>
-            <p className="text-[10px] text-slate-400">DNS &amp; SSL Ready</p>
+            <p className="text-[12px] font-semibold text-[#18181B]">Estimasi Go-Live: ~30 Menit</p>
+            <p className="text-[11px] text-[#6B7280]">DNS &amp; SSL Ready</p>
           </div>
-          <span className="ml-1 flex items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[9px] font-bold text-emerald-300">
-            <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+          <span className="ml-1 flex items-center gap-1 rounded-full border border-[#E5E7EB] bg-[#F3F4F6] px-2 py-0.5 text-[10px] font-semibold text-[#374151]">
+            <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#18181B]" />
             READY
           </span>
         </div>
@@ -284,7 +271,7 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
         <button
           type="button"
           onClick={() => onOpenFullscreen?.(active)}
-          className="group absolute -bottom-6 right-1 z-30 inline-flex items-center gap-1.5 rounded-xl border border-indigo-400/40 bg-indigo-500/90 px-2.5 py-2 text-[10.5px] font-bold text-white shadow-[0_20px_45px_-22px_rgba(99,102,241,0.95)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-indigo-500 sm:right-0 sm:px-3"
+          className="group absolute -bottom-6 right-1 z-30 inline-flex items-center gap-1.5 rounded-full bg-[#18181B] px-3 py-2 text-[11.5px] font-semibold text-white shadow-[0_8px_24px_-12px_rgba(24,24,27,0.4)] transition hover:-translate-y-0.5 hover:bg-[#27272A] sm:right-0 sm:px-3.5"
         >
           <Maximize2 className="h-3.5 w-3.5" />
           Buka Preview Penuh
@@ -292,10 +279,10 @@ export default function HeroShowcase({ templates = [], onOpenFullscreen, classNa
         </button>
       </div>
 
-      <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[10px] text-slate-500 sm:text-[10.5px]">
-        <ActiveIcon className="h-3 w-3 shrink-0 text-indigo-300" aria-hidden="true" />
+      <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[11px] text-[#6B7280] sm:text-[11.5px]">
+        <ActiveIcon className="h-3 w-3 shrink-0 text-[#6B7280]" aria-hidden="true" />
         <span>
-          Pratinjau live <span className="font-semibold text-slate-400">{active.name}</span> — halaman
+          Pratinjau live <span className="font-semibold text-[#374151]">{active.name}</span> — halaman
           asli berjalan di dalam sandbox, bukan gambar.
         </span>
       </p>

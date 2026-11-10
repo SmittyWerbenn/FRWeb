@@ -10,17 +10,17 @@ const ITEMS = [
 
 export default function ValueStrip() {
   return (
-    <section className="relative px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-[#F9FAFB] px-4 pb-16 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
-        <div className="grid gap-px overflow-hidden rounded-2xl border border-slate-800/80 bg-white/[0.06] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-px overflow-hidden rounded-2xl border border-[#E5E7EB] bg-[#E5E7EB] sm:grid-cols-2 lg:grid-cols-4">
           {ITEMS.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="flex items-start gap-3 bg-[#0b1120] px-4 py-4">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-indigo-400/10 text-indigo-300 ring-1 ring-inset ring-indigo-400/20">
+            <div key={title} className="flex items-start gap-3 bg-white px-4 py-4">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#E5E7EB] bg-[#F3F4F6] text-[#374151]">
                 <Icon className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-[12.5px] font-bold text-white">{title}</p>
-                <p className="mt-0.5 text-[11px] leading-snug text-slate-500">{desc}</p>
+                <p className="text-[13px] font-semibold text-[#18181B]">{title}</p>
+                <p className="mt-0.5 text-[12px] leading-snug text-[#6B7280]">{desc}</p>
               </div>
             </div>
           ))}

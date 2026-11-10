@@ -43,8 +43,10 @@ function Site() {
       <div className="relative z-10">
         <Navbar />
         <main>
-          <Hero />
-          <ValueStrip />
+          <div className="bg-[#F9FAFB]">
+            <Hero />
+            <ValueStrip />
+          </div>
           <PricingSection />
           <DomainSection />
           <DesignModeSection

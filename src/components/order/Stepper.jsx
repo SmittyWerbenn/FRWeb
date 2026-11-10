@@ -47,10 +47,10 @@ export const ORDER_STEPS = [
  * elemen dekoratif dari section di belakangnya yang menembus pill.
  */
 const PILL_SURFACE = {
-  done: 'border-emerald-400/30 bg-[#07120f] text-emerald-200 hover:border-emerald-400/55 hover:bg-[#081813]',
+  done: 'border-[#D1D5DB] bg-[#F3F4F6] text-[#374151] hover:border-[#9CA3AF]',
   active:
-    'border-indigo-400/60 bg-[#0c1224] text-white shadow-[0_0_0_1px_rgba(99,102,241,0.18),0_0_26px_-8px_rgba(99,102,241,0.7)]',
-  idle: 'border-slate-800/80 bg-[#0b1120] text-slate-500 hover:border-slate-700 hover:text-slate-300',
+    'border-[#18181B] bg-[#18181B] text-white',
+  idle: 'border-[#E5E7EB] bg-white text-[#6B7280] hover:border-[#D1D5DB] hover:text-[#18181B]',
 }
 
 export default function Stepper({ className = '' }) {
@@ -77,7 +77,7 @@ export default function Stepper({ className = '' }) {
             <Fragment key={step.id}>
               {index > 0 && (
                 <li aria-hidden="true" className="hidden shrink-0 items-center sm:flex">
-                  <ChevronRight className="h-3 w-3 text-slate-600" strokeWidth={2.5} />
+                  <ChevronRight className="h-3 w-3 text-[#D1D5DB]" strokeWidth={2.5} />
                 </li>
               )}
 
@@ -92,10 +92,10 @@ export default function Stepper({ className = '' }) {
                   <span
                     className={`relative grid h-5 w-5 shrink-0 place-items-center rounded-full ${
                       isDone
-                        ? 'bg-emerald-400/20 text-emerald-300'
+                        ? 'bg-[#18181B] text-white'
                         : isActive
-                          ? 'bg-indigo-500/20 text-indigo-200'
-                          : 'bg-white/[0.04] text-slate-500'
+                          ? 'bg-white/15 text-white'
+                          : 'bg-[#F3F4F6] text-[#6B7280]'
                     }`}
                   >
                     {isDone ? (
@@ -106,7 +106,7 @@ export default function Stepper({ className = '' }) {
                     {isActive && (
                       <span
                         aria-hidden="true"
-                        className="absolute inset-0 animate-pulse-ring rounded-full ring-1 ring-indigo-400/60"
+                        className="absolute inset-0 animate-pulse-ring rounded-full ring-1 ring-white/50"
                       />
                     )}
                   </span>
@@ -125,21 +125,21 @@ export default function Stepper({ className = '' }) {
         })}
 
         <li className="ml-auto hidden shrink-0 items-center gap-1.5 pl-3 lg:flex">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-          <span className="font-mono text-[10px] font-semibold tabular-nums text-slate-400">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#18181B]" />
+          <span className="font-mono text-[10px] font-semibold tabular-nums text-[#6B7280]">
             {completed}/{ORDER_STEPS.length} siap
           </span>
         </li>
       </ol>
 
       <div className="mt-3 flex items-center gap-3">
-        <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+        <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-[#E5E7EB]">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-400 to-emerald-400 transition-all duration-500"
+            className="h-full rounded-full bg-[#18181B] transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <span className="shrink-0 font-mono text-[9.5px] font-semibold tabular-nums text-slate-500 lg:hidden">
+        <span className="shrink-0 font-mono text-[9.5px] font-semibold tabular-nums text-[#6B7280] lg:hidden">
           {completed}/{ORDER_STEPS.length}
         </span>
       </div>

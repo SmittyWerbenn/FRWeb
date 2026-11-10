@@ -40,28 +40,21 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="relative overflow-hidden px-4 pb-14 pt-10 sm:px-6 sm:pt-14 lg:px-8 lg:pb-20 lg:pt-16"
+      className="relative overflow-hidden bg-[#F9FAFB] px-4 pb-14 pt-10 text-[#18181B] sm:px-6 sm:pt-14 lg:px-8 lg:pb-20 lg:pt-16"
     >
-      {/* Ambient background glow */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-24 top-0 h-[420px] w-[420px] rounded-full bg-indigo-600/15 blur-[120px]" />
-        <div className="absolute right-0 top-24 h-[360px] w-[360px] rounded-full bg-violet-600/12 blur-[120px]" />
-        <div className="absolute bottom-0 left-1/3 h-[260px] w-[260px] rounded-full bg-emerald-500/8 blur-[110px]" />
-      </div>
-
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.04fr_0.96fr] lg:gap-12">
+      <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.04fr_0.96fr] lg:gap-14">
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-3 py-1.5 text-[11.5px] font-semibold text-indigo-200 backdrop-blur">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F3F4F6] px-3 py-1.5 text-[11.5px] font-medium text-[#374151]">
+            <Sparkles className="h-3.5 w-3.5 text-[#6B7280]" />
             Solusi website instan siap pakai untuk pemilik bisnis
           </div>
 
-          <h1 className="mt-5 text-[32px] font-extrabold leading-[1.1] tracking-tight text-white sm:text-[44px] lg:text-[52px]">
+          <h1 className="mt-5 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#18181B] sm:text-[44px] lg:text-[52px]">
             Go-Live Dalam{' '}
-            <span className="relative whitespace-nowrap bg-gradient-to-r from-indigo-300 via-violet-300 to-emerald-300 bg-clip-text text-transparent">
+            <span className="relative whitespace-nowrap">
               30 Menit
               <svg
-                className="absolute -bottom-1.5 left-0 h-2 w-full text-indigo-400/60"
+                className="absolute -bottom-1.5 left-0 h-2 w-full text-[#18181B]/25"
                 viewBox="0 0 300 12"
                 preserveAspectRatio="none"
                 aria-hidden="true"
@@ -78,7 +71,7 @@ export default function Hero() {
             : Pilih Paket, Tentukan Domain, lalu Pilih Template atau Custom Design.
           </h1>
 
-          <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-slate-400 sm:text-base">
+          <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[#6B7280] sm:text-base">
             Anda tidak perlu mengurus hosting, SSL, atau instalasi apa pun. Cukup pilih paket,
             tentukan nama domain, pilih desain sesuai industri — website resmi
             bisnis Anda langsung aktif dan bisa diakses pelanggan.
@@ -86,8 +79,8 @@ export default function Hero() {
 
           <ul className="mt-6 grid max-w-lg grid-cols-1 gap-2.5 sm:grid-cols-2">
             {VALUES.map((value) => (
-              <li key={value} className="flex items-start gap-2 text-[12.5px] text-slate-300">
-                <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-400/30">
+              <li key={value} className="flex items-start gap-2 text-[13px] text-[#4B5563]">
+                <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full border border-[#E5E7EB] bg-white text-[#475569]">
                   <Check className="h-2.5 w-2.5" strokeWidth={3} />
                 </span>
                 {value}
@@ -96,30 +89,30 @@ export default function Hero() {
           </ul>
 
           {/* Value proposition 2-in-1: satu paket, dua antarmuka */}
-          <div className="mt-6 flex max-w-xl items-start gap-3 rounded-2xl border border-emerald-400/25 bg-gradient-to-r from-emerald-400/[0.10] via-emerald-400/[0.04] to-transparent p-3.5">
-            <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300 ring-1 ring-inset ring-emerald-400/30">
+          <div className="mt-6 flex max-w-xl items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-white p-4">
+            <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-[#E5E7EB] bg-[#F3F4F6] text-[#374151]">
               <LayoutGrid className="h-4 w-4" />
             </span>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#6B7280]">
                 Sistem 2-in-1 di setiap paket
               </p>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-slate-200">
-                Setiap paket sudah mencakup <strong className="font-bold text-white">Web Customer</strong>{' '}
+              <p className="mt-1 text-[13px] leading-relaxed text-[#4B5563]">
+                Setiap paket sudah mencakup <strong className="font-semibold text-[#18181B]">Web Customer</strong>{' '}
                 (Landing Page &amp; Booking) +{' '}
-                <strong className="font-bold text-white">Dashboard Admin Pengelola</strong> (Pantau
+                <strong className="font-semibold text-[#18181B]">Dashboard Admin Pengelola</strong> (Pantau
                 Pesanan, Jadwal &amp; Transaksi).
               </p>
-              <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.05] px-2 py-1 text-[10px] font-semibold text-slate-200">
-                  <Globe className="h-2.5 w-2.5 text-emerald-300" />
+              <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-2 py-1 text-[11px] font-medium text-[#374151]">
+                  <Globe className="h-3 w-3 text-[#6B7280]" />
                   Customer View
                 </span>
-                <span aria-hidden="true" className="text-[10px] font-bold text-slate-500">
+                <span aria-hidden="true" className="text-[11px] font-semibold text-[#9CA3AF]">
                   +
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.05] px-2 py-1 text-[10px] font-semibold text-slate-200">
-                  <LayoutGrid className="h-2.5 w-2.5 text-emerald-300" />
+                <span className="inline-flex items-center gap-1 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-2 py-1 text-[11px] font-medium text-[#374151]">
+                  <LayoutGrid className="h-3 w-3 text-[#6B7280]" />
                   Admin View
                 </span>
               </div>
@@ -130,30 +123,26 @@ export default function Hero() {
             <button
               type="button"
               onClick={() => scrollToSection('paket')}
-              className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-6 py-3.5 text-sm font-bold text-white shadow-[0_18px_45px_-18px_rgba(99,102,241,0.9)] transition hover:brightness-110"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#18181B] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#27272A]"
             >
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 -z-10 animate-pulse bg-gradient-to-r from-indigo-400/0 via-white/10 to-violet-400/0"
-              />
               Mulai: Pilih Paket
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
             </button>
             <button
               type="button"
               onClick={() => scrollToSection('katalog')}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-800/80 bg-white/5 px-6 py-3.5 text-sm font-semibold text-slate-200 backdrop-blur-md transition hover:border-indigo-400/40 hover:bg-white/[0.08] hover:text-white"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-[#E5E7EB] bg-transparent px-6 py-3.5 text-sm font-semibold text-[#18181B] transition hover:bg-[#F3F4F6]"
             >
-              <Eye className="h-4 w-4 text-indigo-300" />
+              <Eye className="h-4 w-4 text-[#6B7280]" />
               Lihat Live Preview Template
             </button>
           </div>
 
-          <div className="mt-8 grid max-w-xl grid-cols-2 gap-x-6 gap-y-4 border-t border-slate-800/80 pt-6 sm:grid-cols-4">
+          <div className="mt-9 grid max-w-xl grid-cols-2 gap-x-6 gap-y-4 border-t border-[#E5E7EB] pt-6 sm:grid-cols-4">
             {STATS.map((stat) => (
               <div key={stat.label}>
-                <p className="text-[19px] font-extrabold leading-none text-white">{stat.value}</p>
-                <p className="mt-1.5 text-[10.5px] leading-tight text-slate-500">{stat.label}</p>
+                <p className="text-[22px] font-bold leading-none tracking-tight text-[#18181B]">{stat.value}</p>
+                <p className="mt-1.5 text-[11.5px] leading-tight text-[#6B7280]">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -161,10 +150,10 @@ export default function Hero() {
           <div className="mt-5 flex items-center gap-2">
             <div className="flex">
               {[0, 1, 2, 3, 4].map((index) => (
-                <Star key={index} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                <Star key={index} className="h-3.5 w-3.5 fill-[#18181B] text-[#18181B]" />
               ))}
             </div>
-            <span className="text-[11px] text-slate-400">4.9 dari 120+ pemilik bisnis</span>
+            <span className="text-[12px] text-[#6B7280]">4.9 dari 120+ pemilik bisnis</span>
           </div>
         </div>
 
@@ -174,17 +163,17 @@ export default function Hero() {
       </div>
 
       <div className="mx-auto mt-16 w-full max-w-7xl lg:mt-20">
-        <div className="relative z-10 rounded-2xl border border-slate-800/80 bg-[#0b1120] p-4 shadow-[0_30px_80px_-50px_rgba(0,0,0,0.9)] sm:p-5">
+        <div className="relative z-10 rounded-2xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
           <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-300">
+              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[#18181B]">
                 Alur Order
               </span>
-              <span className="hidden text-[11px] text-slate-500 sm:inline">
+              <span className="hidden text-[12px] text-[#6B7280] sm:inline">
                 klik langkah untuk langsung melompat ke form
               </span>
             </div>
-            <span className="rounded-full border border-slate-800/80 bg-[#080c14] px-2.5 py-1 text-[10.5px] font-semibold text-slate-400">
+            <span className="rounded-full border border-[#E5E7EB] bg-[#F3F4F6] px-2.5 py-1 text-[11px] font-medium text-[#374151]">
               {completedSteps} / 4 langkah siap
             </span>
           </div>
