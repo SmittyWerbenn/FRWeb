@@ -78,12 +78,12 @@ export default function DomainSection() {
   const preview = fullDomain(order.domainName, order.tld)
 
   const statusStyles = {
-    idle: 'border-[#E5E7EB] bg-[#F9FAFB] text-[#6B7280]',
+    idle: 'border-[#DDE5F3] bg-[#F5F8FD] text-[#64748B]',
     invalid: 'border-rose-400/40 bg-rose-400/[0.07] text-rose-600',
-    checking: 'border-[#0B1F3F] bg-[#F3F4F6] text-[#0B1F3F]',
-    available: 'border-[#0B1F3F] bg-[#F3F4F6] text-[#0B1F3F]',
+    checking: 'border-[#0B1F3F] bg-[#E8EEFA] text-[#0B1F3F]',
+    available: 'border-[#0B1F3F] bg-[#E8EEFA] text-[#0B1F3F]',
     taken: 'border-rose-400/45 bg-rose-400/[0.08] text-rose-600',
-    unknown: 'border-[#0B1F3F] bg-[#F3F4F6] text-[#0B1F3F]',
+    unknown: 'border-[#0B1F3F] bg-[#E8EEFA] text-[#0B1F3F]',
   }
 
   const StatusIcon =
@@ -96,26 +96,26 @@ export default function DomainSection() {
           : Globe
 
   return (
-    <section id="domain" className="relative scroll-mt-20 px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+    <section id="domain" className="relative border-y border-[#DDE5F3] bg-white scroll-mt-20 px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#0B1F3F]">Langkah 2</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#2F5BEA]">Langkah 2</span>
           <h2 className="mt-2.5 text-[26px] font-extrabold leading-tight tracking-tight text-[#0B1F3F] sm:text-[34px]">
             Tentukan nama domain bisnis Anda
           </h2>
-          <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-[#6B7280]">
+          <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-[#64748B]">
             Tulis nama brand tanpa ekstensi, lalu pilih TLD-nya. Sistem langsung mengecek
             ketersediaan dan menyiapkan penyambungan domain saat proses go-live.
           </p>
 
-          <div className="mt-6 rounded-2xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
-            <label htmlFor="domain-name" className="text-[11.5px] font-semibold text-[#4B5563]">
+          <div className="mt-6 rounded-2xl border border-[#DDE5F3] bg-white p-4 sm:p-5">
+            <label htmlFor="domain-name" className="text-[11.5px] font-semibold text-[#475569]">
               Nama domain impian
             </label>
 
             <div className="mt-2 flex flex-col gap-2 sm:flex-row">
               <div className="relative flex-1">
-                <Globe className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+                <Globe className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
                 <input
                   id="domain-name"
                   value={order.domainName}
@@ -124,11 +124,11 @@ export default function DomainSection() {
                   autoComplete="off"
                   spellCheck={false}
                   aria-describedby="domain-status"
-                  className="w-full rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] py-3 pl-10 pr-3 text-[14px] font-semibold text-[#0B1F3F] placeholder:font-normal placeholder:text-[#6B7280] focus:border-[#0B1F3F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3F]/10"
+                  className="w-full rounded-xl border border-[#DDE5F3] bg-[#F5F8FD] py-3 pl-10 pr-3 text-[14px] font-semibold text-[#0B1F3F] placeholder:font-normal placeholder:text-[#64748B] focus:border-[#0B1F3F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3F]/10"
                 />
               </div>
 
-              <div className="flex items-center gap-1 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-1">
+              <div className="flex items-center gap-1 rounded-xl border border-[#DDE5F3] bg-[#F5F8FD] p-1">
                 {TLD_OPTIONS.map((option) => {
                   const active = option.value === order.tld
                   return (
@@ -141,7 +141,7 @@ export default function DomainSection() {
                       className={`rounded-lg px-2.5 py-2 text-[12px] font-bold transition ${
                         active
                           ? 'bg-white text-[#0B1F3F] shadow-sm'
-                          : 'text-[#6B7280] hover:bg-[#F3F4F6] hover:text-[#0B1F3F]'
+                          : 'text-[#64748B] hover:bg-[#E8EEFA] hover:text-[#0B1F3F]'
                       }`}
                     >
                       {option.label}
@@ -152,13 +152,13 @@ export default function DomainSection() {
             </div>
 
             <div className="mt-2 flex items-start justify-between gap-3">
-              <p className="text-[11px] text-[#6B7280]">
+              <p className="text-[11px] text-[#64748B]">
                 Ekstensi:{' '}
-                <span className="font-semibold text-[#4B5563]">
+                <span className="font-semibold text-[#475569]">
                   {TLD_OPTIONS.find((option) => option.value === order.tld)?.note ?? '—'}
                 </span>
               </p>
-              <p className="truncate text-[11.5px] font-semibold text-[#4B5563]">
+              <p className="truncate text-[11.5px] font-semibold text-[#475569]">
                 {preview || 'namabisnis.com'}
               </p>
             </div>
@@ -181,7 +181,7 @@ export default function DomainSection() {
 
             {status.state === 'taken' && status.suggestions.length > 0 && (
               <div className="mt-3">
-                <p className="text-[10.5px] font-semibold uppercase tracking-wider text-[#6B7280]">
+                <p className="text-[10.5px] font-semibold uppercase tracking-wider text-[#64748B]">
                   Rekomendasi tersedia
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -197,7 +197,7 @@ export default function DomainSection() {
                         setTld(detected.value)
                         setDomainName(suggestion.slice(0, -detected.value.length))
                       }}
-                      className="rounded-lg border border-[#D1D5DB] bg-[#F3F4F6] px-2.5 py-1.5 text-[11.5px] font-semibold text-[#0B1F3F] transition hover:bg-[#F3F4F6]"
+                      className="rounded-lg border border-[#C5D0E4] bg-[#E8EEFA] px-2.5 py-1.5 text-[11.5px] font-semibold text-[#0B1F3F] transition hover:bg-[#E8EEFA]"
                     >
                       {suggestion}
                     </button>
@@ -212,53 +212,53 @@ export default function DomainSection() {
               disabled={status.state !== 'available' && status.state !== 'unknown'}
               className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-[13px] font-bold transition ${
                 status.state === 'available' || status.state === 'unknown'
-                  ? 'bg-[#0B1F3F] text-white  hover:bg-[#17315F]'
-                  : 'cursor-not-allowed border border-[#E5E7EB] bg-[#F9FAFB] text-[#6B7280]'
+                  ? 'bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] text-white  hover:brightness-125'
+                  : 'cursor-not-allowed border border-[#DDE5F3] bg-[#F5F8FD] text-[#64748B]'
               }`}
             >
               Lanjut: Pilih Desain & Tema
               <ArrowRight className="h-4 w-4" />
             </button>
-            <p className="mt-2 text-center text-[10.5px] text-[#6B7280]">
+            <p className="mt-2 text-center text-[10.5px] text-[#64748B]">
               Ketersediaan dicek real-time ke registry resmi (.com/.net: Verisign, .id/.co.id: PANDI).
               Verifikasi final tetap dilakukan tim kami saat aktivasi.
             </p>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5">
+        <div className="rounded-2xl border border-[#DDE5F3] bg-white p-5">
           <div className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#F3F4F6] text-[#0B1F3F] ring-1 ring-inset ring-[#D1D5DB]">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#E8EEFA] text-[#0B1F3F] ring-1 ring-inset ring-[#C5D0E4]">
               <ShieldCheck className="h-4 w-4" />
             </span>
             <div>
               <h3 className="text-[13.5px] font-bold text-[#0B1F3F]">Sudah termasuk dalam semua paket</h3>
-              <p className="text-[11px] text-[#6B7280]">Tanpa biaya tambahan di muka</p>
+              <p className="text-[11px] text-[#64748B]">Tanpa biaya tambahan di muka</p>
             </div>
           </div>
 
           <ul className="mt-4 space-y-2.5">
             {INCLUDED.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-[12px] leading-snug text-[#4B5563]">
+              <li key={item} className="flex items-start gap-2 text-[12px] leading-snug text-[#475569]">
                 <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0B1F3F]" strokeWidth={3} />
                 {item}
               </li>
             ))}
           </ul>
 
-          <div className="mt-5 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-3.5">
+          <div className="mt-5 rounded-xl border border-[#DDE5F3] bg-[#F5F8FD] p-3.5">
             <p className="flex items-center gap-1.5 text-[11px] font-bold text-[#0B1F3F]">
               <Sparkles className="h-3.5 w-3.5" />
               Sudah punya domain sendiri?
             </p>
-            <p className="mt-1.5 text-[11.5px] leading-relaxed text-[#6B7280]">
+            <p className="mt-1.5 text-[11.5px] leading-relaxed text-[#64748B]">
               Tidak masalah. Cukup siapkan akses DNS-nya, tim kami yang melakukan pointing ke
               website FRWeb tanpa downtime.
             </p>
           </div>
 
-          <div className="mt-4 border-t border-[#E5E7EB] pt-3.5">
-            <p className="text-[10.5px] uppercase tracking-wider text-[#6B7280]">Domain terpilih</p>
+          <div className="mt-4 border-t border-[#DDE5F3] pt-3.5">
+            <p className="text-[10.5px] uppercase tracking-wider text-[#64748B]">Domain terpilih</p>
             <p className="mt-1 truncate font-mono text-[13px] font-semibold text-[#0B1F3F]">
               {preview || '—'}
             </p>

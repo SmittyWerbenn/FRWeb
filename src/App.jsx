@@ -33,7 +33,7 @@ function Site() {
   }, [category, query])
 
   return (
-    <div className="relative min-h-screen bg-[#F9FAFB] text-[#0B1F3F] antialiased">
+    <div className="relative min-h-screen bg-[#F5F8FD] text-[#0B1F3F] antialiased">
       <div className="relative z-10">
         <Navbar />
         <main>

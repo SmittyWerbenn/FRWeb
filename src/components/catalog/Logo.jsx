@@ -8,7 +8,7 @@ export default function Logo({ compact = false, onNavigate, tone = 'dark' }) {
       aria-label="FRWeb — kembali ke atas"
     >
       {light ? (
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#0B1F3F] text-[13px] font-bold tracking-tight text-white">
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] text-[13px] font-bold tracking-tight text-white">
           FR
         </span>
       ) : (
@@ -31,7 +31,7 @@ export default function Logo({ compact = false, onNavigate, tone = 'dark' }) {
           </span>
           <span
             className={`mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] ${
-              light ? 'text-[#6B7280]' : 'text-slate-500'
+              light ? 'text-[#64748B]' : 'text-slate-500'
             }`}
           >
             from FRCloud

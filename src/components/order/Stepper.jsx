@@ -47,10 +47,10 @@ export const ORDER_STEPS = [
  * elemen dekoratif dari section di belakangnya yang menembus pill.
  */
 const PILL_SURFACE = {
-  done: 'border-[#D1D5DB] bg-[#F3F4F6] text-[#374151] hover:border-[#9CA3AF]',
+  done: 'border-[#C5D0E4] bg-[#E0E9FD] text-[#2F5BEA] hover:border-[#94A3B8]',
   active:
-    'border-[#0B1F3F] bg-[#0B1F3F] text-white',
-  idle: 'border-[#E5E7EB] bg-white text-[#6B7280] hover:border-[#D1D5DB] hover:text-[#0B1F3F]',
+    'border-[#0B1F3F] bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] text-white',
+  idle: 'border-[#DDE5F3] bg-white text-[#64748B] hover:border-[#C5D0E4] hover:text-[#0B1F3F]',
 }
 
 export default function Stepper({ className = '' }) {
@@ -77,7 +77,7 @@ export default function Stepper({ className = '' }) {
             <Fragment key={step.id}>
               {index > 0 && (
                 <li aria-hidden="true" className="hidden shrink-0 items-center sm:flex">
-                  <ChevronRight className="h-3 w-3 text-[#D1D5DB]" strokeWidth={2.5} />
+                  <ChevronRight className="h-3 w-3 text-[#C5D0E4]" strokeWidth={2.5} />
                 </li>
               )}
 
@@ -92,10 +92,10 @@ export default function Stepper({ className = '' }) {
                   <span
                     className={`relative grid h-5 w-5 shrink-0 place-items-center rounded-full ${
                       isDone
-                        ? 'bg-[#0B1F3F] text-white'
+                        ? 'bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] text-white'
                         : isActive
                           ? 'bg-white/15 text-white'
-                          : 'bg-[#F3F4F6] text-[#6B7280]'
+                          : 'bg-[#E8EEFA] text-[#64748B]'
                     }`}
                   >
                     {isDone ? (
@@ -125,21 +125,21 @@ export default function Stepper({ className = '' }) {
         })}
 
         <li className="ml-auto hidden shrink-0 items-center gap-1.5 pl-3 lg:flex">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#0B1F3F]" />
-          <span className="font-mono text-[10px] font-semibold tabular-nums text-[#6B7280]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF]" />
+          <span className="font-mono text-[10px] font-semibold tabular-nums text-[#64748B]">
             {completed}/{ORDER_STEPS.length} siap
           </span>
         </li>
       </ol>
 
       <div className="mt-3 flex items-center gap-3">
-        <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-[#E5E7EB]">
+        <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-[#DDE5F3]">
           <div
-            className="h-full rounded-full bg-[#0B1F3F] transition-all duration-500"
+            className="h-full rounded-full bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <span className="shrink-0 font-mono text-[9.5px] font-semibold tabular-nums text-[#6B7280] lg:hidden">
+        <span className="shrink-0 font-mono text-[9.5px] font-semibold tabular-nums text-[#64748B] lg:hidden">
           {completed}/{ORDER_STEPS.length}
         </span>
       </div>

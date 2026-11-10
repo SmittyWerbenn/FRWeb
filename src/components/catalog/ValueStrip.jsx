@@ -10,17 +10,17 @@ const ITEMS = [
 
 export default function ValueStrip() {
   return (
-    <section className="relative bg-[#F9FAFB] px-4 pb-16 sm:px-6 lg:px-8">
+    <section className="relative bg-[#F5F8FD] px-4 pb-16 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
-        <div className="grid gap-px overflow-hidden rounded-2xl border border-[#E5E7EB] bg-[#E5E7EB] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-px overflow-hidden rounded-2xl border border-[#DDE5F3] bg-[#DDE5F3] sm:grid-cols-2 lg:grid-cols-4">
           {ITEMS.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex items-start gap-3 bg-white px-4 py-4">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#E5E7EB] bg-[#F3F4F6] text-[#374151]">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#DDE5F3] bg-[#E0E9FD] text-[#2F5BEA]">
                 <Icon className="h-4 w-4" />
               </span>
               <div>
                 <p className="text-[13px] font-semibold text-[#0B1F3F]">{title}</p>
-                <p className="mt-0.5 text-[12px] leading-snug text-[#6B7280]">{desc}</p>
+                <p className="mt-0.5 text-[12px] leading-snug text-[#64748B]">{desc}</p>
               </div>
             </div>
           ))}

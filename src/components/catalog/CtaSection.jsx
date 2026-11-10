@@ -20,9 +20,9 @@ export default function CtaSection() {
   return (
     <section className="relative px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
       <div className="mx-auto w-full max-w-5xl">
-        <div className="relative overflow-hidden rounded-3xl bg-[#0B1F3F] px-5 py-10 sm:px-9 sm:py-12">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-white/10 blur-[90px]" />
-          <div className="pointer-events-none absolute -bottom-28 -left-20 h-64 w-64 rounded-full bg-white/5 blur-[90px]" />
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] px-5 py-10 sm:px-9 sm:py-12">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#3B82F6]/40 blur-[90px]" />
+          <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#60A5FA]/25 blur-[90px]" />
           <div className="pointer-events-none absolute left-1/2 top-0 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
 
           <div className="relative mx-auto flex max-w-2xl flex-col items-center text-center">
@@ -55,7 +55,7 @@ export default function CtaSection() {
                   href={waOrderLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-[13px] font-semibold text-[#0B1F3F] transition hover:bg-[#F3F4F6]"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-[13px] font-semibold text-[#0B1F3F] transition hover:bg-[#E8EEFA]"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Proses &amp; Go-Live via WhatsApp
@@ -64,7 +64,7 @@ export default function CtaSection() {
                 <button
                   type="button"
                   onClick={() => scrollToSection('order')}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-[13px] font-semibold text-[#0B1F3F] transition hover:bg-[#F3F4F6]"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-[13px] font-semibold text-[#0B1F3F] transition hover:bg-[#E8EEFA]"
                 >
                   Proses &amp; Go-Live via WhatsApp
                   <ArrowRight className="h-4 w-4" />

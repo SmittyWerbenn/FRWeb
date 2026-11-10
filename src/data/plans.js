@@ -13,7 +13,7 @@ export const PLANS = [
     priceSuffix: '/ setup awal',
     tagline: 'Website profil bisnis siap tayang',
     bestFor: 'Company profile standar, portofolio jasa lokal, landing page UMKM.',
-    accent: '#38bdf8',
+    accent: '#60A5FA',
     recommended: false,
     specs: [
       'Termasuk Web Customer (landing + booking) + Dashboard Admin pengelola',
@@ -32,7 +32,7 @@ export const PLANS = [
     priceSuffix: '/ setup awal',
     tagline: 'Paling laris untuk bisnis yang mulai ramai',
     bestFor: 'Website dengan trafik ramai, booking slot jam, toko online dinamis, transaksi harian.',
-    accent: '#34d399',
+    accent: '#2F5BEA',
     recommended: true,
     badge: 'BEST VALUE',
     specs: [
@@ -53,7 +53,7 @@ export const PLANS = [
     priceSuffix: '/ setup awal',
     tagline: 'Untuk operasional multi-cabang tanpa lag',
     bestFor: 'Portal grosir, multi-cabang, reservasi ribuan user harian, traffic tinggi.',
-    accent: '#a78bfa',
+    accent: '#1E40AF',
     recommended: false,
     specs: [
       'Termasuk Web Customer (landing + booking) + Dashboard Admin pengelola',
@@ -73,7 +73,7 @@ export const PLANS = [
     priceSuffix: '',
     tagline: 'Arsitektur khusus sesuai proses bisnis',
     bestFor: 'Multi-tenant API, ERP/POS kustom, integrasi sistem backend perusahaan.',
-    accent: '#fbbf24',
+    accent: '#0B1F3F',
     recommended: false,
     specs: [
       'Web Customer + Dashboard Admin dirancang sesuai proses bisnis',

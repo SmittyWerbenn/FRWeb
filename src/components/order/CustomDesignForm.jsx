@@ -6,7 +6,7 @@ function StatusDot({ done }) {
   return (
     <span
       className={`grid h-4 w-4 shrink-0 place-items-center rounded-full ${
-        done ? 'bg-[#0B1F3F] text-white' : 'bg-[#F3F4F6] text-[#6B7280]'
+        done ? 'bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] text-white' : 'bg-[#E8EEFA] text-[#64748B]'
       }`}
       aria-hidden="true"
     >
@@ -34,14 +34,14 @@ export default function CustomDesignForm() {
   return (
     <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
       {/* ── Form brief ─────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-5 sm:p-6">
+      <div className="rounded-2xl border border-[#DDE5F3] bg-[#F5F8FD] p-5 sm:p-6">
         <div className="flex items-start gap-3">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#F3F4F6] text-[#0B1F3F]">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#E8EEFA] text-[#0B1F3F]">
             <Sparkles className="h-4.5 w-4.5" />
           </span>
           <div>
             <h3 className="text-[15px] font-bold text-[#0B1F3F]">Brief singkat kebutuhan custom</h3>
-            <p className="mt-1 text-[12.5px] leading-relaxed text-[#6B7280]">
+            <p className="mt-1 text-[12.5px] leading-relaxed text-[#64748B]">
               Kami tidak akan memakai template katalog. Tim desain menyusun konsep baru dari nol
               berdasarkan brief di bawah ini.
             </p>
@@ -54,19 +54,19 @@ export default function CustomDesignForm() {
             <label htmlFor="brief-referensi" className="text-[12.5px] font-semibold text-[#0B1F3F]">
               Referensi Desain / Website Impian
             </label>
-            <span className="text-[11px] text-[#6B7280]">URL atau nama website</span>
+            <span className="text-[11px] text-[#64748B]">URL atau nama website</span>
           </div>
           <div className="relative mt-2">
-            <Link2 className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+            <Link2 className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
             <input
               id="brief-referensi"
               value={customBrief.reference}
               onChange={(event) => setCustomReference(event.target.value)}
               placeholder="https://website-kompetitor.com atau nama brand favorit"
-              className="w-full rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] py-3 pl-10 pr-3 text-[13px] text-[#0B1F3F] placeholder:text-[#6B7280] focus:border-[#0B1F3F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3F]/10"
+              className="w-full rounded-xl border border-[#DDE5F3] bg-[#F5F8FD] py-3 pl-10 pr-3 text-[13px] text-[#0B1F3F] placeholder:text-[#64748B] focus:border-[#0B1F3F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3F]/10"
             />
           </div>
-          <p className="mt-1.5 text-[11px] leading-relaxed text-[#6B7280]">
+          <p className="mt-1.5 text-[11px] leading-relaxed text-[#64748B]">
             Boleh lebih dari satu, pisahkan dengan koma. Yang kami pelajari: struktur halaman, gaya
             visual, dan alur yang Anda sukai — bukan menjiplak mentah.
           </p>
@@ -78,7 +78,7 @@ export default function CustomDesignForm() {
             <legend className="text-[12.5px] font-semibold text-[#0B1F3F]">
               Kebutuhan Fitur Spesifik
             </legend>
-            <span className="text-[11px] text-[#6B7280]">
+            <span className="text-[11px] text-[#64748B]">
               {selectedFeatures.length} dipilih · opsional, bisa dipilih lebih dari satu
             </span>
           </div>
@@ -95,15 +95,15 @@ export default function CustomDesignForm() {
                   data-feature-option={feature.id}
                   className={`group flex items-start gap-2.5 rounded-xl border p-3 text-left transition ${
                     active
-                      ? 'border-[#0B1F3F] bg-[#F3F4F6] shadow-[0_8px_24px_-12px_rgba(11,31,63,0.18)]'
-                      : 'border-[#E5E7EB] bg-[#F9FAFB] hover:border-[#E5E7EB] hover:bg-[#F3F4F6]'
+                      ? 'border-[#0B1F3F] bg-[#E8EEFA] shadow-[0_8px_24px_-12px_rgba(11,31,63,0.18)]'
+                      : 'border-[#DDE5F3] bg-[#F5F8FD] hover:border-[#DDE5F3] hover:bg-[#E8EEFA]'
                   }`}
                 >
                   <span
                     className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-[5px] border ${
                       active
-                        ? 'border-[#0B1F3F] bg-[#0B1F3F] text-white'
-                        : 'border-[#E5E7EB] text-transparent'
+                        ? 'border-[#0B1F3F] bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] text-white'
+                        : 'border-[#DDE5F3] text-transparent'
                     }`}
                     aria-hidden="true"
                   >
@@ -113,17 +113,17 @@ export default function CustomDesignForm() {
                     <span className="flex items-center gap-1.5">
                       <Icon
                         name={feature.icon}
-                        className={`h-3.5 w-3.5 ${active ? 'text-[#0B1F3F]' : 'text-[#6B7280]'}`}
+                        className={`h-3.5 w-3.5 ${active ? 'text-[#0B1F3F]' : 'text-[#64748B]'}`}
                       />
                       <span
                         className={`text-[12px] font-semibold ${
-                          active ? 'text-[#0B1F3F]' : 'text-[#374151]'
+                          active ? 'text-[#0B1F3F]' : 'text-[#334155]'
                         }`}
                       >
                         {feature.label}
                       </span>
                     </span>
-                    <span className="mt-0.5 block text-[11px] leading-snug text-[#6B7280]">
+                    <span className="mt-0.5 block text-[11px] leading-snug text-[#64748B]">
                       {feature.desc}
                     </span>
                   </span>
@@ -141,7 +141,7 @@ export default function CustomDesignForm() {
             </label>
             <span
               className={`text-[11px] tabular-nums ${
-                notesLength > CUSTOM_NOTES_MAX * 0.9 ? 'text-[#0B1F3F]' : 'text-[#6B7280]'
+                notesLength > CUSTOM_NOTES_MAX * 0.9 ? 'text-[#0B1F3F]' : 'text-[#64748B]'
               }`}
             >
               {notesLength}/{CUSTOM_NOTES_MAX}
@@ -153,14 +153,14 @@ export default function CustomDesignForm() {
             onChange={(event) => setCustomNotes(event.target.value.slice(0, CUSTOM_NOTES_MAX))}
             rows={4}
             placeholder="Misal: 3 cabang kafe, butuh halaman menu per cabang, pesanan online dengan pickup, dan dashboard laporan harian untuk owner."
-            className="mt-2 w-full resize-y rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-3 text-[13px] leading-relaxed text-[#0B1F3F] placeholder:text-[#6B7280] focus:border-[#0B1F3F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3F]/10"
+            className="mt-2 w-full resize-y rounded-xl border border-[#DDE5F3] bg-[#F5F8FD] px-3.5 py-3 text-[13px] leading-relaxed text-[#0B1F3F] placeholder:text-[#64748B] focus:border-[#0B1F3F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3F]/10"
           />
         </div>
 
         {/* Estimasi pengerjaan */}
-        <div className="mt-6 rounded-xl border border-[#D1D5DB] bg-[#F9FAFB] p-4">
+        <div className="mt-6 rounded-xl border border-[#C5D0E4] bg-[#F5F8FD] p-4">
           <div className="flex items-start gap-3">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#F3F4F6] text-[#0B1F3F]">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#E8EEFA] text-[#0B1F3F]">
               <Clock className="h-4 w-4" />
             </span>
             <div>
@@ -179,53 +179,53 @@ export default function CustomDesignForm() {
 
       {/* ── Ringkasan brief (sticky) ────────────────────────────────── */}
       <aside className="lg:sticky lg:top-24 lg:self-start">
-        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5">
+        <div className="rounded-2xl border border-[#DDE5F3] bg-white p-5">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-[13.5px] font-bold text-[#0B1F3F]">Ringkasan brief</h3>
-            <span className="rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#0B1F3F] ring-1 ring-inset ring-[#D1D5DB]">
+            <span className="rounded-full bg-[#E8EEFA] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#0B1F3F] ring-1 ring-inset ring-[#C5D0E4]">
               Custom
             </span>
           </div>
 
           <dl className="mt-4 space-y-2.5 text-[12px]">
             <div className="flex items-start justify-between gap-3">
-              <dt className="text-[#6B7280]">Paket</dt>
+              <dt className="text-[#64748B]">Paket</dt>
               <dd className="text-right font-semibold text-[#0B1F3F]">{plan.name}</dd>
             </div>
             <div className="flex items-start justify-between gap-3">
-              <dt className="text-[#6B7280]">Domain</dt>
-              <dd className="truncate text-right font-medium text-[#4B5563]">
+              <dt className="text-[#64748B]">Domain</dt>
+              <dd className="truncate text-right font-medium text-[#475569]">
                 {domain || 'belum diisi'}
               </dd>
             </div>
             <div className="flex items-start justify-between gap-3">
-              <dt className="text-[#6B7280]">Mode desain</dt>
+              <dt className="text-[#64748B]">Mode desain</dt>
               <dd className="text-right font-semibold text-[#0B1F3F]">Custom Design</dd>
             </div>
           </dl>
 
-          <div className="mt-4 space-y-2 border-t border-[#E5E7EB] pt-4">
-            <p className="flex items-center gap-2 text-[11.5px] text-[#4B5563]">
+          <div className="mt-4 space-y-2 border-t border-[#DDE5F3] pt-4">
+            <p className="flex items-center gap-2 text-[11.5px] text-[#475569]">
               <StatusDot done={customBrief.reference.trim().length > 0} />
               Referensi web
             </p>
-            <p className="flex items-center gap-2 text-[11.5px] text-[#4B5563]">
+            <p className="flex items-center gap-2 text-[11.5px] text-[#475569]">
               <StatusDot done={selectedFeatures.length > 0} />
               Fitur khusus ({selectedFeatures.length})
             </p>
-            <p className="flex items-center gap-2 text-[11.5px] text-[#4B5563]">
+            <p className="flex items-center gap-2 text-[11.5px] text-[#475569]">
               <StatusDot done={customBrief.notes.trim().length > 0} />
-              Catatan bisnis <span className="text-[#6B7280]">(opsional)</span>
+              Catatan bisnis <span className="text-[#64748B]">(opsional)</span>
             </p>
           </div>
 
           {selectedFeatures.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-1.5 border-t border-[#E5E7EB] pt-4">
+            <div className="mt-4 flex flex-wrap gap-1.5 border-t border-[#DDE5F3] pt-4">
               {CUSTOM_FEATURES.filter((feature) => selectedFeatures.includes(feature.id)).map(
                 (feature) => (
                   <span
                     key={feature.id}
-                    className="rounded-md bg-[#F3F4F6] px-2 py-1 text-[10.5px] font-medium text-[#0B1F3F]"
+                    className="rounded-md bg-[#E8EEFA] px-2 py-1 text-[10.5px] font-medium text-[#0B1F3F]"
                   >
                     {feature.label}
                   </span>
@@ -234,7 +234,7 @@ export default function CustomDesignForm() {
             </div>
           )}
 
-          <div className="mt-4 flex items-center gap-2 rounded-lg bg-[#F9FAFB] px-3 py-2.5 text-[11.5px] text-[#4B5563]">
+          <div className="mt-4 flex items-center gap-2 rounded-lg bg-[#F5F8FD] px-3 py-2.5 text-[11.5px] text-[#475569]">
             <Clock className="h-3.5 w-3.5 shrink-0 text-[#0B1F3F]" />
             Estimasi {CUSTOM_TIMELINE}
           </div>
@@ -243,20 +243,20 @@ export default function CustomDesignForm() {
             type="button"
             onClick={() => scrollToSection('ringkasan')}
             disabled={!isCustomDesignReady}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0B1F3F] px-4 py-3 text-[12.5px] font-bold text-white transition hover:bg-[#17315F] disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#0B1F3F] to-[#1E40AF] px-4 py-3 text-[12.5px] font-bold text-white transition hover:brightness-125 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <PenLine className="h-3.5 w-3.5" />
             Lanjut ke ringkasan
           </button>
 
           {!isCustomDesignReady && (
-            <p className="mt-2.5 text-[11px] leading-relaxed text-[#6B7280]">
+            <p className="mt-2.5 text-[11px] leading-relaxed text-[#64748B]">
               Isi minimal satu: URL referensi atau centang fitur khusus yang dibutuhkan.
             </p>
           )}
 
           {designLocked && (
-            <p className="mt-2.5 rounded-lg bg-[#F3F4F6] px-3 py-2 text-[11px] leading-relaxed text-[#0B1F3F]">
+            <p className="mt-2.5 rounded-lg bg-[#E8EEFA] px-3 py-2 text-[11px] leading-relaxed text-[#0B1F3F]">
               Paket {plan.name} otomatis memakai jalur Custom Design — template katalog tidak
               tersedia untuk paket ini.
             </p>
@@ -265,7 +265,7 @@ export default function CustomDesignForm() {
           <button
             type="button"
             onClick={resetCustomBrief}
-            className="mt-3 w-full rounded-lg px-3 py-2 text-[11px] font-semibold text-[#6B7280] transition hover:bg-[#F3F4F6] hover:text-[#4B5563]"
+            className="mt-3 w-full rounded-lg px-3 py-2 text-[11px] font-semibold text-[#64748B] transition hover:bg-[#E8EEFA] hover:text-[#475569]"
           >
             Kosongkan brief
           </button>
